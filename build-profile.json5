@@ -1,0 +1,56 @@
+{
+  "app": {
+    "signingConfigs": [
+      {
+        "name": "default",
+        "type": "HarmonyOS",
+        "material": {
+          "certpath": "C:\\Users\\TZG\\.ohos\\config\\default_MedCalc_VVef3zYfZX-VK57p1Eo49_nId3itopZW9y43N1yiCr4=.cer",
+          "keyAlias": "debugKey",
+          "keyPassword": "0000001B89D21439743D679FAC1DD7EC5B602205CE1D7517F14C45C0B4A6D58936702577721B9497D0C13F",
+          "profile": "C:\\Users\\TZG\\.ohos\\config\\default_MedCalc_VVef3zYfZX-VK57p1Eo49_nId3itopZW9y43N1yiCr4=.p7b",
+          "signAlg": "SHA256withECDSA",
+          "storeFile": "C:\\Users\\TZG\\.ohos\\config\\default_MedCalc_VVef3zYfZX-VK57p1Eo49_nId3itopZW9y43N1yiCr4=.p12",
+          "storePassword": "0000001BA48F9F5E01E2109E39DAC5AEF486C0135FFD47D72487ECB719245B3E12AD7BDCC31C01D3E74804"
+        }
+      }
+    ],
+    "products": [
+      {
+        "name": "default",
+        "signingConfig": "default",
+        "targetSdkVersion": "6.0.2(22)",
+        "compatibleSdkVersion": "6.0.2(22)",
+        "runtimeOS": "HarmonyOS",
+        "buildOption": {
+          "strictMode": {
+            "caseSensitiveCheck": true,
+            "useNormalizedOHMUrl": true
+          }
+        }
+      }
+    ],
+    "buildModeSet": [
+      {
+        "name": "debug",
+      },
+      {
+        "name": "release"
+      }
+    ]
+  },
+  "modules": [
+    {
+      "name": "entry",
+      "srcPath": "./entry",
+      "targets": [
+        {
+          "name": "default",
+          "applyToProducts": [
+            "default"
+          ]
+        }
+      ]
+    }
+  ]
+}

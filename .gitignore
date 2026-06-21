@@ -1,0 +1,22 @@
+/node_modules
+/oh_modules
+/local.properties
+/.idea
+**/build
+/.hvigor
+.cxx
+/.clangd
+/.clang-format
+/.clang-tidy
+**/.test
+/.appanalyzer
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# DevEco cache
+.entry-caches
