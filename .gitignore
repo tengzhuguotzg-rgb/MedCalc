@@ -20,3 +20,6 @@ Thumbs.db
 
 # DevEco cache
 .entry-caches
+
+# DevEco agent plans
+/.deveco

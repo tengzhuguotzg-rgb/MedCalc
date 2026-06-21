@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNa } from '../../engine/CommonCalculators';
 
 @Component
-export struct NaCalculator {
-  @State na: number = 0;
+export struct NaCalculator {  @State na: number = 0;
   @State glu: number = 0;
   @State result: CalcResult | null = null;
 
@@ -18,13 +17,13 @@ export struct NaCalculator {
   build() {
     Column() {
       Column() {
-        Text('校正血钠')
-          .fontSize(17)
-          .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F');
-        Text('高血糖时假性低钠校正')
-          .fontSize(11.5)
-          .fontColor('#4A5247')
+        Text('用于校正高血糖所致假性低钠血症')
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Medium);
+        Text('校正Na = 实测Na + 1.6×(Glu-5.6)/5.6')
+          .fontSize(12)
+          .fontColor('#7A8074')
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
@@ -106,8 +105,8 @@ export struct NaCalculator {
                 .fontWeight(FontWeight.Bold)
                 .fontColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : 
                            this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
-                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#E8F0EC' : 
-                                 this.result!.tierClass === 'tier-warn' ? '#F5EFE0' : '#F5E4E0')
+                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : 
+                                 this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
                 .borderRadius(20)
                 .padding({ left: 12, right: 12, top: 4, bottom: 4 })
                 .margin({ top: 4 });
@@ -126,6 +125,7 @@ export struct NaCalculator {
       }
     }
     .width('100%')
-    .padding(16);
+    .constraintSize({ minHeight: '100%' })
+    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

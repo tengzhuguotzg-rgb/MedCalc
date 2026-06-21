@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCag } from '../../engine/MoreCalculators';
 
 @Component
-export struct CagCalculator {
-  @State na: number = 0;
+export struct CagCalculator {  @State na: number = 0;
   @State cl: number = 0;
   @State hco3: number = 0;
   @State alb: number = 0;
@@ -15,9 +14,7 @@ export struct CagCalculator {
 
   build() {
     Column() {
-      Column() {
-        Text('白蛋白校准 AG').fontSize(17).fontWeight(FontWeight.Bold).fontColor('#1F3D2F'); Text('低白蛋白时 AG 假性正常, 必须校正').fontSize(11.5).fontColor('#4A5247').margin({ top: 2 });
-      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于校正低蛋白血症时的阴离子间隙').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('校正AG = 计算AG + 2.5×(4 - 白蛋白g/dL)，低蛋白时必校').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
         Text('— 电解质').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
@@ -65,13 +62,13 @@ export struct CagCalculator {
               Text(this.result!.value !== null ? `${this.result!.value!.toFixed(1)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
                 .fontColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
-                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#E8F0EC' : this.result!.tierClass === 'tier-warn' ? '#F5EFE0' : '#F5E4E0')
+                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
                 .borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             
           }.width('100%');
         }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
       }
-    }.width('100%').padding(16);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -6,8 +6,7 @@ interface CritLine {
 }
 
 @Component
-export struct BloodGasCalculator {
-  @State ph: string = '';
+export struct BloodGasCalculator {  @State ph: string = '';
   @State paco2: string = '';
   @State paco2Unit: string = 'mmhg';
   @State pao2: string = '';
@@ -209,19 +208,20 @@ export struct BloodGasCalculator {
       }
     }
     .width('100%')
-    .padding(16);
+    .constraintSize({ minHeight: '100%' })
+    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
   Header() {
     Column() {
-      Text('血气分析 (动脉 + 静脉)')
-        .fontSize(17)
-        .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F');
-      Text('动脉+静脉血气, 酸碱失衡/氧合/缺氧分型/呼吸商/危急值')
-        .fontSize(11.5)
-        .fontColor('#4A5247')
+      Text('用于判断酸碱失衡类型及氧合状态，鉴别缺氧机制')
+        .fontSize(14)
+        .fontColor('#1F3D2F')
+        .fontWeight(FontWeight.Medium);
+      Text('6步法判断酸碱失衡 + 氧合评估 + 缺氧分型(需静脉) + 呼吸商 + 危急值')
+        .fontSize(12)
+        .fontColor('#7A8074')
         .margin({ top: 2 });
     }
     .alignItems(HorizontalAlign.Start)
@@ -243,16 +243,16 @@ export struct BloodGasCalculator {
         Button('急性')
           .height(32)
           .fontSize(13)
-          .fontColor(this.acute === 'acute' ? '#FFFFFF' : '#1F3D2F')
-          .backgroundColor(this.acute === 'acute' ? '#1F3D2F' : '#F0EDE4')
+          .fontColor(this.acute === 'acute' ? '#FFFFFF' : '#2D5440')
+          .backgroundColor(this.acute === 'acute' ? '#1F3D2F' : '#F5F5F5')
           .borderRadius(6)
           .layoutWeight(1)
           .onClick(() => { this.acute = 'acute'; this.calculate(); });
         Button('慢性')
           .height(32)
           .fontSize(13)
-          .fontColor(this.acute === 'chronic' ? '#FFFFFF' : '#1F3D2F')
-          .backgroundColor(this.acute === 'chronic' ? '#1F3D2F' : '#F0EDE4')
+          .fontColor(this.acute === 'chronic' ? '#FFFFFF' : '#2D5440')
+          .backgroundColor(this.acute === 'chronic' ? '#1F3D2F' : '#F5F5F5')
           .borderRadius(6)
           .layoutWeight(1)
           .margin({ left: 6 })
@@ -283,98 +283,12 @@ export struct BloodGasCalculator {
         }
         .layoutWeight(1);
         Column() {
-          Text('PaCO\u2082')
+          Text('HCO\u2083\u207B (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          Row() {
-            TextInput({ placeholder: '35-45' })
-              .height(40)
-              .fontSize(16)
-              .fontColor('#1F2421')
-              .placeholderColor('#999999')
-              .backgroundColor('#FFFFFF')
-              .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
-              .padding({ left: 12, right: 12 })
-              .layoutWeight(1)
-              .onChange((value: string) => { this.paco2 = value; this.calculate(); });
-            Row() {
-              Button('mmHg')
-                .height(28)
-                .fontSize(11)
-                .fontColor(this.paco2Unit === 'mmhg' ? '#FFFFFF' : '#1F3D2F')
-                .backgroundColor(this.paco2Unit === 'mmhg' ? '#1F3D2F' : '#F0EDE4')
-                .borderRadius(4)
-                .onClick(() => { this.paco2Unit = 'mmhg'; this.calculate(); });
-              Button('kPa')
-                .height(28)
-                .fontSize(11)
-                .fontColor(this.paco2Unit === 'kpa' ? '#FFFFFF' : '#1F3D2F')
-                .backgroundColor(this.paco2Unit === 'kpa' ? '#1F3D2F' : '#F0EDE4')
-                .borderRadius(4)
-                .margin({ left: 4 })
-                .onClick(() => { this.paco2Unit = 'kpa'; this.calculate(); });
-            }
-            .margin({ left: 4 });
-          }
-          .width('100%');
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
-      }
-      .width('100%')
-      .margin({ bottom: 12 });
-
-      Row() {
-        Column() {
-          Text('PaO\u2082')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          Row() {
-            TextInput({ placeholder: '80-100' })
-              .height(40)
-              .fontSize(16)
-              .fontColor('#1F2421')
-              .placeholderColor('#999999')
-              .backgroundColor('#FFFFFF')
-              .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
-              .padding({ left: 12, right: 12 })
-              .layoutWeight(1)
-              .onChange((value: string) => { this.pao2 = value; this.calculate(); });
-            Row() {
-              Button('mmHg')
-                .height(28)
-                .fontSize(11)
-                .fontColor(this.pao2Unit === 'mmhg' ? '#FFFFFF' : '#1F3D2F')
-                .backgroundColor(this.pao2Unit === 'mmhg' ? '#1F3D2F' : '#F0EDE4')
-                .borderRadius(4)
-                .onClick(() => { this.pao2Unit = 'mmhg'; this.calculate(); });
-              Button('kPa')
-                .height(28)
-                .fontSize(11)
-                .fontColor(this.pao2Unit === 'kpa' ? '#FFFFFF' : '#1F3D2F')
-                .backgroundColor(this.pao2Unit === 'kpa' ? '#1F3D2F' : '#F0EDE4')
-                .borderRadius(4)
-                .margin({ left: 4 })
-                .onClick(() => { this.pao2Unit = 'kpa'; this.calculate(); });
-            }
-            .margin({ left: 4 });
-          }
-          .width('100%');
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('HCO\u2083\u207B')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '22-27 mmol/L' })
+          TextInput({ placeholder: '22-27' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -392,14 +306,98 @@ export struct BloodGasCalculator {
       .width('100%')
       .margin({ bottom: 12 });
 
+      Column() {
+        Text('PaCO\u2082')
+          .fontSize(14)
+          .fontColor('#1F2421')
+          .fontWeight(FontWeight.Medium)
+          .margin({ bottom: 6 });
+        Row() {
+          TextInput({ placeholder: '35-45' })
+            .height(40)
+            .fontSize(16)
+            .fontColor('#1F2421')
+            .placeholderColor('#999999')
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .border({ width: 1, color: '#E0E0E0' })
+            .padding({ left: 12, right: 12 })
+            .layoutWeight(1)
+            .onChange((value: string) => { this.paco2 = value; this.calculate(); });
+          Row() {
+            Button('mmHg')
+              .height(28)
+              .fontSize(11)
+              .fontColor(this.paco2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.paco2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
+              .borderRadius(4)
+              .onClick(() => { this.paco2Unit = 'mmhg'; this.calculate(); });
+            Button('kPa')
+              .height(28)
+              .fontSize(11)
+              .fontColor(this.paco2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.paco2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
+              .borderRadius(4)
+              .margin({ left: 4 })
+              .onClick(() => { this.paco2Unit = 'kpa'; this.calculate(); });
+          }
+          .margin({ left: 8 });
+        }
+        .width('100%');
+      }
+      .width('100%')
+      .margin({ bottom: 12 });
+
+      Column() {
+        Text('PaO\u2082')
+          .fontSize(14)
+          .fontColor('#1F2421')
+          .fontWeight(FontWeight.Medium)
+          .margin({ bottom: 6 });
+        Row() {
+          TextInput({ placeholder: '80-100' })
+            .height(40)
+            .fontSize(16)
+            .fontColor('#1F2421')
+            .placeholderColor('#999999')
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .border({ width: 1, color: '#E0E0E0' })
+            .padding({ left: 12, right: 12 })
+            .layoutWeight(1)
+            .onChange((value: string) => { this.pao2 = value; this.calculate(); });
+          Row() {
+            Button('mmHg')
+              .height(28)
+              .fontSize(11)
+              .fontColor(this.pao2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.pao2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
+              .borderRadius(4)
+              .onClick(() => { this.pao2Unit = 'mmhg'; this.calculate(); });
+            Button('kPa')
+              .height(28)
+              .fontSize(11)
+              .fontColor(this.pao2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.pao2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
+              .borderRadius(4)
+              .margin({ left: 4 })
+              .onClick(() => { this.pao2Unit = 'kpa'; this.calculate(); });
+          }
+          .margin({ left: 8 });
+        }
+        .width('100%');
+      }
+      .width('100%')
+      .margin({ bottom: 12 });
+
       Row() {
         Column() {
-          Text('BE 碱剩余')
+          Text('BE 碱剩余 (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '-3~+3 mmol/L' })
+          TextInput({ placeholder: '-3~+3' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -413,12 +411,12 @@ export struct BloodGasCalculator {
         }
         .layoutWeight(1);
         Column() {
-          Text('SaO\u2082')
+          Text('SaO\u2082 (%)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '95-100 %' })
+          TextInput({ placeholder: '95-100' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -438,12 +436,12 @@ export struct BloodGasCalculator {
 
       Row() {
         Column() {
-          Text('Lac 乳酸')
+          Text('Lac 乳酸 (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '0-2 mmol/L' })
+          TextInput({ placeholder: '0-2' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -457,58 +455,12 @@ export struct BloodGasCalculator {
         }
         .layoutWeight(1);
         Column() {
-          Text('Hgb 血红蛋白')
+          Text('K\u207A (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          Row() {
-            TextInput({ placeholder: '120-160' })
-              .height(40)
-              .fontSize(16)
-              .fontColor('#1F2421')
-              .placeholderColor('#999999')
-              .backgroundColor('#FFFFFF')
-              .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
-              .padding({ left: 12, right: 12 })
-              .layoutWeight(1)
-              .onChange((value: string) => { this.hgb = value; this.calculate(); });
-            Row() {
-              Button('g/L')
-                .height(28)
-                .fontSize(11)
-                .fontColor(this.hgbUnit === 'gl' ? '#FFFFFF' : '#1F3D2F')
-                .backgroundColor(this.hgbUnit === 'gl' ? '#1F3D2F' : '#F0EDE4')
-                .borderRadius(4)
-                .onClick(() => { this.hgbUnit = 'gl'; this.calculate(); });
-              Button('g/dL')
-                .height(28)
-                .fontSize(11)
-                .fontColor(this.hgbUnit === 'gdl' ? '#FFFFFF' : '#1F3D2F')
-                .backgroundColor(this.hgbUnit === 'gdl' ? '#1F3D2F' : '#F0EDE4')
-                .borderRadius(4)
-                .margin({ left: 4 })
-                .onClick(() => { this.hgbUnit = 'gdl'; this.calculate(); });
-            }
-            .margin({ left: 4 });
-          }
-          .width('100%');
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
-      }
-      .width('100%')
-      .margin({ bottom: 12 });
-
-      Row() {
-        Column() {
-          Text('K\u207A')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '3.5-5.5 mmol/L' })
+          TextInput({ placeholder: '3.5-5.5' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -520,14 +472,62 @@ export struct BloodGasCalculator {
             .width('100%')
             .onChange((value: string) => { this.k = value; this.calculate(); });
         }
-        .layoutWeight(1);
+        .layoutWeight(1)
+        .margin({ left: 12 });
+      }
+      .width('100%')
+      .margin({ bottom: 12 });
+
+      Column() {
+        Text('Hgb 血红蛋白')
+          .fontSize(14)
+          .fontColor('#1F2421')
+          .fontWeight(FontWeight.Medium)
+          .margin({ bottom: 6 });
+        Row() {
+          TextInput({ placeholder: '120-160' })
+            .height(40)
+            .fontSize(16)
+            .fontColor('#1F2421')
+            .placeholderColor('#999999')
+            .backgroundColor('#FFFFFF')
+            .borderRadius(8)
+            .border({ width: 1, color: '#E0E0E0' })
+            .padding({ left: 12, right: 12 })
+            .layoutWeight(1)
+            .onChange((value: string) => { this.hgb = value; this.calculate(); });
+          Row() {
+            Button('g/L')
+              .height(28)
+              .fontSize(11)
+              .fontColor(this.hgbUnit === 'gl' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.hgbUnit === 'gl' ? '#1F3D2F' : '#F5F5F5')
+              .borderRadius(4)
+              .onClick(() => { this.hgbUnit = 'gl'; this.calculate(); });
+            Button('g/dL')
+              .height(28)
+              .fontSize(11)
+              .fontColor(this.hgbUnit === 'gdl' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.hgbUnit === 'gdl' ? '#1F3D2F' : '#F5F5F5')
+              .borderRadius(4)
+              .margin({ left: 4 })
+              .onClick(() => { this.hgbUnit = 'gdl'; this.calculate(); });
+          }
+          .margin({ left: 8 });
+        }
+        .width('100%');
+      }
+      .width('100%')
+      .margin({ bottom: 12 });
+
+      Row() {
         Column() {
-          Text('Na\u207A')
+          Text('Na\u207A (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '135-145 mmol/L' })
+          TextInput({ placeholder: '135-145' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -539,20 +539,14 @@ export struct BloodGasCalculator {
             .width('100%')
             .onChange((value: string) => { this.na = value; this.calculate(); });
         }
-        .layoutWeight(1)
-        .margin({ left: 12 });
-      }
-      .width('100%')
-      .margin({ bottom: 12 });
-
-      Row() {
+        .layoutWeight(1);
         Column() {
-          Text('Cl\u207B (可选, 算 AG)')
+          Text('Cl\u207B (可选, 算AG) (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '98-106 mmol/L' })
+          TextInput({ placeholder: '98-106' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -564,14 +558,20 @@ export struct BloodGasCalculator {
             .width('100%')
             .onChange((value: string) => { this.cl = value; this.calculate(); });
         }
-        .layoutWeight(1);
+        .layoutWeight(1)
+        .margin({ left: 12 });
+      }
+      .width('100%')
+      .margin({ bottom: 12 });
+
+      Row() {
         Column() {
-          Text('Glu 血糖')
+          Text('Glu 血糖 (mmol/L)')
             .fontSize(14)
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '3.9-7.8 mmol/L' })
+          TextInput({ placeholder: '3.9-7.8' })
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -583,8 +583,7 @@ export struct BloodGasCalculator {
             .width('100%')
             .onChange((value: string) => { this.glu = value; this.calculate(); });
         }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        .layoutWeight(1);
       }
       .width('100%')
       .margin({ bottom: 12 });
@@ -611,15 +610,15 @@ export struct BloodGasCalculator {
             Button('小数')
               .height(28)
               .fontSize(11)
-              .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#1F3D2F')
-              .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F0EDE4')
+              .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
               .onClick(() => { this.fio2Mode = 'dec'; this.calculate(); });
             Button('%')
               .height(28)
               .fontSize(11)
-              .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#1F3D2F')
-              .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F0EDE4')
+              .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
               .margin({ left: 4 })
               .onClick(() => { this.fio2Mode = 'pct'; this.calculate(); });
@@ -640,7 +639,7 @@ export struct BloodGasCalculator {
         .height(36)
         .fontSize(13)
         .fontColor('#1F3D2F')
-        .backgroundColor('#F0EDE4')
+        .backgroundColor('#F5F5F5')
         .borderRadius(8)
         .width('100%')
         .onClick(() => { this.showVenous = !this.showVenous; });
@@ -652,54 +651,14 @@ export struct BloodGasCalculator {
             .fontColor('#7A8074')
             .margin({ top: 8, bottom: 12 });
 
-          Row() {
-            Column() {
-              Text('PvCO\u2082')
-                .fontSize(14)
-                .fontColor('#1F2421')
-                .fontWeight(FontWeight.Medium)
-                .margin({ bottom: 6 });
-              Row() {
-                TextInput({ placeholder: '40-50' })
-                  .height(40)
-                  .fontSize(16)
-                  .fontColor('#1F2421')
-                  .placeholderColor('#999999')
-                  .backgroundColor('#FFFFFF')
-                  .borderRadius(8)
-                  .border({ width: 1, color: '#E0E0E0' })
-                  .padding({ left: 12, right: 12 })
-                  .layoutWeight(1)
-                  .onChange((value: string) => { this.pvco2 = value; this.calculate(); });
-                Row() {
-                  Button('mmHg')
-                    .height(28)
-                    .fontSize(11)
-                    .fontColor(this.pvco2Unit === 'mmhg' ? '#FFFFFF' : '#1F3D2F')
-                    .backgroundColor(this.pvco2Unit === 'mmhg' ? '#1F3D2F' : '#F0EDE4')
-                    .borderRadius(4)
-                    .onClick(() => { this.pvco2Unit = 'mmhg'; this.calculate(); });
-                  Button('kPa')
-                    .height(28)
-                    .fontSize(11)
-                    .fontColor(this.pvco2Unit === 'kpa' ? '#FFFFFF' : '#1F3D2F')
-                    .backgroundColor(this.pvco2Unit === 'kpa' ? '#1F3D2F' : '#F0EDE4')
-                    .borderRadius(4)
-                    .margin({ left: 4 })
-                    .onClick(() => { this.pvco2Unit = 'kpa'; this.calculate(); });
-                }
-                .margin({ left: 4 });
-              }
-              .width('100%');
-            }
-            .layoutWeight(1);
-            Column() {
-              Text('SvO\u2082')
-                .fontSize(14)
-                .fontColor('#1F2421')
-                .fontWeight(FontWeight.Medium)
-                .margin({ bottom: 6 });
-              TextInput({ placeholder: '60-80 %' })
+          Column() {
+            Text('PvCO\u2082')
+              .fontSize(14)
+              .fontColor('#1F2421')
+              .fontWeight(FontWeight.Medium)
+              .margin({ bottom: 6 });
+            Row() {
+              TextInput({ placeholder: '40-50' })
                 .height(40)
                 .fontSize(16)
                 .fontColor('#1F2421')
@@ -708,11 +667,49 @@ export struct BloodGasCalculator {
                 .borderRadius(8)
                 .border({ width: 1, color: '#E0E0E0' })
                 .padding({ left: 12, right: 12 })
-                .width('100%')
-                .onChange((value: string) => { this.svo2 = value; this.calculate(); });
+                .layoutWeight(1)
+                .onChange((value: string) => { this.pvco2 = value; this.calculate(); });
+              Row() {
+                Button('mmHg')
+                  .height(28)
+                  .fontSize(11)
+                  .fontColor(this.pvco2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
+                  .backgroundColor(this.pvco2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
+                  .borderRadius(4)
+                  .onClick(() => { this.pvco2Unit = 'mmhg'; this.calculate(); });
+                Button('kPa')
+                  .height(28)
+                  .fontSize(11)
+                  .fontColor(this.pvco2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
+                  .backgroundColor(this.pvco2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
+                  .borderRadius(4)
+                  .margin({ left: 4 })
+                  .onClick(() => { this.pvco2Unit = 'kpa'; this.calculate(); });
+              }
+              .margin({ left: 8 });
             }
-            .layoutWeight(1)
-            .margin({ left: 12 });
+            .width('100%');
+          }
+          .width('100%')
+          .margin({ bottom: 12 });
+
+          Column() {
+            Text('SvO\u2082 (%)')
+              .fontSize(14)
+              .fontColor('#1F2421')
+              .fontWeight(FontWeight.Medium)
+              .margin({ bottom: 6 });
+            TextInput({ placeholder: '60-80' })
+              .height(40)
+              .fontSize(16)
+              .fontColor('#1F2421')
+              .placeholderColor('#999999')
+              .backgroundColor('#FFFFFF')
+              .borderRadius(8)
+              .border({ width: 1, color: '#E0E0E0' })
+              .padding({ left: 12, right: 12 })
+              .width('100%')
+              .onChange((value: string) => { this.svo2 = value; this.calculate(); });
           }
           .width('100%')
           .margin({ bottom: 12 });
@@ -739,15 +736,15 @@ export struct BloodGasCalculator {
                 Button('mmHg')
                   .height(28)
                   .fontSize(11)
-                  .fontColor(this.pvo2Unit === 'mmhg' ? '#FFFFFF' : '#1F3D2F')
-                  .backgroundColor(this.pvo2Unit === 'mmhg' ? '#1F3D2F' : '#F0EDE4')
+                  .fontColor(this.pvo2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
+                  .backgroundColor(this.pvo2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
                   .borderRadius(4)
                   .onClick(() => { this.pvo2Unit = 'mmhg'; this.calculate(); });
                 Button('kPa')
                   .height(28)
                   .fontSize(11)
-                  .fontColor(this.pvo2Unit === 'kpa' ? '#FFFFFF' : '#1F3D2F')
-                  .backgroundColor(this.pvo2Unit === 'kpa' ? '#1F3D2F' : '#F0EDE4')
+                  .fontColor(this.pvo2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
+                  .backgroundColor(this.pvo2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
                   .borderRadius(4)
                   .margin({ left: 4 })
                   .onClick(() => { this.pvo2Unit = 'kpa'; this.calculate(); });

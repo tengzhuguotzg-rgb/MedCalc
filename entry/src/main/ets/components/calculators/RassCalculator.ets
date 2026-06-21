@@ -22,8 +22,7 @@ const RASS_LEVELS: RassLevel[] = [
 ];
 
 @Component
-export struct RassCalculator {
-  @State score: number = 0;
+export struct RassCalculator {  @State score: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -31,7 +30,7 @@ export struct RassCalculator {
 
   build() {
     Column() {
-      Column() { Text('RASS 镇静评分').fontSize(17).fontWeight(FontWeight.Bold).fontColor('#1F3D2F'); Text('Richmond Agitation-Sedation Scale · −5 ~ +4').fontSize(11.5).fontColor('#4A5247').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估ICU患者镇静深度及躁动状态').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('+4(攻击)至-5(昏迷)，目标-2至0').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
         Text('— 选择评分').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
@@ -63,11 +62,11 @@ export struct RassCalculator {
                   .fontColor('#1F3D2F');
               }.width(60).alignItems(HorizontalAlign.End);
             }.padding({ top: 6, bottom: 6, left: 8, right: 8 })
-              .backgroundColor(level.score === this.score ? '#E8F0EC' : 'transparent')
+              .backgroundColor(level.score === this.score ? '#3D6B4F' : 'transparent')
               .borderRadius(6).margin({ bottom: 2 });
           });
         }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
       }
-    }.width('100%').padding(16);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

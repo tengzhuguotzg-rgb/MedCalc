@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCrCl } from '../../engine/CrClCalculator';
 
 @Component
-export struct CrClCalculator {
-  @State sex: string = 'male';
+export struct CrClCalculator {  @State sex: string = 'male';
   @State age: number = 0;
   @State weight: number = 0;
   @State creatinine: number = 0;
@@ -26,21 +25,22 @@ export struct CrClCalculator {
       }
     }
     .width('100%')
-    .padding(16);
+    .constraintSize({ minHeight: '100%' })
+    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
   Header() {
     Column() {
-      Text('肌酐清除率 · CrCl')
-        .fontSize(17)
-        .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F');
-      Text('Cockcroft-Gault 公式, 经肾药物剂量调整依据')
-        .fontSize(11.5)
-        .fontColor('#4A5247')
-        .margin({ top: 2 });
-    }
+      Text('用于评估肾功能，指导经肾药物剂量调整')
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Medium);
+        Text('Cockcroft-Gault公式，需肌酐+年龄+体重+性别')
+          .fontSize(12)
+          .fontColor('#7A8074')
+          .margin({ top: 2 });
+      }
     .alignItems(HorizontalAlign.Start)
     .width('100%')
     .margin({ bottom: 12 });
@@ -232,11 +232,11 @@ export struct CrClCalculator {
   private getTierBgColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#E8F0EC';
+        return '#3D6B4F';
       case 'tier-warn':
-        return '#F5EFE0';
+        return '#C8881A';
       case 'tier-danger':
-        return '#F5E4E0';
+        return '#B1452A';
       default:
         return '#F0F4F2';
     }

@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCurb65 } from '../../engine/CommonCalculators';
 
 @Component
-export struct Curb65Calculator {
-  @State confusion: boolean = false;
+export struct Curb65Calculator {  @State confusion: boolean = false;
   @State urea: number = 0;
   @State ureaUnit: string = 'mmol';
   @State rr: number = 0;
@@ -17,9 +16,7 @@ export struct Curb65Calculator {
 
   build() {
     Column() {
-      Column() {
-        Text('CURB-65 评分').fontSize(17).fontWeight(FontWeight.Bold).fontColor('#1F3D2F'); Text('社区获得性肺炎严重度 · 5 项, 0-5 分').fontSize(11.5).fontColor('#4A5247').margin({ top: 2 });
-      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估社区获得性肺炎严重程度及住院决策').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：意识+BUN+呼吸+血压+年龄≥65，0-5分').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
@@ -77,13 +74,13 @@ export struct Curb65Calculator {
               Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
                 .fontColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
-                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#E8F0EC' : this.result!.tierClass === 'tier-warn' ? '#F5EFE0' : '#F5E4E0')
+                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
                 .borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             
           }.width('100%');
         }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
       }
-    }.width('100%').padding(16);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

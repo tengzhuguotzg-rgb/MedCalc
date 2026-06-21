@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 
 @Component
-export struct Apache2Calculator {
-  @State temp: number = 37;
+export struct Apache2Calculator {  @State temp: number = 37;
   @State sbp: number = 120;
   @State dbp: number = 80;
   @State hr: number = 80;
@@ -54,21 +53,22 @@ export struct Apache2Calculator {
       }
     }
     .width('100%')
-    .padding(16);
+    .constraintSize({ minHeight: '100%' })
+    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
   Header() {
     Column() {
-      Text('APACHE II 评分')
-        .fontSize(17)
-        .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F');
-      Text('急性生理与慢性健康评分 · 总分 0-71 (Knaus 1985)')
-        .fontSize(11.5)
-        .fontColor('#4A5247')
-        .margin({ top: 2 });
-    }
+      Text('用于ICU患者病情严重度及死亡风险预测')
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Medium);
+        Text('14生理参数+年龄+慢性健康，总分0-71')
+          .fontSize(12)
+          .fontColor('#7A8074')
+          .margin({ top: 2 });
+      }
     .alignItems(HorizontalAlign.Start)
     .width('100%')
     .margin({ bottom: 12 });
@@ -219,68 +219,57 @@ export struct Apache2Calculator {
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
 
-      Row() {
-        Column() {
-          Text('FiO₂')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '21' })
-            .height(40)
-            .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
-            .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.fio2 = parseFloat(value) || 21;
+      Column() {
+        Text('FiO₂')
+          .fontSize(14)
+          .fontColor('#1F2421')
+          .fontWeight(FontWeight.Medium)
+          .margin({ bottom: 6 });
+        TextInput({ placeholder: '21' })
+          .height(40)
+          .fontSize(16)
+          .fontColor('#1F2421')
+          .placeholderColor('#999999')
+          .backgroundColor('#FFFFFF')
+          .borderRadius(8)
+          .border({ width: 1, color: '#E0E0E0' })
+          .padding({ left: 12, right: 12 })
+          .width('100%')
+          .onChange((value: string) => {
+            this.fio2 = parseFloat(value) || 21;
+            this.calculate();
+          });
+        Row() {
+          Button('%')
+            .fontSize(11)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.fio2Mode === 'pct' ? '#1F3D2F' : '#E0E0E0' })
+            .borderRadius(6)
+            .height(28)
+            .layoutWeight(1)
+            .onClick(() => {
+              this.fio2Mode = 'pct';
+              this.calculate();
+            });
+          Button('小数')
+            .fontSize(11)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.fio2Mode === 'dec' ? '#1F3D2F' : '#E0E0E0' })
+            .borderRadius(6)
+            .height(28)
+            .layoutWeight(1)
+            .margin({ left: 4 })
+            .onClick(() => {
+              this.fio2Mode = 'dec';
               this.calculate();
             });
         }
-        .layoutWeight(1);
-        Column() {
-          Text('FiO₂ 单位')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          Row() {
-            Button('%')
-              .fontSize(15)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5')
-              .border({ width: 1, color: this.fio2Mode === 'pct' ? '#1F3D2F' : '#E0E0E0' })
-              .borderRadius(8)
-              .height(40)
-              .layoutWeight(1)
-              .onClick(() => {
-                this.fio2Mode = 'pct';
-                this.calculate();
-              });
-            Button('小数')
-              .fontSize(15)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5')
-              .border({ width: 1, color: this.fio2Mode === 'dec' ? '#1F3D2F' : '#E0E0E0' })
-              .borderRadius(8)
-              .height(40)
-              .layoutWeight(1)
-              .margin({ left: 8 })
-              .onClick(() => {
-                this.fio2Mode = 'dec';
-                this.calculate();
-              });
-          }
-          .width('100%');
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        .width('100%')
+        .margin({ top: 6 });
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -478,47 +467,39 @@ export struct Apache2Calculator {
               this.cr = parseFloat(value) || 80;
               this.calculate();
             });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('单位')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
           Row() {
             Button('µmol/L')
-              .fontSize(12)
+              .fontSize(11)
               .fontWeight(FontWeight.Bold)
               .fontColor(this.crUnit === 'umol' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.crUnit === 'umol' ? '#1F3D2F' : '#F5F5F5')
               .border({ width: 1, color: this.crUnit === 'umol' ? '#1F3D2F' : '#E0E0E0' })
-              .borderRadius(8)
-              .height(40)
+              .borderRadius(6)
+              .height(28)
               .layoutWeight(1)
               .onClick(() => {
                 this.crUnit = 'umol';
                 this.calculate();
               });
             Button('mg/dL')
-              .fontSize(12)
+              .fontSize(11)
               .fontWeight(FontWeight.Bold)
               .fontColor(this.crUnit === 'mgdl' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.crUnit === 'mgdl' ? '#1F3D2F' : '#F5F5F5')
               .border({ width: 1, color: this.crUnit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' })
-              .borderRadius(8)
-              .height(40)
+              .borderRadius(6)
+              .height(28)
               .layoutWeight(1)
-              .margin({ left: 8 })
+              .margin({ left: 4 })
               .onClick(() => {
                 this.crUnit = 'mgdl';
                 this.calculate();
               });
           }
-          .width('100%');
+          .width('100%')
+          .margin({ top: 6 });
         }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        .layoutWeight(1);
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -690,42 +671,42 @@ export struct Apache2Calculator {
 
       Row() {
         Button('无')
-          .fontSize(14)
+          .fontSize(11)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.chronic === 'none' ? '#FFFFFF' : '#2D5440')
           .backgroundColor(this.chronic === 'none' ? '#1F3D2F' : '#F5F5F5')
           .border({ width: 1, color: this.chronic === 'none' ? '#1F3D2F' : '#E0E0E0' })
           .borderRadius(8)
-          .height(40)
+          .height(36)
           .layoutWeight(1)
           .onClick(() => {
             this.chronic = 'none';
             this.calculate();
           });
         Button('择期术后')
-          .fontSize(14)
+          .fontSize(11)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.chronic === 'elective' ? '#FFFFFF' : '#2D5440')
           .backgroundColor(this.chronic === 'elective' ? '#1F3D2F' : '#F5F5F5')
           .border({ width: 1, color: this.chronic === 'elective' ? '#1F3D2F' : '#E0E0E0' })
           .borderRadius(8)
-          .height(40)
+          .height(36)
           .layoutWeight(1)
-          .margin({ left: 8 })
+          .margin({ left: 4 })
           .onClick(() => {
             this.chronic = 'elective';
             this.calculate();
           });
         Button('非手术/急诊')
-          .fontSize(14)
+          .fontSize(11)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.chronic === 'nonop' ? '#FFFFFF' : '#2D5440')
           .backgroundColor(this.chronic === 'nonop' ? '#1F3D2F' : '#F5F5F5')
           .border({ width: 1, color: this.chronic === 'nonop' ? '#1F3D2F' : '#E0E0E0' })
           .borderRadius(8)
-          .height(40)
+          .height(36)
           .layoutWeight(1)
-          .margin({ left: 8 })
+          .margin({ left: 4 })
           .onClick(() => {
             this.chronic = 'nonop';
             this.calculate();
@@ -802,11 +783,11 @@ export struct Apache2Calculator {
   private getTierBgColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#E8F0EC';
+        return '#3D6B4F';
       case 'tier-warn':
-        return '#F5EFE0';
+        return '#C8881A';
       case 'tier-danger':
-        return '#F5E4E0';
+        return '#B1452A';
       default:
         return '#F0F4F2';
     }

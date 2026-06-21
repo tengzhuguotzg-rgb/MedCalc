@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateSirs } from '../../engine/CommonCalculators';
 
 @Component
-export struct SirsCalculator {
-  @State temp: number = 0;
+export struct SirsCalculator {  @State temp: number = 0;
   @State hr: number = 0;
   @State rr: number = 0;
   @State paco2: number = 0;
@@ -16,9 +15,7 @@ export struct SirsCalculator {
 
   build() {
     Column() {
-      Column() {
-        Text('SIRS 评分').fontSize(17).fontWeight(FontWeight.Bold).fontColor('#1F3D2F'); Text('4 项, ≥2 = 阳性 (1991 ACCP/SCCM)').fontSize(11.5).fontColor('#4A5247').margin({ top: 2 });
-      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于筛查全身炎症反应综合征/脓毒症').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('4项：体温+心率+呼吸+WBC，≥2项阳性').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
@@ -71,13 +68,13 @@ export struct SirsCalculator {
               Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
                 .fontColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
-                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#E8F0EC' : this.result!.tierClass === 'tier-warn' ? '#F5EFE0' : '#F5E4E0')
+                .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
                 .borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             
           }.width('100%');
         }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
       }
-    }.width('100%').padding(16);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

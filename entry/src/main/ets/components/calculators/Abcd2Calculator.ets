@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateAbcd2 } from '../../engine/MoreCalculators2';
 
 @Component
-export struct Abcd2Calculator {
-  @State age: boolean = false;
+export struct Abcd2Calculator {  @State age: boolean = false;
   @State bp: boolean = false;
   @State clin: number = 0;
   @State dur: number = 0;
@@ -15,7 +14,7 @@ export struct Abcd2Calculator {
 
   build() {
     Column() {
-      Column() { Text('ABCD² 评分 (TIA)').fontSize(17).fontWeight(FontWeight.Bold).fontColor('#1F3D2F'); Text('TIA 后短期卒中风险 · 0-7 分').fontSize(11.5).fontColor('#4A5247').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估TIA后短期脑卒中风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：年龄+血压+临床表现+持续时间+糖尿病，总分0-7').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
       Column() {
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         this.OptionRow('A 年龄 ≥ 60 岁', this.age, (v: boolean) => { this.age = v; this.calculate(); });
@@ -42,11 +41,11 @@ export struct Abcd2Calculator {
         Column() { Text('ABCD² Total').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium);
           Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
           Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A')
-            .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#E8F0EC' : this.result!.tierClass === 'tier-warn' ? '#F5EFE0' : '#F5E4E0').borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
+            .backgroundColor(this.result!.tierClass === 'tier-ok' ? '#3D6B4F' : this.result!.tierClass === 'tier-warn' ? '#C8881A' : '#B1452A').borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
         }.alignItems(HorizontalAlign.Start).layoutWeight(1);
         Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
       }.width('100%'); }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%'); }
-    }.width('100%').padding(16);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder OptionRow(label: string, value: boolean, onChange: (v: boolean) => void) {

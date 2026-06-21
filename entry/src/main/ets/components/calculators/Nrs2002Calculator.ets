@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 
 @Component
-export struct Nrs2002Calculator {
-  @State patientHeight: number = 0;
+export struct Nrs2002Calculator {  @State patientHeight: number = 0;
   @State patientWeight: number = 0;
   @State weightLoss: string = 'none';
   @State intake: string = 'none';
@@ -28,21 +27,22 @@ export struct Nrs2002Calculator {
       }
     }
     .width('100%')
-    .padding(16);
+    .constraintSize({ minHeight: '100%' })
+    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
   Header() {
     Column() {
-      Text('营养风险筛查 · NRS-2002')
-        .fontSize(17)
-        .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F');
-      Text('住院患者营养风险 · 总分 0-7, ≥ 3 有营养风险 (ESPEN 2002)')
-        .fontSize(11.5)
-        .fontColor('#4A5247')
-        .margin({ top: 2 });
-    }
+      Text('用于住院患者营养风险筛查')
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Medium);
+        Text('4项：BMI+体重下降+摄食减少+疾病严重度，≥3有营养风险')
+          .fontSize(12)
+          .fontColor('#7A8074')
+          .margin({ top: 2 });
+      }
     .alignItems(HorizontalAlign.Start)
     .width('100%')
     .margin({ bottom: 12 });
@@ -408,11 +408,11 @@ export struct Nrs2002Calculator {
   private getTierBgColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#E8F0EC';
+        return '#3D6B4F';
       case 'tier-warn':
-        return '#F5EFE0';
+        return '#C8881A';
       case 'tier-danger':
-        return '#F5E4E0';
+        return '#B1452A';
       default:
         return '#F0F4F2';
     }

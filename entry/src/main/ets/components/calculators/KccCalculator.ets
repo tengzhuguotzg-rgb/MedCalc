@@ -2,8 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateKcc } from '../../engine/KccCalculator';
 
 @Component
-export struct KccCalculator {
-  @State inr: number = 0;
+export struct KccCalculator {  @State inr: number = 0;
   @State bilirubin: number = 0;
   @State age: number = 0;
   @State etiology: boolean = false;
@@ -14,7 +13,7 @@ export struct KccCalculator {
 
   build() {
     Column() {
-      Column() { Text('KCC 标准').fontSize(17).fontWeight(FontWeight.Bold).fontColor('#1F3D2F'); Text('急性肝衰竭紧急肝移植决策 (O\x27Grady 1989)').fontSize(11.5).fontColor('#4A5247').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于急性肝衰竭紧急肝移植决策').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('对乙酰氨基酚/非对乙酰氨基酚两种标准评估').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
@@ -43,6 +42,6 @@ export struct KccCalculator {
           }.width('100%');
         }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
       }
-    }.width('100%').padding(16);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
