@@ -30,6 +30,7 @@ import { Apache2Calculator } from '../components/calculators/Apache2Calculator';
 import { ClifCCalculator } from '../components/calculators/ClifCCalculator';
 import { AarcCalculator } from '../components/calculators/AarcCalculator';
 import { BloodGasCalculator } from '../components/calculators/BloodGasCalculator';
+import { LlmDialog } from '../components/LlmDialog';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 
@@ -39,6 +40,7 @@ struct Index {
   @State currentCalc: string = 'crcl';
   @State favorites: string[] = [];
   @State sidebarCollapsed: boolean = true;
+  @State showLlmDialog: boolean = false;
 
   aboutToAppear() {
     const prefsService = PreferencesService.getInstance();
@@ -153,6 +155,11 @@ struct Index {
           sidebarCollapsed: $sidebarCollapsed
         });
       }
+
+      LlmDialog({
+        isOpen: $showLlmDialog,
+        currentCalc: $currentCalc
+      })
     }
     .width('100%')
     .height('100%');

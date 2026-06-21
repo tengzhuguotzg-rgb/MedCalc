@@ -24,3 +24,20 @@ export function getTierClass(tier: string): string {
   }
   return 'tier-info';
 }
+
+export function getTierColor(tierClass: string): string {
+  if (tierClass === 'tier-ok') {
+    return '#3D6B4F';
+  }
+  if (tierClass === 'tier-warn') {
+    return '#C8881A';
+  }
+  if (tierClass === 'tier-danger') {
+    return '#B1452A';
+  }
+  return '#7A8074';
+}
+
+export function getTierBgColor(tierClass: string): string {
+  return getTierColor(tierClass);
+}
