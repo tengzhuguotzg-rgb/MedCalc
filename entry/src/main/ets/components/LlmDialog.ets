@@ -1,7 +1,6 @@
 import { CALCULATORS } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
-import { ApiServiceConfig, sendLlmRequest } from '../services/LlmService';
-
+import { ApiServiceConfig, LlmRecommendation, sendLlmRequest } from '../services/LlmService';
 let svcIdCounter: number = 0;
 
 function generateServiceId(): string {
@@ -15,8 +14,7 @@ export struct LlmDialog {
   @Link currentCalc: string;
   @State userInput: string = '';
   @State loading: boolean = false;
-  @State resultCalcId: string = '';
-  @State resultCalcName: string = '';
+  @State results: LlmRecommendation[] = [];
   @State errorMsg: string = '';
   @State showSettings: boolean = false;
 
@@ -62,15 +60,12 @@ export struct LlmDialog {
     }
 
     this.errorMsg = '';
-    this.resultCalcId = '';
-    this.resultCalcName = '';
+    this.results = [];
     this.loading = true;
 
-    sendLlmRequest(active, trimmedInput).then((calcId: string) => {
+    sendLlmRequest(active, trimmedInput).then((recs: LlmRecommendation[]) => {
       this.loading = false;
-      this.resultCalcId = calcId;
-      const calc = CALCULATORS.find((c): boolean => c.id === calcId);
-      this.resultCalcName = calc ? calc.name : calcId;
+      this.results = recs;
     }).catch((err: Error) => {
       this.loading = false;
       this.errorMsg = err.message;
@@ -156,19 +151,19 @@ export struct LlmDialog {
     this.persistServices();
   }
 
-  getCalcDescription(calcId: string): string {
-    const calc = CALCULATORS.find((c): boolean => c.id === calcId);
-    return calc ? calc.description : '';
-  }
-
   getActiveServiceName(): string {
     const s = this.getActiveService();
     return s ? s.name : '未选择';
   }
 
-  jumpToCalculator(): void {
-    if (this.resultCalcId) {
-      this.currentCalc = this.resultCalcId;
+  getCalcDescription(calcId: string): string {
+    const calc = CALCULATORS.find((c): boolean => c.id === calcId);
+    return calc ? calc.description : '';
+  }
+
+  jumpToCalculator(id: string): void {
+    if (id) {
+      this.currentCalc = id;
       this.closeDialog();
     }
   }
@@ -176,8 +171,7 @@ export struct LlmDialog {
   closeDialog(): void {
     this.isOpen = false;
     this.userInput = '';
-    this.resultCalcId = '';
-    this.resultCalcName = '';
+    this.results = [];
     this.errorMsg = '';
   }
 
@@ -542,47 +536,72 @@ export struct LlmDialog {
 
   @Builder
   ResultArea() {
-    if (this.resultCalcId) {
+    if (this.results.length > 0) {
       Column() {
         Text('✅ 推荐结果')
           .fontSize(11)
           .fontColor('#7A8074')
           .letterSpacing(1)
           .width('100%')
+          .margin({ bottom: 8 })
 
-        Text(this.resultCalcName)
-          .fontSize(22)
-          .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
-          .width('100%')
-          .margin({ top: 4 })
-
-        if (this.resultCalcId) {
-          Text(this.getCalcDescription(this.resultCalcId))
-            .fontSize(12)
-            .fontColor('#4A5247')
-            .width('100%')
-            .margin({ top: 4 })
-        }
-
-        Button() {
-          Text('跳转到此计算器 →')
-            .fontSize(14)
-            .fontColor('#FFFFFF')
-        }
-        .width('100%')
-        .height(40)
-        .backgroundColor('#1F3D2F')
-        .borderRadius(8)
-        .margin({ top: 12 })
-        .onClick(() => {
-          this.jumpToCalculator();
-        })
+        ForEach(this.results, (rec: LlmRecommendation, index: number) => {
+          this.RecommendationCard(rec, index + 1);
+        }, (rec: LlmRecommendation) => rec.id)
       }
       .width('100%')
-      .padding(16)
-      .backgroundColor('#F0F7F0')
-      .borderRadius(8)
     }
+  }
+
+  @Builder
+  RecommendationCard(rec: LlmRecommendation, rank: number) {
+    Column() {
+      Row() {
+        Text(`${rank}`)
+          .fontSize(12)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#FFFFFF')
+          .width(20)
+          .height(20)
+          .borderRadius(10)
+          .backgroundColor('#1F3D2F')
+          .textAlign(TextAlign.Center)
+          .margin({ right: 8 })
+
+        Column() {
+          Text(rec.name)
+            .fontSize(15)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#1F3D2F')
+            .width('100%')
+
+          Text(this.getCalcDescription(rec.id))
+            .fontSize(11)
+            .fontColor('#4A5247')
+            .width('100%')
+            .margin({ top: 2 })
+        }
+        .layoutWeight(1)
+        .alignItems(HorizontalAlign.Start)
+      }
+      .width('100%')
+
+      Button('跳转 →')
+        .fontSize(12)
+        .fontColor('#1F3D2F')
+        .backgroundColor('#E8E5D8')
+        .borderRadius(6)
+        .height(30)
+        .width('100%')
+        .margin({ top: 6 })
+        .onClick(() => {
+          this.jumpToCalculator(rec.id);
+        })
+    }
+    .width('100%')
+    .padding(12)
+    .backgroundColor('#F9F8F3')
+    .borderRadius(8)
+    .margin({ bottom: 8 })
   }
 }

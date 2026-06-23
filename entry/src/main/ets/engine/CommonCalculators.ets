@@ -59,7 +59,8 @@ export function calculateNa(na: number, glu: number): CalcResult {
     };
   }
 
-  const corrected = na + 1.6 * (glu - 100) / 100;
+  const gluMgDl = glu * 18;
+  const corrected = na + 1.6 * (gluMgDl - 100) / 100;
   const delta = corrected - na;
 
   let tier: string;

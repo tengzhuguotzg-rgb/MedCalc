@@ -1,0 +1,27 @@
+import { CalcResult, getTierClass } from './CalcEngine';
+
+export function calculateFssicu(roll: number, situp: number, sit: number, standup: number, stand: number): CalcResult {
+  const total = roll + situp + sit + standup + stand;
+
+  let tier: string;
+  let footnote: string;
+
+  if (total >= 30) {
+    tier = '功能良好';
+    footnote = '≥ 30 功能状态良好, 可考虑转出 ICU 或普通病房。';
+  } else if (total >= 20) {
+    tier = '功能中等';
+    footnote = '20-29 功能中等, 继续每日康复治疗, 评估转出可能。';
+  } else if (total >= 10) {
+    tier = '功能较差';
+    footnote = '10-19 功能较差, 需持续康复介入, 每日评估进展。';
+  } else {
+    tier = '功能极差';
+    footnote = '< 10 功能极差, 卧床/依赖状态, 建议康复科会诊, 被动+主动活动。';
+  }
+
+  const labels = ['无法', '完全帮助', '最大帮助', '中度帮助', '最小帮助', '监护', '独立(需辅)', '完全独立'];
+  const detail = `\n\n翻身: ${roll} (${labels[roll]})\n卧→坐: ${situp} (${labels[situp]})\n坐位平衡: ${sit} (${labels[sit]})\n坐→站: ${standup} (${labels[standup]})\n站立平衡: ${stand} (${labels[stand]})`;
+
+  return { value: total, unit: '/ 35', tier, tierClass: getTierClass(tier), footnote: footnote + detail };
+}

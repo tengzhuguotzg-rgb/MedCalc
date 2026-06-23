@@ -41,7 +41,7 @@ export struct HuntHessCalculator {  @State grade: number = 0;
 
 @Component
 export struct WfnsCalculator {
-  @State grade: number = 0;
+  @State grade: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -54,7 +54,7 @@ export struct WfnsCalculator {
       Column() {
         Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
-          ForEach([0, 1, 2, 3, 4, 5], (item: number) => {
+          ForEach([1, 2, 3, 4, 5], (item: number) => {
             Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.grade === item ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.grade === item ? '#1F3D2F' : '#E0E0E0' })
               .borderRadius(8).height(40).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
@@ -80,7 +80,7 @@ export struct WfnsCalculator {
 
 @Component
 export struct FisherCalculator {
-  @State grade: number = 0;
+  @State grade: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -93,7 +93,7 @@ export struct FisherCalculator {
       Column() {
         Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
-          ForEach([0, 1, 2, 3, 4], (item: number) => {
+          ForEach([1, 2, 3, 4], (item: number) => {
             Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.grade === item ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.grade === item ? '#1F3D2F' : '#E0E0E0' })
               .borderRadius(8).height(40).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });

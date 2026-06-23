@@ -6,9 +6,9 @@ export function calculateClifC(bilirubin: number, bilUnit: string, inr: number, 
   const fio2Val = fio2Mode === 'pct' ? fio2 / 100 : fio2;
 
   let hepFail = 0;
-  if (bilUmol >= 12 && inr >= 1.5) hepFail = 3;
-  else if (bilUmol >= 6 || inr >= 1.5 || hepaticEnceph >= 2) hepFail = 2;
-  else if (bilUmol >= 6 || inr >= 1.2 || hepaticEnceph === 1) hepFail = 1;
+  if (bilUmol >= 204 && inr >= 1.5) hepFail = 3;
+  else if (bilUmol >= 102 || inr >= 1.5 || hepaticEnceph >= 2) hepFail = 2;
+  else if (bilUmol >= 34 || inr >= 1.2 || hepaticEnceph === 1) hepFail = 1;
 
   let circFail = 0;
   if (vasoNorepi || vasoDopamine || vasoEpi) circFail = 3;

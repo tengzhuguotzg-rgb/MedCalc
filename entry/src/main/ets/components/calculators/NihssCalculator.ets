@@ -1,5 +1,5 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
-import { calculateNihss } from '../../engine/MoreCalculators2';
+import { calculateNihss } from '../../engine/MoreCalculators';
 
 @Component
 export struct NihssCalculator {  @State ia: number = 0;

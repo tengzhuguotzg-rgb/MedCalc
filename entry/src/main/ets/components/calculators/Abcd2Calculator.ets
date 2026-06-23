@@ -1,5 +1,5 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
-import { calculateAbcd2 } from '../../engine/MoreCalculators2';
+import { calculateAbcd2 } from '../../engine/MoreCalculators';
 
 @Component
 export struct Abcd2Calculator {  @State age: boolean = false;

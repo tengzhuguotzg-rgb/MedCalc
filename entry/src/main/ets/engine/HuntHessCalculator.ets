@@ -43,11 +43,7 @@ export function calculateWfns(grade: number): CalcResult {
   let tierClass: string;
   let footnote: string;
 
-  if (grade === 0) {
-    tier = '未破裂';
-    tierClass = 'tier-ok';
-    footnote = 'GCS 15，无神经功能缺损';
-  } else if (grade === 1) {
+  if (grade === 1) {
     tier = 'I 级';
     tierClass = 'tier-ok';
     footnote = 'GCS 15，无神经功能缺损';
@@ -73,7 +69,7 @@ export function calculateWfns(grade: number): CalcResult {
     footnote = '';
   }
 
-  return { value: grade, unit: '级', tier, tierClass, footnote };
+  return { value: grade >= 1 && grade <= 5 ? grade : null, unit: '级', tier, tierClass, footnote };
 }
 
 export function calculateFisher(grade: number): CalcResult {
@@ -81,11 +77,7 @@ export function calculateFisher(grade: number): CalcResult {
   let tierClass: string;
   let footnote: string;
 
-  if (grade === 0) {
-    tier = '未破裂';
-    tierClass = 'tier-ok';
-    footnote = 'CT未见出血';
-  } else if (grade === 1) {
+  if (grade === 1) {
     tier = 'I 级';
     tierClass = 'tier-ok';
     footnote = '薄层出血，<1mm厚度';
@@ -107,5 +99,5 @@ export function calculateFisher(grade: number): CalcResult {
     footnote = '';
   }
 
-  return { value: grade, unit: '级', tier, tierClass, footnote };
+  return { value: grade >= 1 && grade <= 4 ? grade : null, unit: '级', tier, tierClass, footnote };
 }

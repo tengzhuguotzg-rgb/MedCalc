@@ -55,12 +55,19 @@ export function calculateSofa(
   else if (gcs < 15) total += 1;
 
   const crMg = creatinineUnit === 'mgdl' ? creatinine : creatinine / 88.4;
-  if (urineOutput < 200) total += 4;
-  else if (urineOutput < 500) total += 3;
-  else if (crMg >= 5.0) total += 4;
-  else if (crMg >= 3.5) total += 3;
-  else if (crMg >= 2.0) total += 2;
-  else if (crMg >= 1.2) total += 1;
+  let renalCrScore = 0;
+  if (crMg >= 5.0) renalCrScore = 4;
+  else if (crMg >= 3.5) renalCrScore = 3;
+  else if (crMg >= 2.0) renalCrScore = 2;
+  else if (crMg >= 1.2) renalCrScore = 1;
+
+  let renalUrineScore = 0;
+  if (urineOutput > 0) {
+    if (urineOutput < 200) renalUrineScore = 4;
+    else if (urineOutput < 500) renalUrineScore = 3;
+  }
+
+  total += Math.max(renalCrScore, renalUrineScore);
 
   let tier: string;
   let footnote: string;

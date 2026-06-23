@@ -30,6 +30,13 @@ import { Apache2Calculator } from '../components/calculators/Apache2Calculator';
 import { ClifCCalculator } from '../components/calculators/ClifCCalculator';
 import { AarcCalculator } from '../components/calculators/AarcCalculator';
 import { BloodGasCalculator } from '../components/calculators/BloodGasCalculator';
+import { CamicuCalculator } from '../components/calculators/CamicuCalculator';
+import { PesiCalculator } from '../components/calculators/PesiCalculator';
+import { ScaiCalculator } from '../components/calculators/ScaiCalculator';
+import { MnutricCalculator } from '../components/calculators/MnutricCalculator';
+import { FssicuCalculator } from '../components/calculators/FssicuCalculator';
+import { KdigoCalculator } from '../components/calculators/KdigoCalculator';
+import { VasopressorCalculator } from '../components/calculators/VasopressorCalculator';
 import { LlmDialog } from '../components/LlmDialog';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
@@ -128,6 +135,20 @@ struct Index {
               AarcCalculator();
             } else if (this.currentCalc === 'bg') {
               BloodGasCalculator();
+            } else if (this.currentCalc === 'camicu') {
+              CamicuCalculator();
+            } else if (this.currentCalc === 'pesi') {
+              PesiCalculator();
+            } else if (this.currentCalc === 'scai') {
+              ScaiCalculator();
+            } else if (this.currentCalc === 'mnutric') {
+              MnutricCalculator();
+            } else if (this.currentCalc === 'fssicu') {
+              FssicuCalculator();
+            } else if (this.currentCalc === 'kdigo') {
+              KdigoCalculator();
+            } else if (this.currentCalc === 'vasopressor') {
+              VasopressorCalculator();
             } else {
               this.PlaceholderCalculator();
             }
