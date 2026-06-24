@@ -1,4 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
+import { CalcResult } from './CalcEngine';
 
 export function calculateMnutric(
   age: number,
@@ -21,17 +21,20 @@ export function calculateMnutric(
   const total = age + apScore + sfScore + comorb + icuDay;
 
   let tier: string;
+  let tierClass: string;
   let footnote: string;
 
   if (total >= 5) {
     tier = '高营养风险';
+    tierClass = 'tier-danger';
     footnote = '≥ 5 分 · 建议启动营养支持(肠内优先), 24-48h 内达到目标量。';
   } else {
     tier = '低营养风险';
+    tierClass = 'tier-ok';
     footnote = '< 5 分 · 常规营养支持, 动态评估。';
   }
 
   const detail = `\n\n年龄 ${age === 0 ? '<50' : age === 1 ? '50-74' : '≥75'} (${age})\nAPACHE II ${apache2} (${apScore})\nSOFA ${sofa} (${sfScore})\n合并症≥2: ${comorb === 1 ? '是' : '否'}\nICU前住院≥1d: ${icuDay === 1 ? '是' : '否'}`;
 
-  return { value: total, unit: '/ 9', tier, tierClass: getTierClass(tier), footnote: footnote + detail };
+  return { value: total, unit: '/ 9', tier, tierClass, footnote: footnote + detail };
 }

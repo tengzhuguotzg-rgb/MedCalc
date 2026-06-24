@@ -1,7 +1,6 @@
 import { CALCULATORS } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
-import { ApiServiceConfig, LlmRecommendation, sendLlmRequest } from '../services/LlmService';
-let svcIdCounter: number = 0;
+import { ApiServiceConfig, LlmRecommendation, sendLlmRequest } from '../services/LlmService';let svcIdCounter: number = 0;
 
 function generateServiceId(): string {
   svcIdCounter++;
@@ -17,6 +16,11 @@ export struct LlmDialog {
   @State results: LlmRecommendation[] = [];
   @State errorMsg: string = '';
   @State showSettings: boolean = false;
+  @State fabRight: number = 24;
+  @State fabBottom: number = 24;
+  private touchDownX: number = 0;
+  private touchDownY: number = 0;
+  private isMoving: boolean = false;
 
   @State apiServices: ApiServiceConfig[] = [];
   @State activeServiceId: string = '';
@@ -222,9 +226,29 @@ export struct LlmDialog {
       .borderRadius(26)
       .backgroundColor('#1F3D2F')
       .shadow({ radius: 8, color: 'rgba(0,0,0,0.25)', offsetY: 4 })
-      .position({ bottom: 24, right: 24 })
-      .onClick(() => {
-        this.isOpen = true;
+      .position({ bottom: this.fabBottom, right: this.fabRight })
+      .onTouch((event: TouchEvent) => {
+        if (event.type === TouchType.Down) {
+          this.touchDownX = event.touches[0].x;
+          this.touchDownY = event.touches[0].y;
+          this.isMoving = false;
+        } else if (event.type === TouchType.Move) {
+          const dx = event.touches[0].x - this.touchDownX;
+          const dy = event.touches[0].y - this.touchDownY;
+          if (Math.abs(dx) > 10 || Math.abs(dy) > 10) {
+            this.isMoving = true;
+          }
+          if (this.isMoving) {
+            this.fabRight = Math.max(0, this.fabRight - dx);
+            this.fabBottom = Math.max(0, this.fabBottom - dy);
+            this.touchDownX = event.touches[0].x;
+            this.touchDownY = event.touches[0].y;
+          }
+        } else if (event.type === TouchType.Up) {
+          if (!this.isMoving) {
+            this.isOpen = true;
+          }
+        }
       })
     }
   }

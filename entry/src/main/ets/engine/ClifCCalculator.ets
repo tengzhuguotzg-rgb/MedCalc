@@ -1,59 +1,81 @@
-import { CalcResult, getTierClass } from './CalcEngine';
+import { CalcResult } from './CalcEngine';
 
-export function calculateClifC(bilirubin: number, bilUnit: string, inr: number, hepaticEnceph: number, map: number, vasoNorepi: boolean, vasoDopamine: boolean, vasoEpi: boolean, creatinine: number, crUnit: string, rr: number, spo2: number, fio2: number, fio2Mode: string): CalcResult {
-  const bilUmol = bilUnit === 'mgdl' ? bilirubin * 17.1 : bilirubin;
-  const crMg = crUnit === 'umol' ? creatinine / 88.4 : creatinine;
-  const fio2Val = fio2Mode === 'pct' ? fio2 / 100 : fio2;
-
-  let hepFail = 0;
-  if (bilUmol >= 204 && inr >= 1.5) hepFail = 3;
-  else if (bilUmol >= 102 || inr >= 1.5 || hepaticEnceph >= 2) hepFail = 2;
-  else if (bilUmol >= 34 || inr >= 1.2 || hepaticEnceph === 1) hepFail = 1;
-
-  let circFail = 0;
-  if (vasoNorepi || vasoDopamine || vasoEpi) circFail = 3;
-  else if (map < 70) circFail = 2;
-  else if (map >= 70 && map < 80) circFail = 1;
-
-  let renFail = 0;
-  if (crMg >= 2.0) renFail = 3;
-  else if (crMg >= 1.5) renFail = 2;
-  else if (crMg >= 1.2) renFail = 1;
-
-  let respFail = 0;
-  const pf = fio2Val > 0 ? spo2 / fio2Val : 999;
-  if (rr > 30 && pf <= 200) respFail = 3;
-  else if (pf <= 315) respFail = 2;
-  else if (pf <= 400 || rr > 20) respFail = 1;
-
-  const organFails = [hepFail, circFail, renFail, respFail].filter(v => v >= 2).length;
-
-  let aclfGrade: string;
-  if (organFails === 0) aclfGrade = '无ACLF';
-  else if (organFails === 1) aclfGrade = 'ACLF-1';
-  else if (organFails === 2) aclfGrade = 'ACLF-2';
-  else aclfGrade = 'ACLF-3';
-
-  const clifScore = hepFail + circFail + renFail + respFail;
-
-  let tier: string;
-  let footnote: string;
-
-  if (aclfGrade === '无ACLF') {
-    tier = '无ACLF';
-    footnote = '28天死亡率约5%，90天死亡率约12%';
-  } else if (aclfGrade === 'ACLF-1') {
-    tier = 'ACLF-1';
-    footnote = '28天死亡率约22%，90天死亡率约28%';
-  } else if (aclfGrade === 'ACLF-2') {
-    tier = 'ACLF-2';
-    footnote = '28天死亡率约32%，90天死亡率约46%';
-  } else {
-    tier = 'ACLF-3';
-    footnote = '28天死亡率约77%，90天死亡率约83%';
+export function calculateClifC(
+  bilirubin: number, bilUnit: string,
+  creatinine: number, crUnit: string,
+  inr: number, hepaticEnceph: number,
+  map: number, vaso: string,
+  pao2: number, fio2: number, fio2Mode: string,
+  age: number, wbc: number
+): CalcResult {
+  if (bilirubin <= 0 || creatinine <= 0 || inr <= 0 || map <= 0 || pao2 <= 0 || fio2 <= 0 || age <= 0 || wbc <= 0) {
+    return { value: null, unit: '', tier: '请填写所有项目', tierClass: 'tier-info', footnote: '' };
   }
 
-  const detail = `肝衰竭: ${hepFail} | 循环衰竭: ${circFail} | 肾衰竭: ${renFail} | 呼吸衰竭: ${respFail}\n器官衰竭数: ${organFails}`;
+  const bilMg = bilUnit === 'umol' ? bilirubin / 17.1 : bilirubin;
+  const crMg = crUnit === 'umol' ? creatinine / 88.4 : creatinine;
+  const fio2Val = fio2Mode === 'pct' ? fio2 / 100 : fio2;
+  const pf = pao2 / fio2Val;
 
-  return { value: clifScore, unit: '分', tier, tierClass: getTierClass(tier), footnote: footnote + '\n\n' + detail };
+  let bScore = 0;
+  if (bilMg >= 12) bScore = 3;
+  else if (bilMg >= 6) bScore = 2;
+  else if (bilMg >= 2) bScore = 1;
+
+  let cScore = 0;
+  if (crMg >= 3.5) cScore = 3;
+  else if (crMg >= 2.0) cScore = 2;
+  else if (crMg >= 1.2) cScore = 1;
+
+  let hScore = hepaticEnceph;
+  if (hScore > 3) hScore = 3;
+
+  let iScore = 0;
+  if (inr >= 2.5) iScore = 3;
+  else if (inr >= 1.5) iScore = 2;
+  else if (inr >= 1.1) iScore = 1;
+
+  let vScore = 0;
+  if (vaso === 'high') vScore = 3;
+  else if (vaso === 'low') vScore = 2;
+  else if (map < 70) vScore = 1;
+
+  let rScore = 0;
+  if (pf < 100) rScore = 3;
+  else if (pf < 200) rScore = 2;
+  else if (pf < 300) rScore = 1;
+
+  const clifOf = bScore + cScore + hScore + iScore + vScore + rScore;
+  const score = 10 * (0.33 * clifOf + 0.04 * age + 0.63 * Math.log(wbc + 1)) + 3;
+  const scoreRounded = Math.round(score * 10) / 10;
+
+  let tier: string;
+  let tierClass: string;
+  let footnote: string;
+
+  if (scoreRounded <= 30) {
+    tier = '低风险';
+    tierClass = 'tier-ok';
+    footnote = '≤ 30  28天死亡率 ~5%, 90天 ~10%。';
+  } else if (scoreRounded <= 40) {
+    tier = '中风险';
+    tierClass = 'tier-warn';
+    footnote = '31-40  28天死亡率 ~15%, 90天 ~30%。';
+  } else if (scoreRounded <= 50) {
+    tier = '高风险';
+    tierClass = 'tier-danger';
+    footnote = '41-50  28天死亡率 ~35%, 90天 ~55%。';
+  } else if (scoreRounded <= 60) {
+    tier = '极高风险';
+    tierClass = 'tier-danger';
+    footnote = '51-60  28天死亡率 ~60%, 90天 ~80%。';
+  } else {
+    tier = '濒危';
+    tierClass = 'tier-danger';
+    footnote = '> 60  28天死亡率 > 80%, 90天 > 90%。';
+  }
+
+  const detail = `\n\n肝脏(胆红素 ${bilMg.toFixed(1)} mg/dL): ${bScore}\n肾脏(肌酐 ${crMg.toFixed(2)} mg/dL): ${cScore}\n脑(HE ${hepaticEnceph}级): ${hScore}\n凝血(INR ${inr}): ${iScore}\n循环(MAP ${map} ${vaso === 'none' ? '无血管活性药' : vaso === 'low' ? '低剂量血管活性药' : '高剂量血管活性药'}): ${vScore}\n呼吸(P/F ${pf.toFixed(0)}): ${rScore}\n\nCLIF-OF: ${clifOf}/18\n年龄: ${age}\nWBC: ${wbc} (×10⁹/L)`;
+
+  return { value: scoreRounded, unit: '分', tier, tierClass, footnote: footnote + detail };
 }

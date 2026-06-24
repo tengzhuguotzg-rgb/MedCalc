@@ -25,3 +25,19 @@ export function vasopressorDoseToMlh(concMg: number, concMl: number, weight: num
   const concUgPerMl = concMg * 1000 / concMl;
   return (dose * weight * 60) / concUgPerMl;
 }
+
+export function vasopressinMlhToDose(concU: number, concMl: number, mlh: number): number | null {
+  if (concU <= 0 || concMl <= 0) {
+    return null;
+  }
+  const concUPerMl = concU / concMl;
+  return (mlh / 60) * concUPerMl;
+}
+
+export function vasopressinDoseToMlh(concU: number, concMl: number, dose: number): number | null {
+  if (concU <= 0 || concMl <= 0) {
+    return null;
+  }
+  const concUPerMl = concU / concMl;
+  return (dose * 60) / concUPerMl;
+}

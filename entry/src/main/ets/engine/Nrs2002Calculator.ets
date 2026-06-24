@@ -1,4 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
+import { CalcResult } from './CalcEngine';
 
 export function calculateNrs2002(
   height: number,
@@ -42,13 +42,16 @@ export function calculateNrs2002(
   const total = nutrScore + disScore + ageScore;
 
   let tier: string;
+  let tierClass: string;
   let footnote: string;
 
   if (total >= 3) {
     tier = '有营养风险';
+    tierClass = 'tier-danger';
     footnote = '≥ 3 分 · 有营养风险 · 建议营养支持 (制定营养计划, 考虑管饲/PN)。';
   } else {
     tier = '无营养风险';
+    tierClass = 'tier-ok';
     footnote = '< 3 分 · 无营养风险 · 住院期间每周复查。';
   }
 
@@ -58,7 +61,7 @@ export function calculateNrs2002(
     value: total,
     unit: '/ 7',
     tier: tier,
-    tierClass: getTierClass(tier),
+    tierClass: tierClass,
     footnote: footnote + '\n\n' + detail
   };
 }

@@ -1,6 +1,6 @@
 import { CalcResult, formatValue, getTierClass } from './CalcEngine';
 
-export function calculateCrCl(sex: string, age: number, weight: number, creatinine: number): CalcResult {
+export function calculateCrCl(sex: string, age: number, weight: number, creatinine: number, crUnit: string): CalcResult {
   if (age <= 0 || weight <= 0 || creatinine <= 0) {
     return {
       value: null,
@@ -11,7 +11,7 @@ export function calculateCrCl(sex: string, age: number, weight: number, creatini
     };
   }
 
-  const crMg = creatinine / 88.4;
+  const crMg = crUnit === 'mgdl' ? creatinine : creatinine / 88.4;
   let crcl = ((140 - age) * weight) / (72 * crMg);
   if (sex === 'female') {
     crcl *= 0.85;

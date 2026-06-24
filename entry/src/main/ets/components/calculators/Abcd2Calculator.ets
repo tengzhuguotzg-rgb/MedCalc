@@ -17,8 +17,8 @@ export struct Abcd2Calculator {  @State age: boolean = false;
       Column() { Text('用于评估TIA后短期脑卒中风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：年龄+血压+临床表现+持续时间+糖尿病，总分0-7').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
       Column() {
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
-        this.OptionRow('A 年龄 ≥ 60 岁', this.age, (v: boolean) => { this.age = v; this.calculate(); });
-        this.OptionRow('B 血压 ≥ 140/90', this.bp, (v: boolean) => { this.bp = v; this.calculate(); });
+        OptRow({ label: 'A 年龄 ≥ 60 岁', value: this.age, onChange: (v: boolean) => { this.age = v; this.calculate(); } });
+        OptRow({ label: 'B 血压 ≥ 140/90', value: this.bp, onChange: (v: boolean) => { this.bp = v; this.calculate(); } });
         Column() {
           Text('C 临床特征').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 8 });
           Row() {
@@ -35,7 +35,7 @@ export struct Abcd2Calculator {  @State age: boolean = false;
             Button('≥60min').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.dur === 2 ? '#FFFFFF' : '#2D5440').backgroundColor(this.dur === 2 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.dur === 2 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 8 }).onClick(() => { this.dur = 2; this.calculate(); });
           }.width('100%');
         }.width('100%').alignItems(HorizontalAlign.Start).margin({ bottom: 12 });
-        this.OptionRow('D 糖尿病', this.dm, (v: boolean) => { this.dm = v; this.calculate(); });
+        OptRow({ label: 'D 糖尿病', value: this.dm, onChange: (v: boolean) => { this.dm = v; this.calculate(); } });
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
       if (this.result) { Column() { Row() {
         Column() { Text('ABCD² Total').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium);
@@ -47,11 +47,20 @@ export struct Abcd2Calculator {  @State age: boolean = false;
       }.width('100%'); }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%'); }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
+}
 
-  @Builder OptionRow(label: string, value: boolean, onChange: (v: boolean) => void) {
-    Row() { Text(label).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-      Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!value ? '#FFFFFF' : '#2D5440').backgroundColor(!value ? '#1F3D2F' : '#F5F5F5').border({ width: !value ? 0 : 1, color: '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => onChange(false));
-        Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value ? '#FFFFFF' : '#2D5440').backgroundColor(value ? '#1F3D2F' : '#F5F5F5').border({ width: value ? 0 : 1, color: '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => onChange(true));
+@Component
+struct OptRow {
+  @Prop value: boolean = false;
+  private label: string = '';
+  private onChange?: (v: boolean) => void;
+
+  build() {
+    Row() {
+      Text(this.label).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
+      Row() {
+        Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.value ? '#FFFFFF' : '#2D5440').backgroundColor(!this.value ? '#1F3D2F' : '#F5F5F5').border({ width: !this.value ? 0 : 1, color: '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { if (this.onChange) { this.onChange(false); } });
+        Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.value ? '#FFFFFF' : '#2D5440').backgroundColor(this.value ? '#1F3D2F' : '#F5F5F5').border({ width: this.value ? 0 : 1, color: '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { if (this.onChange) { this.onChange(true); } });
       }.width(100);
     }.width('100%').margin({ bottom: 12 });
   }

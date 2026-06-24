@@ -17,7 +17,8 @@ export function calculateCamicu(f1: number, f2: number, f3: number, f4: number):
     footnote = '不符合 CAM-ICU 谵妄标准。\n继续常规监测, 尤其高危患者(COS/高龄/镇静后)。';
   }
 
-  const detail = `\n\n① 急性波动: ${f1 === 1 ? '有' : '无'}\n② 注意力缺损: ${f2 === 1 ? '有' : '无'}\n③ 意识改变: ${f3 === 1 ? '有' : '无'}\n④ 思维紊乱: ${f4 === 1 ? '有' : '无'}\n判定: ①+②+(${f3 === 1 ? '③' : '④'}) = ${positive ? '阳性' : '阴性'}`;
+  const detailText = f3 === 1 && f4 === 1 ? '③+④' : (f3 === 1 ? '③' : '④');
+  const detail = `\n\n① 急性波动: ${f1 === 1 ? '有' : '无'}\n② 注意力缺损: ${f2 === 1 ? '有' : '无'}\n③ 意识改变: ${f3 === 1 ? '有' : '无'}\n④ 思维紊乱: ${f4 === 1 ? '有' : '无'}\n判定: ①+②+${detailText} = ${positive ? '阳性' : '阴性'}`;
 
   return { value: positive ? 1 : 0, unit: '', tier, tierClass, footnote: footnote + detail };
 }

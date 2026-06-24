@@ -1,4 +1,4 @@
-import { CalcResult } from '../../engine/CalcEngine';
+import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateRass } from '../../engine/RassCalculator';
 
 interface RassLevel {
@@ -22,7 +22,8 @@ const RASS_LEVELS: RassLevel[] = [
 ];
 
 @Component
-export struct RassCalculator {  @State score: number = 0;
+export struct RassCalculator {
+  @State score: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -39,34 +40,41 @@ export struct RassCalculator {  @State score: number = 0;
             Button(`${item >= 0 ? '+' : ''}${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.score === item ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.score === item ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.score === item ? '#1F3D2F' : '#E0E0E0' })
               .borderRadius(8).height(40).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.score = item; this.calculate(); });
-          });
+          }, (item: number) => item.toString() + '-' + this.score.toString());
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
       if (this.result && this.result.value !== null) {
         Column() {
-          Column() {
-            Text(this.result!.tier).fontSize(18).fontWeight(FontWeight.Bold).fontColor('#1F3D2F');
-            Text(this.result!.footnote).fontSize(13).fontColor('#4A5247').margin({ top: 4 });
-          }.alignItems(HorizontalAlign.Start).width('100%').padding({ bottom: 12 }).border({ width: { bottom: 1 }, color: '#E0E0E0' });
-
-          Text('完整评分参考').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ top: 8, bottom: 8 });
-          ForEach(RASS_LEVELS, (level: RassLevel) => {
-            Row() {
-              Column() {
-                Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor('#1F2421');
-                Text(level.desc).fontSize(11).fontColor('#7A8074').margin({ top: 2 });
-              }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-              Column() {
-                Text(level.score === this.score ? '✓ 当前' : '').fontSize(11).fontWeight(FontWeight.Bold)
-                  .fontColor('#1F3D2F');
-              }.width(60).alignItems(HorizontalAlign.End);
-            }.padding({ top: 6, bottom: 6, left: 8, right: 8 })
-              .backgroundColor(level.score === this.score ? '#3D6B4F' : 'transparent')
-              .borderRadius(6).margin({ bottom: 2 });
-          });
-        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
+          Text(this.result!.tier).fontSize(18).fontWeight(FontWeight.Bold).fontColor('#1F3D2F');
+          Text(this.result!.footnote).fontSize(13).fontColor('#4A5247').margin({ top: 4 });
+        }.alignItems(HorizontalAlign.Start).width('100%').padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
       }
+
+      Column() {
+        Text('完整评分参考').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
+        RassTable({ levels: RASS_LEVELS, current: this.score });
+      }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+  }
+}
+
+@Component
+struct RassTable {
+  @Prop levels: RassLevel[] = [];
+  @Prop current: number = 0;
+
+  build() {
+    ForEach(this.levels, (level: RassLevel) => {
+      Row() {
+        Column() {
+          Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor('#1F2421');
+          Text(level.desc).fontSize(11).fontColor('#7A8074').margin({ top: 2 });
+        }.layoutWeight(1).alignItems(HorizontalAlign.Start);
+        Column() {
+          Text(level.score === this.current ? '✓ 当前' : '').fontSize(11).fontWeight(FontWeight.Bold).fontColor('#1F3D2F');
+        }.width(60).alignItems(HorizontalAlign.End);
+      }.padding({ top: 6, bottom: 6, left: 8, right: 8 }).borderRadius(6).margin({ bottom: 2 });
+    }, (level: RassLevel) => level.score.toString() + '-' + this.current.toString());
   }
 }

@@ -1,6 +1,6 @@
 import { CalcResult, getTierClass } from './CalcEngine';
 
-export function calculateGfr(sex: string, age: number, creatinine: number): CalcResult {
+export function calculateGfr(sex: string, age: number, creatinine: number, crUnit: string): CalcResult {
   if (age <= 0 || creatinine <= 0) {
     return {
       value: null,
@@ -11,7 +11,7 @@ export function calculateGfr(sex: string, age: number, creatinine: number): Calc
     };
   }
 
-  const crMg = creatinine / 88.4;
+  const crMg = crUnit === 'mgdl' ? creatinine : creatinine / 88.4;
   const isFemale = sex === 'female';
   const kappa = isFemale ? 0.7 : 0.9;
   const alpha = isFemale ? -0.241 : -0.302;

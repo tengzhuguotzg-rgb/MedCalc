@@ -306,7 +306,7 @@ export const CALCULATORS: Calculator[] = [
     shortcut: '无',
     kw: 'TIMI STEMI ST段抬高 心肌梗死 溶栓 风险 死亡率',
     compute: 'timistemi',
-    description: 'STEMI风险评分, 0-14分, 14天死亡/再梗风险',
+    description: 'STEMI 30天死亡风险评分, 8项(年龄/合并症/SBP/心率/Killip/体重/前壁/就诊时间), 0-14分 (InTIME-II 2000)',
   },
   {
     id: 'timinstemi',
@@ -460,7 +460,7 @@ export const CALCULATORS: Calculator[] = [
     shortcut: '无',
     kw: '升压药 剂量 换算 mL/h μg/kg/min 去甲肾上腺素 多巴胺 多巴酚丁胺 肾上腺素',
     compute: 'vasopressor',
-    description: '升压药 mL/h ↔ μg/kg/min 双向换算',
+    description: '升压药 mL/h ↔ μg/kg/min 双向换算，垂体后叶素支持 U/min',
   },
 ];
 

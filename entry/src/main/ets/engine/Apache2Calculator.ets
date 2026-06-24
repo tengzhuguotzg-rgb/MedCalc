@@ -1,4 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
+import { CalcResult } from './CalcEngine';
 
 export function calculateApache2(
   temp: number,
@@ -162,31 +162,40 @@ export function calculateApache2(
   const total = physTotal + ageScore + chrScore;
 
   let tier: string;
+  let tierClass: string;
   let footnote: string;
 
   if (total <= 4) {
     tier = '轻度';
+    tierClass = 'tier-ok';
     footnote = '0-4 预测死亡率 ≈ 4%';
   } else if (total <= 9) {
     tier = '中度';
+    tierClass = 'tier-warn';
     footnote = '5-9 预测死亡率 ≈ 8%';
   } else if (total <= 14) {
     tier = '中重度';
+    tierClass = 'tier-warn';
     footnote = '10-14 预测死亡率 ≈ 15%';
   } else if (total <= 19) {
     tier = '重度';
+    tierClass = 'tier-danger';
     footnote = '15-19 预测死亡率 ≈ 25%';
   } else if (total <= 24) {
     tier = '极重度';
+    tierClass = 'tier-danger';
     footnote = '20-24 预测死亡率 ≈ 40%';
   } else if (total <= 29) {
     tier = '危重';
+    tierClass = 'tier-danger';
     footnote = '25-29 预测死亡率 ≈ 55%';
   } else if (total <= 34) {
     tier = '濒危';
+    tierClass = 'tier-danger';
     footnote = '30-34 预测死亡率 ≈ 75%';
   } else {
     tier = '极危';
+    tierClass = 'tier-danger';
     footnote = '> 34 预测死亡率 ≈ 85%+';
   }
 
@@ -196,7 +205,7 @@ export function calculateApache2(
     value: total,
     unit: '/ 71',
     tier: tier,
-    tierClass: getTierClass(tier),
+    tierClass: tierClass,
     footnote: footnote + '\n\n' + detail
   };
 }

@@ -30,9 +30,9 @@ export struct KdigoCalculator {
           }.layoutWeight(1);
           Column() {
             Text('单位').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            Row() {
-              Button('mg/dL').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cr0Unit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr0Unit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr0Unit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.cr0Unit = 'mgdl'; this.calculate(); });
-              Button('µmol/L').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cr0Unit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr0Unit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr0Unit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.cr0Unit = 'umol'; this.calculate(); });
+            Flex({ wrap: FlexWrap.Wrap }) {
+              Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.cr0Unit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr0Unit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr0Unit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 4, bottom: 4 }).onClick(() => { this.cr0Unit = 'mgdl'; this.calculate(); });
+              Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.cr0Unit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr0Unit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr0Unit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.cr0Unit = 'umol'; this.calculate(); });
             }.width('100%');
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
@@ -45,9 +45,9 @@ export struct KdigoCalculator {
           }.layoutWeight(1);
           Column() {
             Text('单位').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            Row() {
-              Button('mg/dL').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cr1Unit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr1Unit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr1Unit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.cr1Unit = 'mgdl'; this.calculate(); });
-              Button('µmol/L').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cr1Unit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr1Unit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr1Unit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.cr1Unit = 'umol'; this.calculate(); });
+            Flex({ wrap: FlexWrap.Wrap }) {
+              Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.cr1Unit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr1Unit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr1Unit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 4, bottom: 4 }).onClick(() => { this.cr1Unit = 'mgdl'; this.calculate(); });
+              Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.cr1Unit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.cr1Unit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cr1Unit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.cr1Unit = 'umol'; this.calculate(); });
             }.width('100%');
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });

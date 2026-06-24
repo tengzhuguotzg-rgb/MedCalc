@@ -24,7 +24,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
   @State hct: number = 40;
   @State wbc: number = 8;
   @State gcs: number = 15;
-  @State age: number = 50;
+  @State age: number = 0;
   @State chronic: string = 'none';
   @State result: CalcResult | null = null;
 
@@ -335,6 +335,11 @@ export struct Apache2Calculator {  @State temp: number = 37;
         .margin({ bottom: 12 });
 
       Row() {
+        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? '#FFFFFF' : '#2D5440').backgroundColor(this.phFilled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.phFilled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
+        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? '#FFFFFF' : '#2D5440').backgroundColor(this.hco3Filled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hco3Filled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
+      }.width('100%').margin({ bottom: 10 });
+
+      Row() {
         Column() {
           Text('pH')
             .fontSize(14)
@@ -365,7 +370,6 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '24' })
-            .type(InputType.Number)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')

@@ -22,21 +22,21 @@ export struct ScaiCalculator {
 
         Row() {
           Column() {
-            Text('SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.Number).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
+            Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
+            TextInput({ placeholder: 'SBP' }).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('乳酸 (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '乳酸' }).type(InputType.Number).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '乳酸' }).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
 
         Column() {
           Text('血管活性药').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-          Row() {
-            Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'none' ? '#FFFFFF' : '#2D5440').backgroundColor(this.vaso === 'none' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.vaso === 'none' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.vaso = 'none'; this.calculate(); });
-            Button('1种低剂量').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'low' ? '#FFFFFF' : '#2D5440').backgroundColor(this.vaso === 'low' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.vaso === 'low' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.vaso = 'low'; this.calculate(); });
-            Button('≥2种/高剂量').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'high' ? '#FFFFFF' : '#2D5440').backgroundColor(this.vaso === 'high' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.vaso === 'high' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.vaso = 'high'; this.calculate(); });
+          Flex({ wrap: FlexWrap.Wrap }) {
+            Button('无').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'none' ? '#FFFFFF' : '#2D5440').backgroundColor(this.vaso === 'none' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.vaso === 'none' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'none'; this.calculate(); });
+            Button('1种低剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'low' ? '#FFFFFF' : '#2D5440').backgroundColor(this.vaso === 'low' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.vaso === 'low' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'low'; this.calculate(); });
+            Button('≥2种/高剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'high' ? '#FFFFFF' : '#2D5440').backgroundColor(this.vaso === 'high' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.vaso === 'high' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.vaso = 'high'; this.calculate(); });
           }.width('100%');
         }.width('100%').margin({ bottom: 8 });
 

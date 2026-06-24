@@ -13,11 +13,6 @@ export struct FssicuCalculator {
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateFssicu(this.roll, this.situp, this.sit, this.standup, this.stand); }
 
-  itemLabel(val: number): string {
-    const labels = ['0 无法', '1 完全帮助', '2 最大帮助', '3 中度帮助', '4 最小帮助', '5 监护', '6 独立(需辅)', '7 完全独立'];
-    return labels[val] || '';
-  }
-
   build() {
     Column() {
       Column() { Text('用于 ICU 患者功能状态评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5 项各 0-7, 总分 0-35 (Thrush 2012)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
@@ -25,11 +20,11 @@ export struct FssicuCalculator {
       Column() {
         Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(10).fontColor('#7A8074').margin({ bottom: 12 });
 
-        this.FssItem('① 翻身 (仰卧→侧卧)', this.roll, (v: number) => { this.roll = v; this.calculate(); });
-        this.FssItem('② 卧位→坐位', this.situp, (v: number) => { this.situp = v; this.calculate(); });
-        this.FssItem('③ 床缘静坐平衡', this.sit, (v: number) => { this.sit = v; this.calculate(); });
-        this.FssItem('④ 坐位→站立', this.standup, (v: number) => { this.standup = v; this.calculate(); });
-        this.FssItem('⑤ 站立平衡', this.stand, (v: number) => { this.stand = v; this.calculate(); });
+        FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });
+        FssRowComponent({ label: '② 卧位→坐位', value: this.situp, onChange: (v: number): void => { this.situp = v; this.calculate(); } });
+        FssRowComponent({ label: '③ 床缘静坐平衡', value: this.sit, onChange: (v: number): void => { this.sit = v; this.calculate(); } });
+        FssRowComponent({ label: '④ 坐位→站立', value: this.standup, onChange: (v: number): void => { this.standup = v; this.calculate(); } });
+        FssRowComponent({ label: '⑤ 站立平衡', value: this.stand, onChange: (v: number): void => { this.stand = v; this.calculate(); } });
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
@@ -48,19 +43,26 @@ export struct FssicuCalculator {
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
+}
 
-  @Builder
-  FssItem(label: string, value: number, onChange: (v: number) => void) {
+@Component
+struct FssRowComponent {
+  @Prop value: number = 1;
+  @Prop label: string = '';
+  private onChange?: (v: number) => void;
+
+  build() {
     Column() {
-      Text(label).fontSize(13).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
+      Text(this.label).fontSize(13).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
       Row() {
-        ForEach([0, 1, 2, 3, 4, 5, 6, 7], (item: number) => {
-          Button(`${item}`).fontSize(12).fontWeight(FontWeight.Bold).fontColor(value === item ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(value === item ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: value === item ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
-            .onClick(() => { onChange(item); });
-        }, (item: number) => item.toString());
+        Button('0').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(0); } });
+        Button('1').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(1); } });
+        Button('2').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 2 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 2 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 2 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(2); } });
+        Button('3').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 3 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 3 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 3 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(3); } });
+        Button('4').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 4 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 4 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 4 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(4); } });
+        Button('5').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 5 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 5 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 5 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(5); } });
+        Button('6').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 6 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 6 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 6 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(6); } });
+        Button('7').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 7 ? '#FFFFFF' : '#2D5440').backgroundColor(this.value === 7 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.value === 7 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(7); } });
       }.width('100%');
     }.width('100%').margin({ bottom: 10 });
   }

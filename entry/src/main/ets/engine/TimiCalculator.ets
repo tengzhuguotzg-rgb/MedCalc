@@ -1,23 +1,22 @@
 import { CalcResult } from './CalcEngine';
 
-export function calculateTimiStemi(age: number, dm: boolean, htn: boolean, smoker: boolean, priorMi: boolean, priorRevasc: boolean, stDev: number, troponin: number): CalcResult {
-  if (age <= 0) {
-    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+export function calculateTimiStemi(age: number, dmHtnAngina: boolean, sbp: number, hr: number, killip: number, weight: number, anteriorLbbb: boolean, timeToTreat: boolean): CalcResult {
+  if (age <= 0 || sbp <= 0 || hr <= 0 || weight <= 0) {
+    return { value: null, unit: '', tier: '请填写年龄、血压、心率和体重', tierClass: 'tier-info', footnote: '' };
   }
 
   let score = 0;
-  if (age >= 65) score += 2;
+  if (age >= 75) score += 3;
+  else if (age >= 65) score += 2;
   else if (age >= 55) score += 1;
-  
-  if (dm) score += 1;
-  if (htn) score += 1;
-  if (smoker) score += 1;
-  if (priorMi) score += 1;
-  if (priorRevasc) score += 1;
-  if (stDev > 2) score += 3;
-  else if (stDev > 0) score += 2;
-  if (troponin > 0.1) score += 3;
-  else if (troponin > 0) score += 2;
+
+  if (dmHtnAngina) score += 1;
+  if (sbp < 100) score += 3;
+  if (hr > 100) score += 2;
+  if (killip >= 2) score += 2;
+  if (weight < 67) score += 1;
+  if (anteriorLbbb) score += 1;
+  if (timeToTreat) score += 1;
 
   let tier: string;
   let tierClass: string;
@@ -41,10 +40,10 @@ export function calculateTimiStemi(age: number, dm: boolean, htn: boolean, smoke
     footnote = '30天死亡率约11.0%';
   }
 
-  return { value: score, unit: '分', tier, tierClass, footnote };
+  return { value: score, unit: '/ 14', tier, tierClass, footnote };
 }
 
-export function calculateTimiNstemi(age: number, riskFactors: number, priorAspirin: boolean, stDev: number, troponin: number): CalcResult {
+export function calculateTimiNstemi(age: number, riskFactorsGte3: boolean, priorAspirin: boolean, stDev: number, troponin: number): CalcResult {
   if (age <= 0) {
     return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
@@ -53,7 +52,7 @@ export function calculateTimiNstemi(age: number, riskFactors: number, priorAspir
   if (age >= 65) score += 2;
   else if (age >= 45) score += 1;
   
-  if (riskFactors >= 3) score += 1;
+  if (riskFactorsGte3) score += 1;
   if (priorAspirin) score += 1;
   if (stDev > 0.5) score += 1;
   if (troponin > 0.01) score += 1;

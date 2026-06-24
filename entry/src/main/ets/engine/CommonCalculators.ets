@@ -104,7 +104,7 @@ export function calculateCurb65(confusion: boolean, urea: number, ureaUnit: stri
 
   if (confusion) total += 1;
 
-  const ureaMmol = ureaUnit === 'mgdl' ? urea / 2.14 : urea;
+  const ureaMmol = ureaUnit === 'mgdl' ? urea / 2.8 : urea;
   if (ureaMmol > 7) total += 1;
 
   if (rr >= 30) total += 1;
