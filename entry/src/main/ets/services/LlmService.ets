@@ -80,9 +80,9 @@ function buildSystemPrompt(): string {
   prompt += '1. 仅输出计算器ID，多个ID用英文逗号分隔，按匹配度从高到低排列，最多4个。\n';
   prompt += '2. 不要输出任何其他文字、标点或解释。\n';
   prompt += '3. 如果没有任何计算器能合理匹配，只输出 unknown\n\n';
-  prompt += '计算器列表（ID: 名称 - 用途）：\n';
+  prompt += '计算器列表（ID: 名称 - 用途 - 适用场景）：\n';
   for (const calc of CALCULATORS) {
-    prompt += `${calc.id}: ${calc.name} - ${calc.description}\n`;
+    prompt += `${calc.id}: ${calc.name} - ${calc.description}。适用: ${calc.whenToUse}\n`;
   }
   prompt += '\n示例：\n用户：肾功能评估\n你：crcl,gfr\n\n用户：今天天气不错\n你：unknown\n';
   return prompt;

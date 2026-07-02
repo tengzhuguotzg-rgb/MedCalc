@@ -1,20 +1,16 @@
 import { CalcResult } from './CalcEngine';
 
-export function calculateTimiStemi(age: number, dmHtnAngina: boolean, sbp: number, hr: number, killip: number, weight: number, anteriorLbbb: boolean, timeToTreat: boolean): CalcResult {
-  if (age <= 0 || sbp <= 0 || hr <= 0 || weight <= 0) {
-    return { value: null, unit: '', tier: '请填写年龄、血压、心率和体重', tierClass: 'tier-info', footnote: '' };
-  }
-
+export function calculateTimiStemi(ageCat: number, dmHtnAngina: boolean, sbpLt100: boolean, hrGt100: boolean, killip: number, weightLt67: boolean, anteriorLbbb: boolean, timeToTreat: boolean): CalcResult {
   let score = 0;
-  if (age >= 75) score += 3;
-  else if (age >= 65) score += 2;
-  else if (age >= 55) score += 1;
+  if (ageCat >= 3) score += 3;
+  else if (ageCat >= 2) score += 2;
+  else if (ageCat >= 1) score += 1;
 
   if (dmHtnAngina) score += 1;
-  if (sbp < 100) score += 3;
-  if (hr > 100) score += 2;
+  if (sbpLt100) score += 3;
+  if (hrGt100) score += 2;
   if (killip >= 2) score += 2;
-  if (weight < 67) score += 1;
+  if (weightLt67) score += 1;
   if (anteriorLbbb) score += 1;
   if (timeToTreat) score += 1;
 
@@ -43,37 +39,33 @@ export function calculateTimiStemi(age: number, dmHtnAngina: boolean, sbp: numbe
   return { value: score, unit: '/ 14', tier, tierClass, footnote };
 }
 
-export function calculateTimiNstemi(age: number, riskFactorsGte3: boolean, priorAspirin: boolean, stDev: number, troponin: number): CalcResult {
-  if (age <= 0) {
-    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
-  }
-
+export function calculateTimiNstemi(ageGte65: boolean, riskFactorsGte3: boolean, knownCAD: boolean, priorAspirin: boolean, severeAngina: boolean, stDevGte05: boolean, biomarkerElevated: boolean): CalcResult {
   let score = 0;
-  if (age >= 65) score += 2;
-  else if (age >= 45) score += 1;
-  
+  if (ageGte65) score += 1;
   if (riskFactorsGte3) score += 1;
+  if (knownCAD) score += 1;
   if (priorAspirin) score += 1;
-  if (stDev > 0.5) score += 1;
-  if (troponin > 0.01) score += 1;
+  if (severeAngina) score += 1;
+  if (stDevGte05) score += 1;
+  if (biomarkerElevated) score += 1;
 
   let tier: string;
   let tierClass: string;
   let footnote: string;
 
-  if (score <= 2) {
+  if (score <= 1) {
     tier = '低风险';
     tierClass = 'tier-ok';
-    footnote = '14天死亡/MI风险约3.1%';
+    footnote = '0-1 分 14天死亡/MI风险约4.7%。';
   } else if (score <= 4) {
     tier = '中风险';
     tierClass = 'tier-warn';
-    footnote = '14天死亡/MI风险约8.3%';
+    footnote = '2-4 分 14天死亡/MI风险约8-20%。';
   } else {
     tier = '高风险';
     tierClass = 'tier-danger';
-    footnote = '14天死亡/MI风险约19.9%';
+    footnote = '5-7 分 14天死亡/MI风险约26-41%。';
   }
 
-  return { value: score, unit: '分', tier, tierClass, footnote };
+  return { value: score, unit: '/ 7', tier, tierClass, footnote };
 }

@@ -8,6 +8,7 @@ export interface Calculator {
   kw: string;
   compute: string;
   description: string;
+  whenToUse: string;
 }
 
 export const CALCULATORS: Calculator[] = [
@@ -21,6 +22,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'SOFA 序贯器官衰竭 脓毒症 sepsis 危压药 多巴胺 去甲肾上腺素 GCS 胆红素',
     compute: 'sofa',
     description: '6 系统器官功能评估, Sepsis-3 诊断标准',
+    whenToUse: '脓毒症/感染性休克器官功能评估 / SSC复苏目标追踪 / ICU患者每日SOFA评分',
   },
   {
     id: 'map',
@@ -32,6 +34,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'MAP 平均动脉压 灌注 休克 复苏 sepsis SSC',
     compute: 'map',
     description: 'Mean Arterial Pressure，计算平均动脉压，用于休克复苏目标评估(SSC≥65mmHg)',
+    whenToUse: '休克复苏目标评估 (SSC目标≥65mmHg) / 高血压急症降压幅度 / 术中血压管理',
   },
   {
     id: 'bg',
@@ -43,6 +46,7 @@ export const CALCULATORS: Calculator[] = [
     kw: '血气分析 BG blood gas pH PaCO2 HCO3 AG 酸碱失衡 氧合 缺氧 呼吸商 TABD',
     compute: 'bg',
     description: '酸碱失衡6步判断 + 氧合 + 缺氧分型 + 呼吸商 + 危急值',
+    whenToUse: '脓毒症复苏评估乳酸+酸碱 / ARDS 氧合指数 P/F / 休克类型鉴别 / DKA评估 / 酸碱失衡判断',
   },
   {
     id: 'sf',
@@ -54,6 +58,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'S/F SF 比值 SpO2/FiO2 氧合 ARDS 柏林 呼吸衰竭',
     compute: 'sf',
     description: 'SpO₂/FiO₂, ARDS 床旁筛查',
+    whenToUse: 'ARDS 氧合监测 / 呼吸支持滴定 / S/F比值筛查ARDS严重度 / 替代P/F (无需血气)',
   },
   {
     id: 'pf',
@@ -65,6 +70,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'P/F PF 比值 PaO2/FiO2 氧合 ARDS 柏林 呼吸衰竭 诊断',
     compute: 'pf',
     description: 'PaO₂/FiO₂, ARDS 诊断金标准 (Berlin 2012)',
+    whenToUse: 'ARDS诊断柏林分级 / 呼吸衰竭氧合评估 / 插管前评估ARDS严重度',
   },
   {
     id: 'gcs',
@@ -76,6 +82,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'GCS 格拉斯哥 昏迷 睁眼 言语 运动 consciousness 意识',
     compute: 'gcs',
     description: '3 维度 E/V/M, 总分 3-15, ≤8 重度需插管',
+    whenToUse: '脑外伤GCS评分 / 镇静深度评估 / ICU意识监测 / 麻醉苏醒评估',
   },
   {
     id: 'nihss',
@@ -87,6 +94,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'NIHSS 卒中 脑梗 溶栓 取栓 神经功能 评分',
     compute: 'nihss',
     description: '11 项, 总分 0-42, ≥6 考虑溶栓/取栓',
+    whenToUse: '急性脑卒中NIHSS评分 / 溶栓决策评估 / 卒中严重度分层 / 预后评估',
   },
   {
     id: 'rox',
@@ -98,6 +106,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'ROX HFNC 高流量 氧疗 呼吸衰竭 插管 预测 氧合',
     compute: 'rox',
     description: '预测 HFNC 失败风险, SpO2/(FiO2×RR)',
+    whenToUse: '无创呼吸支持失败预测 / HFNC转气管插管决策 / ROX指数动态监测',
   },
   {
     id: 'curb65',
@@ -109,6 +118,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'CURB-65 社区获得性肺炎 严重度 死亡风险 CAP 意识 尿素',
     compute: 'curb65',
     description: '5 项, 0-5 分, 院外/住院/ICU 决策',
+    whenToUse: '社区获得性肺炎住院决策 / 抗生素选择评估 / 出院标准评估 / 肺炎严重度分层',
   },
   {
     id: 'sirs',
@@ -120,6 +130,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'SIRS systemic inflammatory response syndrome 全身炎症反应 脓毒症 sepsis 旧标准',
     compute: 'sirs',
     description: '4 项 (T/HR/RR/WBC), >=2 阳性, 1991 标准',
+    whenToUse: '脓毒症筛查早期识别 / 炎症反应评估 / ICU感染监测 / 急诊分诊',
   },
   {
     id: 'abcd2',
@@ -131,6 +142,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'ABCD2 TIA 短暂性脑缺血 卒中风险 评分',
     compute: 'abcd2',
     description: '5 项, 总分 0-7, ≥6 高风险需住院',
+    whenToUse: 'TIA短期卒中风险评估 / 急诊TIA分层 / 抗血小板决策 / 短期随访分层',
   },
   {
     id: 'news2',
@@ -142,6 +154,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'NEWS2 national early warning score 早期预警 RCP 2017 sepsis 脓毒症',
     compute: 'news2',
     description: '英国国家早期预警评分 2, 7 参数, 0-20 分',
+    whenToUse: '病房早期预警评分 / 普通病房识别重症 / 转ICU决策 / 普通护士快速评估',
   },
   {
     id: 'cag',
@@ -153,6 +166,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'AG anion gap 阴离子间隙 白蛋白 校正 hypoalbuminemia corrected',
     compute: 'cag',
     description: '白蛋白校准阴离子间隙, 低蛋白时必校',
+    whenToUse: '低白蛋白血症时阴离子间隙校正 / 酸碱平衡评估 / 代酸鉴别诊断',
   },
   {
     id: 'na',
@@ -164,6 +178,7 @@ export const CALCULATORS: Calculator[] = [
     kw: '钠 Na 校正 血糖 高血糖 稀释 低钠 高钠 假性低钠',
     compute: 'na',
     description: '高血糖时假性低钠校正 (1.6 mmol/L per 100 mg/dL Glu)',
+    whenToUse: '低钠/高钠血症评估 / 容量状态评估 / 渗透压计算 / 钠紊乱纠正速度',
   },
   {
     id: 'crcl',
@@ -175,6 +190,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'CrCl Cockcroft Gault 肌酐清除率 CKD 药物调整 肾功能',
     compute: 'crcl',
     description: 'Cockcroft-Gault公式评估肾功能（肌酐清除率），用于肾功能不全患者药物剂量调整',
+    whenToUse: '肾功能不全药物剂量调整 / 造影剂前肾功能评估 / 抗肿瘤药物剂量 / 肾衰分期',
   },
   {
     id: 'gfr',
@@ -186,6 +202,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'eGFR CKD-EPI 肾小球滤过率 肌酐 CKD 分期 G1 G2 G3 G4 G5',
     compute: 'gfr',
     description: 'CKD-EPI 2021 race-free公式评估肾功能（肾小球滤过率），用于CKD分期(G1-G5)及慢病管理',
+    whenToUse: 'CKD分期评估 / 慢病管理长期随访 / 药物剂量调整 / 老年肾功能评估',
   },
   {
     id: 'chadsvasc',
@@ -197,6 +214,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'CHADS2-VASc CHADSVASc 房颤 卒中 抗凝 stroke AF atrial fibrillation anticoagulation 血栓',
     compute: 'chadsvasc',
     description: '房颤卒中风险评分, 8 项, 总分 0-9 (ESC 2020)',
+    whenToUse: '房颤卒中风险评估 / 抗凝决策 / 房颤患者分层 / 长期抗凝管理',
   },
   {
     id: 'hasbled',
@@ -208,6 +226,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'HAS-BLED 出血 抗凝 房颤 出血风险 AF bleeding anticoagulation warfarin 华法林',
     compute: 'hasbled',
     description: '房颤抗凝出血风险评分, 7 项, 总分 0-9 (ESC 2020)',
+    whenToUse: '房颤抗凝出血风险评估 / 华法林决策 / NOAC出血风险评估 / 高危患者监测',
   },
   {
     id: 'apache2',
@@ -219,6 +238,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'APACHE II 急性生理 慢性健康 评分 重症 ICU 死亡风险 预测 生理参数',
     compute: 'apache2',
     description: '急性生理与慢性健康评分 II, 14 参数, 总分 0-71 (Knaus 1985)',
+    whenToUse: 'ICU患者严重度评分 / 预后预测 / 院内死亡率预测 / ICU质量控制',
   },
   {
     id: 'rass',
@@ -230,6 +250,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'RASS Richmond 镇静 躁动 评分 ICU sedation agitation',
     compute: 'rass',
     description: 'Richmond躁动-镇静评分, +4至-5, 目标-2至0',
+    whenToUse: 'ICU镇静深度评估 / 镇静药物调整 / 谵妄评估RASS-2~+4 / 护士交班评估',
   },
   {
     id: 'ich',
@@ -241,6 +262,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'ICH 脑出血 评分 intracerebral hemorrhage 预后 死亡率',
     compute: 'ich',
     description: '自发性脑出血预后评分, 总分0-6, 30天死亡率预测',
+    whenToUse: '脑出血量评估 / 出血扩大风险 / 血压管理目标 / 神经外科决策',
   },
   {
     id: 'hunthess',
@@ -252,6 +274,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'Hunt-Hess 脑动脉瘤 蛛网膜下腔出血 SAH 分级 手术风险',
     compute: 'hunthess',
     description: '脑动脉瘤破裂临床分级, 0-5级, 手术风险评估',
+    whenToUse: '动脉瘤性SAH分级 / Hunt-Hess手术决策 / 神经介入评估 / 预后预测',
   },
   {
     id: 'wfns',
@@ -263,6 +286,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'WFNS 世界神经外科 SAH 蛛网膜下腔出血 分级 预后',
     compute: 'wfns',
     description: 'WFNS SAH分级, I-V级, 基于GCS和局灶体征',
+    whenToUse: '动脉瘤性SAH分级 / WFNS手术决策 / 神经介入评估 / 预后预测',
   },
   {
     id: 'fisher',
@@ -274,6 +298,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'Fisher 蛛网膜下腔出血 SAH CT 分级 血管痉挛',
     compute: 'fisher',
     description: 'SAH的CT分级, 1-4级, 预测血管痉挛风险',
+    whenToUse: '动脉瘤性SAH CT分级 / 脑血管痉挛预测 / 出血量评估 / SAH预后预测',
   },
   {
     id: 'marshall',
@@ -285,6 +310,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'Marshall ARDS 严重程度 评分 氧合 PEEP',
     compute: 'marshall',
     description: 'ARDS严重程度评分, 基于P/F和PEEP',
+    whenToUse: '重症急性胰腺炎器官功能障碍评估 / Atlanta 分级 / 胰腺炎严重度判断 / ICU 预后预测',
   },
   {
     id: 'mehran',
@@ -296,6 +322,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'Mehran 造影剂肾病 CIN AKI 对比剂 肾损伤 风险',
     compute: 'mehran',
     description: '造影剂肾病风险评分, 总分0-21, 预测CIN风险',
+    whenToUse: 'PCI 术后对比剂肾病风险评估 / 造影前肾功能评估 / 高危患者造影剂用量决策',
   },
   {
     id: 'timistemi',
@@ -307,6 +334,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'TIMI STEMI ST段抬高 心肌梗死 溶栓 风险 死亡率',
     compute: 'timistemi',
     description: 'STEMI 30天死亡风险评分, 8项(年龄/合并症/SBP/心率/Killip/体重/前壁/就诊时间), 0-14分 (InTIME-II 2000)',
+    whenToUse: 'STEMI 风险评分 / 早期溶栓决策 / 双抗选择评估 / STEMI短期死亡风险',
   },
   {
     id: 'timinstemi',
@@ -317,7 +345,8 @@ export const CALCULATORS: Calculator[] = [
     shortcut: '无',
     kw: 'TIMI NSTEMI 非ST段抬高 心肌梗死 不稳定心绞痛 风险',
     compute: 'timinstemi',
-    description: 'NSTEMI/UA风险评分, 0-7分, 14天事件风险',
+    description: 'NSTEMI/UA 14天死亡/MI风险评分, 7项各1分, 总分0-7 (Antman 2000)',
+    whenToUse: 'NSTEMI短期死亡风险 / 早期介入决策 / 双抗评估 / NSTEMI危险分层',
   },
   {
     id: 'wells',
@@ -329,6 +358,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'Wells 肺栓塞 PE 深静脉血栓 DVT 临床概率',
     compute: 'wells',
     description: '肺栓塞临床概率评分, 总分0-12.5, 低/中/高概率',
+    whenToUse: '深静脉血栓DVT预测 / 肺栓塞PE可能性评估 / 急诊DVT筛查 / DVT/PE分层',
   },
   {
     id: 'childpugh',
@@ -340,6 +370,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'Child-Pugh 肝功能 分级 肝硬化 腹水 脑病 白蛋白 胆红素 INR',
     compute: 'childpugh',
     description: '肝功能储备分级, A/B/C级, 总分5-15',
+    whenToUse: '肝硬化肝功能Child分级 / 肝移植决策 / 门脉高压评估 / 肝硬化预后',
   },
   {
     id: 'kcc',
@@ -351,6 +382,7 @@ export const CALCULATORS: Calculator[] = [
     kw: "KCC King's College 急性肝衰竭 肝移植 紧急移植 指征",
     compute: 'kcc',
     description: "King's College标准, 急性肝衰竭紧急肝移植指征",
+    whenToUse: '急性肝衰竭紧急肝移植决策 / 对乙酰氨基酚中毒 / 非扑热息痛病因ALF / 肝硬化失代偿',
   },
   {
     id: 'clifc',
@@ -362,6 +394,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'CLIF-C ACLF 慢加急性肝衰竭 器官衰竭 分级 EASL',
     compute: 'clifc',
     description: '慢加急性肝衰竭分级, ACLF 0-3级, 6器官评估',
+    whenToUse: '慢加急性肝衰竭ACLF分级 / 短期预后预测 / 肝移植紧急评估 / 肝硬化急性失代偿评估',
   },
   {
     id: 'aarc',
@@ -373,6 +406,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'AARC 亚太 急性肝衰竭 评分 肝移植 APASL 预后',
     compute: 'aarc',
     description: '亚太急性肝衰竭研究组评分, 总分0-17, 预后评估',
+    whenToUse: '慢加急性肝衰竭AARC分级 / 肝衰竭短期预后 / 肝移植决策辅助 / 肝硬化急性加重评估',
   },
   {
     id: 'nrs2002',
@@ -384,6 +418,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'NRS-2002 营养风险 筛查 住院患者 营养不良 ESPEN 2002 体重下降 BMI',
     compute: 'nrs2002',
     description: '营养风险筛查 2002, 4 项, 总分 0-7, ≥ 3 有营养风险',
+    whenToUse: '住院患者营养风险筛查 / 围术期营养评估 / 营养支持决策 / 老年住院患者评估',
   },
   {
     id: 'camicu',
@@ -395,6 +430,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'CAM-ICU 谵妄 意识 波动 注意力 思维 紊乱 delirium confusion assessment method',
     compute: 'camicu',
     description: 'ICU 谵妄筛查, 4 步评估, 阳性/阴性 (Ely 2001)',
+    whenToUse: 'ICU谵妄筛查 / 镇静评估 / 老年ICU患者评估 / 护士每班评估',
   },
   {
     id: 'pesi',
@@ -406,6 +442,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'PESI sPESI 肺栓塞 PE 死亡 风险 评分 预后 栓塞 pulmonary embolism severity index',
     compute: 'pesi',
     description: '肺栓塞 30 天死亡风险评分, 11 项, 总分 0-300+ 五级 (Aujesky 2005)',
+    whenToUse: '肺栓塞严重度指数 / PESI分层 / 住院决策 / 短期死亡率预测',
   },
   {
     id: 'scai',
@@ -417,6 +454,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'SCAI 休克 心源性 分级 A B C D E 心衰 cardiogenic shock 血管活性药 乳酸',
     compute: 'scai',
     description: '心源性休克 SCAI 分级, A-E 五级 (2019/2024)',
+    whenToUse: '急性冠脉综合征SCAI分级 / 心源性休克分层 / 介入决策 / ICU患者分层',
   },
   {
     id: 'mnutric',
@@ -428,6 +466,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'mNUTRIC 营养 风险 ICU 营养风险评分 肠外营养 鼻饲 nutrition critically ill Heyland',
     compute: 'mnutric',
     description: 'ICU 营养风险评分, 5 项, 总分 0-9, ≥5 高营养风险 (Heyland 2011)',
+    whenToUse: 'ICU营养风险mNUTRIC评分 / 营养支持决策 / ICU患者预后 / 重症营养评估',
   },
   {
     id: 'fssicu',
@@ -439,6 +478,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'FSS-ICU 功能状态 ICU 早期活动 康复 翻身 坐起 站立 Barthel functional status score',
     compute: 'fssicu',
     description: 'ICU 功能状态评分, 5 项各 0-7, 总分 0-35 (Thrush 2012)',
+    whenToUse: 'ICU肌力评估 / FSS-ICU评分 / 早期康复评估 / 机械通气撤机前评估',
   },
   {
     id: 'kdigo',
@@ -450,6 +490,7 @@ export const CALCULATORS: Calculator[] = [
     kw: 'KDIGO AKI 急性肾损伤 分期 肌酐 尿量 RRT 透析 肾脏 衰竭 kidney disease improving global outcomes',
     compute: 'kdigo',
     description: 'KDIGO 急性肾损伤 1-3 期分期 (2012)',
+    whenToUse: '急性肾损伤AKI分期 / AKI严重度评估 / 透析决策 / ICU肾损伤监测',
   },
   {
     id: 'vasopressor',
@@ -461,6 +502,7 @@ export const CALCULATORS: Calculator[] = [
     kw: '升压药 剂量 换算 mL/h μg/kg/min 去甲肾上腺素 多巴胺 多巴酚丁胺 肾上腺素',
     compute: 'vasopressor',
     description: '升压药 mL/h ↔ μg/kg/min 双向换算，垂体后叶素支持 U/min',
+    whenToUse: 'ICU 血管活性药滴定 / mL/h ↔ μg/kg/min 双向换算 / 多药同表比较 / 升压素 U/min 换算',
   },
 ];
 
