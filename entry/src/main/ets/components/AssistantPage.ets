@@ -11,6 +11,12 @@ import { ImageEditor } from './ImageEditor';
 import { ImageStore } from '../services/ImageStore';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
+class DataDisplayItem {
+  key: string = '';
+  label: string = '';
+  value: string = '';
+}
+
 @Component
 export struct AssistantPage {
   @Link currentCalc: string;
@@ -405,20 +411,20 @@ export struct AssistantPage {
   @Builder
   ExtractedDataCard(data: Record<string, string>) {
     Column() {
-      Text('📋 提取数据')
+      Text('提取数据')
         .fontSize(11)
         .fontColor('#7A8074')
         .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
 
-      ForEach(Object.entries(data), (entry: string[]) => {
+      ForEach(this.formatExtractedData(data), (item: DataDisplayItem) => {
         Row() {
-          Text(entry[0])
+          Text(item.label)
             .fontSize(12)
             .fontColor('#7A8074')
             .width('40%')
-          Text(entry[1])
+          Text(item.value)
             .fontSize(12)
             .fontColor('#1F3D2F')
             .fontWeight(FontWeight.Medium)
@@ -426,7 +432,7 @@ export struct AssistantPage {
         }
         .width('100%')
         .padding({ top: 2, bottom: 2 })
-      }, (entry: string[]) => entry[0])
+      }, (item: DataDisplayItem) => item.key)
     }
     .width('100%')
     .padding(8)
@@ -684,7 +690,7 @@ export struct AssistantPage {
     if (fieldKey === 'bilirubinUnit') {
       return opt === 'umol' ? 'μmol/L' : 'mg/dL';
     }
-    if (fieldKey === 'crUnit') {
+    if (fieldKey === 'crUnit' || fieldKey === 'cr0Unit' || fieldKey === 'cr1Unit') {
       return opt === 'umol' ? 'μmol/L' : 'mg/dL';
     }
     if (fieldKey === 'hgbUnit') {
@@ -699,9 +705,155 @@ export struct AssistantPage {
     if (fieldKey === 'pao2Unit' || fieldKey === 'paco2Unit') {
       return opt === 'mmhg' ? 'mmHg' : 'kPa';
     }
+    if (fieldKey === 'sex') {
+      return opt === 'male' ? '男' : '女';
+    }
+    if (fieldKey === 'acute') {
+      return opt === 'acute' ? '急性' : '慢性';
+    }
+    if (fieldKey === 'consciousness') {
+      if (opt === 'alert') return '清醒';
+      if (opt === 'voice') return '对声音有反应';
+      if (opt === 'pain') return '对疼痛有反应';
+      return '无反应';
+    }
+    if (fieldKey === 'vaso') {
+      if (opt === 'none') return '无';
+      if (opt === 'dopamine_low') return '多巴胺(低)';
+      if (opt === 'dopamine_mid') return '多巴胺(中)';
+      if (opt === 'dopamine_high') return '多巴胺(高)';
+      if (opt === 'norepinephrine') return '去甲肾上腺素';
+      if (opt === 'epinephrine') return '肾上腺素';
+      if (opt === 'dobutamine') return '多巴酚丁胺';
+      return opt;
+    }
+    if (fieldKey === 'o2supplement') {
+      return opt === 'air' ? '空气' : '吸氧';
+    }
+    if (fieldKey === 'ichLocation') {
+      return opt === '0' ? '幕上' : '幕下';
+    }
+    if (fieldKey === 'ichIvh') {
+      return opt === '0' ? '无' : '有';
+    }
+    if (fieldKey === 'etiology') {
+      if (opt === 'acetaminophen') return '对乙酰氨基酚';
+      return '其他';
+    }
+    if (fieldKey === 'chronic') {
+      if (opt === 'none') return '无';
+      if (opt === 'nonSurgical') return '非手术';
+      return '择期手术';
+    }
+    if (fieldKey === 'perf' || fieldKey === 'resus') {
+      if (opt === 'A') return 'A-稳定';
+      if (opt === 'B') return 'B-危险';
+      return 'C-致命';
+    }
+    if (fieldKey === 'weightLoss') {
+      if (opt === 'none') return '无';
+      if (opt === 'mild') return '轻度';
+      if (opt === 'mod') return '中度';
+      return '重度';
+    }
+    if (fieldKey === 'intake') {
+      if (opt === 'normal') return '正常';
+      if (opt === 'mild') return '轻度减少';
+      if (opt === 'mod') return '中度减少';
+      return '重度减少';
+    }
+    if (fieldKey === 'disease') {
+      if (opt === 'none') return '无';
+      if (opt === 'moderate') return '中度';
+      return '重度';
+    }
+    const boolFields: string[] = [
+      'confusion', 'chf', 'htn', 'dm', 'stroke', 'vasc', 'female', 'age75', 'age65',
+      'renal', 'liver', 'bleed', 'inrAbn', 'drugs', 'alcohol', 'bpAbn', 'dur',
+      'arf', 'dmHtnAngina', 'sbpLt100', 'hrGt100', 'weightLt67', 'anteriorLbbb',
+      'timeToTreat', 'ageGte65', 'riskFactorsGte3', 'knownCAD', 'priorAspirin',
+      'severeAngina', 'stDevGte05', 'biomarkerElevated', 'clinicalPe', 'hrGt100Pe',
+      'surgery', 'hemoptysis', 'cancer', 'anemia', 'sexPesi', 'cancerPesi',
+      'chfPesi', 'cldPesi', 'ams', 'osp', 'comorb', 'rrt', 'ageAdj', 'acKf'
+    ];
+    if (boolFields.indexOf(fieldKey) >= 0) {
+      return opt === '0' ? '否' : '是';
+    }
     return opt;
   }
 
+  private unitKeys: string[] = [
+    'crUnit', 'cr0Unit', 'cr1Unit', 'albUnit', 'bilirubinUnit', 'hgbUnit',
+    'ureaUnit', 'pao2Unit', 'paco2Unit', 'fio2Mode'
+  ];
+
+  private unitParentMap: Map<string, string> = new Map([
+    ['crUnit', 'creatinine'], ['cr0Unit', 'cr0'], ['cr1Unit', 'cr1'],
+    ['albUnit', 'alb'], ['bilirubinUnit', 'bilirubin'], ['hgbUnit', 'hgb'],
+    ['ureaUnit', 'urea'], ['pao2Unit', 'pao2'], ['paco2Unit', 'paco2'],
+    ['fio2Mode', 'fio2']
+  ]);
+
+  private unitValueMap: Map<string, Map<string, string>> = new Map([
+    ['crUnit', new Map([['umol', 'μmol/L'], ['mgdl', 'mg/dL']])],
+    ['cr0Unit', new Map([['umol', 'μmol/L'], ['mgdl', 'mg/dL']])],
+    ['cr1Unit', new Map([['umol', 'μmol/L'], ['mgdl', 'mg/dL']])],
+    ['albUnit', new Map([['gl', 'g/L'], ['gdl', 'g/dL']])],
+    ['bilirubinUnit', new Map([['umol', 'μmol/L'], ['mgdl', 'mg/dL']])],
+    ['hgbUnit', new Map([['gl', 'g/L'], ['gdl', 'g/dL']])],
+    ['ureaUnit', new Map([['mmol', 'mmol/L'], ['mgdl', 'mg/dL']])],
+    ['pao2Unit', new Map([['mmhg', 'mmHg'], ['kpa', 'kPa']])],
+    ['paco2Unit', new Map([['mmhg', 'mmHg'], ['kpa', 'kPa']])],
+    ['fio2Mode', new Map([['dec', ''], ['pct', '%']])]
+  ]);
+
+  formatExtractedData(data: Record<string, string>): DataDisplayItem[] {
+    const result: DataDisplayItem[] = [];
+    const keys = Object.keys(data);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (this.unitKeys.indexOf(key) >= 0) {
+        continue;
+      }
+      const item = new DataDisplayItem();
+      item.key = key;
+      item.label = this.assistantService.getFieldLabel(key);
+      const value = data[key];
+      const spec = this.assistantService.getFieldSpec(key);
+      if (spec !== null && spec.type === 'select') {
+        item.value = this.getOptionLabel(key, value);
+      } else if (spec !== null && spec.type === 'number') {
+        let unitStr = spec.unit;
+        const parentUnitKey = this.findUnitKeyForField(key);
+        if (parentUnitKey.length > 0 && data[parentUnitKey] !== undefined) {
+          const unitMap = this.unitValueMap.get(parentUnitKey);
+          if (unitMap !== undefined) {
+            const resolvedUnit = unitMap.get(data[parentUnitKey]);
+            if (resolvedUnit !== undefined) {
+              unitStr = resolvedUnit;
+            }
+          }
+        }
+        item.value = value + (unitStr.length > 0 ? ' ' + unitStr : '');
+      } else {
+        item.value = value;
+      }
+      result.push(item);
+    }
+    return result;
+  }
+
+  private findUnitKeyForField(key: string): string {
+    const iter = this.unitParentMap.entries();
+    let entry = iter.next();
+    while (!entry.done) {
+      if (entry.value[1] === key) {
+        return entry.value[0];
+      }
+      entry = iter.next();
+    }
+    return '';
+  }
   @Builder
   LoadingBubble() {
     Column() {
