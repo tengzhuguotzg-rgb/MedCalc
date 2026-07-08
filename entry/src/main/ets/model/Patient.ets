@@ -16,6 +16,7 @@ export class PatientDataPoint {
   value: string = '';
   source: string = '';
   timestamp: number = 0;
+  examTime: number = 0;
   note: string = '';
 }
 
@@ -80,4 +81,21 @@ export const DATA_DOMAINS: Record<string, string[]> = {
   '凝血': ['inr', 'aptt', 'fib', 'dDimer'],
   '代谢': ['glu', 'lactate', 'albumin', 'prealbumin', 'crp', 'procalcitonin'],
   'ICU评分': ['apache2Score', 'sofaScore', 'icuDay', 'vaso', 'comorb'],
+};
+
+export const DOMAIN_COLORS: Record<string, string> = {
+  '人口学': '#7A8074',
+  '生命体征': '#C8881A',
+  '血气分析': '#2B6CB0',
+  '电解质': '#6B8E23',
+  '肾功能': '#D4760A',
+  '肝功能': '#8B6914',
+  '血液学': '#B1452A',
+  '神经': '#6B4FA0',
+  '心脏': '#B1452A',
+  '呼吸': '#2B6CB0',
+  '营养': '#3D6B4F',
+  '凝血': '#B1452A',
+  '代谢': '#C8881A',
+  'ICU评分': '#4A5247',
 };

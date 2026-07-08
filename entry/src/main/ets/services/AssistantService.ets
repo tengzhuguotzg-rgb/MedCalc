@@ -35,7 +35,7 @@ export interface DataFieldSpec {
   key: string;
   label: string;
   unit: string;
-  type: 'number' | 'select';
+  type: 'number' | 'select' | 'text';
   options?: string[];
   normalRange?: string;
 }
@@ -73,6 +73,8 @@ class ExtractionResult {
 }
 
 const DATA_FIELDS: DataFieldSpec[] = [
+  { key: 'reportDate', label: '检查日期', unit: '', type: 'text' },
+  { key: 'reportTime', label: '检查时间', unit: '', type: 'text' },
   { key: 'age', label: '年龄', unit: '岁', type: 'number', normalRange: '18-100' },
   { key: 'sex', label: '性别', unit: '', type: 'select', options: ['male', 'female'] },
   { key: 'weight', label: '体重', unit: 'kg', type: 'number', normalRange: '40-120' },
@@ -483,18 +485,31 @@ export class AssistantService {
     for (let i = 0; i < this.messages.length; i++) {
       if (this.messages[i].role === 'assistant' && this.messages[i].matches.length > 0) {
         this.messages[i].matches = matches;
+        this.messages[i].summaryText = this.buildSummaryFromMatches(matches);
+        this.messages[i].id = generateMsgId();
       }
     }
 
-    const assistantMsg = new AssistantMessage();
-    assistantMsg.id = generateMsgId();
-    assistantMsg.role = 'assistant';
-    assistantMsg.timestamp = Date.now();
-    assistantMsg.extractedData = fields;
-    assistantMsg.matches = matches;
-    assistantMsg.summaryText = '已补充数据，重新计算结果';
-    this.messages = [...this.messages, assistantMsg];
-    return assistantMsg;
+    this.messages = [...this.messages];
+    const lastAssistant = this.findLastAssistantWithMatches();
+    if (lastAssistant !== null) {
+      return lastAssistant;
+    }
+    const fallback = new AssistantMessage();
+    fallback.id = generateMsgId();
+    fallback.role = 'assistant';
+    fallback.timestamp = Date.now();
+    fallback.matches = matches;
+    return fallback;
+  }
+
+  private findLastAssistantWithMatches(): AssistantMessage | null {
+    for (let i = this.messages.length - 1; i >= 0; i--) {
+      if (this.messages[i].role === 'assistant' && this.messages[i].matches.length > 0) {
+        return this.messages[i];
+      }
+    }
+    return null;
   }
 
   getExtractionPrompt(): string {
@@ -509,7 +524,8 @@ export class AssistantService {
     prompt += '- 特别注意：PaO2的字段键名是pao2(不是po2)，PaCO2的键名是paco2(不是pco2)，SpO2的键名是spo2(不是sao2)\n';
     prompt += '- 数值和单位要按字段定义转换（如肌酐mg/dL需标注crUnit为mgdl，FiO2百分比需转换为小数如40%→0.4并标注fio2Mode为pct）\n';
     prompt += '- 图片中明确标注的数值均可提取，不需要用户逐项提及\n';
-    prompt += '- **只提取图片中明确可见/标注的数值，不要推断、猜测或补全任何未标注的参数**（如FiO2未标注则不提取fio2字段，不要推断为0.21或其他值）\n\n';
+    prompt += '- **只提取图片中明确可见/标注的数值，不要推断、猜测或补全任何未标注的参数**（如FiO2未标注则不提取fio2字段，不要推断为0.21或其他值）\n';
+    prompt += '- **报告上的检查日期和时间也必须提取**，分别放入reportDate和reportTime字段，格式：reportDate为YYYY-MM-DD（如2025-01-15），reportTime为HH:MM（如14:30）。如果只有日期没有时间，reportTime留空；如果都没有则两个字段都不填\n\n';
     prompt += '## 可提取字段\n';
     for (const f of DATA_FIELDS) {
       let line = f.key + ': ' + f.label + '(' + f.unit + ')';
@@ -1043,6 +1059,29 @@ export class AssistantService {
 
   private buildSummary(newFields: Record<string, string>, matches: CalcMatch[]): string {
     const fieldCount = Object.keys(newFields).length;
+    if (fieldCount === 0 && matches.length === 0) {
+      return '未能从描述中提取到医疗数据，请提供更详细的病情信息。';
+    }
+    let summary = '';
+    if (fieldCount > 0) {
+      summary += '已提取 ' + fieldCount + ' 项数据。';
+    }
+    const complete = matches.filter(m => m.completeness === 100);
+    const partial = matches.filter(m => m.completeness < 100);
+    if (complete.length > 0) {
+      summary += ' ' + complete.length + ' 个计算器可直接出结果';
+    }
+    if (partial.length > 0) {
+      summary += '，' + partial.length + ' 个缺少部分数据';
+    }
+    if (complete.length === 0 && partial.length === 0) {
+      summary += ' 暂无匹配的计算器。';
+    }
+    return summary;
+  }
+
+  private buildSummaryFromMatches(matches: CalcMatch[]): string {
+    const fieldCount = this.allExtractedData.size;
     if (fieldCount === 0 && matches.length === 0) {
       return '未能从描述中提取到医疗数据，请提供更详细的病情信息。';
     }

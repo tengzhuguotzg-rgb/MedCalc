@@ -1,4 +1,4 @@
-import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientDashboard, DATA_DOMAINS } from '../model/Patient';
+import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientDashboard, DATA_DOMAINS, DOMAIN_COLORS } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
 import { AssistantService, DataFieldSpec, CalcMatch } from '../services/AssistantService';
 import { CalcResult, getTierColor, getTierBgColor } from '../engine/CalcEngine';
@@ -29,6 +29,13 @@ export struct PatientDetailPage {
   @State timelineField: string = '';
   @State timelineData: PatientDataPoint[] = [];
   @State showTimelineDialog: boolean = false;
+  @State editExamTimePointId: number = 0;
+  @State showExamTimeEditor: boolean = false;
+  @State editExamYear: number = 2025;
+  @State editExamMonth: number = 1;
+  @State editExamDay: number = 1;
+  @State editExamHour: number = 0;
+  @State editExamMinute: number = 0;
   @State showManualInput: boolean = false;
   @State manualFieldKey: string = '';
   @State manualFieldValue: string = '';
@@ -194,6 +201,24 @@ export struct PatientDetailPage {
       }
     }
     return '';
+  }
+
+  getDomainColor(domainName: string): string {
+    const color = DOMAIN_COLORS[domainName];
+    if (color !== undefined && color !== null) {
+      return color;
+    }
+    return '#7A8074';
+  }
+
+  getDomainDataCount(domainKeys: string[]): number {
+    let count = 0;
+    for (let i = 0; i < domainKeys.length; i++) {
+      if (this.dashboard.latestData.has(domainKeys[i])) {
+        count++;
+      }
+    }
+    return count;
   }
 
   parseAlertResult(alert: PatientAlert): CalcResult {
@@ -457,8 +482,9 @@ export struct PatientDetailPage {
       this.loadDashboard();
     } catch (e) {
       this.uploading = false;
-      this.uploadMsg = '上传失败: ' + (e instanceof Error ? e.message : String(e));
-      hilog.error(0xF000, 'PatientDetail', 'processUpload failed: ' + (e instanceof Error ? e.stack : String(e)));
+      const errMsg = e instanceof Error ? e.message : '未知错误';
+      this.uploadMsg = '上传失败: ' + errMsg;
+      hilog.error(0xF000, 'PatientDetail', 'processUpload failed');
     }
   }
 
@@ -592,10 +618,13 @@ export struct PatientDetailPage {
        .height('100%')
        .backgroundColor('#F5F4EF')
 
-       if (this.showTimelineDialog) {
-         this.TimelineDialog();
-       }
-       if (this.showManualInput) {
+        if (this.showTimelineDialog) {
+          this.TimelineDialog();
+        }
+        if (this.showExamTimeEditor) {
+          this.ExamTimeEditorDialog();
+        }
+        if (this.showManualInput) {
          this.ManualInputDialog();
        }
        if (this.showDeleteConfirm) {
@@ -1105,7 +1134,7 @@ export struct PatientDetailPage {
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .fontColor(getTierColor(this.parseAlertResult(alert).tierClass))
-        .backgroundColor(getTierBgColor(this.parseAlertResult(alert).tierClass) + '20')
+        .backgroundColor(getTierBgColor(this.parseAlertResult(alert).tierClass))
         .borderRadius(20)
         .padding({ left: 8, right: 8, top: 2, bottom: 2 })
         .margin({ bottom: 6 })
@@ -1255,19 +1284,32 @@ export struct PatientDetailPage {
               .padding(40)
           } else {
             ForEach(this.domainEntries, (entry: DomainEntry) => {
-              Column() {
-                Row() {
-                  Text(entry.name)
-                    .fontSize(13)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor('#1F3D2F')
-                    .layoutWeight(1)
-                  Text(this.isDomainExpanded(entry.name) ? ' ▲' : ' ▼')
-                    .fontSize(10)
-                    .fontColor('#7A8074')
-                }
-                .width('100%')
-                .onClick(() => { this.toggleDomain(entry.name); })
+               Column() {
+                 Row() {
+                   Column()
+                     .width(4)
+                     .height(16)
+                     .backgroundColor(this.getDomainColor(entry.name))
+                     .borderRadius(2)
+                     .margin({ right: 8 })
+                   Text(entry.name)
+                     .fontSize(13)
+                     .fontWeight(FontWeight.Bold)
+                     .fontColor('#1F3D2F')
+                     .layoutWeight(1)
+                   Text(this.getDomainDataCount(entry.keys) + '项')
+                     .fontSize(10)
+                     .fontColor('#FFFFFF')
+                     .backgroundColor(this.getDomainColor(entry.name))
+                     .borderRadius(8)
+                     .padding({ left: 5, right: 5, top: 1, bottom: 1 })
+                     .margin({ right: 6 })
+                   Text(this.isDomainExpanded(entry.name) ? ' ▲' : ' ▼')
+                     .fontSize(10)
+                     .fontColor('#7A8074')
+                 }
+                 .width('100%')
+                 .onClick(() => { this.toggleDomain(entry.name); })
 
                 if (this.isDomainExpanded(entry.name)) {
                   Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start, alignContent: FlexAlign.Start }) {
@@ -1523,19 +1565,72 @@ export struct PatientDetailPage {
             .fontColor('#7A8074')
         } else {
           ForEach(this.timelineData, (dp: PatientDataPoint) => {
-            Row() {
-              Text(this.formatDateTime(dp.timestamp))
-                .fontSize(12)
-                .fontColor('#7A8074')
-                .width('50%')
-              Text(dp.value + ' ' + this.getFieldUnit(this.timelineField))
-                .fontSize(13)
-                .fontColor('#1F3D2F')
-                .fontWeight(FontWeight.Medium)
-                .layoutWeight(1)
+            Column() {
+              Row() {
+                Text(dp.value + ' ' + this.getFieldUnit(this.timelineField))
+                  .fontSize(14)
+                  .fontColor('#1F3D2F')
+                  .fontWeight(FontWeight.Bold)
+                  .layoutWeight(1)
+              }
+              .width('100%')
+              Row() {
+                Text('报告')
+                  .fontSize(10)
+                  .fontColor('#FFFFFF')
+                  .backgroundColor(dp.examTime > 0 ? '#3D6B4F' : '#B1452A')
+                  .borderRadius(3)
+                  .padding({ left: 3, right: 3, top: 1, bottom: 1 })
+                  .margin({ right: 4 })
+                if (dp.examTime > 0) {
+                  Text(this.formatDateTime(dp.examTime))
+                    .fontSize(12)
+                    .fontColor('#1F3D2F')
+                    .layoutWeight(1)
+                  Text('修改')
+                    .fontSize(10)
+                    .fontColor('#3D6B4F')
+                    .margin({ left: 4 })
+                    .onClick(() => {
+                      this.openExamTimeEditor(dp);
+                    })
+                } else {
+                  Text('未设置')
+                    .fontSize(12)
+                    .fontColor('#B1452A')
+                    .layoutWeight(1)
+                  Text('录入')
+                    .fontSize(10)
+                    .fontColor('#FFFFFF')
+                    .backgroundColor('#3D6B4F')
+                    .borderRadius(3)
+                    .padding({ left: 3, right: 3, top: 1, bottom: 1 })
+                    .margin({ left: 4 })
+                    .onClick(() => {
+                      this.openExamTimeEditor(dp);
+                    })
+                }
+              }
+              .width('100%')
+              .margin({ top: 2 })
+              Row() {
+                Text('上传')
+                  .fontSize(10)
+                  .fontColor('#7A8074')
+                  .margin({ right: 4 })
+                Text(this.formatDateTime(dp.timestamp))
+                  .fontSize(11)
+                  .fontColor('#7A8074')
+              }
+              .width('100%')
+              .margin({ top: 1 })
             }
             .width('100%')
-            .padding({ top: 4, bottom: 4 })
+            .padding({ top: 8, bottom: 8 })
+            .borderRadius(6)
+            .backgroundColor('#F9F8F3')
+            .padding({ left: 8, right: 8, top: 8, bottom: 8 })
+            .margin({ bottom: 6 })
           }, (dp: PatientDataPoint) => dp.id.toString())
         }
 
@@ -1548,6 +1643,101 @@ export struct PatientDetailPage {
           .width('100%')
           .margin({ top: 12 })
           .onClick(() => { this.showTimelineDialog = false; })
+      }
+      .padding(20)
+      .backgroundColor('#FFFFFF')
+      .borderRadius(12)
+      .width('85%')
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('rgba(0,0,0,0.4)')
+    .justifyContent(FlexAlign.Center)
+  }
+
+  openExamTimeEditor(dp: PatientDataPoint) {
+    this.editExamTimePointId = dp.id;
+    if (dp.examTime > 0) {
+      const d = new Date(dp.examTime);
+      this.editExamYear = d.getFullYear();
+      this.editExamMonth = d.getMonth() + 1;
+      this.editExamDay = d.getDate();
+      this.editExamHour = d.getHours();
+      this.editExamMinute = d.getMinutes();
+    } else {
+      const d = new Date(dp.timestamp);
+      this.editExamYear = d.getFullYear();
+      this.editExamMonth = d.getMonth() + 1;
+      this.editExamDay = d.getDate();
+      this.editExamHour = d.getHours();
+      this.editExamMinute = d.getMinutes();
+    }
+    this.showExamTimeEditor = true;
+  }
+
+  async saveExamTime() {
+    const d = new Date(this.editExamYear, this.editExamMonth - 1, this.editExamDay, this.editExamHour, this.editExamMinute, 0, 0);
+    const ts = d.getTime();
+    await this.patientService.updateExamTime(this.editExamTimePointId, ts);
+    this.showExamTimeEditor = false;
+    this.patientService.getDataTimeline(this.currentPatientId, this.timelineField).then((data: PatientDataPoint[]) => {
+      this.timelineData = data;
+    });
+  }
+
+  @Builder
+  ExamTimeEditorDialog() {
+    Column() {
+      Column() {
+        Text('设置报告时间')
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .margin({ bottom: 12 })
+
+        DatePicker({
+          selected: new Date(this.editExamYear, this.editExamMonth - 1, this.editExamDay)
+        })
+          .onChange((value: DatePickerResult) => {
+            if (value.year !== undefined) this.editExamYear = value.year as number;
+            if (value.month !== undefined) this.editExamMonth = (value.month as number) + 1;
+            if (value.day !== undefined) this.editExamDay = value.day as number;
+          })
+
+        TimePicker({
+          selected: new Date(2025, 0, 1, this.editExamHour, this.editExamMinute)
+        })
+          .onChange((value: TimePickerResult) => {
+            if (value.hour !== undefined) this.editExamHour = value.hour as number;
+            if (value.minute !== undefined) this.editExamMinute = value.minute as number;
+          })
+          .margin({ top: 8 })
+
+        Row() {
+          Button('取消')
+            .fontSize(14)
+            .fontColor('#7A8074')
+            .backgroundColor('#F5F5F5')
+            .borderRadius(8)
+            .height(36)
+            .layoutWeight(1)
+            .onClick(() => {
+              this.showExamTimeEditor = false;
+            })
+          Button('保存')
+            .fontSize(14)
+            .fontColor('#FFFFFF')
+            .backgroundColor('#3D6B4F')
+            .borderRadius(8)
+            .height(36)
+            .layoutWeight(1)
+            .margin({ left: 8 })
+            .onClick(() => {
+              this.saveExamTime();
+            })
+        }
+        .width('100%')
+        .margin({ top: 12 })
       }
       .padding(20)
       .backgroundColor('#FFFFFF')

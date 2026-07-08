@@ -67,6 +67,22 @@ export class PatientService {
   }
 
   async mergeExtractedData(patientId: string, extractedData: Record<string, string>, source: string, note: string, recordId: string): Promise<void> {
+    let reportDate = '';
+    let reportTime = '';
+    try {
+      const rd = extractedData['reportdate'];
+      if (rd !== undefined && rd !== null && typeof rd === 'string') {
+        reportDate = rd;
+      }
+      const rt = extractedData['reporttime'];
+      if (rt !== undefined && rt !== null && typeof rt === 'string') {
+        reportTime = rt;
+      }
+    } catch (e) {
+      // ignore
+    }
+    const examTime = this.parseExamTime(reportDate, reportTime);
+
     const entries = Object.entries(extractedData);
     const now = Date.now();
     let changed = false;
@@ -77,6 +93,9 @@ export class PatientService {
       if (val.length === 0) {
         continue;
       }
+      if (key === 'reportdate' || key === 'reporttime') {
+        continue;
+      }
       const existing = await this.repo.getLatestValue(patientId, key);
       if (existing !== val) {
         const dp = new PatientDataPoint();
@@ -85,6 +104,7 @@ export class PatientService {
         dp.value = val;
         dp.source = source;
         dp.timestamp = now;
+        dp.examTime = examTime;
         dp.note = recordId.length > 0 ? recordId : note;
         await this.repo.insertDataPoint(dp);
         changed = true;
@@ -98,6 +118,28 @@ export class PatientService {
         await this.repo.updatePatient(patient);
       }
       await this.refreshAlerts(patientId);
+    }
+  }
+
+  parseExamTime(dateStr: string, timeStr: string): number {
+    if (dateStr.length === 0) {
+      return 0;
+    }
+    try {
+      let isoStr = dateStr;
+      if (timeStr.length > 0) {
+        isoStr += 'T' + timeStr;
+      } else {
+        isoStr += 'T00:00';
+      }
+      const d = new Date(isoStr);
+      const ts = d.getTime();
+      if (ts > 0) {
+        return ts;
+      }
+      return 0;
+    } catch (e) {
+      return 0;
     }
   }
 
@@ -249,6 +291,10 @@ export class PatientService {
 
   async getDataTimeline(patientId: string, fieldKey: string): Promise<PatientDataPoint[]> {
     return await this.repo.getDataTimeline(patientId, fieldKey);
+  }
+
+  async updateExamTime(dataPointId: number, examTime: number): Promise<void> {
+    await this.repo.updateExamTime(dataPointId, examTime);
   }
 
   async getAlertCounts(): Promise<Map<string, number>> {

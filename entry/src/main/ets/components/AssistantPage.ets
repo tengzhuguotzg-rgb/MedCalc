@@ -210,7 +210,6 @@ export struct AssistantPage {
     const msg = this.assistantService.supplementData(fields);
     this.messages = this.assistantService.getMessages();
     this.supplementFields = {};
-    this.scroller.scrollToIndex(this.messages.length - 1);
   }
 
   jumpToCalc(calcId: string) {
@@ -397,7 +396,7 @@ export struct AssistantPage {
       .padding(12)
       .backgroundColor('#FFFFFF')
       .borderRadius({ topLeft: 12, topRight: 12, bottomLeft: 12, bottomRight: 4 })
-      .constraintSize({ maxWidth: '92%' })
+      .width('92%')
       .alignItems(HorizontalAlign.Start)
     }
     .width('100%')
@@ -455,9 +454,6 @@ export struct AssistantPage {
 
   private isCalcExpanded(match: CalcMatch): boolean {
     if (this.expandedCalcIds.has(match.calcId)) {
-      return true;
-    }
-    if (match.completeness === 100 && match.result) {
       return true;
     }
     return false;
@@ -545,7 +541,7 @@ export struct AssistantPage {
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(getTierColor(match.result!.tierClass))
-            .backgroundColor(getTierBgColor(match.result!.tierClass) + '20')
+            .backgroundColor(getTierBgColor(match.result!.tierClass))
             .borderRadius(20)
             .padding({ left: 8, right: 8, top: 2, bottom: 2 })
             .margin({ top: 4 })

@@ -2,6 +2,7 @@ import { relationalStore, ValuesBucket } from '@kit.ArkData';
 import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis } from '../model/Patient';
 
 const DB_NAME: string = 'medcalc_patients.db';
+const DB_VERSION: number = 2;
 const DB_SECURITY: relationalStore.SecurityLevel = relationalStore.SecurityLevel.S3;
 
 const CREATE_PATIENTS: string =
@@ -23,7 +24,11 @@ const CREATE_PATIENT_DATA: string =
   'value TEXT NOT NULL,' +
   'source TEXT,' +
   'timestamp INTEGER NOT NULL,' +
+  'examTime INTEGER DEFAULT 0,' +
   'note TEXT)';
+
+const ALTER_ADD_EXAM_TIME: string =
+  'ALTER TABLE patient_data ADD COLUMN examTime INTEGER DEFAULT 0';
 
 const CREATE_PATIENT_RECORDS: string =
   'CREATE TABLE IF NOT EXISTS patient_records (' +
@@ -103,16 +108,25 @@ export class PatientRepository {
       securityLevel: DB_SECURITY
     };
     this.store = await relationalStore.getRdbStore(context, config);
-    await this.store.executeSql(CREATE_PATIENTS);
-    await this.store.executeSql(CREATE_PATIENT_DATA);
-    await this.store.executeSql(CREATE_PATIENT_RECORDS);
-    await this.store.executeSql(CREATE_PATIENT_ALERTS);
-    await this.store.executeSql(IDX_DATA_PATIENT_FIELD);
-    await this.store.executeSql(IDX_DATA_PATIENT_TS);
-    await this.store.executeSql(IDX_RECORDS_PATIENT);
-    await this.store.executeSql(IDX_ALERTS_PATIENT_STATUS);
-    await this.store.executeSql(CREATE_PATIENT_DIAGNOSES);
-    await this.store.executeSql(IDX_DIAGNOSES_PATIENT_STATUS);
+    const currentVersion = this.store.version;
+    if (currentVersion < DB_VERSION) {
+      if (currentVersion === 0) {
+        await this.store.executeSql(CREATE_PATIENTS);
+        await this.store.executeSql(CREATE_PATIENT_DATA);
+        await this.store.executeSql(CREATE_PATIENT_RECORDS);
+        await this.store.executeSql(CREATE_PATIENT_ALERTS);
+        await this.store.executeSql(IDX_DATA_PATIENT_FIELD);
+        await this.store.executeSql(IDX_DATA_PATIENT_TS);
+        await this.store.executeSql(IDX_RECORDS_PATIENT);
+        await this.store.executeSql(IDX_ALERTS_PATIENT_STATUS);
+        await this.store.executeSql(CREATE_PATIENT_DIAGNOSES);
+        await this.store.executeSql(IDX_DIAGNOSES_PATIENT_STATUS);
+      }
+      if (currentVersion >= 1 && currentVersion < 2) {
+        await this.store.executeSql(ALTER_ADD_EXAM_TIME);
+      }
+      this.store.version = DB_VERSION;
+    }
   }
 
   private ensureStore(): relationalStore.RdbStore {
@@ -232,6 +246,7 @@ export class PatientRepository {
       'value': dp.value,
       'source': dp.source,
       'timestamp': dp.timestamp,
+      'examTime': dp.examTime,
       'note': dp.note
     };
     return await db.insert('patient_data', bucket);
@@ -294,12 +309,24 @@ export class PatientRepository {
         dp.value = rs.getString(rs.getColumnIndex('value'));
         dp.source = rs.getString(rs.getColumnIndex('source'));
         dp.timestamp = rs.getLong(rs.getColumnIndex('timestamp'));
+        const examTimeIdx = rs.getColumnIndex('examTime');
+        dp.examTime = examTimeIdx >= 0 ? rs.getLong(examTimeIdx) : 0;
         dp.note = rs.getString(rs.getColumnIndex('note'));
         result.push(dp);
       } while (rs.goToNextRow());
     }
     rs.close();
     return result;
+  }
+
+  async updateExamTime(dataPointId: number, examTime: number): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = {
+      'examTime': examTime
+    };
+    const predicates = new relationalStore.RdbPredicates('patient_data');
+    predicates.equalTo('id', dataPointId);
+    await db.update(bucket, predicates);
   }
 
   async insertRecord(record: PatientRecord): Promise<void> {
