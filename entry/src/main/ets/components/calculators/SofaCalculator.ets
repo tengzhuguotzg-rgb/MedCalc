@@ -4,6 +4,7 @@ import { calculateSofa } from '../../engine/SofaCalculator';
 @Component
 export struct SofaCalculator {  @State pao2: number = 0;
   @State fio2: number = 0;
+  @State fio2Mode: string = 'dec';
   @State platelet: number = 0;
   @State bilirubin: number = 0;
   @State bilirubinUnit: string = 'umol';
@@ -16,7 +17,7 @@ export struct SofaCalculator {  @State pao2: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateSofa(this.pao2, this.fio2, this.platelet, this.bilirubin, this.bilirubinUnit, this.map, this.vaso, this.gcs, this.creatinine, this.creatinineUnit, this.urineOutput); }
+  calculate() { this.result = calculateSofa(this.pao2, this.fio2, this.fio2Mode, this.platelet, this.bilirubin, this.bilirubinUnit, this.map, this.vaso, this.gcs, this.creatinine, this.creatinineUnit, this.urineOutput); }
 
   build() {
     Column() {
@@ -26,8 +27,12 @@ export struct SofaCalculator {  @State pao2: number = 0;
         Text('— 呼吸').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() { Text('PaO₂ (mmHg)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入PaO2' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('FiO₂').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入FiO2' }).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
-        }.width('100%');
+           Column() { Text('FiO₂').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)' }).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
+        }.width('100%').margin({ bottom: 8 });
+        Row() {
+          Button('小数').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440').backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.fio2Mode === 'dec' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.fio2Mode = 'dec'; this.calculate(); });
+          Button('百分比').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440').backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.fio2Mode === 'pct' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.fio2Mode = 'pct'; this.calculate(); });
+        }.width('100%').margin({ bottom: 8 });
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
       Column() {

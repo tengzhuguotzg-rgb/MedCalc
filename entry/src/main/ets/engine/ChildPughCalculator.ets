@@ -1,18 +1,21 @@
 import { CalcResult } from './CalcEngine';
 
-export function calculateChildPugh(bilirubin: number, albumin: number, inr: number, ascites: number, encephalopathy: number): CalcResult {
+export function calculateChildPugh(bilirubin: number, bilirubinUnit: string, albumin: number, albUnit: string, inr: number, ascites: number, encephalopathy: number): CalcResult {
   if (bilirubin <= 0 || albumin <= 0 || inr <= 0) {
     return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
+  const bilUmol = bilirubinUnit === 'mgdl' ? bilirubin * 17.1 : bilirubin;
+  const albGl = albUnit === 'gdl' ? albumin * 10 : albumin;
+
   let score = 0;
 
-  if (bilirubin < 34) score += 1;
-  else if (bilirubin < 51) score += 2;
+  if (bilUmol < 34) score += 1;
+  else if (bilUmol < 51) score += 2;
   else score += 3;
 
-  if (albumin > 35) score += 1;
-  else if (albumin > 28) score += 2;
+  if (albGl > 35) score += 1;
+  else if (albGl > 28) score += 2;
   else score += 3;
 
   if (inr < 1.7) score += 1;

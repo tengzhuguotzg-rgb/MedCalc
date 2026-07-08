@@ -38,6 +38,10 @@ import { FssicuCalculator } from '../components/calculators/FssicuCalculator';
 import { KdigoCalculator } from '../components/calculators/KdigoCalculator';
 import { VasopressorCalculator } from '../components/calculators/VasopressorCalculator';
 import { LlmDialog } from '../components/LlmDialog';
+import { AssistantPage } from '../components/AssistantPage';
+import { SettingsPage } from '../components/SettingsPage';
+import { PatientListPage } from '../components/PatientListPage';
+import { PatientDetailPage } from '../components/PatientDetailPage';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 
@@ -47,12 +51,26 @@ struct Index {
   @State currentCalc: string = 'crcl';
   @State favorites: string[] = [];
   @State sidebarCollapsed: boolean = true;
-  @State showLlmDialog: boolean = false;
+  @State currentTab: number = 0;
+  @State currentPatientId: string = '';
+  @StorageLink('patientNavDepth') patientNavDepth: number = 0;
+  @StorageLink('patientBackFlag') patientBackFlag: number = 0;
 
   aboutToAppear() {
     const prefsService = PreferencesService.getInstance();
     this.favorites = prefsService.getFavorites();
     this.currentCalc = prefsService.getLastCalculator();
+    AppStorage.setOrCreate<number>('patientNavDepth', 0);
+    AppStorage.setOrCreate<number>('patientBackFlag', 0);
+  }
+
+  onBackPress(): boolean | void {
+    if (this.patientNavDepth > 0) {
+      const flag = AppStorage.get<number>('patientBackFlag') || 0;
+      AppStorage.setOrCreate<number>('patientBackFlag', flag + 1);
+      return true;
+    }
+    return false;
   }
 
   aboutToDisappear() {
@@ -62,6 +80,41 @@ struct Index {
   }
 
   build() {
+    Tabs({ barPosition: BarPosition.End, index: this.currentTab }) {
+      TabContent() {
+        this.CalcModeView();
+      }
+      .tabBar('计算器')
+
+      TabContent() {
+        AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab });
+      }
+      .tabBar('助手')
+
+      TabContent() {
+        if (this.currentPatientId.length > 0) {
+          PatientDetailPage({ currentPatientId: $currentPatientId });
+        } else {
+          PatientListPage({ currentPatientId: $currentPatientId });
+        }
+      }
+      .tabBar('病历')
+
+      TabContent() {
+        SettingsPage();
+      }
+      .tabBar('设置')
+    }
+    .barBackgroundColor('#FFFFFF')
+    .barMode(BarMode.Fixed)
+    .scrollable(false)
+    .onChange((index: number) => { this.currentTab = index; })
+    .width('100%')
+    .height('100%')
+  }
+
+  @Builder
+  CalcModeView() {
     Stack({ alignContent: Alignment.Start }) {
       Column() {
         this.Topbar();
@@ -177,10 +230,7 @@ struct Index {
         });
       }
 
-      LlmDialog({
-        isOpen: $showLlmDialog,
-        currentCalc: $currentCalc
-      })
+      LlmDialog({ currentCalc: $currentCalc })
     }
     .width('100%')
     .height('100%');
@@ -189,13 +239,15 @@ struct Index {
   @Builder
   Topbar() {
     Row() {
-      Button('☰')
-        .fontSize(18)
-        .fontColor('#1F3D2F')
-        .backgroundColor('transparent')
-        .onClick(() => {
-          this.sidebarCollapsed = false;
-        });
+      Button() {
+        this.MenuIcon()
+      }
+      .width(36)
+      .height(36)
+      .backgroundColor('transparent')
+      .onClick(() => {
+        this.sidebarCollapsed = false;
+      });
 
       Column() {
         Text(this.getCurrentCalculatorName())
@@ -205,21 +257,38 @@ struct Index {
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
-      .margin({ left: 8 });
+      .margin({ left: 4 });
 
-      Button(this.isFavorite() ? '★' : '☆')
-        .fontSize(18)
-        .fontColor(this.isFavorite() ? '#E76F2C' : '#7A8074')
-        .backgroundColor('transparent')
-        .onClick(() => {
-          this.toggleFavorite();
-        });
+      Button() {
+        Text(this.isFavorite() ? '★' : '☆')
+          .fontSize(18)
+          .fontColor(this.isFavorite() ? '#E76F2C' : '#7A8074')
+      }
+      .width(36)
+      .height(36)
+      .backgroundColor('transparent')
+      .onClick(() => {
+        this.toggleFavorite();
+      })
     }
     .width('100%')
     .height(44)
     .padding({ left: 12, right: 12 })
     .backgroundColor('#FFFFFF')
     .border({ width: { bottom: 1 }, color: '#E0DCC8' });
+  }
+
+  @Builder
+  MenuIcon() {
+    Column({ space: 3.5 }) {
+      Row().width(18).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
+      Row().width(18).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
+      Row().width(12).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
+    }
+    .width(24)
+    .height(24)
+    .justifyContent(FlexAlign.Center)
+    .alignItems(HorizontalAlign.Center)
   }
 
   @Builder

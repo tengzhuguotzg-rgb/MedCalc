@@ -3,6 +3,7 @@ import { CalcResult, getTierClass } from './CalcEngine';
 export function calculateSofa(
   pao2: number,
   fio2: number,
+  fio2Mode: string,
   platelet: number,
   bilirubin: number,
   bilirubinUnit: string,
@@ -13,7 +14,9 @@ export function calculateSofa(
   creatinineUnit: string,
   urineOutput: number
 ): CalcResult {
-  if (pao2 <= 0 || fio2 <= 0) {
+  const fio2Value = fio2Mode === 'pct' ? fio2 / 100 : fio2;
+
+  if (pao2 <= 0 || fio2Value <= 0) {
     return {
       value: null,
       unit: '',
@@ -25,7 +28,7 @@ export function calculateSofa(
 
   let total = 0;
 
-  const pfRatio = pao2 / fio2;
+  const pfRatio = pao2 / fio2Value;
   if (pfRatio < 100) total += 4;
   else if (pfRatio < 200) total += 3;
   else if (pfRatio < 300) total += 2;

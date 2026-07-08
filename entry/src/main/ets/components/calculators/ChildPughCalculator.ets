@@ -3,14 +3,16 @@ import { calculateChildPugh } from '../../engine/ChildPughCalculator';
 
 @Component
 export struct ChildPughCalculator {  @State bilirubin: number = 0;
+  @State bilirubinUnit: string = 'umol';
   @State albumin: number = 0;
+  @State albUnit: string = 'gl';
   @State inr: number = 0;
   @State ascites: number = 1;
   @State encephalopathy: number = 1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateChildPugh(this.bilirubin, this.albumin, this.inr, this.ascites, this.encephalopathy); }
+  calculate() { this.result = calculateChildPugh(this.bilirubin, this.bilirubinUnit, this.albumin, this.albUnit, this.inr, this.ascites, this.encephalopathy); }
 
   build() {
     Column() {
@@ -20,9 +22,21 @@ export struct ChildPughCalculator {  @State bilirubin: number = 0;
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
 
         Row() {
-          Column() { Text('胆红素 (µmol/L)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('白蛋白 (g/L)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入白蛋白' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.albumin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
-        }.width('100%').margin({ bottom: 16 });
+          Column() { Text(this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
+          Column() { Text(this.albUnit === 'gl' ? '白蛋白 (g/L)' : '白蛋白 (g/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入白蛋白' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.albumin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
+        }.width('100%').margin({ bottom: 8 });
+
+        Row() {
+          Text('胆红素单位').fontSize(12).fontColor('#7A8074').layoutWeight(1);
+          Button('µmol/L').fontSize(11).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.bilirubinUnit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.bilirubinUnit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).onClick(() => { this.bilirubinUnit = 'umol'; this.calculate(); });
+          Button('mg/dL').fontSize(11).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.bilirubinUnit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.bilirubinUnit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).margin({ left: 6 }).onClick(() => { this.bilirubinUnit = 'mgdl'; this.calculate(); });
+        }.width('100%').margin({ bottom: 8 });
+
+        Row() {
+          Text('白蛋白单位').fontSize(12).fontColor('#7A8074').layoutWeight(1);
+          Button('g/L').fontSize(11).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.albUnit === 'gl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.albUnit === 'gl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).onClick(() => { this.albUnit = 'gl'; this.calculate(); });
+          Button('g/dL').fontSize(11).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.albUnit === 'gdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.albUnit === 'gdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).margin({ left: 6 }).onClick(() => { this.albUnit = 'gdl'; this.calculate(); });
+        }.width('100%').margin({ bottom: 8 });
 
         Column() { Text('INR').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
 

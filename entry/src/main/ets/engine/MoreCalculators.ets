@@ -24,6 +24,7 @@ export function calculateCag(na: number, cl: number, hco3: number, alb: number, 
   if (corrected > 16) { tier = '高AG代酸'; footnote = `校正AG > 16，提示高AG代酸（M代酸）。常见：酮症酸中毒、乳酸酸中毒、肾衰、摄入中毒。`; }
   else if (corrected >= 8) { tier = '正常偏高'; footnote = `校正AG 8-16，正常范围偏高。需结合临床。`; }
   else { tier = '正常'; footnote = `校正AG < 8，正常。`; }
+  footnote += `\n基础AG ${ag.toFixed(1)} → 校正AG ${corrected.toFixed(1)}`;
   return { value: corrected, unit: 'mmol/L', tier, tierClass: getTierClass(tier), footnote };
 }
 

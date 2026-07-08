@@ -15,7 +15,11 @@
 
 import { AbilityConstant, ConfigurationConstant, UIAbility, Want } from '@kit.AbilityKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
-import { window } from '@kit.ArkUI';
+import { window, KeyboardAvoidMode } from '@kit.ArkUI';
+import { common } from '@kit.AbilityKit';
+import { PreferencesService } from '../services/PreferencesService';
+import { PatientRepository } from '../services/PatientRepository';
+import { ImageStore } from '../services/ImageStore';
 
 const DOMAIN = 0x0000;
 
@@ -26,6 +30,9 @@ export default class EntryAbility extends UIAbility {
     } catch (err) {
       hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
     }
+    AppStorage.setOrCreate<common.UIAbilityContext>('context', this.context);
+    PreferencesService.getInstance().init(this.context);
+    PatientRepository.getInstance().init(this.context);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
@@ -34,14 +41,15 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageCreate(windowStage: window.WindowStage): void {
-    // Main window is created, set main page for this ability
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageCreate');
+    ImageStore.getInstance().init(this.context);
 
     windowStage.loadContent('pages/Index', (err) => {
       if (err.code) {
         hilog.error(DOMAIN, 'testTag', 'Failed to load the content. Cause: %{public}s', JSON.stringify(err));
         return;
       }
+      windowStage.getMainWindowSync().getUIContext().setKeyboardAvoidMode(KeyboardAvoidMode.RESIZE);
       hilog.info(DOMAIN, 'testTag', 'Succeeded in loading the content.');
     });
   }

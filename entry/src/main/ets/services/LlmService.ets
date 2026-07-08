@@ -1,5 +1,44 @@
 import http from '@ohos.net.http';
 import { CALCULATORS } from '../model/CalculatorRegistry';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+
+const DOMAIN: number = 0xF000;
+const TAG: string = 'LlmService';
+
+export enum LlmFormat {
+  OPENAI = 0,
+  ANTHROPIC = 1
+}
+
+export class LlmModelConfig {
+  id: string = '';
+  name: string = '';
+  provider: string = '';
+  format: LlmFormat = LlmFormat.OPENAI;
+  baseUrl: string = '';
+  apiKey: string = '';
+  modelName: string = '';
+
+  constructor(id: string, name: string, provider: string = '', format: LlmFormat = LlmFormat.OPENAI, baseUrl: string = '', apiKey: string = '', modelName: string = '') {
+    this.id = id;
+    this.name = name;
+    this.provider = provider;
+    this.format = format;
+    this.baseUrl = baseUrl;
+    this.apiKey = apiKey;
+    this.modelName = modelName;
+  }
+
+  toApiServiceConfig(): ApiServiceConfig {
+    return {
+      id: this.id,
+      name: this.name,
+      baseUrl: this.baseUrl,
+      apiKey: this.apiKey,
+      model: this.modelName
+    };
+  }
+}
 
 export interface ApiServiceConfig {
   id: string;
@@ -23,6 +62,67 @@ class OpenAiMsg {
 class AnthropicMsg {
   role: string = '';
   content: string = '';
+}
+
+class VisionTextItem {
+  type: string = 'text';
+  text: string = '';
+
+  constructor(text: string) {
+    this.text = text;
+  }
+}
+
+class VisionImageSource {
+  type: string = 'base64';
+  media_type: string = '';
+  data: string = '';
+
+  constructor(mime: string, base64: string) {
+    this.media_type = mime;
+    this.data = base64;
+  }
+}
+
+class AnthropicVisionImageItem {
+  type: string = 'image';
+  source: VisionImageSource = new VisionImageSource('', '');
+
+  constructor(mime: string, base64: string) {
+    this.source = new VisionImageSource(mime, base64);
+  }
+}
+
+class OpenAiImageUrlObj {
+  url: string = '';
+
+  constructor(url: string) {
+    this.url = url;
+  }
+}
+
+class OpenAiVisionImageItem {
+  type: string = 'image_url';
+  image_url: OpenAiImageUrlObj = new OpenAiImageUrlObj('');
+
+  constructor(url: string) {
+    this.image_url = new OpenAiImageUrlObj(url);
+  }
+}
+
+class AnthropicVisionMsg {
+  role: string = '';
+  content: Object[] = [];
+}
+
+class OpenAiVisionSysMsg {
+  role: string = '';
+  content: string = '';
+}
+
+class OpenAiVisionUserMsg {
+  role: string = '';
+  content: Object[] = [];
 }
 
 class BearerHeadersObj {
@@ -70,8 +170,47 @@ function jsonToObject(json: string): Object {
   return result;
 }
 
-function isAnthropic(baseUrl: string): boolean {
-  return baseUrl.includes('anthropic');
+function isAnthropicProvider(baseUrl: string): boolean {
+  const lower = baseUrl.toLowerCase();
+  if (lower.includes('/anthropic')) {
+    return true;
+  }
+  if (lower.includes('anthropic.com')) {
+    return true;
+  }
+  return false;
+}
+
+function isMiniMaxProvider(baseUrl: string): boolean {
+  const lower = baseUrl.toLowerCase();
+  if (!lower.includes('minimaxi')) {
+    return false;
+  }
+  if (lower.includes('/anthropic')) {
+    return false;
+  }
+  return true;
+}
+
+function buildUrlPath(baseUrl: string, path: string): string {
+  let base = baseUrl.replace(/\/+$/, '');
+  if (path.startsWith('/')) {
+    path = path.substring(1);
+  }
+  if (base.endsWith('/v1') && path.startsWith('v1/')) {
+    path = path.substring(3);
+  }
+  return base + '/' + path;
+}
+
+function buildUrl(config: ApiServiceConfig): string {
+  if (isAnthropicProvider(config.baseUrl)) {
+    return buildUrlPath(config.baseUrl, 'v1/messages');
+  }
+  if (isMiniMaxProvider(config.baseUrl)) {
+    return buildUrlPath(config.baseUrl, 'v1/text/chatcompletion_v2');
+  }
+  return buildUrlPath(config.baseUrl, 'v1/chat/completions');
 }
 
 function buildSystemPrompt(): string {
@@ -88,16 +227,8 @@ function buildSystemPrompt(): string {
   return prompt;
 }
 
-function buildUrl(config: ApiServiceConfig): string {
-  const base = config.baseUrl.replace(/\/+$/, '');
-  if (isAnthropic(config.baseUrl)) {
-    return `${base}/v1/messages`;
-  }
-  return `${base}/v1/chat/completions`;
-}
-
 function buildHeaders(config: ApiServiceConfig): Object {
-  if (isAnthropic(config.baseUrl)) {
+  if (isAnthropicProvider(config.baseUrl)) {
     const h = new ApiKeyHeadersObj(config.apiKey);
     return jsonToObject(h.toJson());
   }
@@ -106,7 +237,7 @@ function buildHeaders(config: ApiServiceConfig): Object {
 }
 
 function buildRequestBody(config: ApiServiceConfig, systemPrompt: string, userMessage: string): string {
-  if (isAnthropic(config.baseUrl)) {
+  if (isAnthropicProvider(config.baseUrl)) {
     const msg1: AnthropicMsg = { role: 'user', content: userMessage };
     const messages: AnthropicMsg[] = [msg1];
     return JSON.stringify({ model: config.model, max_tokens: 512, system: systemPrompt, messages: messages });
@@ -115,6 +246,48 @@ function buildRequestBody(config: ApiServiceConfig, systemPrompt: string, userMe
   const msg2: OpenAiMsg = { role: 'user', content: userMessage };
   const messages: OpenAiMsg[] = [msg1, msg2];
   return JSON.stringify({ model: config.model, max_tokens: 512, messages: messages });
+}
+
+function buildVisionRequestBody(config: ApiServiceConfig, systemPrompt: string, userText: string, imageBase64: string, imageMime: string): string {
+  if (isAnthropicProvider(config.baseUrl)) {
+    const contentItems: Object[] = [];
+    const textItem = new VisionTextItem(userText);
+    contentItems.push(textItem);
+    if (imageBase64.length > 0 && imageMime.length > 0) {
+      const imageItem = new AnthropicVisionImageItem(imageMime, imageBase64);
+      contentItems.push(imageItem);
+    }
+    const msg = new AnthropicVisionMsg();
+    msg.role = 'user';
+    msg.content = contentItems;
+    const messages: AnthropicVisionMsg[] = [msg];
+    const body: Record<string, Object> = {};
+    body['model'] = config.model;
+    body['max_tokens'] = 4096;
+    body['system'] = systemPrompt;
+    body['messages'] = messages;
+    return JSON.stringify(body);
+  }
+  const contentItems: Object[] = [];
+  const textItem2 = new VisionTextItem(userText);
+  contentItems.push(textItem2);
+  if (imageBase64.length > 0 && imageMime.length > 0) {
+    const urlStr = 'data:' + imageMime + ';base64,' + imageBase64;
+    const imageItem = new OpenAiVisionImageItem(urlStr);
+    contentItems.push(imageItem);
+  }
+  const sysMsg = new OpenAiVisionSysMsg();
+  sysMsg.role = 'system';
+  sysMsg.content = systemPrompt;
+  const userMsg = new OpenAiVisionUserMsg();
+  userMsg.role = 'user';
+  userMsg.content = contentItems;
+  const messages: Object[] = [sysMsg, userMsg];
+  const body: Record<string, Object> = {};
+  body['model'] = config.model;
+  body['max_tokens'] = 4096;
+  body['messages'] = messages;
+  return JSON.stringify(body);
 }
 
 function extractFromOpenAI(text: string): string {
@@ -249,7 +422,7 @@ function parseRecommendations(content: string): LlmRecommendation[] {
 
 function parseResponseText(config: ApiServiceConfig, responseText: string): LlmRecommendation[] {
   let content = '';
-  if (isAnthropic(config.baseUrl)) {
+  if (isAnthropicProvider(config.baseUrl)) {
     content = extractFromAnthropic(responseText);
   } else {
     content = extractFromOpenAI(responseText);
@@ -269,10 +442,10 @@ function doHttpPost(url: string, headers: Object, body: string): Promise<http.Ht
       method: http.RequestMethod.POST,
       header: headers,
       extraData: body,
-      connectTimeout: 15000,
-      readTimeout: 15000,
+      connectTimeout: 30000,
+      readTimeout: 60000,
       expectDataType: http.HttpDataType.STRING,
-    }, (err: Error, data: http.HttpResponse) => {
+    }, (err: Error | void, data: http.HttpResponse) => {
       httpRequest.destroy();
       if (err) {
         reject(err);
@@ -307,5 +480,34 @@ export function sendLlmRequest(config: ApiServiceConfig, userMessage: string): P
       throw new Error('LLM 未找到匹配的计算器，请提供更详细的病情描述');
     }
     return results;
+  });
+}
+
+function extractContentFromResponse(config: ApiServiceConfig, responseText: string): string {
+  if (isAnthropicProvider(config.baseUrl)) {
+    return extractFromAnthropic(responseText);
+  }
+  return extractFromOpenAI(responseText);
+}
+
+export function sendVisionRequest(config: ApiServiceConfig, systemPrompt: string, userText: string, imageBase64: string, imageMime: string): Promise<string> {
+  const url = buildUrl(config);
+  const headers = buildHeaders(config);
+  const body = buildVisionRequestBody(config, systemPrompt, userText, imageBase64, imageMime);
+  hilog.info(DOMAIN, TAG, `sendVision url=${url} model=${config.model} hasImage=${imageBase64.length > 0}`);
+
+  return doHttpPost(url, headers, body).then((response: http.HttpResponse): string => {
+    if (response.responseCode !== 200) {
+      const responseText = extractResultText(response);
+      hilog.error(DOMAIN, TAG, `Vision HTTP ${response.responseCode}: ${responseText.substring(0, 300)}`);
+      throw new Error('API 错误 (' + response.responseCode + '): ' + responseText);
+    }
+    const responseText = extractResultText(response);
+    const content = extractContentFromResponse(config, responseText);
+    hilog.info(DOMAIN, TAG, `Vision response content len=${content.length} first200=${content.substring(0, 200)}`);
+    if (content.length === 0) {
+      throw new Error('LLM 返回内容为空');
+    }
+    return content;
   });
 }

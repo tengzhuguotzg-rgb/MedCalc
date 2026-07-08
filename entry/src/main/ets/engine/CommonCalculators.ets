@@ -37,7 +37,7 @@ export function calculatePf(pao2: number, fio2: number, fio2Mode: string, peep: 
   const peepNote = peep !== null ? `PEEP ${peep} cmH₂O` : 'PEEP 未填';
   const peepStatus = peep !== null && peep >= 5 ? '✅ 满足诊断' : peep !== null ? '⚠ 可能不满足' : '—';
   footnote += `\n\n${peepNote} · ${peepStatus}`;
-  footnote += '\n\nBerlin ARDS 诊断标准 (2012):\n· 轻度: 200 ≤ P/F ≤ 300 + PEEP/CPAP ≥ 5\n· 中度: 100 ≤ P/F ≤ 200 + PEEP ≥ 5\n· 重度: P/F < 100 + PEEP ≥ 5\n需同时满足: 急性起病(1周内)、胸片/CT双肺浸润、非心源性肺水肿。';
+  footnote += '\n\nBerlin ARDS 诊断标准 (2012):\n· 轻度: 200 ≤ P/F ≤ 300 + PEEP/CPAP ≥ 5\n· 中度: 100 ≤ P/F ≤ 200 + PEEP ≥ 5\n· 重度: P/F < 100 + PEEP ≥ 5\n需同时满足: 急性起病(1周内)、胸像/CT双肺浸润、非心源性肺水肿。';
 
   return {
     value: ratio,
