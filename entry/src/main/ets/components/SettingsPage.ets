@@ -369,7 +369,7 @@ export struct SettingsPage {
             .width('100%')
 
           Column({ space: 4 }) {
-            Text('MedCalc v1.0')
+            Text('重症智算 v1.0')
               .fontSize(14)
               .fontColor('#1F3D2F')
             Text('智能医学评分计算器')

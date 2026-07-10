@@ -1,65 +1,151 @@
-# 踩坑记录
+# MedCalc ArkTS/UI Pitfall Log
 
-## ArkTS 语法
+Every time a non-trivial UI/ArkTS bug is found and fixed, add it here. Consult this file before writing or reviewing `.ets` code to avoid repeat mistakes.
 
-### 小数输入不要用 InputType.Number
-鸿蒙数字键盘不带小数点，需要输小数的字段（体温、体重、剂量等）不要设 `.type(InputType.Number)`，默认键盘即可。
+---
 
-### 多选按钮显示不全 → 用 FlexWrap
-长文本按钮在 `Row` + `layoutWeight` 里会被挤到看不见。**修复**：改用 `Flex({ wrap: FlexWrap.Wrap })`，按钮用 `padding` + `margin` 定宽，空间不够自动换行。
+## 2026-07-09 Callout body lines not merging with header
 
-### onChange 不要做计算
-`parseFloat("0.")` 返回 0 → state 变 0 → 重绘 → 输入框丢焦点/删不动。
-**原则**：onChange 只存原始字符串，计算由按钮触发。
+**Symptom**: Obsidian `> [!info] title` callout renders as a tiny header-only box, while body lines (`> some text`) appear as separate yellow `quote` boxes below it.
 
-### Anthropic 格式的 content 是数组
-MiniMax 等兼容 Anthropic API 的返回 `content: [{type:"thinking",...}, {type:"text", text:"..."}]`。必须遍历找 `type==="text"` 的项，不能直接取 `[0]`。
+**Root cause**: In `KbMarkdownParser`, after a `callout-header` line, subsequent `> text` lines were classified as `quote` (not `callout-body`) because the parser had no state tracking whether we were inside a callout. Without `callout-body` classification, the second-pass merge never grouped body lines with the header.
 
-### 禁止 any/unknown
-ArkTS 规则 `arkts-no-any-unknown`。用 `Record<string, object>` + `as` 转换代替。
+**Fix**: Added `inCallout` boolean flag. Set `true` on `callout-header`, classify following `> text` / `>text` lines as `callout-body` while `inCallout` is true. Reset `inCallout = false` on any non-quote line (blank, heading, list, table, hr, text). Bare `>` (callout internal blank separator) keeps `inCallout` alive.
 
-### JSON.parse 需要 as 转换
-`JSON.parse` 返回 `object | null`，用 `as Record<string, object>` 转后才能索引。
+**Rule**: Any parser that groups consecutive lines must use explicit state flags; do not rely on type-based second-pass merge alone when the first-pass type assignment depends on context.
 
-## LLM 推荐
+---
 
-### 格式越简单越好
-让 LLM 输出 `id|名称|原因` → LLM 开始思考过程 → 返回思考内容 → 解析失败。只让输出逗号分隔的 ID 最稳定。
+## 2026-07-09 Standalone short quote renders as oversized background box
 
-### 不要用关键词匹配
-LLM 的医学知识比关键词更准。`kw` 里的"钠""校正"等泛化词会误导。只给 `description`（临床用途）即可。
+**Symptom**: A single short `> 心脏功能障碍 → 心输出量不足 → **终末器官低灌注**` renders as a tall yellow background box with disproportionate vertical space.
 
-### 解析器永远有回退
-LLM 不一定会按格式输出。字符串扫 ID/名称做兜底。
+**Root cause**: The `quote` type used `Row { Row(height:'100%') + Text(padding:{10,10,6,6}) }` with `backgroundColor('#FFF8E1')`. The `height:'100%'` on the left border stripe forced the Row to be taller than the text needed, and the generous padding + background made it visually dominant for a short emphasis line.
 
-### 先确认 API 响应结构
-不同厂商响应体格式不同。先 curl 看一眼再写解析器。
+**Fix**: Removed `backgroundColor`, removed `height:'100%'` (changed to fixed `height(14)`), reduced padding to `{left:8}` only, removed italic. Short quotes now render as a compact left-bordered line.
 
-## 临床逻辑
+**Rule**: `height:'100%'` inside a Row whose height is determined by sibling content often causes oversized containers. Use fixed heights for decorative stripes. For short emphasis text, avoid full-width background boxes.
 
-### 评分标准要逐项核对原文
-原项目 KDIGO 中 `cr1 >= 1.5` 是绝对值（mg/dL），标准应是 `ratio >= 1.5`（倍基线）。原代码有 bug，移植时要修。
+---
 
-### SOFA 肾脏取最大值
-尿量和肌酐分取 `Math.max`，不是 `else if` 互斥。
+## 2026-07-09 Markdown table columns misaligned in Chinese/mixed content
 
-### 特殊药物特殊处理
-垂体后叶素用 U/min、不按体重，和其他升压药不同。同类但不同单位。
+**Symptom**: Table header `| # | 章节 | 文件 | 核心内容 |` and data rows have columns that don't line up — the `│` separator positions drift because Chinese characters are double-width but monospace font metrics differ.
 
-### 双向换算用按钮
-"已知A求B"型计算器（如升压药换算），用按钮触发比边输边算更稳，避免输入抖动。
+**Root cause**: `stripTableMarkdown()` replaced `|` with ` │ ` and rendered the whole row as a single `Text` with `fontFamily('monospace')`. Column alignment depended on character-count, which fails with CJK fullwidth characters mixed with ASCII.
 
-### ForEach 在 @Builder 里不响应状态变化
-`@Builder` 内 `ForEach` 的 Button 在父组件 state 变化后不会更新样式。**原因**：ArkUI 按 key 复用组件，key 不变则不更新属性。
+**Fix**: Added `cells: string[]` field to `MarkdownLine`. Added `parseTableCells()` to split `|a|b|c|` into `['a','b','c']` with inline markdown stripped. Renderer uses `Row { ForEach(cells, cell => Text(cell).layoutWeight(1)) }` so each column gets equal flex weight regardless of character width.
 
-**修复**：ForEach 的 key 要包含判断依据：
-```typescript
-ForEach(items, (item) => { Button(...).color(value === item ? ...) },
-  (item) => item.toString() + '-' + value.toString())
-```
-这样 value 变化时 key 变，组件重建，样式刷新。
+**Rule**: Never render Markdown tables as a single monospace Text line with `│` separators when CJK content is present. Always split into cells and use `Row`+`layoutWeight(1)` per cell.
 
-### @Builder 的参数不是响应式的
-`@Builder func(label: string, value: number)` — 当父组件 `@State` 变化后 `build()` 重跑，`@Builder` 会重新调用，但内部创建的子组件可能被缓存而不更新。
+---
 
-**不能用 `@Builder` 转发响应式数据**。需要响应 state 变化的 UI 片段必须用 `@Component` + `@Prop` 实现。`@Prop` 才是一向数据绑定，父 state 变 → 子 `@Prop` 变 → 子重绘。
+## 2026-07-09 Emoji prefix in headings causes visual misalignment with left border
+
+**Symptom**: `## 📐 指南结构` renders with the 📐 emoji overlapping or misaligned against the h2 left border (`border { left: 3 }`).
+
+**Root cause**: `stripEmojiPrefix()` used a Unicode range regex with `/u` flag: `/^[\u{1F300}-\u{1F9FF}...]\s*/u`. While ArkTS supports `/u`, the regex was fragile and may not reliably strip all emoji variants (compound emoji like 🏷️ with VS16, variation selectors). If emoji survives stripping, it renders at the border edge and looks misaligned.
+
+**Fix**: Replaced regex with hardcoded emoji list matching. Loop through known emoji strings, `startsWith()` check, then `substring()` + `trimStart()`.
+
+**Rule**: Do not rely on Unicode-range regex for emoji stripping in ArkTS. Use explicit emoji string list + `startsWith()` for reliability. The `/u` flag works but Unicode ranges miss compound emoji (VS16, ZWJ sequences).
+
+---
+
+## 2026-07-09 Physical back key exits app instead of navigating back in knowledge base
+
+**Symptom**: Pressing the physical back button on phone while viewing a knowledge article or category page exits the app to the home screen instead of going back to the previous view.
+
+**Root cause**: Only `PatientDetailPage` had a `navDepth`/`backFlag` mechanism via `AppStorage`. `KnowledgeSearchPage` had no such mechanism. `Index.onBackPress()` only checked `patientNavDepth > 0`, so when on the KB tab with articles open, `patientNavDepth` was 0, `onBackPress()` returned `false`, and the system treated it as an exit.
+
+**Fix**: Added `kbNavDepth`/`kbBackFlag` mirrors of the patient pattern. `KnowledgeSearchPage` calls `syncNavDepth()` whenever `browseMode` or `readingPage` changes (via `@Watch`). `Index.onBackPress()` checks `kbNavDepth > 0` before `patientNavDepth > 0`.
+
+**Pattern for any sub-page navigation**:
+1. Component tracks its own `navDepth` (0=root, 1=drill-down, 2=detail).
+2. Sync depth to `AppStorage.setOrCreate('xxxNavDepth', depth)` on every navigation change.
+3. Add `@Watch('onXxxBackFlagChanged') @StorageLink('xxxBackFlag')` + `navigateBack()` method.
+4. `Index.onBackPress()` checks each tab's navDepth; if >0, increment that tab's backFlag, return `true`.
+
+---
+
+## 2026-07-09 PanGesture on outer Column ignored when Scroll child swallows touches
+
+**Symptom**: `PanGesture` attached to an outer `Column` containing a `Scroll` child never fires; horizontal swipe does nothing.
+
+**Root cause**: `Scroll` component consumes touch events for its own scroll gesture. `.gesture()` has lower priority than child gestures. Even `PanDirection.Horizontal` doesn't help because Scroll intercepts first.
+
+**Fix**: Don't use PanGesture for back navigation. Use the `navDepth`/`backFlag` pattern instead. If swipe is truly needed, use `.parallelGesture()` on the `Scroll` itself (not the parent), but even this is unreliable on real devices.
+
+**Rule**: For "swipe to go back" on HarmonyOS, prefer the physical back key + `navDepth`/`backFlag` mechanism. `PanGesture` on parents of `Scroll` is fundamentally broken; `.parallelGesture()` on `Scroll` works sometimes but is fragile.
+
+---
+
+## 2026-07-09 @Builder method returning PanGesture causes ArkTS compiler error
+
+**Symptom**: `private swipeBackGesture(): PanGesture { return PanGesture(...)... }` causes error: `'PanGesture' refers to a value, but is being used as a type here`.
+
+**Root cause**: ArkTS does not allow `PanGesture` as a return type annotation. Gesture objects are not valid return types for methods.
+
+**Fix**: Inline the `PanGesture` directly at the `.parallelGesture()` call site instead of extracting to a method. Or avoid gestures entirely (use back-key pattern).
+
+**Rule**: Never use `PanGesture`, `TapGesture`, etc. as return types of methods. If gesture reuse is needed, duplicate the inline code. In ArkTS, gesture builders are not first-class values that can be returned from methods.
+
+---
+
+## 2026-07-10 Stop-word stripping destroys compound clinical entity names
+
+**Symptom**: Searching "社区获得性肺炎" (CAP) yields poor results because refineQuery strips "获得性" as a stop-word, leaving "社区 肺炎" which is not a clinically meaningful term pair. The OR expansion then matches any "肺炎" document, losing CAP specificity entirely.
+
+**Root cause**: The STOPWORDS list contained "获得性" because it's a modifier in many contexts (e.g., "获得性免疫缺陷"). But in "社区获得性肺炎", "获得性" is part of the compound entity name — removing it changes the meaning from CAP to generic "community pneumonia".
+
+**Fix**: Removed "获得性" from STOPWORDS. Added COMPOUND_PREFIXES list ("社区获得性", "医院获得性", "获得性免疫", "获得性肺炎") that is extracted and protected BEFORE stop-word stripping. refineQuery now checks for compound prefixes first, removes them intact, then applies stop-word stripping to remaining terms.
+
+**Rule**: Stop-word stripping must respect compound entity boundaries. Clinical terms like "社区获得性肺炎" are single entities — internal components should not be stripped independently. When building a medical stop-word list, test against known compound entities to verify integrity is preserved.
+
+---
+
+## 2026-07-10 OR-expanded search loses specificity — core term filter needed
+
+**Symptom**: LLM query expansion for "脓毒症" adds "败血症", "感染性休克", "Sepsis" etc. OR search then matches any document containing any expanded term. For "社区获得性肺炎", expanded to "CAP", "肺炎链球菌", "肺炎" — the term "肺炎" alone matches ~40+ documents, most not CAP-specific.
+
+**Root cause**: Pure OR expansion maximizes recall but sacrifices precision. The original query's core semantic specificity is lost when expansion terms are much broader than the original.
+
+**Fix**: Added two-stage filtering in smartSearch: (1) broad OR search to maximize recall, (2) filterByCoreTerms that prioritizes results matching original query's core terms (from refineQuery), demotes results matching only expanded terms. If core-matched results < limit, falls back to include expanded-only results.
+
+**Rule**: In RAG pipelines with query expansion, always preserve original query specificity. OR expansion is for recall; core-term filtering is for precision. The pipeline should be: expand→broad search→core-term prioritize→LLM rerank→top-N.
+
+---
+
+## 2026-07-10 FTS5 title field missing topic keywords for numbered-chapter textbooks
+
+**Symptom**: "实用重症医学" textbook chapters have titles like "第36章 脓毒症". FTS5 title field stores this as-is. While "脓毒症" is in the title, the chapter number prefix adds noise. More critically, tags in YAML frontmatter (e.g., "第五篇", "脓毒症", "机体反应与器官功能不全") contain additional topic keywords not in the title that could improve matching.
+
+**Root cause**: extractTitle() only returns the YAML title field. The tags field contains topic keywords that would improve FTS5 title-match quality and help core-term filtering work better for textbook chapters.
+
+**Fix**: Added extractTags() method to parse YAML tags array. buildIndex() now appends tags to the indexed title: `title + ' ' + tags.join(' ')`. This gives FTS5 more surface area for title matching without changing the displayed title. DB_VERSION bumped to 3 to trigger reindex.
+
+**Rule**: When indexing documents with structured metadata (YAML frontmatter), extract and include all keyword-bearing fields (tags, categories, aliases) in the FTS title column. This improves both recall (more terms to match) and ranking (title matches rank higher than content matches in FTS5).
+
+---
+
+## 2026-07-10 FTS5 full-text indexing causes cross-topic noise in medical wiki
+
+**Symptom**: Searching "重症肺炎" returns brain meningitis (脑膜炎) articles. Brain meningitis guidelines mention "肺炎球菌" (pneumococcus) and "肺炎链球菌" (S. pneumoniae) as pathogens — these are legitimate meningitis content, but FTS5 treats them as "肺炎" matches, causing the meningitis article to rank alongside actual pneumonia articles.
+
+**Root cause**: FTS5 indexed the full article text (content column). Medical wiki pages naturally cross-reference related diseases — every guideline mentions differential diagnoses, pathogen names that overlap with other diseases. "肺炎球菌脑膜炎" contains "肺炎" but is about meningitis, not pneumonia. Full-text indexing cannot distinguish "article about pneumonia" from "article mentioning pneumonia-related terms".
+
+**Fix**: Replaced full-text content indexing with metadata-only indexing (Karpathy LLM Wiki pattern). FTS5 `kb_index` now indexes only: title + tags + summary (from YAML frontmatter) + path keywords + wikilink targets. Full article text is stored in a separate `kb_content` table for reading but NOT indexed for search. Metadata naturally contains only the article's own topic, not mentions of related diseases. Also removed LLM rerank (B方案) since metadata-level search already has high precision — rerank was compensating for full-text noise that no longer exists.
+
+**Rule**: For topic-focused wiki knowledge bases where articles cross-reference related topics, NEVER index full article text for search. Index only structured metadata (title, tags, summary, path, link targets) that reflects the article's own topic. Cross-topic mentions are content, not search signals. Full-text indexing in medical/academic wikis creates precision-killing noise from pathogen names, differential diagnoses, and comparative references.
+
+---
+
+## 2026-07-10 Cross-topic disease names in summary/tags still cause FTS5 noise after metadata-only indexing
+
+**Symptom**: Even after switching to metadata-only FTS5 indexing, "重症肺炎" search could still match brain meningitis articles because their summary field contained "肺炎链球菌" as a pathogen name. Metadata was supposed to be topic-focused but YAML summary fields naturally mention cross-topic entities (pathogens, differential diagnoses, complications).
+
+**Root cause**: Summary fields are human/LLM-written natural language that inevitably mentions related diseases. "细菌性脑膜炎抗生素方案：已知致病菌（肺炎链球菌/HIB/...）" — "肺炎链球菌" is legitimate meningitis content but triggers FTS5 match for "肺炎". Tags can also contain cross-topic terms (e.g., "AKI" tag in a sepsis article about sepsis-associated AKI).
+
+**Fix**: Two-layer approach: (1) Data cleaning — systematically replaced cross-topic disease names in summaries/tags with non-triggering equivalents: "肺炎链球菌"→"S.pneumoniae(肺炎双球菌)", "脓毒性休克"→"septic shock", "心源性休克"→"CS(cardiogenic shock)", "液体复苏"→"容量复苏", "癫痫"→"seizure", etc. Scoped tags where the concept is a sub-type: "AKI"→"SA-AKI" in sepsis, "AKI"→"ACLF-AKI" in liver failure, "AKI"→"PPI-AKI" in stress ulcer. (2) Verification agent — added `verifyResultsWithLlm()` as final step in smartSearch. LLM judges each result as relevant/irrelevant based on whether the article's TOPIC is about the query disease, not just mentioning it. This is a binary acceptance filter (unlike rerank which only reorders).
+
+**Rule**: In medical KB search, metadata-only indexing is necessary but not sufficient. Summary/tag fields will always contain some cross-topic disease names because clinical content is inherently interconnected. Two defenses needed: (1) Proactive data cleaning — replace cross-topic disease names with English abbreviations or scoped compound terms in summary/tags; (2) Verification agent — LLM-based acceptance filter that distinguishes "article about X" from "article mentioning X".

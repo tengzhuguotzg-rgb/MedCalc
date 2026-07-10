@@ -60,6 +60,8 @@ export class PatientDiagnosis {
   name: string = '';
   category: string = '';
   urgency: string = '';
+  source: string = 'rule';
+  missingCriteria: string = '';
   llmConfirmed: number = 0;
   llmNote: string = '';
   triggeredAt: number = 0;

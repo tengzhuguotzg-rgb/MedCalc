@@ -1,0 +1,117 @@
+=== Build Output ===
+> D:/Program Files/DevEco Studio\tools\node\node.exe D:/Program Files/DevEco Studio\tools\hvigor\bin\hvigorw.js --mode project -p product=default assembleApp -p buildMode=debug --no-daemon
+
+> hvigor Finished ::PreBuildApp... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@PreBuild...  
+> hvigor Finished ::DuplicateDependencyCheck... after 1 ms 
+> hvigor Finished :entry:default@CreateModuleInfo... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@GenerateMetadata...  
+> hvigor Finished :entry:default@ConfigureCmake... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@MergeProfile...  
+> hvigor UP-TO-DATE :entry:default@CreateBuildProfile...  
+> hvigor Finished :entry:default@PreCheckSyscap... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@GeneratePkgContextInfo...  
+> hvigor Finished :entry:default@GeneratePkgSdkInfo... after 1 ms 
+> hvigor Finished :entry:default@ProcessIntegratedHsp... after 1 ms 
+> hvigor Finished :entry:default@BuildNativeWithCmake... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@MakePackInfo...  
+> hvigor Finished :entry:default@SyscapTransform... after 7 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessProfile...  
+> hvigor UP-TO-DATE :entry:default@ProcessRouterMap...  
+> hvigor UP-TO-DATE :entry:default@ProcessShareConfig...  
+> hvigor Finished :entry:default@ProcessStartupConfig... after 1 ms 
+> hvigor Finished :entry:default@BuildNativeWithNinja... after 1 ms 
+> hvigor UP-TO-DATE :entry:default@ProcessResource...  
+> hvigor UP-TO-DATE :entry:default@GenerateLoaderJson...  
+> hvigor UP-TO-DATE :entry:default@ProcessLibs...  
+> hvigor UP-TO-DATE :entry:default@CompileResource...  
+> hvigor UP-TO-DATE :entry:default@DoNativeStrip...  
+> hvigor Finished :entry:default@BuildJS... after 2 ms 
+> hvigor UP-TO-DATE :entry:default@CacheNativeLibs...  
+> hvigor ERROR: Failed :entry:default@CompileArkTS... 
+> hvigor WARN: 
+1 WARN: ArkTS:WARN: For details about ArkTS syntax errors, see FAQs
+> hvigor ERROR: ArkTS Compiler Error
+1 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:123:46
+
+
+2 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:126:49
+
+
+3 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:127:49
+
+
+4 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:130:41
+
+
+5 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:135:44
+
+
+6 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:139:49
+
+
+7 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:140:47
+
+
+8 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:143:42
+
+
+9 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/LlmService.ets:144:43
+
+
+10 ERROR: 10605040 ArkTS Compiler Error
+Error Message: Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types) At File: E:/ai/MedCalc/entry/src/main/ets/services/AssistantService.ets:409:53
+
+
+11 ERROR: 10605008 ArkTS Compiler Error
+Error Message: Use explicit types instead of "any", "unknown" (arkts-no-any-unknown) At File: E:/ai/MedCalc/entry/src/main/ets/services/AssistantService.ets:450:17
+
+
+12 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/AssistantService.ets:460:14
+
+
+13 ERROR: 10605040 ArkTS Compiler Error
+Error Message: Object literals cannot be used as type declarations (arkts-no-obj-literals-as-types) At File: E:/ai/MedCalc/entry/src/main/ets/services/AssistantService.ets:467:43
+
+
+14 ERROR: 10605038 ArkTS Compiler Error
+Error Message: Object literal must correspond to some explicitly declared class or interface (arkts-no-untyped-obj-literals) At File: E:/ai/MedCalc/entry/src/main/ets/services/AssistantService.ets:517:12
+
+
+15 ERROR: 10605008 ArkTS Compiler Error
+Error Message: Use explicit types instead of "any", "unknown" (arkts-no-any-unknown) At File: E:/ai/MedCalc/entry/src/main/ets/components/AssistantPage.ets:99:13
+
+
+16 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Expected 13 arguments, but got 15. At File: E:/ai/MedCalc/entry/src/main/ets/services/AssistantService.ets:650:244
+
+
+17 ERROR: 10505001 ArkTS Compiler Error
+Error Message: Property 'encodeSync' does not exist on type 'typeof Base64Helper'. At File: E:/ai/MedCalc/entry/src/main/ets/components/AssistantPage.ets:99:41
+
+
+18 ERROR: 10905209 ArkTS Compiler Error
+Error Message: Only UI component syntax can be written here. At File: E:/ai/MedCalc/entry/src/main/ets/components/AssistantPage.ets:344:7
+
+
+COMPILE RESULT:FAIL {ERROR:19 WARN:1}
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --debug option to get more log output.
+
+> hvigor ERROR: BUILD FAILED in 4 s 105 ms 
+
+
+Process finished with exit code -1
+

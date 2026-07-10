@@ -1,0 +1,1083 @@
+import { KnowledgeService, SearchResult, KnowledgePage, KnowledgeDirEntry, GroupedPageEntry } from '../services/KnowledgeService';
+import {
+  MarkdownLine, TocEntry, CalloutStyle, AnnotationBadge,
+  parseKbMarkdown, extractToc, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
+} from '../utils/KbMarkdownParser';
+
+@Component
+export struct KnowledgeSearchPage {
+  @State searchKeyword: string = '';
+  @State searchResults: SearchResult[] = [];
+  @State dirEntries: KnowledgeDirEntry[] = [];
+  @State groupedPages: GroupedPageEntry[] = [];
+  @State currentCategoryName: string = '';
+  @Watch('syncNavDepth') @State readingPage: KnowledgePage | null = null;
+  @State readingPath: string = '';
+  @State pageNavStack: string[] = [];
+  @State relatedPages: SearchResult[] = [];
+  @State isSearching: boolean = false;
+  @State isPageLoading: boolean = false;
+  @State isLoadingCategory: boolean = false;
+  @State isKbIniting: boolean = true;
+  @Watch('syncNavDepth') @State browseMode: string = 'root';
+  @State markdownLines: MarkdownLine[] = [];
+  @State wikilinks: string[] = [];
+  @State tocEntries: TocEntry[] = [];
+  @State showToc: boolean = false;
+  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
+  @Watch('onKbBackFlagChanged') @StorageLink('kbBackFlag') kbBackFlag: number = 0;
+  private lastKbBackFlag: number = 0;
+
+  private kbService: KnowledgeService = KnowledgeService.getInstance();
+  private pageScroller: Scroller = new Scroller();
+
+  aboutToAppear() {
+    this.waitForInit();
+  }
+
+  syncNavDepth() {
+    let depth = 0;
+    if (this.browseMode === 'category') {
+      depth = 1;
+    }
+    if (this.readingPage !== null) {
+      depth = 2;
+    }
+    AppStorage.setOrCreate<number>('kbNavDepth', depth);
+  }
+
+  onKbBackFlagChanged() {
+    if (this.kbBackFlag !== this.lastKbBackFlag) {
+      this.lastKbBackFlag = this.kbBackFlag;
+      this.navigateBack();
+    }
+  }
+
+  navigateBack(): boolean {
+    if (this.readingPage !== null) {
+      this.closeReader();
+      this.syncNavDepth();
+      return true;
+    }
+    if (this.browseMode === 'category') {
+      this.browseMode = 'root';
+      this.groupedPages = [];
+      this.currentCategoryName = '';
+      this.syncNavDepth();
+      return true;
+    }
+    return false;
+  }
+
+  onKbNavigate() {
+    if (this.kbNavigatePath.length > 0) {
+      const path = this.kbNavigatePath;
+      AppStorage.setOrCreate<string>('kbNavigatePath', '');
+      this.openPage(path);
+    }
+  }
+
+  async waitForInit() {
+    if (!this.kbService.isReady()) {
+      const ctx = AppStorage.get<Context>('context');
+      if (ctx !== undefined) {
+        await this.kbService.init(ctx);
+      }
+    }
+    this.isKbIniting = false;
+    await this.loadDirEntries('');
+  }
+
+  async loadDirEntries(parentPath: string) {
+    this.dirEntries = await this.kbService.listDirEntries(parentPath);
+  }
+
+  async loadCategoryPages(categoryPath: string) {
+    this.isLoadingCategory = true;
+    this.groupedPages = await this.kbService.listAllPagesInCategory(categoryPath);
+    this.currentCategoryName = categoryPath.split('/').pop() || categoryPath;
+    this.browseMode = 'category';
+    this.isLoadingCategory = false;
+  }
+
+  async doSearch() {
+    const kw = this.searchKeyword.trim();
+    if (kw.length === 0) {
+      this.searchResults = [];
+      this.browseMode = 'root';
+      return;
+    }
+    this.isSearching = true;
+    this.browseMode = 'search';
+    try {
+      this.searchResults = await this.kbService.searchWithSnippets(kw, 20);
+    } catch (_e) {
+      this.searchResults = [];
+    }
+    this.isSearching = false;
+  }
+
+  clearSearch() {
+    this.searchKeyword = '';
+    this.searchResults = [];
+    this.browseMode = 'root';
+  }
+
+  async openPage(path: string) {
+    this.isPageLoading = true;
+    const page = await this.kbService.getPage(path);
+    if (page !== null) {
+      if (this.readingPath.length > 0) {
+        this.pageNavStack = [...this.pageNavStack, this.readingPath];
+      }
+      this.readingPage = page;
+      this.readingPath = path;
+      this.markdownLines = parseKbMarkdown(page.content);
+      this.wikilinks = this.kbService.extractWikilinks(page.content);
+      this.tocEntries = extractToc(page.content);
+      this.showToc = false;
+      this.relatedPages = await this.kbService.getRelatedPages(path, 5);
+    }
+    this.isPageLoading = false;
+  }
+
+  closeReader() {
+    if (this.pageNavStack.length > 0) {
+      const prevPath = this.pageNavStack[this.pageNavStack.length - 1];
+      this.pageNavStack = this.pageNavStack.slice(0, this.pageNavStack.length - 1);
+      this.kbService.getPage(prevPath).then((p: KnowledgePage | null) => {
+        if (p !== null) {
+          this.readingPage = p;
+          this.readingPath = prevPath;
+          this.markdownLines = parseKbMarkdown(p.content);
+          this.wikilinks = this.kbService.extractWikilinks(p.content);
+          this.tocEntries = extractToc(p.content);
+        }
+      });
+    } else {
+      this.readingPage = null;
+      this.readingPath = '';
+      this.markdownLines = [];
+      this.wikilinks = [];
+      this.tocEntries = [];
+      this.relatedPages = [];
+    }
+  }
+
+  handleCategoryClick(entry: KnowledgeDirEntry) {
+    if (entry.isDir) {
+      this.loadCategoryPages(entry.path);
+    } else {
+      this.openPage(entry.path.endsWith('.md') ? entry.path : entry.path + '.md');
+    }
+  }
+
+  handleWikilinkClick(link: string) {
+    let resolvedPath = link;
+    const pipeIdx = resolvedPath.indexOf('|');
+    if (pipeIdx >= 0) {
+      resolvedPath = resolvedPath.substring(0, pipeIdx);
+    }
+    if (!resolvedPath.endsWith('.md')) {
+      resolvedPath = resolvedPath + '.md';
+    }
+    this.openPage(resolvedPath);
+  }
+
+  getCategoryColor(name: string): string {
+    const colors: string[] = [
+      '#4A7C6F', '#C8881A', '#8B5E3C', '#5B7FA5', '#7A6B9D',
+      '#B85C5C', '#5A8F6B', '#9B7B4A', '#6B8CAD', '#8E6B8E',
+      '#6A9B7A', '#A58555', '#7B8DB5', '#9A7DA0', '#C47A6A',
+      '#6B9E85', '#B8956A', '#7B9EC0', '#A07BA5', '#D08A7A',
+    ];
+    let hash = 0;
+    for (let i = 0; i < name.length; i++) {
+      hash = (hash * 31 + name.charCodeAt(i)) % colors.length;
+    }
+    return colors[hash % colors.length];
+  }
+
+  getSearchResultTitle(sr: SearchResult): string {
+    if (sr.title.length > 0) {
+      return sr.title;
+    }
+    return sr.path.split('/').pop()?.replace(/\.md$/, '') || sr.path;
+  }
+
+  getPageTitle(): string {
+    if (this.readingPage !== null && this.readingPage.title.length > 0) {
+      return this.readingPage.title;
+    }
+    return this.readingPath.split('/').pop()?.replace(/\.md$/, '') || '';
+  }
+
+  getBreadcrumb(): string[] {
+    if (this.readingPath.length === 0) {
+      return [];
+    }
+    return this.readingPath.split('/');
+  }
+
+  getWikilinkDisplayName(link: string): string {
+    const pipeIdx = link.indexOf('|');
+    if (pipeIdx >= 0) {
+      return link.substring(pipeIdx + 1);
+    }
+    const name = link.split('/').pop() || link;
+    return name.replace(/\.md$/, '');
+  }
+
+  getGroupedPageGroups(): string[] {
+    const groups: string[] = [];
+    for (const page of this.groupedPages) {
+      if (groups.indexOf(page.groupName) < 0) {
+        groups.push(page.groupName);
+      }
+    }
+    return groups;
+  }
+
+  getPagesForGroup(groupName: string): GroupedPageEntry[] {
+    const result: GroupedPageEntry[] = [];
+    for (const page of this.groupedPages) {
+      if (page.groupName === groupName) {
+        result.push(page);
+      }
+    }
+    return result;
+  }
+
+  getGroupSourceInfo(groupName: string): string {
+    for (const page of this.groupedPages) {
+      if (page.groupName === groupName && page.sourceInfo.length > 0) {
+        return page.sourceInfo;
+      }
+    }
+    return '';
+  }
+
+  build() {
+    Column() {
+      if (this.readingPage !== null) {
+        this.ReaderView();
+      } else {
+        this.MainView();
+      }
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#F5F4EF');
+  }
+
+  @Builder
+  MainView() {
+    Column() {
+      this.SearchBar();
+
+      if (this.browseMode === 'search' && this.searchKeyword.trim().length > 0) {
+        this.SearchResultsView();
+      } else if (this.browseMode === 'category') {
+        this.CategoryPageView();
+      } else {
+        this.RootBrowseView();
+      }
+    }
+    .width('100%')
+    .height('100%');
+  }
+
+  @Builder
+  SearchBar() {
+    Row() {
+      Search({ value: this.searchKeyword, placeholder: '搜索疾病、指南、关键词...' })
+        .width('100%')
+        .searchButton('搜索')
+        .onChange((value: string) => {
+          this.searchKeyword = value;
+          if (value.trim().length === 0) {
+            this.browseMode = 'root';
+            this.searchResults = [];
+          }
+        })
+        .onSubmit(() => { this.doSearch(); })
+    }
+    .width('100%')
+    .padding({ left: 12, right: 12, top: 8, bottom: 4 })
+    .backgroundColor('#FFFFFF');
+  }
+
+  @Builder
+  SearchResultsView() {
+    if (this.isSearching) {
+      Column() {
+        LoadingProgress().width(36).height(36).color('#7A8074');
+        Text('搜索中...')
+          .fontSize(13)
+          .fontColor('#7A8074')
+          .margin({ top: 8 });
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center);
+    } else if (this.searchResults.length === 0) {
+      Column() {
+        Text('未找到相关内容')
+          .fontSize(15)
+          .fontColor('#7A8074');
+        Text('试试其他关键词，如"脓毒症""ARDS""镇静"')
+          .fontSize(12)
+          .fontColor('#B0B0A8')
+          .margin({ top: 6 });
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center);
+    } else {
+      Column() {
+        Text('找到 ' + this.searchResults.length + ' 条结果')
+          .fontSize(12)
+          .fontColor('#7A8074')
+          .width('100%')
+          .padding({ left: 16, top: 8, bottom: 4 });
+
+        Scroll() {
+          Column() {
+            ForEach(this.searchResults, (sr: SearchResult) => {
+              this.SearchResultCard(sr);
+            }, (sr: SearchResult) => sr.path);
+          }
+          .padding({ left: 12, right: 12, bottom: 12 });
+        }
+        .layoutWeight(1);
+      }
+      .layoutWeight(1);
+    }
+  }
+
+  @Builder
+  SearchResultCard(sr: SearchResult) {
+    Column() {
+      Row() {
+        Text(this.getPathCategory(sr.path))
+          .fontSize(10)
+          .fontColor('#FFFFFF')
+          .backgroundColor('#7A8074')
+          .borderRadius(3)
+          .padding({ left: 5, right: 5, top: 1, bottom: 1 });
+        if (sr.sourceInfo.length > 0) {
+          Text(sr.sourceInfo)
+            .fontSize(10)
+            .fontColor('#7A8074')
+            .maxLines(1)
+            .margin({ left: 6 })
+            .layoutWeight(1);
+        }
+        Blank();
+      }
+      .width('100%')
+      .margin({ bottom: 4 });
+
+      Text(this.getSearchResultTitle(sr))
+        .fontSize(15)
+        .fontWeight(FontWeight.Medium)
+        .fontColor('#1F3D2F')
+        .maxLines(2)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .width('100%');
+
+      if (sr.snippet.length > 0) {
+        Text(stripMarkdownInline(sr.snippet))
+          .fontSize(12)
+          .fontColor('#6B6F5E')
+          .maxLines(3)
+          .margin({ top: 4 })
+          .width('100%');
+      }
+    }
+    .width('100%')
+    .padding(12)
+    .backgroundColor('#FFFFFF')
+    .borderRadius(10)
+    .margin({ bottom: 8 })
+    .shadow({ radius: 1, color: '#1A000000', offsetY: 1 })
+    .onClick(() => { this.openPage(sr.path); });
+  }
+
+  getPathCategory(path: string): string {
+    const parts = path.split('/');
+    return parts.length > 0 ? parts[0] : '';
+  }
+
+  @Builder
+  RootBrowseView() {
+    if (this.isKbIniting) {
+      Column() {
+        LoadingProgress().width(36).height(36).color('#7A8074');
+        Text('知识库加载中...')
+          .fontSize(13)
+          .fontColor('#7A8074')
+          .margin({ top: 8 });
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center);
+    } else if (this.dirEntries.length === 0) {
+      Column() {
+        Text('知识库为空')
+          .fontSize(15)
+          .fontColor('#7A8074');
+        Text('请检查知识库数据是否已正确部署')
+          .fontSize(12)
+          .fontColor('#B0B0A8')
+          .margin({ top: 6 });
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center);
+    } else {
+      Scroll() {
+        Column() {
+          this.CategoryGrid();
+        }
+        .padding({ left: 12, right: 12, top: 4, bottom: 12 });
+      }
+      .layoutWeight(1);
+    }
+  }
+
+  @Builder
+  CategoryGrid() {
+    Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+      ForEach(this.dirEntries, (entry: KnowledgeDirEntry) => {
+        this.CategoryCard(entry);
+      }, (entry: KnowledgeDirEntry) => entry.path);
+    }
+    .width('100%');
+  }
+
+  @Builder
+  CategoryCard(entry: KnowledgeDirEntry) {
+    Column() {
+      Text(entry.name.charAt(0))
+        .fontSize(22)
+        .fontColor('#FFFFFF')
+        .fontWeight(FontWeight.Bold)
+        .width(44)
+        .height(44)
+        .borderRadius(10)
+        .backgroundColor(this.getCategoryColor(entry.name))
+        .textAlign(TextAlign.Center);
+      Text(entry.name)
+        .fontSize(12)
+        .fontColor('#1F3D2F')
+        .maxLines(2)
+        .textOverflow({ overflow: TextOverflow.Ellipsis })
+        .margin({ top: 6 })
+        .width('100%')
+        .textAlign(TextAlign.Center);
+    }
+    .width('23%')
+    .margin({ right: '2%', bottom: 12 })
+    .padding({ top: 8, bottom: 8 })
+    .alignItems(HorizontalAlign.Center)
+    .onClick(() => { this.handleCategoryClick(entry); });
+  }
+
+  @Builder
+  CategoryPageView() {
+    Column() {
+      Row() {
+        Text('\u2190')
+          .fontSize(20)
+          .fontColor('#1F3D2F')
+          .padding({ right: 12 })
+          .onClick(() => {
+            this.browseMode = 'root';
+            this.groupedPages = [];
+            this.currentCategoryName = '';
+          });
+        Text(this.currentCategoryName)
+          .fontSize(18)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .layoutWeight(1);
+      }
+      .width('100%')
+      .padding({ left: 12, right: 12, top: 10, bottom: 10 })
+      .backgroundColor('#FFFFFF');
+
+      if (this.isLoadingCategory) {
+        Column() {
+          LoadingProgress().width(36).height(36).color('#7A8074');
+          Text('加载中...')
+            .fontSize(13)
+            .fontColor('#7A8074')
+            .margin({ top: 8 });
+        }
+        .width('100%')
+        .layoutWeight(1)
+        .justifyContent(FlexAlign.Center);
+      } else {
+        Scroll() {
+          Column() {
+            ForEach(this.getGroupedPageGroups(), (groupName: string) => {
+              this.PageGroupSection(groupName);
+            }, (groupName: string) => groupName);
+          }
+          .padding({ left: 12, right: 12, top: 4, bottom: 12 });
+        }
+        .layoutWeight(1);
+      }
+    }
+    .layoutWeight(1);
+  }
+
+  @Builder
+  PageGroupSection(groupName: string) {
+    Column() {
+      Row() {
+        if (groupName.length > 0) {
+          Text(groupName)
+            .fontSize(14)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#FFFFFF')
+            .padding({ left: 10, right: 10, top: 4, bottom: 4 })
+            .borderRadius(4)
+            .backgroundColor(this.getCategoryColor(this.currentCategoryName + '/' + groupName));
+          if (this.getGroupSourceInfo(groupName).length > 0) {
+            Text(this.getGroupSourceInfo(groupName))
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ left: 8 })
+              .layoutWeight(1);
+          }
+        } else {
+          Text(this.currentCategoryName)
+            .fontSize(14)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#FFFFFF')
+            .padding({ left: 10, right: 10, top: 4, bottom: 4 })
+            .borderRadius(4)
+            .backgroundColor(this.getCategoryColor(this.currentCategoryName));
+        }
+      }
+      .width('100%')
+      .margin({ top: 12, bottom: 8 });
+
+      Column() {
+        ForEach(this.getPagesForGroup(groupName), (page: GroupedPageEntry) => {
+          this.PageCard(page);
+        }, (page: GroupedPageEntry) => page.path);
+      }
+    }
+    .width('100%');
+  }
+
+  @Builder
+  PageCard(page: GroupedPageEntry) {
+    Row() {
+      Column() {
+        Text(stripMarkdownInline(page.title))
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Medium)
+          .maxLines(2)
+          .textOverflow({ overflow: TextOverflow.Ellipsis })
+          .width('100%');
+        if (page.summary.length > 0) {
+          Text(page.summary)
+            .fontSize(11)
+            .fontColor('#7A8074')
+            .maxLines(2)
+            .margin({ top: 2 })
+            .width('100%');
+        }
+        if (page.sourceInfo.length > 0 && page.groupName.length > 0) {
+          Text(page.sourceInfo)
+            .fontSize(10)
+            .fontColor('#9B9E8E')
+            .maxLines(1)
+            .margin({ top: 1 })
+            .width('100%');
+        }
+      }
+      .layoutWeight(1);
+
+      Text('\u203A')
+        .fontSize(18)
+        .fontColor('#B0B0A8');
+    }
+    .width('100%')
+    .padding({ left: 12, right: 12, top: 10, bottom: 10 })
+    .backgroundColor('#FFFFFF')
+    .borderRadius(8)
+    .margin({ bottom: 4 })
+    .onClick(() => { this.openPage(page.path); });
+  }
+
+  @Builder
+  ReaderView() {
+    Column() {
+      this.ReaderHeader();
+      this.ReaderContent();
+    }
+    .width('100%')
+    .height('100%');
+  }
+
+  @Builder
+  ReaderHeader() {
+    Column() {
+      Row() {
+        Text('\u2190')
+          .fontSize(20)
+          .fontColor('#1F3D2F')
+          .padding({ right: 8 })
+          .onClick(() => { this.closeReader(); });
+
+        Column() {
+          Text(this.getPageTitle())
+            .fontSize(16)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#1F3D2F')
+            .maxLines(1)
+            .textOverflow({ overflow: TextOverflow.Ellipsis });
+          Scroll() {
+            Row() {
+              ForEach(this.getBreadcrumb(), (part: string, index: number) => {
+                if (index > 0) {
+                  Text(' \u203A ')
+                    .fontSize(10)
+                    .fontColor('#B0B0A8');
+                }
+                Text(part.replace(/\.md$/, ''))
+                  .fontSize(10)
+                  .fontColor(index === this.getBreadcrumb().length - 1 ? '#7A8074' : '#2B6CB0')
+                  .onClick(() => {
+                    if (index < this.getBreadcrumb().length - 1) {
+                      const targetPath = this.getBreadcrumb().slice(0, index + 1).join('/');
+                      this.openPage(targetPath.endsWith('.md') ? targetPath : targetPath + '/index.md');
+                    }
+                  });
+              }, (part: string, index: number) => index.toString());
+            }
+          }
+          .scrollable(ScrollDirection.Horizontal)
+          .width('100%');
+        }
+        .layoutWeight(1)
+        .margin({ left: 4 });
+
+        if (this.tocEntries.length > 0) {
+          Text('\u2630')
+            .fontSize(18)
+            .fontColor('#7A8074')
+            .padding({ left: 8 })
+            .onClick(() => { this.showToc = !this.showToc; });
+        }
+      }
+      .width('100%')
+      .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+      .backgroundColor('#FFFFFF');
+
+      if (this.showToc && this.tocEntries.length > 0) {
+        this.TocDropdown();
+      }
+    }
+    .backgroundColor('#FFFFFF')
+    .shadow({ radius: 2, color: '#0A000000', offsetY: 1 });
+  }
+
+  @Builder
+  TocDropdown() {
+    Scroll() {
+      Column() {
+        ForEach(this.tocEntries, (entry: TocEntry) => {
+          Row() {
+            if (entry.level === 3) {
+              Row().width(16);
+            }
+            Text('\u2022')
+              .fontSize(10)
+              .fontColor('#7A8074')
+              .margin({ right: 6 });
+            Text(entry.text)
+              .fontSize(12)
+              .fontColor('#3A3F35')
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis })
+              .layoutWeight(1);
+          }
+          .width('100%')
+          .padding({ top: 4, bottom: 4 })
+          .onClick(() => { this.showToc = false; });
+        }, (entry: TocEntry) => entry.anchor);
+      }
+      .padding({ left: 12, right: 12, top: 4, bottom: 8 });
+    }
+    .constraintSize({ maxHeight: 200 });
+  }
+
+  @Builder
+  ReaderContent() {
+    if (this.isPageLoading) {
+      Column() {
+        LoadingProgress().width(36).height(36).color('#7A8074');
+      }
+      .width('100%')
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center);
+    } else {
+      Scroll(this.pageScroller) {
+        Column() {
+          if (this.readingPage !== null && this.readingPage.sourceInfo.length > 0) {
+            Row() {
+              Text(this.readingPage.sourceInfo)
+                .fontSize(11)
+                .fontColor('#7A8074')
+                .layoutWeight(1)
+                .maxLines(2);
+            }
+            .width('100%')
+            .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+            .backgroundColor('#FFF8E1')
+            .borderRadius(6)
+            .margin({ bottom: 8 });
+          }
+
+          ForEach(this.markdownLines, (ml: MarkdownLine) => {
+            this.MarkdownLineView(ml);
+          }, (ml: MarkdownLine, index: number) => index.toString());
+
+          if (this.wikilinks.length > 0 || this.relatedPages.length > 0) {
+            this.PageFooter();
+          }
+        }
+        .padding(12);
+      }
+      .layoutWeight(1);
+    }
+  }
+
+  @Builder
+  MarkdownLineView(ml: MarkdownLine) {
+    if (ml.type === 'h1') {
+      Column() {
+        Text(stripMarkdownInline(ml.text))
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .width('100%');
+        Row()
+          .width(40)
+          .height(3)
+          .backgroundColor('#C8881A')
+          .borderRadius(2)
+          .margin({ top: 4 });
+      }
+      .width('100%')
+      .margin({ top: 16, bottom: 10 });
+    } else if (ml.type === 'h2') {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(17)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#1F3D2F')
+        .width('100%')
+        .margin({ top: 14, bottom: 6 })
+        .padding({ bottom: 4, left: 8 })
+        .border({ width: { left: 3, right: 0, top: 0, bottom: 0 }, color: '#4A7C6F' });
+    } else if (ml.type === 'h3') {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(15)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#3A5F4F')
+        .width('100%')
+        .margin({ top: 10, bottom: 4 });
+    } else if (ml.type === 'h4') {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(14)
+        .fontWeight(FontWeight.Medium)
+        .fontColor('#4A6B5A')
+        .width('100%')
+        .margin({ top: 8, bottom: 3 });
+    } else if (ml.type === 'callout') {
+      this.CalloutView(ml);
+    } else if (ml.type === 'codeBlock') {
+      this.CodeBlockView(ml);
+    } else if (ml.type === 'annotation') {
+      this.AnnotationView(ml);
+    } else if (ml.type === 'kvQuote') {
+      this.KvQuoteView(ml);
+    } else if (ml.type === 'li') {
+      Row() {
+        Text('\u2022')
+          .fontSize(10)
+          .fontColor('#4A7C6F')
+          .margin({ right: 6, top: 2 });
+        Text(stripMarkdownInline(ml.text))
+          .fontSize(13)
+          .fontColor('#3A3F35')
+          .layoutWeight(1);
+      }
+      .width('100%')
+      .padding({ left: ml.indent * 12 + 4, top: 1, bottom: 1 });
+    } else if (ml.type === 'quote') {
+      Row() {
+        Row()
+          .width(3)
+          .height(14)
+          .backgroundColor('#C8881A')
+          .borderRadius(2)
+          .margin({ top: 4, bottom: 4 });
+        Text(stripMarkdownInline(ml.text))
+          .fontSize(12)
+          .fontColor('#5A5F4E')
+          .layoutWeight(1)
+          .padding({ left: 8 });
+      }
+      .width('100%')
+      .margin({ top: 2, bottom: 2 });
+    } else if (ml.type === 'hr') {
+      Row()
+        .width('100%')
+        .height(1)
+        .backgroundColor('#E0DCC8')
+        .margin({ top: 10, bottom: 10 });
+    } else if (ml.type === 'blank') {
+      Row().height(4);
+    } else if (ml.type === 'tableSep') {
+      Row();
+    } else if (ml.type === 'tableHeader') {
+      if (ml.cells.length > 0) {
+        Row() {
+          ForEach(ml.cells, (cell: string, idx: number) => {
+            Text(cell)
+              .fontSize(11)
+              .fontColor('#1F3D2F')
+              .fontWeight(FontWeight.Bold)
+              .layoutWeight(1)
+              .padding({ left: 4, right: 4, top: 3, bottom: 3 });
+          }, (cell: string, idx: number) => idx.toString());
+        }
+        .width('100%')
+        .backgroundColor('#E8E6DA')
+        .borderRadius(2);
+      } else {
+        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+          .fontSize(11)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Bold)
+          .fontFamily('monospace')
+          .width('100%')
+          .padding({ left: 6, right: 6, top: 3, bottom: 3 })
+          .backgroundColor('#E8E6DA')
+          .borderRadius(2);
+      }
+    } else if (ml.type === 'table') {
+      if (ml.cells.length > 0) {
+        Row() {
+          ForEach(ml.cells, (cell: string, idx: number) => {
+            Text(cell)
+              .fontSize(11)
+              .fontColor('#4A5247')
+              .layoutWeight(1)
+              .padding({ left: 4, right: 4, top: 2, bottom: 2 });
+          }, (cell: string, idx: number) => idx.toString());
+        }
+        .width('100%')
+        .backgroundColor('#FAFAF5')
+        .borderRadius(2);
+      } else {
+        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+          .fontSize(11)
+          .fontColor('#4A5247')
+          .fontFamily('monospace')
+          .width('100%')
+          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+          .backgroundColor('#FAFAF5')
+          .borderRadius(2);
+      }
+    } else if (ml.type === 'tagLine') {
+      Row() {
+        ForEach(ml.text.split(/\s+/).filter((t: string): boolean => t.startsWith('#') && t.length > 1), (tag: string) => {
+          Text(tag.substring(1))
+            .fontSize(11)
+            .fontColor('#2B6CB0')
+            .backgroundColor('#EBF2FA')
+            .borderRadius(10)
+            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+            .margin({ right: 4, bottom: 4 });
+        }, (tag: string) => tag);
+      }
+      .width('100%')
+      .margin({ top: 4, bottom: 4 });
+    } else {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(13)
+        .fontColor('#3A3F35')
+        .width('100%')
+        .margin({ top: 1, bottom: 1 });
+    }
+  }
+
+  @Builder
+  CalloutView(ml: MarkdownLine) {
+    Column() {
+      if (ml.calloutTitle.length > 0) {
+        Row() {
+          Text(getCalloutStyle(ml.calloutType).icon)
+            .fontSize(14)
+            .margin({ right: 6 });
+          Text(stripMarkdownInline(ml.calloutTitle))
+            .fontSize(13)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(getCalloutStyle(ml.calloutType).borderColor)
+            .layoutWeight(1);
+        }
+        .width('100%')
+        .padding({ left: 12, right: 10, top: 8, bottom: 4 });
+      }
+      if (ml.calloutBody.length > 0) {
+        Text(stripMarkdownInline(ml.calloutBody))
+          .fontSize(12)
+          .fontColor('#4A5247')
+          .width('100%')
+          .padding({ left: 12, right: 10, top: ml.calloutTitle.length > 0 ? 0 : 8, bottom: 8 });
+      }
+    }
+    .width('100%')
+    .borderRadius(6)
+    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: getCalloutStyle(ml.calloutType).borderColor })
+    .backgroundColor(getCalloutStyle(ml.calloutType).bgColor)
+    .margin({ top: 6, bottom: 6 });
+  }
+
+  @Builder
+  CodeBlockView(ml: MarkdownLine) {
+    Scroll() {
+      Text(ml.codeContent)
+        .fontSize(11)
+        .fontFamily('monospace')
+        .fontColor('#3A3F35')
+        .width('100%');
+    }
+    .scrollable(ScrollDirection.Horizontal)
+    .width('100%')
+    .padding(10)
+    .backgroundColor('#F5F5F0')
+    .borderRadius(6)
+    .margin({ top: 6, bottom: 6 });
+  }
+
+  @Builder
+  AnnotationView(ml: MarkdownLine) {
+    Row() {
+      Text(getAnnotationBadgeInfo(ml.text).keyword)
+        .fontSize(11)
+        .fontColor('#FFFFFF')
+        .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
+        .borderRadius(3)
+        .padding({ left: 6, right: 6, top: 1, bottom: 1 });
+      if (getAnnotationBadgeInfo(ml.text).detail.length > 0) {
+        Text(getAnnotationBadgeInfo(ml.text).detail)
+          .fontSize(11)
+          .fontColor('#7A8074')
+          .margin({ left: 6 });
+      }
+    }
+    .margin({ top: 4, bottom: 4 });
+  }
+
+  @Builder
+  KvQuoteView(ml: MarkdownLine) {
+    Row() {
+      Row()
+        .width(3)
+        .height('100%')
+        .backgroundColor('#4A7C6F')
+        .borderRadius(2);
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(13)
+        .fontColor('#3A3F35')
+        .layoutWeight(1)
+        .padding({ left: 8, right: 8, top: 6, bottom: 6 });
+    }
+    .width('100%')
+    .backgroundColor('#EDF5F0')
+    .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 6, bottomRight: 6 })
+    .margin({ top: 4, bottom: 4 });
+  }
+
+  @Builder
+  PageFooter() {
+    Column() {
+      Row()
+        .width('100%')
+        .height(1)
+        .backgroundColor('#E0DCC8')
+        .margin({ top: 16, bottom: 12 });
+
+      if (this.wikilinks.length > 0) {
+        Text('相关章节')
+          .fontSize(13)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .width('100%')
+          .margin({ bottom: 8 });
+        Flex({ wrap: FlexWrap.Wrap }) {
+          ForEach(this.wikilinks.slice(0, 15), (link: string) => {
+            Row() {
+              Text(this.getWikilinkDisplayName(link))
+                .fontSize(12)
+                .fontColor('#2B6CB0');
+            }
+            .backgroundColor('#EBF2FA')
+            .borderRadius(12)
+            .padding({ left: 8, right: 10, top: 4, bottom: 4 })
+            .margin({ right: 6, bottom: 6 })
+            .onClick(() => { this.handleWikilinkClick(link); });
+          }, (link: string) => link);
+        }
+      }
+
+      if (this.relatedPages.length > 0) {
+        Text('相关指南')
+          .fontSize(13)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .width('100%')
+          .margin({ top: this.wikilinks.length > 0 ? 12 : 0, bottom: 8 });
+        Column() {
+          ForEach(this.relatedPages, (sr: SearchResult) => {
+            Row() {
+              Column() {
+                Text(this.getSearchResultTitle(sr))
+                  .fontSize(13)
+                  .fontColor('#1F3D2F')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis });
+                Text(this.getPathCategory(sr.path) + (sr.sourceInfo.length > 0 ? ' \u00B7 ' + sr.sourceInfo : ''))
+                  .fontSize(10)
+                  .fontColor('#7A8074')
+                  .maxLines(1)
+                  .margin({ top: 1 });
+              }
+              .layoutWeight(1);
+              Text('\u203A')
+                .fontSize(16)
+                .fontColor('#B0B0A8');
+            }
+            .width('100%')
+            .padding({ top: 8, bottom: 8, left: 8, right: 8 })
+            .borderRadius(6)
+            .margin({ bottom: 2 })
+            .backgroundColor('#FFFFFF')
+            .onClick(() => { this.openPage(sr.path); });
+          }, (sr: SearchResult) => sr.path);
+        }
+      }
+    }
+    .width('100%');
+  }
+}

@@ -20,6 +20,7 @@ import { common } from '@kit.AbilityKit';
 import { PreferencesService } from '../services/PreferencesService';
 import { PatientRepository } from '../services/PatientRepository';
 import { ImageStore } from '../services/ImageStore';
+import { KnowledgeService } from '../services/KnowledgeService';
 
 const DOMAIN = 0x0000;
 
@@ -33,6 +34,7 @@ export default class EntryAbility extends UIAbility {
     AppStorage.setOrCreate<common.UIAbilityContext>('context', this.context);
     PreferencesService.getInstance().init(this.context);
     PatientRepository.getInstance().init(this.context);
+    KnowledgeService.getInstance().init(this.context);
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
   }
 

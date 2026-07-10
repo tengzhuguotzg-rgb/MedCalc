@@ -6,6 +6,12 @@ import { PreferencesService } from '../services/PreferencesService';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { sendVisionRequest, ApiServiceConfig } from '../services/LlmService';
 import { ImageStore } from '../services/ImageStore';
+import { KnowledgeService, SearchResult, KnowledgePage } from '../services/KnowledgeService';
+import {
+  MarkdownLine, CalloutStyle, AnnotationBadge,
+  parseKbMarkdown, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
+} from '../utils/KbMarkdownParser';
+import { DIAGNOSIS_RULES, DIAGNOSIS_CATEGORIES } from '../model/DiagnosisRules';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo, picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
@@ -17,6 +23,26 @@ class DomainEntry {
   name: string = '';
   keys: string[] = [];
   hasData: boolean = false;
+}
+
+class GuidelineRecommendation {
+  text: string = '';
+  evidenceLevel: string = '';
+  source: string = '';
+  category: string = '';
+}
+
+class DiagnosisKbData {
+  ruleId: string = '';
+  searchResults: SearchResult[] = [];
+  recommendations: GuidelineRecommendation[] = [];
+  loadingKb: boolean = false;
+  loadingAdvice: boolean = false;
+  expanded: boolean = false;
+  refsExpanded: boolean = false;
+  summary: string = '';
+  loadingSummary: boolean = false;
+  verifyInfo: string = '';
 }
 
 @Component
@@ -56,9 +82,21 @@ export struct PatientDetailPage {
   @State editorImageUri: string = '';
   @State editorResultBase64: string = '';
   @State editorResultMime: string = '';
+  @State diagnosisKbMap: DiagnosisKbData[] = [];
+  @State showKbReader: boolean = false;
+  @State @Watch('onKbReaderPathChanged') kbReaderPath: string = '';
+  @State expandedCategories: Set<string> = new Set();
+  @State kbReaderTitle: string = '';
+  @State showRecommendationsDetail: boolean = false;
+  @State activeAdviceRuleId: string = '';
+  @State summaryLines: MarkdownLine[] = [];
+  @State showAddDiagnosis: boolean = false;
+  @State addDiagName: string = '';
+  @State addDiagCategory: string = '代谢';
 
   private patientService: PatientService = PatientService.getInstance();
   private assistantService: AssistantService = AssistantService.getInstance();
+  private kbService: KnowledgeService = KnowledgeService.getInstance();
   private dataFieldSpecs: DataFieldSpec[] = [];
   private lastBackFlag: number = 0;
 
@@ -70,6 +108,15 @@ export struct PatientDetailPage {
 
   onDetailNavChanged() {
     this.syncNavDepth();
+    if (this.showDiagnosisDetail) {
+      this.loadDiagnosisKb();
+    }
+  }
+
+  onKbReaderPathChanged() {
+    if (this.showKbReader && this.kbReaderPath.length > 0) {
+      this.loadKbReaderContent(this.kbReaderPath);
+    }
   }
 
   syncNavDepth() {
@@ -77,7 +124,7 @@ export struct PatientDetailPage {
     if (this.currentPatientId.length > 0) {
       depth = 1;
     }
-    if (this.showAlertDetail || this.showDiagnosisDetail || this.showDataDetail || this.showRecordsDetail) {
+    if (this.showAlertDetail || this.showDiagnosisDetail || this.showDataDetail || this.showRecordsDetail || this.showRecommendationsDetail) {
       depth = 2;
     }
     AppStorage.setOrCreate<number>('patientNavDepth', depth);
@@ -93,12 +140,18 @@ export struct PatientDetailPage {
   }
 
   navigateBack(): boolean {
+    if (this.showRecommendationsDetail) {
+      this.showRecommendationsDetail = false;
+      this.activeAdviceRuleId = '';
+      return true;
+    }
     if (this.showAlertDetail) {
       this.showAlertDetail = false;
       return true;
     }
     if (this.showDiagnosisDetail) {
       this.showDiagnosisDetail = false;
+      this.activeAdviceRuleId = '';
       return true;
     }
     if (this.showDataDetail) {
@@ -492,9 +545,11 @@ export struct PatientDetailPage {
       Stack() {
       if (!this.showImageEditor) {
       Column() {
-        if (this.showAlertDetail) {
-          this.AlertDetailPage();
-        } else if (this.showDiagnosisDetail) {
+         if (this.showAlertDetail) {
+           this.AlertDetailPage();
+         } else if (this.showRecommendationsDetail) {
+           this.RecommendationsDetailPage();
+         } else if (this.showDiagnosisDetail) {
           this.DiagnosisDetailPage();
         } else if (this.showDataDetail) {
           this.DataDetailPage();
@@ -627,9 +682,15 @@ export struct PatientDetailPage {
         if (this.showManualInput) {
          this.ManualInputDialog();
        }
-       if (this.showDeleteConfirm) {
-         this.DeleteConfirmDialog();
-       }
+        if (this.showDeleteConfirm) {
+           this.DeleteConfirmDialog();
+         }
+         if (this.showKbReader) {
+           this.KbReaderOverlay();
+         }
+         if (this.showAddDiagnosis) {
+           this.AddDiagnosisDialog();
+         }
       } else {
        ImageEditor({
          showEditor: $showImageEditor,
@@ -771,7 +832,7 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(14)
-                .backgroundColor(this.getUrgencyColor(diag.urgency))
+                .backgroundColor(this.getSourceColor(diag.source))
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(diag.name)
@@ -780,6 +841,10 @@ export struct PatientDetailPage {
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text(this.getSourceLabel(diag.source))
+                .fontSize(9)
+                .fontColor(this.getSourceColor(diag.source))
+                .margin({ left: 4 })
               Text(this.getUrgencyLabel(diag.urgency))
                 .fontSize(9)
                 .fontColor(this.getUrgencyColor(diag.urgency))
@@ -919,6 +984,15 @@ export struct PatientDetailPage {
               .padding({ left: 4, right: 4, top: 1, bottom: 1 })
               .margin({ left: 3 })
           }, (tag: string) => tag)
+          Text('+')
+            .fontSize(14)
+            .fontColor('#2B6CB0')
+            .margin({ left: 6 })
+            .onClick(() => {
+              this.addDiagName = '';
+              this.addDiagCategory = '代谢';
+              this.showAddDiagnosis = true;
+            })
         }
       }
       .width('100%')
@@ -939,6 +1013,19 @@ export struct PatientDetailPage {
               this.DiagnosisCard(diag);
             }, (diag: PatientDiagnosis) => diag.id.toString())
           }
+          Row() {
+            Text('+ 添加诊断')
+              .fontSize(13)
+              .fontColor('#2B6CB0')
+              .margin({ top: 8 })
+          }
+          .width('100%')
+          .justifyContent(FlexAlign.Center)
+          .onClick(() => {
+            this.addDiagName = '';
+            this.addDiagCategory = '代谢';
+            this.showAddDiagnosis = true;
+          })
         }
         .padding({ left: 16, right: 16, top: 8, bottom: 16 })
         .alignItems(HorizontalAlign.Start)
@@ -1025,6 +1112,363 @@ export struct PatientDetailPage {
     return '#7A8074';
   }
 
+  getSourceLabel(source: string): string {
+    if (source === 'suggestion') {
+      return '提示';
+    }
+    if (source === 'user') {
+      return '自添加';
+    }
+    return '确定性';
+  }
+
+  getSourceColor(source: string): string {
+    if (source === 'suggestion') {
+      return '#C8881A';
+    }
+    if (source === 'user') {
+      return '#3D6B4F';
+    }
+    return '#1F3D2F';
+  }
+
+  async loadDiagnosisKb() {
+    for (const diag of this.dashboard.diagnoses) {
+      const existing = this.diagnosisKbMap.find((d: DiagnosisKbData): boolean => d.ruleId === diag.ruleId);
+      if (existing !== undefined) {
+        continue;
+      }
+      const kbData = new DiagnosisKbData();
+      kbData.ruleId = diag.ruleId;
+      kbData.loadingKb = true;
+      this.diagnosisKbMap = [...this.diagnosisKbMap, kbData];
+      const rule = DIAGNOSIS_RULES.find((r): boolean => r.id === diag.ruleId);
+      const queryParts: string[] = [diag.name];
+      if (rule !== undefined) {
+        const descWords = rule.description.split(/[+，,]/);
+        for (const w of descWords) {
+          const trimmed = w.trim();
+          if (trimmed.length > 0 && trimmed.length < 10) {
+            queryParts.push(trimmed);
+          }
+        }
+      } else if (diag.missingCriteria.length > 0) {
+        const keywords = diag.missingCriteria.split(/[;；]/);
+        for (const kw of keywords) {
+          const trimmed = kw.trim().split(' ')[0];
+          if (trimmed.length > 0 && trimmed.length < 10) {
+            queryParts.push(trimmed);
+          }
+        }
+      }
+      const query = queryParts.slice(0, 4).join(' ');
+      try {
+        const smartResults = await this.kbService.smartSearch(query, 10);
+        kbData.searchResults = smartResults;
+        const totalExpanded = this.kbService.lastExpandedCount;
+        const totalVerified = smartResults.length;
+        kbData.verifyInfo = '扩展抓取:' + totalExpanded.toString() + '条→验证:' + totalVerified.toString() + '条';
+      } catch (_e) {
+        kbData.searchResults = [];
+        kbData.verifyInfo = '搜索异常';
+      }
+      kbData.loadingKb = false;
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+    }
+  }
+
+  getDiagnosisKb(ruleId: string): DiagnosisKbData | null {
+    for (const item of this.diagnosisKbMap) {
+      if (item.ruleId === ruleId) {
+        return item;
+      }
+    }
+    return null;
+  }
+
+  async loadDiagnosisAdvice(diag: PatientDiagnosis) {
+    const kbData = this.getDiagnosisKb(diag.ruleId);
+    if (kbData === null) {
+      return;
+    }
+    if (kbData.recommendations.length > 0 && kbData.expanded) {
+      this.activeAdviceRuleId = diag.ruleId;
+      this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
+      this.showRecommendationsDetail = true;
+      return;
+    }
+    kbData.loadingAdvice = true;
+    this.diagnosisKbMap = [...this.diagnosisKbMap];
+    const guidelinePages = await this.kbService.searchAndLoad(diag.name, 5);
+    const textbookPages = await this.kbService.searchByPrefix(diag.name, '实用重症医学/', 3);
+    if (guidelinePages.length === 0 && textbookPages.length === 0) {
+      kbData.loadingAdvice = false;
+      kbData.recommendations = [];
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+      return;
+    }
+    const config = this.getLlmConfig();
+    if (config === null) {
+      kbData.loadingAdvice = false;
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+      return;
+    }
+    const systemPrompt = '你是ICU临床指南助手。从给定的参考资料中提取与当前诊断直接相关的临床推荐意见。' +
+      '只提取原文中明确存在的推荐意见，不要推断或编造。' +
+      '每条注明证据级别（原文有就标，没有就标"未标注"）和来源标注。' +
+      '将推荐意见分为以下4类：' +
+      '"病理生理"：机制、病理生理要点，不限条数；' +
+      '"诊断"：诊断标准、诊断要点，不限条数；' +
+      '"监测"：监测指标、评估方法、复查时机、评分工具，不限条数；' +
+      '"治疗"：治疗措施、药物方案、剂量建议，不限条数。' +
+      '按临床优先级排序。输出JSON格式：' +
+      '{"recommendations":[{"text":"推荐意见","evidenceLevel":"级别","source":"来源","category":"病理生理|诊断|监测|治疗"}]}';
+    let contextText = '';
+    if (textbookPages.length > 0) {
+      contextText += '### 教材原文\n';
+      for (const page of textbookPages) {
+        const content = page.content.length > 4000 ? page.content.substring(0, 4000) + '...(内容过长已截断)' : page.content;
+        contextText += '---\n' + content + '\n';
+      }
+    }
+    if (guidelinePages.length > 0) {
+      contextText += '### 指南原文\n';
+      for (const page of guidelinePages) {
+        const content = page.content.length > 4000 ? page.content.substring(0, 4000) + '...(内容过长已截断)' : page.content;
+        contextText += '---\n' + content + '\n';
+      }
+    }
+    const rule = DIAGNOSIS_RULES.find((r): boolean => r.id === diag.ruleId);
+    const patientContext = this.buildPatientContextStr();
+    const userText = '## 患者情况\n- 诊断：' + diag.name +
+      (rule !== undefined ? '\n- 依据：' + rule.description : '') +
+      '\n' + patientContext +
+      '\n## 参考资料\n' + contextText +
+      '\n## 任务\n从以上参考资料提取相关推荐意见，可从指南和教材中提取。输出JSON。';
+    try {
+      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      const recs = this.parseRecommendations(response);
+      kbData.recommendations = recs;
+      kbData.expanded = true;
+    } catch (_e) {
+      kbData.recommendations = [];
+    }
+    kbData.loadingAdvice = false;
+    this.diagnosisKbMap = [...this.diagnosisKbMap];
+
+    this.loadDiagnosisSummary(diag);
+  }
+
+  async loadDiagnosisSummary(diag: PatientDiagnosis) {
+    const kbData = this.getDiagnosisKb(diag.ruleId);
+    if (kbData === null || kbData.recommendations.length === 0) {
+      return;
+    }
+    const config = this.getLlmConfig();
+    if (config === null) {
+      return;
+    }
+    kbData.loadingSummary = true;
+    this.diagnosisKbMap = [...this.diagnosisKbMap];
+
+    const recsText: string[] = [];
+    const categories: string[] = ['病理生理', '诊断', '监测', '治疗'];
+    for (const cat of categories) {
+      let hasCat = false;
+      for (const rec of kbData.recommendations) {
+        if (rec.category === cat) {
+          if (!hasCat) {
+            recsText.push('【' + cat + '】');
+            hasCat = true;
+          }
+          let line = '- ' + rec.text;
+          if (rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注') {
+            line += '（' + rec.evidenceLevel + '）';
+          }
+          if (rec.source.length > 0) {
+            line += '——' + rec.source;
+          }
+          recsText.push(line);
+        }
+      }
+    }
+
+    const rule = DIAGNOSIS_RULES.find((r): boolean => r.id === diag.ruleId);
+    const patientContext = this.buildPatientContextStr();
+
+    const systemPrompt = '你是ICU临床助手。根据给定患者的诊断信息和提取的指南推荐意见，整理一份临床综合要点。' +
+      '要求：1)按"病理生理""诊断""监测""治疗"四个方面分节归纳；' +
+      '2)每个方面用分点列表呈现，将相关条目整合为逻辑清晰、表述完整的要点，不要遗漏重要内容；' +
+      '3)不是精简摘要，而是将分散的条目重组为更连贯、更便于临床阅读的形式；' +
+      '4)保留关键数值、药物名称、剂量等具体信息；5)使用markdown格式，用**加粗**标记关键词。';
+    const userText = '## 患者情况\n- 诊断：' + diag.name +
+      (rule !== undefined ? '\n- 依据：' + rule.description : '') +
+      '\n' + patientContext +
+      '\n## 提取的推荐意见\n' + recsText.join('\n') +
+      '\n## 任务\n整理一份分节分类的临床综合要点。';
+
+    try {
+      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      kbData.summary = response.trim();
+      if (this.activeAdviceRuleId === diag.ruleId) {
+        this.summaryLines = parseKbMarkdown(kbData.summary);
+      }
+    } catch (_e) {
+      kbData.summary = '';
+      this.summaryLines = [];
+    }
+    kbData.loadingSummary = false;
+    this.diagnosisKbMap = [...this.diagnosisKbMap];
+  }
+
+  getLlmConfig(): ApiServiceConfig | null {
+    const prefsService = PreferencesService.getInstance();
+    const models = prefsService.getLlmModels();
+    const selectedId = prefsService.getSelectedLlmId();
+    if (selectedId.length === 0 || models.length === 0) {
+      return null;
+    }
+    const model = models.find((m): boolean => m.id === selectedId);
+    if (model === undefined) {
+      return null;
+    }
+    return model.toApiServiceConfig();
+  }
+
+  buildPatientContextStr(): string {
+    const parts: string[] = [];
+    for (const diag of this.dashboard.diagnoses) {
+      parts.push(diag.name);
+    }
+    const alertTiers: string[] = [];
+    for (const alert of this.dashboard.alerts) {
+      const tier = this.parseAlertResult(alert).tier;
+      if (tier.length > 0) {
+        alertTiers.push(alert.calcName + ':' + tier);
+      }
+    }
+    if (alertTiers.length > 0) {
+      parts.push('评分: ' + alertTiers.slice(0, 5).join(', '));
+    }
+    return '- 关键数据：' + parts.join(', ');
+  }
+
+  parseRecommendations(responseText: string): GuidelineRecommendation[] {
+    const result: GuidelineRecommendation[] = [];
+    let jsonStr = responseText;
+    const jsonStart = responseText.indexOf('{');
+    const jsonEnd = responseText.lastIndexOf('}');
+    if (jsonStart >= 0 && jsonEnd > jsonStart) {
+      jsonStr = responseText.substring(jsonStart, jsonEnd + 1);
+    }
+    const parsed: Object | null = JSON.parse(jsonStr);
+    if (parsed === null) {
+      return result;
+    }
+    const obj = parsed as Record<string, Object>;
+    const arr = obj['recommendations'];
+    if (arr === undefined || arr === null) {
+      return result;
+    }
+    const recArr = arr as Array<Record<string, string>>;
+    const validCategories: string[] = ['病理生理', '诊断', '监测', '治疗'];
+    for (const rec of recArr) {
+      const gr = new GuidelineRecommendation();
+      gr.text = rec['text'] || '';
+      gr.evidenceLevel = rec['evidenceLevel'] || '未标注';
+      gr.source = rec['source'] || '';
+      gr.category = rec['category'] || '';
+      if (validCategories.indexOf(gr.category) < 0) {
+        gr.category = '治疗';
+      }
+      if (gr.text.length > 0) {
+        result.push(gr);
+      }
+    }
+    return result;
+  }
+
+  getKbSearchResultTitle(sr: SearchResult): string {
+    if (sr.title.length > 0) {
+      return sr.title;
+    }
+    return sr.path.split('/').pop() || sr.path;
+  }
+
+  getKbGuidelineName(sr: SearchResult): string {
+    const parts = sr.path.split('/');
+    if (parts.length >= 3) {
+      return parts.slice(0, parts.length - 1).join('/');
+    } else if (parts.length === 2) {
+      return parts[0];
+    }
+    return '';
+  }
+
+  getRecommendationSummary(recs: GuidelineRecommendation[]): string {
+    let count = 0;
+    const catCount: string[] = [];
+    const categories: string[] = ['病理生理', '诊断', '监测', '治疗'];
+    for (const cat of categories) {
+      let c = 0;
+      for (const rec of recs) {
+        if (rec.category === cat) {
+          c++;
+        }
+      }
+      if (c > 0) {
+        catCount.push(c.toString());
+        count += c;
+      }
+    }
+    if (count === 0) {
+      return '0条';
+    }
+    return count.toString() + '条';
+  }
+
+  getCategoryCount(recs: GuidelineRecommendation[], cat: string): number {
+    let c = 0;
+    for (const rec of recs) {
+      if (rec.category === cat) {
+        c++;
+      }
+    }
+    return c;
+  }
+
+  getCategoryBorderColor(cat: string): string {
+    if (cat === '病理生理') {
+      return '#7A6B9D';
+    }
+    if (cat === '诊断') {
+      return '#5B7FA5';
+    }
+    if (cat === '监测') {
+      return '#C8881A';
+    }
+    if (cat === '治疗') {
+      return '#3D6B4F';
+    }
+    return '#7A8074';
+  }
+
+  getCategoryLabel(cat: string): string {
+    if (cat === '病理生理') {
+      return '机制';
+    }
+    if (cat === '诊断') {
+      return '诊断';
+    }
+    if (cat === '监测') {
+      return '监测';
+    }
+    if (cat === '治疗') {
+      return '治疗';
+    }
+    return '其他';
+  }
+
   @Builder
   DiagnosisCard(diag: PatientDiagnosis) {
     Column() {
@@ -1034,22 +1478,56 @@ export struct PatientDetailPage {
           .fontWeight(FontWeight.Bold)
           .fontColor('#1F3D2F')
           .layoutWeight(1)
+        Text(this.getSourceLabel(diag.source))
+          .fontSize(10)
+          .fontColor(this.getSourceColor(diag.source))
+          .backgroundColor(this.getSourceColor(diag.source) + '20')
+          .borderRadius(4)
+          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+          .margin({ left: 4 })
         Text(this.getUrgencyLabel(diag.urgency))
           .fontSize(10)
           .fontColor(this.getUrgencyColor(diag.urgency))
           .backgroundColor(this.getUrgencyColor(diag.urgency) + '20')
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-          .margin({ left: 6 })
-        Text(this.getLlmConfirmLabel(diag.llmConfirmed))
-          .fontSize(10)
-          .fontColor(this.getLlmConfirmColor(diag.llmConfirmed))
-          .backgroundColor(this.getLlmConfirmColor(diag.llmConfirmed) + '20')
-          .borderRadius(4)
-          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
           .margin({ left: 4 })
+        if (diag.source === 'rule') {
+          Text(this.getLlmConfirmLabel(diag.llmConfirmed))
+            .fontSize(10)
+            .fontColor(this.getLlmConfirmColor(diag.llmConfirmed))
+            .backgroundColor(this.getLlmConfirmColor(diag.llmConfirmed) + '20')
+            .borderRadius(4)
+            .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+            .margin({ left: 4 })
+        }
+        if (diag.source !== 'rule') {
+          Text('×')
+            .fontSize(14)
+            .fontColor('#7A8074')
+            .margin({ left: 4 })
+            .onClick(() => {
+              this.patientService.deleteUserDiagnosis(diag.id).then(() => {
+                this.loadDashboard();
+                this.diagnosisKbMap = this.diagnosisKbMap.filter((d: DiagnosisKbData): boolean => d.ruleId !== diag.ruleId);
+              });
+            })
+        }
       }
       .width('100%')
+      if (diag.missingCriteria.length > 0) {
+        Column() {
+          Text('缺：' + diag.missingCriteria)
+            .fontSize(11)
+            .fontColor('#C8881A')
+            .width('100%')
+        }
+        .width('100%')
+        .margin({ top: 4 })
+        .padding(6)
+        .backgroundColor('#FFF8E7')
+        .borderRadius(4)
+      }
       if (diag.llmNote.length > 0) {
         Text(diag.llmNote)
           .fontSize(12)
@@ -1071,13 +1549,370 @@ export struct PatientDetailPage {
       }
       .margin({ top: 4 })
       .width('100%')
+
+      this.DiagnosisKbSection(diag);
     }
     .width('100%')
     .padding(10)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(diag.source === 'rule' ? '#FFFFFF' : (diag.source === 'suggestion' ? '#FFFCF5' : '#F5FFF5'))
     .borderRadius(8)
-    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getUrgencyColor(diag.urgency) })
+    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getSourceColor(diag.source) })
     .margin({ bottom: 6 })
+  }
+
+  @Builder
+  DiagnosisKbSection(diag: PatientDiagnosis) {
+    if (this.getDiagnosisKb(diag.ruleId) !== null) {
+      Column() {
+        Row()
+          .width('100%')
+          .height(1)
+          .backgroundColor('#E0DCC8')
+          .margin({ top: 8, bottom: 8 });
+
+        Row() {
+          Text('指南参考')
+            .fontSize(13)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#1F3D2F');
+          if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
+            Text(this.getDiagnosisKb(diag.ruleId)!.refsExpanded ? ' ▲' : ' ▼')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ left: 4 });
+            Text(this.getDiagnosisKb(diag.ruleId)!.searchResults.length.toString() + '篇')
+              .fontSize(10)
+              .fontColor('#7A8074')
+              .margin({ left: 4 });
+            if (this.getDiagnosisKb(diag.ruleId)!.verifyInfo.length > 0) {
+              Text(this.getDiagnosisKb(diag.ruleId)!.verifyInfo)
+                .fontSize(9)
+                .fontColor('#999999')
+                .margin({ left: 4 });
+            }
+          }
+          Blank();
+          if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
+            Text(this.getDiagnosisKb(diag.ruleId)!.refsExpanded ? '收起' : '展开')
+              .fontSize(11)
+              .fontColor('#2B6CB0');
+          }
+        }
+        .width('100%')
+        .onClick(() => {
+          if (this.getDiagnosisKb(diag.ruleId) !== null) {
+            this.getDiagnosisKb(diag.ruleId)!.refsExpanded = !this.getDiagnosisKb(diag.ruleId)!.refsExpanded;
+            this.diagnosisKbMap = [...this.diagnosisKbMap];
+          }
+        });
+
+        if (this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
+          Row() {
+            LoadingProgress().width(16).height(16).color('#7A8074');
+            Text('检索指南中...')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ left: 6 });
+          }
+          .margin({ top: 4 });
+        } else if (this.getDiagnosisKb(diag.ruleId)!.refsExpanded && this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
+          Column() {
+            ForEach(this.getDiagnosisKb(diag.ruleId)!.searchResults, (sr: SearchResult) => {
+              Column() {
+                Text(this.getKbGuidelineName(sr))
+                  .fontSize(10)
+                  .fontColor('#7A8074')
+                  .maxLines(1)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .width('100%');
+                Text(this.getKbSearchResultTitle(sr))
+                  .fontSize(10)
+                  .fontColor('#2B6CB0')
+                  .maxLines(2)
+                  .textOverflow({ overflow: TextOverflow.Ellipsis })
+                  .width('100%')
+                  .margin({ top: 1 });
+              }
+              .width('100%')
+              .padding({ top: 4, bottom: 4 })
+              .onClick(() => {
+                this.kbReaderPath = sr.path;
+                this.kbReaderTitle = this.getKbSearchResultTitle(sr);
+                this.showKbReader = true;
+              });
+            }, (sr: SearchResult) => sr.path);
+          }
+          .margin({ top: 4 });
+        }
+
+        Row()
+          .width('100%')
+          .height(1)
+          .backgroundColor('#E0DCC8')
+          .margin({ top: 8, bottom: 8 });
+
+        if (this.getDiagnosisKb(diag.ruleId)!.loadingAdvice) {
+          Row() {
+            LoadingProgress().width(14).height(14).color('#7A8074');
+            Text('提取指南建议中...')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ left: 6 });
+          }
+          .margin({ top: 6 });
+        } else if (this.getDiagnosisKb(diag.ruleId)!.expanded) {
+          if (this.getDiagnosisKb(diag.ruleId)!.recommendations.length > 0) {
+            Row() {
+              Text('指南建议 · ' + this.getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
+                .fontSize(12)
+                .fontColor('#1F3D2F')
+                .fontWeight(FontWeight.Medium);
+              Blank();
+              Text('查看 >')
+                .fontSize(12)
+                .fontColor('#2B6CB0');
+            }
+            .width('100%')
+            .padding({ top: 6, bottom: 6 })
+            .onClick(() => {
+               this.activeAdviceRuleId = diag.ruleId;
+               const kbData2 = this.getDiagnosisKb(diag.ruleId);
+               this.summaryLines = kbData2 !== null && kbData2.summary.length > 0 ? parseKbMarkdown(kbData2.summary) : [];
+               this.showRecommendationsDetail = true;
+            });
+          } else {
+            Text('暂无指南建议')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ top: 4 });
+          }
+        } else {
+          Row() {
+            Text('查看指南建议')
+              .fontSize(12)
+              .fontColor('#2B6CB0');
+            Blank();
+            Text('>')
+              .fontSize(12)
+              .fontColor('#2B6CB0');
+          }
+          .width('100%')
+          .padding({ top: 6, bottom: 6 })
+          .onClick(() => { this.loadDiagnosisAdvice(diag); });
+        }
+      }
+      .width('100%');
+    }
+  }
+
+  getEvidenceColor(level: string): string {
+    if (level.indexOf('强') >= 0) {
+      return '#2D6A4F';
+    }
+    if (level.indexOf('条件') >= 0) {
+      return '#9A6B1E';
+    }
+    if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
+      return '#2B5C8A';
+    }
+    return '#7A8074';
+  }
+
+  getEvidenceBgColor(level: string): string {
+    if (level.indexOf('强') >= 0) {
+      return '#D8F3DC';
+    }
+    if (level.indexOf('条件') >= 0) {
+      return '#FEF3C7';
+    }
+    if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
+      return '#DBEAFE';
+    }
+    return '#F0EDE2';
+  }
+
+  getDiagnosisNameByRuleId(ruleId: string): string {
+    for (const diag of this.dashboard.diagnoses) {
+      if (diag.ruleId === ruleId) {
+        return diag.name;
+      }
+    }
+    return '';
+  }
+
+  @Builder
+  RecommendationsDetailPage() {
+    Column() {
+      Row() {
+        Button('< 返回')
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .backgroundColor(Color.Transparent)
+          .onClick(() => {
+            this.showRecommendationsDetail = false;
+            this.activeAdviceRuleId = '';
+          })
+        Text(this.getDiagnosisNameByRuleId(this.activeAdviceRuleId) + ' · 指南建议')
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .layoutWeight(1)
+          .margin({ left: 8 })
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis });
+      }
+      .width('100%')
+      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+      .backgroundColor('#FFFFFF');
+
+      Scroll() {
+        Column() {
+          if (this.activeAdviceRuleId.length > 0 && this.getDiagnosisKb(this.activeAdviceRuleId) !== null) {
+            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.summary.length > 0 || this.getDiagnosisKb(this.activeAdviceRuleId)!.loadingSummary) {
+              Column() {
+                Row() {
+                  Text('临床要点')
+                    .fontSize(14)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor('#1F3D2F');
+                }
+                .width('100%')
+                .margin({ bottom: 4 });
+                Text('以下内容由AI根据指南和教材推荐意见归纳整理，仅供参考，详细内容请展开下方各分类查看原文。')
+                  .fontSize(10)
+                  .fontColor('#9A9E94')
+                  .width('100%')
+                  .margin({ bottom: 6 });
+                if (this.getDiagnosisKb(this.activeAdviceRuleId)!.loadingSummary) {
+                  Row() {
+                    LoadingProgress().width(14).height(14).color('#7A8074');
+                    Text('生成临床要点中...')
+                      .fontSize(11)
+                      .fontColor('#7A8074')
+                      .margin({ left: 6 });
+                  }
+                } else {
+                  ForEach(this.summaryLines, (ml: MarkdownLine) => {
+                    this.KbMarkdownLineView(ml);
+                  }, (ml: MarkdownLine, index: number) => index.toString());
+                }
+              }
+              .width('100%')
+              .padding(10)
+              .backgroundColor('#FFF9F0')
+              .borderRadius(8)
+              .border({ width: 1, color: '#E8DCC8' })
+              .margin({ bottom: 8 });
+            }
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '病理生理', '病理生理要点');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '诊断', '诊断要点');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '监测', '监测与评估');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '治疗', '治疗建议');
+          }
+        }
+        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
+        .alignItems(HorizontalAlign.Start)
+      }
+      .layoutWeight(1)
+      .align(Alignment.Top)
+    }
+    .width('100%')
+    .height('100%')
+    .backgroundColor('#F5F4EF')
+  }
+
+  @Builder
+  RecommendationCategorySection(ruleId: string, category: string, title: string) {
+    if (this.getDiagnosisKb(ruleId) !== null) {
+      if (this.getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category) > 0) {
+        Column() {
+          Row() {
+            Row()
+              .width(3)
+              .height(14)
+              .backgroundColor(this.getCategoryBorderColor(category))
+              .borderRadius(2)
+              .margin({ right: 6 });
+            Text(title)
+              .fontSize(14)
+              .fontWeight(FontWeight.Bold)
+              .fontColor('#1F3D2F');
+            Text(this.getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category).toString() + '条')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ left: 6 });
+            Blank();
+            Text(this.expandedCategories.has(category) ? '▲ 收起' : '▼ 展开')
+              .fontSize(11)
+              .fontColor('#2B6CB0');
+          }
+          .width('100%')
+          .margin({ top: 8, bottom: 4 })
+          .onClick(() => {
+            if (this.expandedCategories.has(category)) {
+              this.expandedCategories.delete(category);
+            } else {
+              this.expandedCategories.add(category);
+            }
+            this.expandedCategories = new Set(this.expandedCategories);
+          });
+
+          if (this.expandedCategories.has(category)) {
+            ForEach(this.getDiagnosisKb(ruleId)!.recommendations, (rec: GuidelineRecommendation) => {
+              if (rec.category === category) {
+                Column() {
+                  Text(rec.text)
+                    .fontSize(13)
+                    .fontColor('#4A5247')
+                    .width('100%');
+                  if (category === '病理生理') {
+                    Text('机制')
+                      .fontSize(10)
+                      .fontColor('#7A6B9D')
+                      .backgroundColor('#F0EBF5')
+                      .borderRadius(3)
+                      .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+                      .margin({ top: 2 });
+                    if (rec.source.length > 0) {
+                      Text(rec.source)
+                        .fontSize(9)
+                        .fontColor('#9A9E94')
+                        .maxLines(2)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
+                        .width('100%')
+                        .margin({ top: 2 });
+                    }
+                  } else {
+                    Text(rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注' ? rec.evidenceLevel : '未分级')
+                      .fontSize(10)
+                      .fontColor(this.getEvidenceColor(rec.evidenceLevel))
+                      .backgroundColor(this.getEvidenceBgColor(rec.evidenceLevel))
+                      .borderRadius(3)
+                      .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+                      .margin({ top: 2 });
+                    if (rec.source.length > 0) {
+                      Text(rec.source)
+                        .fontSize(9)
+                        .fontColor('#9A9E94')
+                        .maxLines(2)
+                        .textOverflow({ overflow: TextOverflow.Ellipsis })
+                        .width('100%')
+                        .margin({ top: 2 });
+                    }
+                  }
+                }
+                .width('100%')
+                .alignItems(HorizontalAlign.Start)
+                .padding({ top: 4, bottom: 4, left: 8 })
+                .border({ width: { left: 2, right: 0, top: 0, bottom: 0 }, color: this.getCategoryBorderColor(category) })
+                .margin({ bottom: 4 });
+              }
+            }, (rec: GuidelineRecommendation, index: number) => category + index.toString())
+          }
+        }
+        .width('100%');
+      }
+    }
   }
 
   @Builder
@@ -1899,5 +2734,375 @@ export struct PatientDetailPage {
     .height('100%')
     .backgroundColor('rgba(0,0,0,0.4)')
     .justifyContent(FlexAlign.Center)
+  }
+
+  @Builder
+  KbReaderOverlay() {
+    Column() {
+      Row() {
+        Button('< 返回')
+          .fontSize(14)
+          .fontColor('#1F3D2F')
+          .backgroundColor(Color.Transparent)
+          .onClick(() => {
+            this.showKbReader = false;
+            this.kbReaderPath = '';
+          });
+        Text(this.kbReaderTitle)
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .layoutWeight(1)
+          .margin({ left: 8 })
+          .maxLines(1)
+          .textOverflow({ overflow: TextOverflow.Ellipsis });
+      }
+      .width('100%')
+      .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+      .backgroundColor('#FFFFFF');
+
+      Scroll() {
+        Column() {
+          Text(this.kbReaderTitle)
+            .fontSize(17)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#1F3D2F')
+            .width('100%');
+          Text(this.kbReaderPath)
+            .fontSize(11)
+            .fontColor('#7A8074')
+            .width('100%')
+            .margin({ top: 4, bottom: 8 });
+          this.KbReaderContent();
+        }
+        .padding(12);
+      }
+      .layoutWeight(1);
+    }
+    .width('95%')
+    .height('85%')
+    .backgroundColor('#FFFFFF')
+    .borderRadius(12);
+  }
+
+  @State kbReaderLines: MarkdownLine[] = [];
+
+  async loadKbReaderContent(path: string) {
+    const page = await this.kbService.getPage(path);
+    if (page !== null) {
+      this.kbReaderTitle = page.title.length > 0 ? page.title : path.split('/').pop() || '';
+      this.kbReaderLines = parseKbMarkdown(page.content);
+    }
+  }
+
+  @Builder
+  KbReaderContent() {
+    ForEach(this.kbReaderLines, (ml: MarkdownLine) => {
+      this.KbMarkdownLineView(ml);
+    }, (ml: MarkdownLine, index: number) => index.toString());
+  }
+
+  @Builder
+  KbMarkdownLineView(ml: MarkdownLine) {
+    if (ml.type === 'h1') {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(18)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#1F3D2F')
+        .width('100%')
+        .margin({ top: 12, bottom: 6 });
+    } else if (ml.type === 'h2') {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(15)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#1F3D2F')
+        .width('100%')
+        .margin({ top: 8, bottom: 4 });
+    } else if (ml.type === 'h3') {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(14)
+        .fontWeight(FontWeight.Bold)
+        .fontColor('#1F3D2F')
+        .width('100%')
+        .margin({ top: 6, bottom: 3 });
+    } else if (ml.type === 'callout') {
+      this.KbCalloutView(ml);
+    } else if (ml.type === 'codeBlock') {
+      this.KbCodeBlockView(ml);
+    } else if (ml.type === 'annotation') {
+      Row() {
+        Text(getAnnotationBadgeInfo(ml.text).keyword)
+          .fontSize(11)
+          .fontColor('#FFFFFF')
+          .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
+          .borderRadius(3)
+          .padding({ left: 6, right: 6, top: 1, bottom: 1 });
+        if (getAnnotationBadgeInfo(ml.text).detail.length > 0) {
+          Text(getAnnotationBadgeInfo(ml.text).detail)
+            .fontSize(11)
+            .fontColor('#7A8074')
+            .margin({ left: 6 });
+        }
+      }
+      .margin({ top: 4, bottom: 4 });
+    } else if (ml.type === 'kvQuote') {
+      Row() {
+        Row()
+          .width(3)
+          .height('100%')
+          .backgroundColor('#4A7C6F')
+          .borderRadius(2);
+        Text(stripMarkdownInline(ml.text))
+          .fontSize(12)
+          .fontColor('#3A3F35')
+          .layoutWeight(1)
+          .padding({ left: 8, right: 8, top: 6, bottom: 6 });
+      }
+      .width('100%')
+      .backgroundColor('#EDF5F0')
+      .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 6, bottomRight: 6 })
+      .margin({ top: 4, bottom: 4 });
+    } else if (ml.type === 'li') {
+      Row() {
+        Text('\u2022')
+          .fontSize(12)
+          .fontColor('#7A8074')
+          .margin({ right: 6 });
+        Text(stripMarkdownInline(ml.text))
+          .fontSize(12)
+          .fontColor('#4A5247')
+          .layoutWeight(1);
+      }
+      .width('100%')
+      .padding({ left: ml.indent * 12 + 8, top: 1, bottom: 1 });
+    } else if (ml.type === 'quote') {
+      Row() {
+        Row()
+          .width(3)
+          .height(14)
+          .backgroundColor('#C8881A')
+          .borderRadius(2)
+          .margin({ top: 4, bottom: 4 });
+        Text(stripMarkdownInline(ml.text))
+          .fontSize(11)
+          .fontColor('#5A5F4E')
+          .layoutWeight(1)
+          .padding({ left: 8 });
+      }
+      .width('100%')
+      .margin({ top: 2, bottom: 2 });
+    } else if (ml.type === 'hr') {
+      Row()
+        .width('100%')
+        .height(1)
+        .backgroundColor('#E0DCC8')
+        .margin({ top: 6, bottom: 6 });
+    } else if (ml.type === 'blank') {
+      Row().height(4);
+    } else if (ml.type === 'tableSep') {
+      Row();
+    } else if (ml.type === 'tableHeader') {
+      if (ml.cells.length > 0) {
+        Row() {
+          ForEach(ml.cells, (cell: string, idx: number) => {
+            Text(cell)
+              .fontSize(11)
+              .fontColor('#1F3D2F')
+              .fontWeight(FontWeight.Bold)
+              .layoutWeight(1)
+              .padding({ left: 4, right: 4, top: 3, bottom: 3 });
+          }, (cell: string, idx: number) => idx.toString());
+        }
+        .width('100%')
+        .backgroundColor('#E8E6DA')
+        .borderRadius(2);
+      } else {
+        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+          .fontSize(11)
+          .fontColor('#1F3D2F')
+          .fontWeight(FontWeight.Bold)
+          .fontFamily('monospace')
+          .width('100%')
+          .padding({ left: 6, right: 6, top: 3, bottom: 3 })
+          .backgroundColor('#E8E6DA')
+          .borderRadius(2);
+      }
+    } else if (ml.type === 'table') {
+      if (ml.cells.length > 0) {
+        Row() {
+          ForEach(ml.cells, (cell: string, idx: number) => {
+            Text(cell)
+              .fontSize(11)
+              .fontColor('#4A5247')
+              .layoutWeight(1)
+              .padding({ left: 4, right: 4, top: 2, bottom: 2 });
+          }, (cell: string, idx: number) => idx.toString());
+        }
+        .width('100%')
+        .backgroundColor('#FAFAF5')
+        .borderRadius(2);
+      } else {
+        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+          .fontSize(11)
+          .fontColor('#4A5247')
+          .fontFamily('monospace')
+          .width('100%')
+          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+          .backgroundColor('#FAFAF5')
+          .borderRadius(2);
+      }
+    } else if (ml.type === 'tagLine') {
+      Row() {
+        ForEach(ml.text.split(/\s+/).filter((t: string): boolean => t.startsWith('#') && t.length > 1), (tag: string) => {
+          Text(tag.substring(1))
+            .fontSize(11)
+            .fontColor('#2B6CB0')
+            .backgroundColor('#EBF2FA')
+            .borderRadius(10)
+            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+            .margin({ right: 4, bottom: 4 });
+        }, (tag: string) => tag);
+      }
+      .width('100%')
+      .margin({ top: 4, bottom: 4 });
+    } else {
+      Text(stripMarkdownInline(ml.text))
+        .fontSize(12)
+        .fontColor('#4A5247')
+        .width('100%')
+        .margin({ top: 1, bottom: 1 });
+    }
+  }
+
+  @Builder
+  KbCalloutView(ml: MarkdownLine) {
+    Column() {
+      if (ml.calloutTitle.length > 0) {
+        Row() {
+          Text(getCalloutStyle(ml.calloutType).icon)
+            .fontSize(14)
+            .margin({ right: 6 });
+          Text(stripMarkdownInline(ml.calloutTitle))
+            .fontSize(13)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(getCalloutStyle(ml.calloutType).borderColor)
+            .layoutWeight(1);
+        }
+        .width('100%')
+        .padding({ left: 12, right: 10, top: 8, bottom: 4 });
+      }
+      if (ml.calloutBody.length > 0) {
+        Text(stripMarkdownInline(ml.calloutBody))
+          .fontSize(12)
+          .fontColor('#4A5247')
+          .width('100%')
+          .padding({ left: 12, right: 10, top: ml.calloutTitle.length > 0 ? 0 : 8, bottom: 8 });
+      }
+    }
+    .width('100%')
+    .borderRadius(6)
+    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: getCalloutStyle(ml.calloutType).borderColor })
+    .backgroundColor(getCalloutStyle(ml.calloutType).bgColor)
+    .margin({ top: 6, bottom: 6 });
+  }
+
+  @Builder
+  KbCodeBlockView(ml: MarkdownLine) {
+    Scroll() {
+      Text(ml.codeContent)
+        .fontSize(11)
+        .fontFamily('monospace')
+        .fontColor('#3A3F35')
+        .width('100%');
+    }
+    .scrollable(ScrollDirection.Horizontal)
+    .width('100%')
+    .padding(10)
+    .backgroundColor('#F5F5F0')
+    .borderRadius(6)
+    .margin({ top: 6, bottom: 6 });
+  }
+
+  @Builder
+  AddDiagnosisDialog() {
+    Column() {
+      Column() {
+        Text('添加诊断')
+          .fontSize(16)
+          .fontWeight(FontWeight.Bold)
+          .fontColor('#1F3D2F')
+          .margin({ bottom: 16 })
+
+        TextInput({ placeholder: '诊断名称', text: this.addDiagName })
+          .fontSize(14)
+          .width('100%')
+          .onChange((value: string) => {
+            this.addDiagName = value;
+          })
+
+        Text('分类')
+          .fontSize(13)
+          .fontColor('#4A5247')
+          .margin({ top: 12, bottom: 6 })
+
+        Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+          ForEach(DIAGNOSIS_CATEGORIES, (cat: string) => {
+            Text(cat)
+              .fontSize(12)
+              .fontColor(this.addDiagCategory === cat ? '#FFFFFF' : '#1F3D2F')
+              .backgroundColor(this.addDiagCategory === cat ? '#1F3D2F' : '#E8E5D8')
+              .borderRadius(4)
+              .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+              .margin({ right: 4, bottom: 4 })
+              .onClick(() => {
+                this.addDiagCategory = cat;
+              })
+          }, (cat: string) => cat)
+        }
+
+        Row() {
+          Text('取消')
+            .fontSize(14)
+            .fontColor('#7A8074')
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+            .padding(10)
+            .onClick(() => {
+              this.showAddDiagnosis = false;
+            })
+          Text('添加')
+            .fontSize(14)
+            .fontColor('#FFFFFF')
+            .backgroundColor('#1F3D2F')
+            .layoutWeight(1)
+            .textAlign(TextAlign.Center)
+            .padding(10)
+            .borderRadius(6)
+            .onClick(() => {
+              if (this.addDiagName.trim().length > 0) {
+                this.patientService.addUserDiagnosis(
+                  this.currentPatientId, this.addDiagName.trim(), this.addDiagCategory
+                ).then(() => {
+                  this.showAddDiagnosis = false;
+                  this.loadDashboard();
+                });
+              }
+            })
+        }
+        .width('100%')
+        .margin({ top: 20 })
+      }
+      .padding(20)
+      .backgroundColor('#FFFFFF')
+      .borderRadius(12)
+      .width('85%')
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
+    .backgroundColor('rgba(0,0,0,0.4)')
+    .onClick(() => {
+      this.showAddDiagnosis = false;
+    })
   }
 }

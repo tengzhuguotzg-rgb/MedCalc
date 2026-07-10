@@ -42,6 +42,8 @@ import { AssistantPage } from '../components/AssistantPage';
 import { SettingsPage } from '../components/SettingsPage';
 import { PatientListPage } from '../components/PatientListPage';
 import { PatientDetailPage } from '../components/PatientDetailPage';
+import { KnowledgeSearchPage } from '../components/KnowledgeSearchPage';
+import { CalcKbLinks } from '../components/CalcKbLinks';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 
@@ -55,6 +57,8 @@ struct Index {
   @State currentPatientId: string = '';
   @StorageLink('patientNavDepth') patientNavDepth: number = 0;
   @StorageLink('patientBackFlag') patientBackFlag: number = 0;
+  @StorageLink('kbNavDepth') kbNavDepth: number = 0;
+  @Watch('onKbNav') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
 
   aboutToAppear() {
     const prefsService = PreferencesService.getInstance();
@@ -62,9 +66,23 @@ struct Index {
     this.currentCalc = prefsService.getLastCalculator();
     AppStorage.setOrCreate<number>('patientNavDepth', 0);
     AppStorage.setOrCreate<number>('patientBackFlag', 0);
+    AppStorage.setOrCreate<number>('kbNavDepth', 0);
+    AppStorage.setOrCreate<number>('kbBackFlag', 0);
+    AppStorage.setOrCreate<string>('kbNavigatePath', '');
+  }
+
+  onKbNav() {
+    if (this.kbNavigatePath.length > 0) {
+      this.currentTab = 3;
+    }
   }
 
   onBackPress(): boolean | void {
+    if (this.kbNavDepth > 0) {
+      const flag = AppStorage.get<number>('kbBackFlag') || 0;
+      AppStorage.setOrCreate<number>('kbBackFlag', flag + 1);
+      return true;
+    }
     if (this.patientNavDepth > 0) {
       const flag = AppStorage.get<number>('patientBackFlag') || 0;
       AppStorage.setOrCreate<number>('patientBackFlag', flag + 1);
@@ -99,6 +117,11 @@ struct Index {
         }
       }
       .tabBar('病历')
+
+      TabContent() {
+        KnowledgeSearchPage();
+      }
+      .tabBar('知识库')
 
       TabContent() {
         SettingsPage();
@@ -205,6 +228,7 @@ struct Index {
             } else {
               this.PlaceholderCalculator();
             }
+            CalcKbLinks({ calcId: this.currentCalc });
           }
           .width('100%');
         }

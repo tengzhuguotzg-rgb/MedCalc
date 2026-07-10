@@ -4,7 +4,7 @@ import { ImageStore } from './ImageStore';
 import { AssistantService, CalcMatch, DataFieldSpec, CalcInputSpec } from './AssistantService';
 import { CalcResult } from '../engine/CalcEngine';
 import { CALCULATORS } from '../model/CalculatorRegistry';
-import { DiagnosisEngine, DiagnosisMatch } from './DiagnosisEngine';
+import { DiagnosisEngine, DiagnosisMatch, DiagnosisResult, PartialMatch } from './DiagnosisEngine';
 import { DiagnosisRule } from '../model/DiagnosisRules';
 import { sendVisionRequest, ApiServiceConfig } from './LlmService';
 import { PreferencesService } from './PreferencesService';
@@ -349,7 +349,7 @@ export class PatientService {
 
   async refreshDiagnoses(patientId: string, latestData: Map<string, string>,
     alertResults: Map<string, CalcResult>): Promise<void> {
-    const diagnosisMatches = this.diagnosisEngine.matchDiagnoses(latestData, alertResults);
+    const diagnosisResult = this.diagnosisEngine.evaluate(latestData, alertResults);
     const now = Date.now();
     const matchedRuleIds = new Set<string>();
     const newMatches: DiagnosisMatch[] = [];
@@ -360,17 +360,28 @@ export class PatientService {
       existingRuleIds.add(existingDiagnoses[i].ruleId);
     }
 
-    for (let i = 0; i < diagnosisMatches.length; i++) {
-      const match = diagnosisMatches[i];
+    for (let i = 0; i < diagnosisResult.confirmed.length; i++) {
+      const match = diagnosisResult.confirmed[i];
       matchedRuleIds.add(match.rule.id);
       const isNew = !existingRuleIds.has(match.rule.id);
       await this.repo.upsertDiagnosis(
         patientId, match.rule.id, match.rule.name, match.rule.category,
-        match.rule.urgency, 0, '', now
+        match.rule.urgency, 'rule', '', 0, '', now
       );
       if (isNew) {
         newMatches.push(match);
       }
+    }
+
+    for (let i = 0; i < diagnosisResult.partial.length; i++) {
+      const partial = diagnosisResult.partial[i];
+      matchedRuleIds.add(partial.rule.id);
+      const missingStr = partial.missingCriteria.join('; ');
+      const isNew = !existingRuleIds.has(partial.rule.id);
+      await this.repo.upsertDiagnosis(
+        patientId, partial.rule.id, partial.rule.name, partial.rule.category,
+        partial.rule.urgency, 'suggestion', missingStr, 0, '', now
+      );
     }
 
     const allRules = this.diagnosisEngine.getDiagnosisRules();
@@ -382,6 +393,14 @@ export class PatientService {
 
     if (newMatches.length > 0) {
       this.confirmDiagnosesWithLlm(patientId, newMatches, latestData, alertResults);
+    }
+
+    const confirmedRuleIds = new Set<string>();
+    for (let i = 0; i < diagnosisResult.confirmed.length; i++) {
+      confirmedRuleIds.add(diagnosisResult.confirmed[i].rule.id);
+    }
+    if (diagnosisResult.confirmed.length === 0 && latestData.size >= 5) {
+      this.suggestDiagnosesWithLlm(patientId, latestData, alertResults, confirmedRuleIds);
     }
   }
 
@@ -458,5 +477,99 @@ export class PatientService {
       hilog.error(0xF000, 'PatientService', 'LLM diagnosis confirmation failed: ' +
         (e instanceof Error ? e.message : String(e)));
     }
+  }
+
+  private async suggestDiagnosesWithLlm(patientId: string,
+    latestData: Map<string, string>, alertResults: Map<string, CalcResult>,
+    existingRuleIds: Set<string>): Promise<void> {
+    try {
+      const prefsService = PreferencesService.getInstance();
+      const config = prefsService.getActiveLlmConfig();
+      if (!config) {
+        return;
+      }
+
+      let dataSummary = '';
+      const dataKeys = Array.from(latestData.keys());
+      for (let i = 0; i < dataKeys.length && i < 30; i++) {
+        const val = latestData.get(dataKeys[i]);
+        dataSummary += dataKeys[i] + '=' + (val !== undefined ? val : '') + ' ';
+      }
+
+      let alertSummary = '';
+      const alertKeys = Array.from(alertResults.keys());
+      for (let i = 0; i < alertKeys.length; i++) {
+        const r = alertResults.get(alertKeys[i]);
+        if (r) {
+          alertSummary += alertKeys[i] + '=' + (r.value !== null ? r.value.toFixed(1) : 'null') + '(' + r.tier + ') ';
+        }
+      }
+
+      const systemPrompt = '你是一名ICU主治医师。根据患者数据，系统未能完全匹配任何确定性诊断规则。' +
+        '请分析患者数据，给出最可能的诊断提示（最多5个）。' +
+        '每个提示说明：1)诊断名 2)可能性(高/中/低) 3)已有支持数据 4)还需要什么检查来确认。' +
+        '注意：仅给出提示，不做确诊。' +
+        '严格按JSON格式回复：{"suggestions":[{"name":"诊断名","category":"感染|呼吸|肾脏|心血管|神经|血液|肝|代谢|营养","likelihood":"高|中|低","supportingData":"已有支持","missingChecks":"需要补充的检查"}]}';
+
+      const userText = '患者数据：' + dataSummary + '\n计算器结果：' + alertSummary;
+
+      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      hilog.info(0xF000, 'PatientService', 'LLM suggestion response: ' + response);
+
+      const parsed: Object | null = JSON.parse(response);
+      if (parsed === null) {
+        return;
+      }
+      const obj = parsed as Record<string, Object>;
+      const sugArr = obj['suggestions'];
+      if (sugArr === undefined || sugArr === null) {
+        return;
+      }
+      const suggestions = sugArr as Array<Record<string, string>>;
+      const now = Date.now();
+
+      for (let i = 0; i < suggestions.length; i++) {
+        const sug = suggestions[i];
+        const name = sug['name'];
+        if (name === undefined || name.length === 0) {
+          continue;
+        }
+        const category = sug['category'] || '代谢';
+        const likelihood = sug['likelihood'] || '低';
+        const urgency = likelihood === '高' ? 'warning' : 'attention';
+        const missingChecks = sug['missingChecks'] || '';
+        const ruleId = 'llm_' + name.replace(/[^a-zA-Z\u4e00-\u9fa50-9]/g, '_').substring(0, 30);
+        if (existingRuleIds.has(ruleId)) {
+          continue;
+        }
+        await this.repo.upsertDiagnosis(
+          patientId, ruleId, name, category,
+          urgency, 'suggestion', missingChecks, 0, '', now
+        );
+      }
+    } catch (e) {
+      hilog.error(0xF000, 'PatientService', 'LLM suggestion failed: ' +
+        (e instanceof Error ? e.message : String(e)));
+    }
+  }
+
+  async addUserDiagnosis(patientId: string, name: string, category: string): Promise<PatientDiagnosis> {
+    const now = Date.now();
+    const ruleId = 'user_' + name.replace(/[^a-zA-Z\u4e00-\u9fa50-9]/g, '_').substring(0, 30) + '_' + now.toString();
+    await this.repo.upsertDiagnosis(
+      patientId, ruleId, name, category,
+      'attention', 'user', '', 0, '', now
+    );
+    const diagnoses = await this.repo.getActiveDiagnoses(patientId);
+    const found = diagnoses.find((d: PatientDiagnosis): boolean => d.ruleId === ruleId);
+    return found !== undefined ? found : new PatientDiagnosis();
+  }
+
+  async deleteUserDiagnosis(diagnosisId: number): Promise<void> {
+    await this.repo.deleteDiagnosis(diagnosisId);
+  }
+
+  async editUserDiagnosis(diagnosisId: number, name: string, category: string): Promise<void> {
+    await this.repo.updateUserDiagnosis(diagnosisId, name, category);
   }
 }

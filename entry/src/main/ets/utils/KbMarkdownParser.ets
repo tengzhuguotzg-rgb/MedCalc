@@ -1,0 +1,442 @@
+export class MarkdownLine {
+  text: string = '';
+  type: string = 'text';
+  indent: number = 0;
+  calloutType: string = '';
+  calloutTitle: string = '';
+  calloutBody: string = '';
+  codeContent: string = '';
+  codeLang: string = '';
+  cells: string[] = [];
+}
+
+export class TocEntry {
+  text: string = '';
+  level: number = 0;
+  anchor: string = '';
+}
+
+const ANNOTATION_KEYWORDS: string[] = ['重新审视', '新增', '沿用', 'Carryover', 'Revisited', 'New'];
+
+function isAnnotationQuote(text: string): boolean {
+  const boldMatch = text.match(/^\*\*([^*]+)\*\*/);
+  if (boldMatch !== null && boldMatch.length > 1) {
+    const keyword = boldMatch[1];
+    for (const kw of ANNOTATION_KEYWORDS) {
+      if (keyword.indexOf(kw) >= 0) {
+        return true;
+      }
+    }
+    if (text.length < 40) {
+      return true;
+    }
+  }
+  return false;
+}
+
+function isKvQuote(text: string): boolean {
+  const boldMatch = text.match(/^\*\*([^*]+)\*\*\s*([：:]\s*|\s)/);
+  return boldMatch !== null && boldMatch.length > 1 && text.length >= 40;
+}
+
+function isTagLine(text: string): boolean {
+  const trimmed = text.trim();
+  if (trimmed.length === 0) {
+    return false;
+  }
+  const parts = trimmed.split(/\s+/);
+  if (parts.length < 2) {
+    return false;
+  }
+  for (const part of parts) {
+    if (!part.startsWith('#') || part.length <= 1) {
+      return false;
+    }
+  }
+  return true;
+}
+
+function stripEmojiPrefix(text: string): string {
+  let result = text;
+  const emojiPrefixes: string[] = [
+    '📋', '📐', '🔗', '🏷️', '🔑', '⚠️', '💡', '📊', '🎯', '📌',
+    '❗', '✅', '⭐', '🏠', '📖', '🧠', '💊', '🫀', '🫁', '🩺',
+    '🔬', '📈', '📉', '🗂️', '📝', '🔢', '⚖️', '🛡️', '🔍', '⚕️',
+    '❓', '❌', '➡️', '⏱️', '🚨', '🆕', '🆗', '🔴', '🟡', '🟢',
+    '⚕', '⚡', '🔥', '💎', '🏆', '📎', '🔖', '📱', '💾', '🧪'
+  ];
+  for (const prefix of emojiPrefixes) {
+    if (result.startsWith(prefix)) {
+      result = result.substring(prefix.length).trimStart();
+      break;
+    }
+  }
+  return result;
+}
+
+export function parseKbMarkdown(content: string): MarkdownLine[] {
+  const firstPass: MarkdownLine[] = [];
+  const lines = content.split('\n');
+  let inYaml = false;
+  let yamlCount = 0;
+  let inCodeBlock = false;
+  let codeLang = '';
+  let codeLines: string[] = [];
+  let inCallout = false;
+
+  for (const line of lines) {
+    if (yamlCount < 2 && line.trim() === '---') {
+      inYaml = !inYaml;
+      yamlCount++;
+      continue;
+    }
+    if (inYaml) {
+      continue;
+    }
+
+    const trimmedLine = line;
+
+    if (inCodeBlock) {
+      if (trimmedLine.trim() === '```') {
+        const ml = new MarkdownLine();
+        ml.type = 'codeBlock';
+        ml.codeContent = codeLines.join('\n');
+        ml.codeLang = codeLang;
+        firstPass.push(ml);
+        inCodeBlock = false;
+        codeLang = '';
+        codeLines = [];
+      } else {
+        codeLines.push(trimmedLine);
+      }
+      continue;
+    }
+
+    if (trimmedLine.trim().startsWith('```')) {
+      inCodeBlock = true;
+      codeLang = trimmedLine.trim().substring(3).trim();
+      codeLines = [];
+      continue;
+    }
+
+    let indent = 0;
+    let scanLine = trimmedLine;
+    while (scanLine.startsWith('  ') || scanLine.startsWith('\t')) {
+      indent++;
+      scanLine = scanLine.startsWith('\t') ? scanLine.substring(1) : scanLine.substring(2);
+    }
+
+    const ml = new MarkdownLine();
+    ml.indent = indent;
+
+    if (scanLine.startsWith('# ')) {
+      ml.type = 'h1';
+      ml.text = stripEmojiPrefix(scanLine.substring(2));
+      inCallout = false;
+    } else if (scanLine.startsWith('## ')) {
+      ml.type = 'h2';
+      ml.text = stripEmojiPrefix(scanLine.substring(3));
+      inCallout = false;
+    } else if (scanLine.startsWith('### ')) {
+      ml.type = 'h3';
+      ml.text = stripEmojiPrefix(scanLine.substring(4));
+      inCallout = false;
+    } else if (scanLine.startsWith('#### ')) {
+      ml.type = 'h4';
+      ml.text = stripEmojiPrefix(scanLine.substring(5));
+      inCallout = false;
+    } else if (scanLine.startsWith('> ')) {
+      const afterGt = scanLine.substring(2);
+      const calloutMatch = afterGt.match(/^\[!(\w+)\]([+-]?)\s*(.*)/);
+      if (calloutMatch !== null && calloutMatch.length > 3) {
+        ml.type = 'callout-header';
+        ml.calloutType = calloutMatch[1].toLowerCase();
+        ml.calloutTitle = calloutMatch[3];
+        inCallout = true;
+      } else if (inCallout) {
+        ml.type = 'callout-body';
+        ml.text = afterGt;
+      } else if (isAnnotationQuote(afterGt)) {
+        ml.type = 'annotation';
+        ml.text = afterGt;
+      } else if (isKvQuote(afterGt)) {
+        ml.type = 'kvQuote';
+        ml.text = afterGt;
+      } else {
+        ml.type = 'quote';
+        ml.text = afterGt;
+      }
+    } else if (scanLine.startsWith('>') && scanLine.length > 1 && !scanLine.startsWith('> [')) {
+      const afterGt = scanLine.substring(1).trim();
+      if (afterGt.startsWith('[!')) {
+        const calloutMatch = scanLine.match(/^>\s*\[!(\w+)\]([+-]?)\s*(.*)/);
+        if (calloutMatch !== null && calloutMatch.length > 3) {
+          ml.type = 'callout-header';
+          ml.calloutType = calloutMatch[1].toLowerCase();
+          ml.calloutTitle = calloutMatch[3];
+          inCallout = true;
+        } else {
+          ml.type = 'quote';
+          ml.text = afterGt;
+        }
+      } else if (inCallout) {
+        ml.type = 'callout-body';
+        ml.text = afterGt;
+      } else if (isAnnotationQuote(afterGt)) {
+        ml.type = 'annotation';
+        ml.text = afterGt;
+      } else if (isKvQuote(afterGt)) {
+        ml.type = 'kvQuote';
+        ml.text = afterGt;
+      } else {
+        ml.type = 'callout-body';
+        ml.text = afterGt;
+      }
+    } else if (scanLine === '>') {
+      if (inCallout) {
+        ml.type = 'callout-body';
+        ml.text = '';
+      } else {
+        ml.type = 'blank';
+      }
+    } else if (scanLine.startsWith('- ') || scanLine.startsWith('* ')) {
+      ml.type = 'li';
+      ml.text = scanLine.substring(2);
+      inCallout = false;
+    } else if (scanLine.startsWith('---') || scanLine.startsWith('***')) {
+      ml.type = 'hr';
+      inCallout = false;
+    } else if (scanLine.trim().length === 0) {
+      ml.type = 'blank';
+      inCallout = false;
+    } else if (isTagLine(scanLine)) {
+      ml.type = 'tagLine';
+      ml.text = scanLine;
+      inCallout = false;
+    } else if (scanLine.startsWith('|')) {
+      if (scanLine.match(/^\|[\s\-:|]+\|$/)) {
+        ml.type = 'tableSep';
+      } else {
+        ml.type = 'table';
+        ml.cells = parseTableCells(scanLine);
+      }
+      ml.text = scanLine;
+      inCallout = false;
+    } else {
+      ml.type = 'text';
+      ml.text = scanLine;
+      inCallout = false;
+    }
+    firstPass.push(ml);
+  }
+
+  if (inCodeBlock && codeLines.length > 0) {
+    const ml = new MarkdownLine();
+    ml.type = 'codeBlock';
+    ml.codeContent = codeLines.join('\n');
+    ml.codeLang = codeLang;
+    firstPass.push(ml);
+  }
+
+  const result: MarkdownLine[] = [];
+  let i = 0;
+  while (i < firstPass.length) {
+    const current = firstPass[i];
+
+    if (current.type === 'callout-header') {
+      const merged = new MarkdownLine();
+      merged.type = 'callout';
+      merged.calloutType = current.calloutType;
+      merged.calloutTitle = current.calloutTitle;
+      merged.calloutBody = '';
+      i++;
+      while (i < firstPass.length && firstPass[i].type === 'callout-body') {
+        if (merged.calloutBody.length > 0) {
+          merged.calloutBody += '\n';
+        }
+        merged.calloutBody += firstPass[i].text;
+        i++;
+      }
+      result.push(merged);
+      continue;
+    }
+
+    if (current.type === 'callout-body') {
+      const merged = new MarkdownLine();
+      merged.type = 'callout';
+      merged.calloutType = 'note';
+      merged.calloutTitle = '';
+      merged.calloutBody = current.text;
+      i++;
+      while (i < firstPass.length && firstPass[i].type === 'callout-body') {
+        if (merged.calloutBody.length > 0) {
+          merged.calloutBody += '\n';
+        }
+        merged.calloutBody += firstPass[i].text;
+        i++;
+      }
+      result.push(merged);
+      continue;
+    }
+
+    if (current.type === 'table') {
+      if (i + 1 < firstPass.length && firstPass[i + 1].type === 'tableSep') {
+        const header = new MarkdownLine();
+        header.type = 'tableHeader';
+        header.text = current.text;
+        header.cells = current.cells;
+        result.push(header);
+        i += 2;
+        while (i < firstPass.length && firstPass[i].type === 'table') {
+          const row = new MarkdownLine();
+          row.type = 'table';
+          row.text = firstPass[i].text;
+          row.cells = firstPass[i].cells;
+          result.push(row);
+          i++;
+        }
+        continue;
+      } else {
+        const row = new MarkdownLine();
+        row.type = 'table';
+        row.text = current.text;
+        row.cells = current.cells;
+        result.push(row);
+        i++;
+        continue;
+      }
+    }
+
+    result.push(current);
+    i++;
+  }
+
+  return result;
+}
+
+export function extractToc(content: string): TocEntry[] {
+  const entries: TocEntry[] = [];
+  const lines = content.split('\n');
+  for (const line of lines) {
+    const h2Match = line.match(/^## (.+)$/);
+    if (h2Match !== null && h2Match.length > 1) {
+      const entry = new TocEntry();
+      entry.text = stripEmojiPrefix(h2Match[1].replace(/\*\*/g, '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, '$2' || '$1'));
+      entry.level = 2;
+      entry.anchor = h2Match[1].replace(/\s+/g, '_');
+      entries.push(entry);
+      continue;
+    }
+    const h3Match = line.match(/^### (.+)$/);
+    if (h3Match !== null && h3Match.length > 1) {
+      const entry = new TocEntry();
+      entry.text = stripEmojiPrefix(h3Match[1].replace(/\*\*/g, '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, '$2' || '$1'));
+      entry.level = 3;
+      entry.anchor = h3Match[1].replace(/\s+/g, '_');
+      entries.push(entry);
+    }
+  }
+  return entries;
+}
+
+export function stripMarkdownInline(text: string): string {
+  let result = text;
+  result = result.replace(/==([^=]+)==/g, '$1');
+  result = result.replace(/\[\[([^\]|]+)\|([^\]]+)\]\]/g, '$2');
+  result = result.replace(/\[\[([^\]]+)\]\]/g, (_match: string, p1: string): string => {
+    const name = p1.split('/').pop() || p1;
+    return name.replace(/\.md$/, '');
+  });
+  result = result.replace(/\*\*([^*]+)\*\*/g, '$1');
+  result = result.replace(/\*([^*]+)\*/g, '$1');
+  result = result.replace(/\[([^\]]+)\]\([^)]+\)/g, '$1');
+  result = result.replace(/`([^`]+)`/g, '$1');
+  result = result.replace(/~~([^~]+)~~/g, '$1');
+  return result;
+}
+
+export function stripTableMarkdown(line: string): string {
+  return line.replace(/^\|/, '').replace(/\|$/, '').replace(/\|/g, ' \u2502 ');
+}
+
+export function parseTableCells(line: string): string[] {
+  let stripped = line.replace(/^\|/, '').replace(/\|$/, '');
+  const cells: string[] = [];
+  const parts = stripped.split('|');
+  for (const part of parts) {
+    cells.push(stripMarkdownInline(part.trim()));
+  }
+  return cells;
+}
+
+export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
+  const boldMatch = text.match(/^\*\*([^*]+)\*\*(.*)/);
+  if (boldMatch !== null && boldMatch.length > 2) {
+    const keyword = boldMatch[1];
+    let color = '#7A8074';
+    if (keyword.indexOf('新增') >= 0 || keyword.indexOf('New') >= 0) {
+      color = '#2E7D32';
+    } else if (keyword.indexOf('重新审视') >= 0 || keyword.indexOf('Revisited') >= 0) {
+      color = '#E65100';
+    } else if (keyword.indexOf('沿用') >= 0 || keyword.indexOf('Carryover') >= 0) {
+      color = '#1565C0';
+    }
+    const badge = new AnnotationBadge();
+    badge.keyword = keyword;
+    badge.detail = boldMatch[2].replace(/^[（(]|[）)]$/g, '').replace(/[。.]$/g, '');
+    badge.color = color;
+    return badge;
+  }
+  const badge = new AnnotationBadge();
+  badge.keyword = text.replace(/\*\*/g, '');
+  badge.detail = '';
+  badge.color = '#7A8074';
+  return badge;
+}
+
+export class AnnotationBadge {
+  keyword: string = '';
+  detail: string = '';
+  color: string = '#7A8074';
+}
+
+export function getCalloutStyle(calloutType: string): CalloutStyle {
+  switch (calloutType) {
+    case 'warning':
+      return new CalloutStyle('#E65100', '#FFF3E0', '\u26A0');
+    case 'danger':
+      return new CalloutStyle('#C62828', '#FFEBEE', '\u274C');
+    case 'important':
+      return new CalloutStyle('#7B1FA2', '#F3E5F5', '\u2757');
+    case 'tip':
+      return new CalloutStyle('#2E7D32', '#E8F5E9', '\uD83D\uDCA1');
+    case 'note':
+      return new CalloutStyle('#1565C0', '#E3F2FD', '\uD83D\uDCDD');
+    case 'info':
+      return new CalloutStyle('#0277BD', '#E1F5FE', '\u2139');
+    case 'abstract':
+      return new CalloutStyle('#00695C', '#E0F2F1', '\uD83D\uDCCB');
+    case 'example':
+      return new CalloutStyle('#F57F17', '#FFFDE7', '\uD83D\uDCD6');
+    case 'success':
+      return new CalloutStyle('#1B5E20', '#E8F5E9', '\u2705');
+    case 'quote':
+      return new CalloutStyle('#C8881A', '#FFF8E1', '\uD83D\uDCAC');
+    case 'faq':
+      return new CalloutStyle('#6A1B9A', '#F3E5F5', '\u2753');
+    default:
+      return new CalloutStyle('#7A8074', '#F5F4EF', '\uD83D\uDCC4');
+  }
+}
+
+export class CalloutStyle {
+  borderColor: string = '';
+  bgColor: string = '';
+  icon: string = '';
+
+  constructor(borderColor: string, bgColor: string, icon: string) {
+    this.borderColor = borderColor;
+    this.bgColor = bgColor;
+    this.icon = icon;
+  }
+}

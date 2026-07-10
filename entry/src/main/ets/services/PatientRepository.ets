@@ -2,7 +2,7 @@ import { relationalStore, ValuesBucket } from '@kit.ArkData';
 import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis } from '../model/Patient';
 
 const DB_NAME: string = 'medcalc_patients.db';
-const DB_VERSION: number = 2;
+const DB_VERSION: number = 3;
 const DB_SECURITY: relationalStore.SecurityLevel = relationalStore.SecurityLevel.S3;
 
 const CREATE_PATIENTS: string =
@@ -29,6 +29,12 @@ const CREATE_PATIENT_DATA: string =
 
 const ALTER_ADD_EXAM_TIME: string =
   'ALTER TABLE patient_data ADD COLUMN examTime INTEGER DEFAULT 0';
+
+const ALTER_ADD_SOURCE: string =
+  'ALTER TABLE patient_diagnoses ADD COLUMN source TEXT DEFAULT \'rule\'';
+
+const ALTER_ADD_MISSING: string =
+  'ALTER TABLE patient_diagnoses ADD COLUMN missingCriteria TEXT DEFAULT \'\'';
 
 const CREATE_PATIENT_RECORDS: string =
   'CREATE TABLE IF NOT EXISTS patient_records (' +
@@ -124,6 +130,10 @@ export class PatientRepository {
       }
       if (currentVersion >= 1 && currentVersion < 2) {
         await this.store.executeSql(ALTER_ADD_EXAM_TIME);
+      }
+      if (currentVersion >= 1 && currentVersion < 3) {
+        await this.store.executeSql(ALTER_ADD_SOURCE);
+        await this.store.executeSql(ALTER_ADD_MISSING);
       }
       this.store.version = DB_VERSION;
     }
@@ -512,7 +522,8 @@ export class PatientRepository {
   }
 
   async upsertDiagnosis(patientId: string, ruleId: string, name: string, category: string,
-    urgency: string, llmConfirmed: number, llmNote: string, triggeredAt: number): Promise<number> {
+    urgency: string, source: string, missingCriteria: string,
+    llmConfirmed: number, llmNote: string, triggeredAt: number): Promise<number> {
     const db = this.ensureStore();
     const pred = new relationalStore.RdbPredicates('patient_diagnoses');
     pred.equalTo('patientId', patientId).equalTo('ruleId', ruleId).equalTo('status', 'active');
@@ -524,6 +535,8 @@ export class PatientRepository {
       rs.close();
       const bucket: ValuesBucket = {
         'urgency': urgency,
+        'source': source,
+        'missingCriteria': missingCriteria,
         'triggeredAt': triggeredAt
       };
       if (llmConfirmed > existingConfirmed) {
@@ -542,6 +555,8 @@ export class PatientRepository {
       'name': name,
       'category': category,
       'urgency': urgency,
+      'source': source,
+      'missingCriteria': missingCriteria,
       'llmConfirmed': llmConfirmed,
       'llmNote': llmNote,
       'triggeredAt': triggeredAt,
@@ -580,6 +595,8 @@ export class PatientRepository {
         d.llmNote = rs.getString(7);
         d.triggeredAt = rs.getLong(8);
         d.status = rs.getString(9);
+        d.source = rs.getString(10);
+        d.missingCriteria = rs.getString(11);
         list.push(d);
       } while (rs.goToNextRow());
     }
@@ -613,5 +630,23 @@ export class PatientRepository {
     const pred = new relationalStore.RdbPredicates('patient_diagnoses');
     pred.equalTo('patientId', patientId);
     await db.delete(pred);
+  }
+
+  async deleteDiagnosis(id: number): Promise<void> {
+    const db = this.ensureStore();
+    const pred = new relationalStore.RdbPredicates('patient_diagnoses');
+    pred.equalTo('id', id);
+    await db.delete(pred);
+  }
+
+  async updateUserDiagnosis(id: number, name: string, category: string): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = {
+      'name': name,
+      'category': category
+    };
+    const pred = new relationalStore.RdbPredicates('patient_diagnoses');
+    pred.equalTo('id', id);
+    await db.update(bucket, pred);
   }
 }
