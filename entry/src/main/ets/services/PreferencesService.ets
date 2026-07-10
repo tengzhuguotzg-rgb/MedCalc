@@ -182,4 +182,12 @@ export class PreferencesService {
     }
     return null;
   }
+
+  saveDiagnosisKbData(patientId: string, ruleId: string, data: string): void {
+    this.putSync('kb_' + patientId + '_' + ruleId, data);
+  }
+
+  getDiagnosisKbData(patientId: string, ruleId: string): string {
+    return this.getSync('kb_' + patientId + '_' + ruleId, '');
+  }
 }

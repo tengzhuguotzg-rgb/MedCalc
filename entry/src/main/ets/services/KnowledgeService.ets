@@ -9,7 +9,7 @@ const DOMAIN: number = 0xF000;
 const TAG: string = 'KnowledgeService';
 
 const KB_DB_NAME: string = 'medcalc_kb.db';
-const KB_DB_VERSION: number = 5;
+const KB_DB_VERSION: number = 6;
 const KB_DB_SECURITY: relationalStore.SecurityLevel = relationalStore.SecurityLevel.S1;
 
 const CREATE_KB_INDEX: string =
@@ -77,6 +77,7 @@ export class KnowledgeService {
   private indexed: boolean = false;
   private context: Context | null = null;
   lastExpandedCount: number = 0;
+  lastPartialPaths: string[] = [];
 
   private constructor() {}
 
@@ -434,7 +435,13 @@ export class KnowledgeService {
   private extractSummary(content: string): string {
     const yamlEnd = content.indexOf('---', 3);
     if (yamlEnd <= 0) {
-      return '';
+      const bodyStart = content.indexOf('\n\n');
+      if (bodyStart > 0 && bodyStart + 2 < content.length) {
+        const firstPara = content.substring(bodyStart + 2, Math.min(bodyStart + 302, content.length));
+        const nextBreak = firstPara.indexOf('\n\n');
+        return nextBreak > 0 ? firstPara.substring(0, nextBreak) : firstPara;
+      }
+      return content.substring(0, Math.min(300, content.length));
     }
     const yaml = content.substring(3, yamlEnd);
     const lines = yaml.split('\n');
@@ -443,6 +450,12 @@ export class KnowledgeService {
       if (trimmed.startsWith('summary:')) {
         return trimmed.substring(8).trim().replace(/^['"]|['"]$/g, '');
       }
+    }
+    const bodyStart = content.indexOf('\n\n', yamlEnd + 3);
+    if (bodyStart > 0 && bodyStart + 2 < content.length) {
+      const firstPara = content.substring(bodyStart + 2, Math.min(bodyStart + 302, content.length));
+      const nextBreak = firstPara.indexOf('\n\n');
+      return nextBreak > 0 ? firstPara.substring(0, nextBreak) : firstPara;
     }
     return '';
   }
@@ -534,26 +547,23 @@ export class KnowledgeService {
       return await this.search(query, limit);
     }
 
-    const expandedTerms = await this.expandQueryWithLlm(query, config);
+    let expandedTerms: string[] = [];
+    try {
+      expandedTerms = await this.expandQueryWithLlm(query, config);
+    } catch (_e) {
+      expandedTerms = [];
+    }
     let ftsResults: SearchResult[];
     if (expandedTerms.length > 0) {
       const expandedQuery = query + ' ' + expandedTerms.join(' ');
-      const broadResults = await this.searchWithExpandedQuery(expandedQuery, limit * 3);
-      const coreTerms = this.extractCoreTerms(query);
-      if (coreTerms.length > 0) {
-        ftsResults = this.filterByCoreTerms(broadResults, coreTerms, limit * 2);
-        if (ftsResults.length === 0) {
-          ftsResults = broadResults.slice(0, limit * 2);
-        }
-      } else {
-        ftsResults = broadResults.slice(0, limit * 2);
-      }
+      ftsResults = await this.searchWithExpandedQuery(expandedQuery, 50);
     } else {
-      ftsResults = await this.search(query, limit * 2);
+      ftsResults = await this.search(query, 50);
     }
 
     if (ftsResults.length === 0) {
       this.lastExpandedCount = 0;
+      this.lastPartialPaths = [];
       return [];
     }
 
@@ -566,91 +576,79 @@ export class KnowledgeService {
   }
 
   private async verifyResultsWithLlm(query: string, results: SearchResult[], config: ApiServiceConfig, limit: number): Promise<SearchResult[]> {
-    if (results.length <= 3) {
-      return results.slice(0, limit);
-    }
     try {
       const docList: string[] = [];
       for (let i = 0; i < results.length; i++) {
         docList.push((i + 1).toString() + '. [' + results[i].path + '] ' + results[i].title);
       }
-      const systemPrompt = '你是重症医学知识库搜索验收专家。给定用户查询词和候选文章列表，判断每篇文章是否与查询词的主题直接相关。' +
-        '只输出相关文章的编号，用逗号分隔。不要输出不相关的编号。不要解释。' +
-        '判断标准：文章的主题必须是关于查询词所述疾病/综合征的，而非仅仅提及该疾病作为鉴别诊断、病原学举例或并发症提及。' +
-        '示例：查询"肺炎"，文章"[中枢神经系统感染/NICE/NICE-BacM-4-抗生素] NICE-BacM 抗生素"虽然提到肺炎链球菌，但主题是脑膜炎抗生素方案，应判定为不相关。' +
-        '示例：查询"脓毒症"，文章"[脓毒症/机制/机制-脓毒症-11-肾脏损伤] 脓毒症机制-肾脏损伤"主题是脓毒症的肾脏并发症机制，应判定为相关。';
+      const systemPrompt = '你是重症医学知识库搜索验收专家。给定用户查询词和候选文章列表，对每篇文章判断其与查询词的相关程度。' +
+        '\n\n三级判断标准：' +
+        'Y(全文相关)：文章的主要主题就是查询词所述的疾病/综合征。文章path中的疾病名与查询词匹配或高度相关。' +
+        'P(片段相关)：文章的主要主题不是查询词疾病，但文章中有**独立段落**专门讨论查询词疾病的诊断、监测、治疗等临床内容。一句话提及或仅作为并发症列举不算P。' +
+        'N(不相关)：文章仅顺带提及查询词（一句话提及、并发症列表、鉴别诊断举例、实验室表现列举等），没有独立段落专门讨论。' +
+        '\n\n输出格式：每篇文章输出"编号:Y"或"编号:P"或"编号:N"，用逗号分隔。不要解释。' +
+        '\n\n示例：' +
+        '查询"代谢性酸中毒"，文章"[酸碱平衡/代谢性酸中毒/诊断]"→1:Y（主题就是代谢性酸中毒）' +
+        '查询"代谢性酸中毒"，文章"[脓毒症/机制/机制-脓毒症-05-代谢改变]"→2:P（脓毒症主题，但有独立段落讨论代谢性酸中毒的机制和处理）' +
+        '查询"代谢性酸中毒"，文章"[休克/分类/分类概述]"→3:N（仅列举"代谢性酸中毒是休克的代谢表现之一"，无独立讨论）' +
+        '查询"AKI"，文章"[脓毒症/机制/肾脏损伤]"→4:P（脓毒症主题，但有独立段落讨论AKI的发生机制和管理）' +
+        '查询"乳酸升高"，文章"[脓毒症/集束化治疗]"→5:P（脓毒症主题，但有独立段落讨论乳酸监测目标和乳酸清除率）' +
+        '查询"肺炎"，文章"[中枢神经系统感染/NICE/NICE-BacM-4-抗生素]"→6:N（仅提及肺炎链球菌作为病原，无独立讨论肺炎）';
       const userText = '查询词：' + query + '\n候选文章：\n' + docList.join('\n');
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
-      const nums = response.split(/[,\s，、]+/);
-      const validIndices = new Set<number>();
-      for (const num of nums) {
-        const n = parseInt(num.trim(), 10);
-        if (!isNaN(n) && n >= 1 && n <= results.length) {
-          validIndices.add(n - 1);
+      const yIndices: number[] = [];
+      const pIndices: number[] = [];
+      const parts = response.split(/[,\s，、]+/);
+      for (const part of parts) {
+        const trimmed = part.trim();
+        const colonIdx = trimmed.lastIndexOf(':');
+        if (colonIdx < 0) {
+          const n = parseInt(trimmed, 10);
+          if (!isNaN(n) && n >= 1 && n <= results.length) {
+            yIndices.push(n - 1);
+          }
+          continue;
+        }
+        const numPart = trimmed.substring(0, colonIdx);
+        const label = trimmed.substring(colonIdx + 1).toUpperCase();
+        const n = parseInt(numPart, 10);
+        if (isNaN(n) || n < 1 || n > results.length) {
+          continue;
+        }
+        if (label === 'Y') {
+          yIndices.push(n - 1);
+        } else if (label === 'P') {
+          pIndices.push(n - 1);
         }
       }
       const verified: SearchResult[] = [];
-      for (const idx of validIndices) {
+      for (const idx of yIndices) {
         verified.push(results[idx]);
         if (verified.length >= limit) {
           break;
         }
       }
-      if (verified.length === 0) {
+      const partialPaths: string[] = [];
+      if (verified.length < limit) {
+        for (const idx of pIndices) {
+          partialPaths.push(results[idx].path);
+          if (verified.length < limit) {
+            verified.push(results[idx]);
+          }
+        }
+      }
+      this.lastPartialPaths = partialPaths;
+      if (verified.length === 0 && pIndices.length === 0) {
         hilog.warn(DOMAIN, TAG, 'verifyResults: all rejected, falling back to FTS order');
         return [];
       }
-      hilog.info(DOMAIN, TAG, 'verifyResults: ' + query + ' accepted=' + verified.length + '/' + results.length);
+      hilog.info(DOMAIN, TAG, 'verifyResults: ' + query + ' Y=' + yIndices.length + ' P=' + pIndices.length + '/' + results.length);
       return verified;
     } catch (e) {
-      hilog.warn(DOMAIN, TAG, 'verifyResults failed: ' + (e instanceof Error ? e.message : 'unknown'));
-      return [];
+      hilog.warn(DOMAIN, TAG, 'verifyResults failed: ' + (e instanceof Error ? e.message : 'unknown') + ', fallback to FTS');
+      this.lastPartialPaths = [];
+      return results.slice(0, limit);
     }
-  }
-
-  private extractCoreTerms(query: string): string[] {
-    const refined = this.refineQuery(query);
-    const terms = refined.split(/[\s,，、；;]+/);
-    const core: string[] = [];
-    for (const term of terms) {
-      const trimmed = term.trim();
-      if (trimmed.length >= 2) {
-        core.push(trimmed);
-      }
-    }
-    return core.slice(0, 2);
-  }
-
-  private filterByCoreTerms(results: SearchResult[], coreTerms: string[], maxResults: number): SearchResult[] {
-    const filtered: SearchResult[] = [];
-    const rest: SearchResult[] = [];
-    for (const sr of results) {
-      const text = sr.path + ' ' + sr.title;
-      let matched = false;
-      for (const ct of coreTerms) {
-        if (text.includes(ct)) {
-          matched = true;
-          break;
-        }
-      }
-      if (matched) {
-        filtered.push(sr);
-      } else {
-        rest.push(sr);
-      }
-      if (filtered.length >= maxResults) {
-        break;
-      }
-    }
-    if (filtered.length < maxResults) {
-      for (const sr of rest) {
-        filtered.push(sr);
-        if (filtered.length >= maxResults) {
-          break;
-        }
-      }
-    }
-    return filtered;
   }
 
   private async expandQueryWithLlm(query: string, config: ApiServiceConfig): Promise<string[]> {
@@ -788,32 +786,61 @@ export class KnowledgeService {
     const pages: KnowledgePage[] = [];
     for (const sr of results) {
       const page = await this.getPage(sr.path);
-      if (page !== null) {
+      if (page !== null && page.content.trim().length >= 100) {
         pages.push(page);
       }
     }
     return pages;
   }
 
-  async searchByPrefix(query: string, pathPrefix: string, limit: number = 3): Promise<KnowledgePage[]> {
-    const results = await this.smartSearch(query, limit * 3);
-    const filtered: SearchResult[] = [];
-    for (const sr of results) {
-      if (sr.path.startsWith(pathPrefix)) {
-        filtered.push(sr);
-        if (filtered.length >= limit) {
+  excerptContent(content: string, keywords: string[], maxChars: number): string {
+    const paragraphs: string[] = content.split(/\n\n+/);
+    if (paragraphs.length === 0) {
+      return content.substring(0, maxChars);
+    }
+    const mandatoryIndices = new Set<number>();
+    if (paragraphs.length > 0) {
+      mandatoryIndices.add(0);
+    }
+    if (paragraphs.length > 1) {
+      mandatoryIndices.add(1);
+    }
+    const hitIndices = new Set<number>();
+    for (let i = 0; i < paragraphs.length; i++) {
+      for (const kw of keywords) {
+        if (kw.length > 0 && paragraphs[i].includes(kw)) {
+          hitIndices.add(i);
+          if (i > 0) {
+            hitIndices.add(i - 1);
+          }
+          if (i < paragraphs.length - 1) {
+            hitIndices.add(i + 1);
+          }
           break;
         }
       }
     }
-    const pages: KnowledgePage[] = [];
-    for (const sr of filtered) {
-      const page = await this.getPage(sr.path);
-      if (page !== null) {
-        pages.push(page);
-      }
+    const selectedIndices = new Set<number>();
+    for (const idx of mandatoryIndices) {
+      selectedIndices.add(idx);
     }
-    return pages;
+    for (const idx of hitIndices) {
+      selectedIndices.add(idx);
+    }
+    const sorted: number[] = Array.from(selectedIndices).sort((a: number, b: number): number => a - b);
+    const result: string[] = [];
+    for (const idx of sorted) {
+      result.push(paragraphs[idx]);
+    }
+    let joined = result.join('\n\n');
+    if (joined.length < 500) {
+      return content.substring(0, Math.min(5000, content.length));
+    }
+    while (joined.length > maxChars && result.length > 2) {
+      result.pop();
+      joined = result.join('\n\n');
+    }
+    return joined.substring(0, maxChars);
   }
 
   async getSnippet(path: string, query: string, contextChars: number = 120): Promise<string> {

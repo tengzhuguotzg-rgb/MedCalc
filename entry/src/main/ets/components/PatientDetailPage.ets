@@ -25,24 +25,95 @@ class DomainEntry {
   hasData: boolean = false;
 }
 
+class ParsedRecommendations {
+  recommendations: GuidelineRecommendation[] = [];
+  summary: string = '';
+}
+
 class GuidelineRecommendation {
   text: string = '';
   evidenceLevel: string = '';
   source: string = '';
   category: string = '';
+  type: string = '';
 }
 
 class DiagnosisKbData {
   ruleId: string = '';
   searchResults: SearchResult[] = [];
+  verifiedPaths: string[] = [];
+  partialPaths: string[] = [];
   recommendations: GuidelineRecommendation[] = [];
   loadingKb: boolean = false;
   loadingAdvice: boolean = false;
-  expanded: boolean = false;
-  refsExpanded: boolean = false;
   summary: string = '';
-  loadingSummary: boolean = false;
   verifyInfo: string = '';
+  isLowRelevance: boolean = false;
+
+  toJson(): string {
+    const srList: Record<string, string>[] = [];
+    for (const sr of this.searchResults) {
+      srList.push({ 'path': sr.path, 'title': sr.title });
+    }
+    const recList: Record<string, string>[] = [];
+    for (const rec of this.recommendations) {
+      recList.push({ 'text': rec.text, 'evidenceLevel': rec.evidenceLevel, 'source': rec.source, 'category': rec.category, 'type': rec.type });
+    }
+    const obj: Record<string, Object> = {
+      'ruleId': this.ruleId,
+      'searchResults': srList,
+      'verifiedPaths': this.verifiedPaths,
+      'partialPaths': this.partialPaths,
+      'recommendations': recList,
+      'summary': this.summary,
+      'verifyInfo': this.verifyInfo,
+      'isLowRelevance': this.isLowRelevance,
+    };
+    return JSON.stringify(obj);
+  }
+
+  static fromJson(jsonStr: string): DiagnosisKbData | null {
+    const parsed: Object | null = JSON.parse(jsonStr);
+    if (parsed === null) {
+      return null;
+    }
+    const obj = parsed as Record<string, Object>;
+    const d = new DiagnosisKbData();
+    d.ruleId = (obj['ruleId'] as string) || '';
+    const srArr = obj['searchResults'] as Array<Record<string, string>>;
+    if (srArr !== undefined && srArr !== null) {
+      for (const sr of srArr) {
+        const searchResult = new SearchResult();
+        searchResult.path = sr['path'] || '';
+        searchResult.title = sr['title'] || '';
+        d.searchResults.push(searchResult);
+      }
+    }
+    const vpArr = obj['verifiedPaths'] as Array<string>;
+    if (vpArr !== undefined && vpArr !== null) {
+      d.verifiedPaths = vpArr;
+    }
+    const ppArr = obj['partialPaths'] as Array<string>;
+    if (ppArr !== undefined && ppArr !== null) {
+      d.partialPaths = ppArr;
+    }
+    const recArr = obj['recommendations'] as Array<Record<string, string>>;
+    if (recArr !== undefined && recArr !== null) {
+      for (const rec of recArr) {
+        const gr = new GuidelineRecommendation();
+        gr.text = rec['text'] || '';
+        gr.evidenceLevel = rec['evidenceLevel'] || '未标注';
+        gr.source = rec['source'] || '';
+        gr.category = rec['category'] || '';
+        gr.type = rec['type'] || '';
+        d.recommendations.push(gr);
+      }
+    }
+    d.summary = (obj['summary'] as string) || '';
+    d.verifyInfo = (obj['verifyInfo'] as string) || '';
+    d.isLowRelevance = (obj['isLowRelevance'] as boolean) || false;
+    return d;
+  }
 }
 
 @Component
@@ -86,9 +157,11 @@ export struct PatientDetailPage {
   @State showKbReader: boolean = false;
   @State @Watch('onKbReaderPathChanged') kbReaderPath: string = '';
   @State expandedCategories: Set<string> = new Set();
+  @State expandedRefIds: Set<string> = new Set();
   @State kbReaderTitle: string = '';
   @State showRecommendationsDetail: boolean = false;
   @State activeAdviceRuleId: string = '';
+  @State adviceReadyRuleId: string = '';
   @State summaryLines: MarkdownLine[] = [];
   @State showAddDiagnosis: boolean = false;
   @State addDiagName: string = '';
@@ -106,11 +179,32 @@ export struct PatientDetailPage {
     this.syncNavDepth();
   }
 
+  saveKbData(kbData: DiagnosisKbData) {
+    if (this.currentPatientId.length === 0) {
+      return;
+    }
+    const prefsService = PreferencesService.getInstance();
+    prefsService.saveDiagnosisKbData(this.currentPatientId, kbData.ruleId, kbData.toJson());
+  }
+
+  loadSavedKbData() {
+    if (this.currentPatientId.length === 0 || this.dashboard.diagnoses.length === 0) {
+      return;
+    }
+    const prefsService = PreferencesService.getInstance();
+    for (const diag of this.dashboard.diagnoses) {
+      const jsonStr = prefsService.getDiagnosisKbData(this.currentPatientId, diag.ruleId);
+      if (jsonStr.length > 0) {
+        const saved = DiagnosisKbData.fromJson(jsonStr);
+        if (saved !== null && (saved.searchResults.length > 0 || saved.recommendations.length > 0)) {
+          this.diagnosisKbMap = [...this.diagnosisKbMap, saved];
+        }
+      }
+    }
+  }
+
   onDetailNavChanged() {
     this.syncNavDepth();
-    if (this.showDiagnosisDetail) {
-      this.loadDiagnosisKb();
-    }
   }
 
   onKbReaderPathChanged() {
@@ -177,6 +271,10 @@ export struct PatientDetailPage {
     this.dashboard = await this.patientService.getDashboard(this.currentPatientId);
     this.domainEntries = this.buildDomainEntries();
     this.loading = false;
+    this.loadSavedKbData();
+    if (this.dashboard.diagnoses.length > 0) {
+      this.loadDiagnosisKb();
+    }
   }
 
   buildDomainEntries(): DomainEntry[] {
@@ -1142,38 +1240,35 @@ export struct PatientDetailPage {
       kbData.ruleId = diag.ruleId;
       kbData.loadingKb = true;
       this.diagnosisKbMap = [...this.diagnosisKbMap, kbData];
-      const rule = DIAGNOSIS_RULES.find((r): boolean => r.id === diag.ruleId);
-      const queryParts: string[] = [diag.name];
-      if (rule !== undefined) {
-        const descWords = rule.description.split(/[+，,]/);
-        for (const w of descWords) {
-          const trimmed = w.trim();
-          if (trimmed.length > 0 && trimmed.length < 10) {
-            queryParts.push(trimmed);
-          }
-        }
-      } else if (diag.missingCriteria.length > 0) {
-        const keywords = diag.missingCriteria.split(/[;；]/);
-        for (const kw of keywords) {
-          const trimmed = kw.trim().split(' ')[0];
-          if (trimmed.length > 0 && trimmed.length < 10) {
-            queryParts.push(trimmed);
-          }
-        }
-      }
-      const query = queryParts.slice(0, 4).join(' ');
+      const query = diag.name;
       try {
         const smartResults = await this.kbService.smartSearch(query, 10);
         kbData.searchResults = smartResults;
+        const partialPathSet = new Set<string>();
+        for (const pp of this.kbService.lastPartialPaths) {
+          partialPathSet.add(pp);
+        }
+        kbData.partialPaths = this.kbService.lastPartialPaths;
+        const fullPaths: string[] = [];
+        for (const sr of smartResults) {
+          if (!partialPathSet.has(sr.path)) {
+            fullPaths.push(sr.path);
+          }
+        }
+        kbData.verifiedPaths = fullPaths;
         const totalExpanded = this.kbService.lastExpandedCount;
-        const totalVerified = smartResults.length;
-        kbData.verifyInfo = '扩展抓取:' + totalExpanded.toString() + '条→验证:' + totalVerified.toString() + '条';
+        const yCount = fullPaths.length;
+        const pCount = kbData.partialPaths.length;
+        kbData.verifyInfo = '广搜:' + totalExpanded.toString() + '→全文:' + yCount.toString() + '+片段:' + pCount.toString();
       } catch (_e) {
         kbData.searchResults = [];
+        kbData.verifiedPaths = [];
+        kbData.partialPaths = [];
         kbData.verifyInfo = '搜索异常';
       }
       kbData.loadingKb = false;
       this.diagnosisKbMap = [...this.diagnosisKbMap];
+      this.saveKbData(kbData);
     }
   }
 
@@ -1191,7 +1286,7 @@ export struct PatientDetailPage {
     if (kbData === null) {
       return;
     }
-    if (kbData.recommendations.length > 0 && kbData.expanded) {
+    if (kbData.recommendations.length > 0) {
       this.activeAdviceRuleId = diag.ruleId;
       this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
       this.showRecommendationsDetail = true;
@@ -1199,126 +1294,137 @@ export struct PatientDetailPage {
     }
     kbData.loadingAdvice = true;
     this.diagnosisKbMap = [...this.diagnosisKbMap];
-    const guidelinePages = await this.kbService.searchAndLoad(diag.name, 5);
-    const textbookPages = await this.kbService.searchByPrefix(diag.name, '实用重症医学/', 3);
-    if (guidelinePages.length === 0 && textbookPages.length === 0) {
-      kbData.loadingAdvice = false;
-      kbData.recommendations = [];
-      this.diagnosisKbMap = [...this.diagnosisKbMap];
-      return;
+
+    const guidelinePaths: string[] = [];
+    const textbookPaths: string[] = [];
+    for (const path of kbData.verifiedPaths) {
+      if (path.startsWith('实用重症医学/')) {
+        textbookPaths.push(path);
+      } else {
+        guidelinePaths.push(path);
+      }
     }
-    const config = this.getLlmConfig();
-    if (config === null) {
-      kbData.loadingAdvice = false;
-      this.diagnosisKbMap = [...this.diagnosisKbMap];
-      return;
-    }
-    const systemPrompt = '你是ICU临床指南助手。从给定的参考资料中提取与当前诊断直接相关的临床推荐意见。' +
-      '只提取原文中明确存在的推荐意见，不要推断或编造。' +
-      '每条注明证据级别（原文有就标，没有就标"未标注"）和来源标注。' +
-      '将推荐意见分为以下4类：' +
-      '"病理生理"：机制、病理生理要点，不限条数；' +
-      '"诊断"：诊断标准、诊断要点，不限条数；' +
-      '"监测"：监测指标、评估方法、复查时机、评分工具，不限条数；' +
-      '"治疗"：治疗措施、药物方案、剂量建议，不限条数。' +
-      '按临床优先级排序。输出JSON格式：' +
-      '{"recommendations":[{"text":"推荐意见","evidenceLevel":"级别","source":"来源","category":"病理生理|诊断|监测|治疗"}]}';
+
     let contextText = '';
-    if (textbookPages.length > 0) {
-      contextText += '### 教材原文\n';
-      for (const page of textbookPages) {
-        const content = page.content.length > 4000 ? page.content.substring(0, 4000) + '...(内容过长已截断)' : page.content;
-        contextText += '---\n' + content + '\n';
+    let guidelineChars = 0;
+    for (const path of guidelinePaths) {
+      const page = await this.kbService.getPage(path);
+      if (page !== null && page.content.trim().length >= 100) {
+        contextText += '### [指南] ' + path + '\n---\n' + page.content + '\n\n';
+        guidelineChars += page.content.length;
       }
     }
-    if (guidelinePages.length > 0) {
-      contextText += '### 指南原文\n';
-      for (const page of guidelinePages) {
-        const content = page.content.length > 4000 ? page.content.substring(0, 4000) + '...(内容过长已截断)' : page.content;
-        contextText += '---\n' + content + '\n';
+    const remainingBudget = Math.max(0, 87000 - guidelineChars);
+    const textbookCount = textbookPaths.length;
+    let perChapterBudget = 20000;
+    if (textbookCount > 0) {
+      perChapterBudget = Math.min(20000, Math.floor(remainingBudget / textbookCount));
+    }
+    const queryKeywords: string[] = diag.name.split(/\s+/);
+    for (const path of textbookPaths) {
+      const page = await this.kbService.getPage(path);
+      if (page !== null && page.content.trim().length >= 100) {
+        let content: string;
+        if (perChapterBudget > 0 && page.content.length > perChapterBudget) {
+          content = this.kbService.excerptContent(page.content, queryKeywords, perChapterBudget);
+        } else if (perChapterBudget <= 0) {
+          content = this.kbService.excerptContent(page.content, queryKeywords, 5000);
+        } else {
+          content = page.content;
+        }
+        contextText += '### [教材] ' + path + '\n---\n' + content + '\n\n';
       }
     }
-    const rule = DIAGNOSIS_RULES.find((r): boolean => r.id === diag.ruleId);
-    const patientContext = this.buildPatientContextStr();
-    const userText = '## 患者情况\n- 诊断：' + diag.name +
-      (rule !== undefined ? '\n- 依据：' + rule.description : '') +
-      '\n' + patientContext +
-      '\n## 参考资料\n' + contextText +
-      '\n## 任务\n从以上参考资料提取相关推荐意见，可从指南和教材中提取。输出JSON。';
-    try {
-      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
-      const recs = this.parseRecommendations(response);
-      kbData.recommendations = recs;
-      kbData.expanded = true;
-    } catch (_e) {
-      kbData.recommendations = [];
-    }
-    kbData.loadingAdvice = false;
-    this.diagnosisKbMap = [...this.diagnosisKbMap];
-
-    this.loadDiagnosisSummary(diag);
-  }
-
-  async loadDiagnosisSummary(diag: PatientDiagnosis) {
-    const kbData = this.getDiagnosisKb(diag.ruleId);
-    if (kbData === null || kbData.recommendations.length === 0) {
-      return;
-    }
-    const config = this.getLlmConfig();
-    if (config === null) {
-      return;
-    }
-    kbData.loadingSummary = true;
-    this.diagnosisKbMap = [...this.diagnosisKbMap];
-
-    const recsText: string[] = [];
-    const categories: string[] = ['病理生理', '诊断', '监测', '治疗'];
-    for (const cat of categories) {
-      let hasCat = false;
-      for (const rec of kbData.recommendations) {
-        if (rec.category === cat) {
-          if (!hasCat) {
-            recsText.push('【' + cat + '】');
-            hasCat = true;
-          }
-          let line = '- ' + rec.text;
-          if (rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注') {
-            line += '（' + rec.evidenceLevel + '）';
-          }
-          if (rec.source.length > 0) {
-            line += '——' + rec.source;
-          }
-          recsText.push(line);
+    const partialBudget = Math.max(0, remainingBudget - textbookCount * perChapterBudget);
+    for (const path of kbData.partialPaths) {
+      const page = await this.kbService.getPage(path);
+      if (page !== null && page.content.trim().length >= 100) {
+        const excerptBudget = Math.min(15000, partialBudget > 0 ? Math.floor(partialBudget / kbData.partialPaths.length) : 5000);
+        const content = this.kbService.excerptContent(page.content, queryKeywords, excerptBudget);
+        if (content.length >= 100) {
+          contextText += '### [片段参考·主题非' + diag.name + '] ' + path + '\n---\n' + content + '\n\n';
         }
       }
     }
 
+    if (contextText.length === 0) {
+      kbData.loadingAdvice = false;
+      kbData.recommendations = [];
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+      return;
+    }
+
+    const config = this.getLlmConfig();
+    if (config === null) {
+      kbData.loadingAdvice = false;
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+      return;
+    }
+
     const rule = DIAGNOSIS_RULES.find((r): boolean => r.id === diag.ruleId);
     const patientContext = this.buildPatientContextStr();
+    const isLowRel = kbData.verifiedPaths.length === 0 && kbData.partialPaths.length === 0 && kbData.searchResults.length > 0;
+    kbData.isLowRelevance = isLowRel;
 
-    const systemPrompt = '你是ICU临床助手。根据给定患者的诊断信息和提取的指南推荐意见，整理一份临床综合要点。' +
-      '要求：1)按"病理生理""诊断""监测""治疗"四个方面分节归纳；' +
-      '2)每个方面用分点列表呈现，将相关条目整合为逻辑清晰、表述完整的要点，不要遗漏重要内容；' +
-      '3)不是精简摘要，而是将分散的条目重组为更连贯、更便于临床阅读的形式；' +
-      '4)保留关键数值、药物名称、剂量等具体信息；5)使用markdown格式，用**加粗**标记关键词。';
+    const systemPrompt = '你是ICU临床指南助手。从给定的参考资料中提取与当前诊断直接相关的临床推荐意见和知识要点，同时生成临床要点归纳。' +
+      '体裁区分：' +
+      '1)对于有明确推荐等级/证据级别的结构化指南内容(如"强烈推荐""条件推荐""GPS"等)，type="推荐意见"，保留原文等级；' +
+      '2)对于叙述式教材内容(无明确推荐等级的病理生理、机制、诊断依据、监测方法等)，type="知识要点"，evidenceLevel填"-"；' +
+      '3)如果同一来源同时包含两种体裁，type="混合"。' +
+      '判断示例：' +
+      '- "脓毒症1小时集束化治疗：1)测量乳酸-强烈推荐(Grade 1)"→type="推荐意见"，保留等级' +
+      '- "脓毒症休克的病理生理特征包括..."→type="知识要点"，不编造等级' +
+      '- "AKI的诊断标准：KDIGO分期...推荐监测尿量"→type="混合"' +
+      '段落级相关性约束：只提取段落主题与查询疾病直接相关的段落，排除仅作为鉴别诊断提及、病原学举例、或并发症列表中顺带提及的段落。' +
+      '片段参考约束：标记为[片段参考]的资料来自主题非查询疾病的文章，只包含与查询疾病相关的段落截取。只从这些片段中提取与查询疾病直接相关的临床内容，不要提取原文中关于其他疾病的诊断或治疗内容。' +
+      '留空原则：如果某类别在参考资料中确实没有相关内容，该类别输出空数组[]，严禁从常识推断或编造。' +
+      '将推荐意见分为以下4类（每类名称严格使用下方4字名称）：' +
+      '"病理生理"：机制、病理生理要点；' +
+      '"诊断要点"：诊断标准、诊断要点、鉴别诊断要点；' +
+      '"监测评估"：监测指标、评估方法、复查时机、评分工具、观察项目；' +
+      '"治疗建议"：治疗措施、药物方案、剂量建议、复苏目标。' +
+      '特别注意"监测评估"类：如果参考资料提到任何需要监测/复查/评估的指标（如乳酸、尿量、生命体征、器官功能等）或评分工具（如SOFA、APACHE、CURB-65等），必须提取到"监测评估"类，不要遗漏。' +
+      '\n\n输出格式要求（严格遵守）：' +
+      '第一部分：JSON，只包含recommendations数组，不要在JSON中放summary。格式如下：\n' +
+      '```json\n{"recommendations":[{"text":"内容","evidenceLevel":"级别或-","source":"来源标注","category":"病理生理|诊断要点|监测评估|治疗建议","type":"推荐意见|知识要点|混合"}]}\n```\n' +
+      '第二部分：临床要点归纳（纯markdown，不在JSON内）。以"## 临床要点"开头，按"病理生理""诊断要点""监测评估""治疗建议"四方面分节归纳，用分点列表呈现，整合相关条目为逻辑清晰的要点，保留关键数值和药物信息，用**加粗**标记关键词。不是精简而是重组，不要遗漏已有条目。某类别无内容则不输出该节。' +
+      '\n\n关键约束（严格遵守，违反即为严重错误）：' +
+      '1. 临床要点归纳(summary)中的每一条内容，必须在recommendations数组中有对应的条目。summary不能包含recommendations中不存在的内容。' +
+      '2. 每条recommendation的text必须直接来自参考资料中与当前诊断疾病直接相关的段落，不能把讲其他疾病的内容张冠李戴。例如参考资料来自"脓毒症/机制"文章，其中关于脓毒症心肌抑制的段落不应提取为"代谢性酸中毒的诊断要点"。' +
+      '3. 如果参考资料中确实没有某类别的相关内容，该类别在recommendations中输出空数组[]，summary中也不输出该节。严禁从常识或其他疾病的内容推断填补。';
+
     const userText = '## 患者情况\n- 诊断：' + diag.name +
       (rule !== undefined ? '\n- 依据：' + rule.description : '') +
       '\n' + patientContext +
-      '\n## 提取的推荐意见\n' + recsText.join('\n') +
-      '\n## 任务\n整理一份分节分类的临床综合要点。';
+      (isLowRel ? '\n⚠️ 注意：以下文献为FTS回退结果，可能与诊断主题相关性较低，请严格按相关性提取，不确定则不提取。' : '') +
+      '\n## 参考资料\n' + contextText +
+      '\n## 任务\n从以上参考资料提取相关推荐意见和知识要点，并生成临床要点归纳。先输出JSON部分，再输出markdown临床要点部分。';
 
     try {
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
-      kbData.summary = response.trim();
+      const parsed = this.parseRecommendationsAndSummary(response);
+      kbData.recommendations = parsed.recommendations;
+      kbData.summary = parsed.summary;
       if (this.activeAdviceRuleId === diag.ruleId) {
-        this.summaryLines = parseKbMarkdown(kbData.summary);
+        this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
       }
     } catch (_e) {
-      kbData.summary = '';
-      this.summaryLines = [];
+      kbData.recommendations = [];
+      kbData.summary = 'AI暂不可用，请稍后重试';
     }
-    kbData.loadingSummary = false;
+    kbData.loadingAdvice = false;
     this.diagnosisKbMap = [...this.diagnosisKbMap];
+    this.activeAdviceRuleId = diag.ruleId;
+    this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
+    this.saveKbData(kbData);
+    if (kbData.recommendations.length > 0) {
+      this.adviceReadyRuleId = diag.ruleId;
+      setTimeout(() => {
+        if (this.adviceReadyRuleId === diag.ruleId) {
+          this.adviceReadyRuleId = '';
+        }
+      }, 3000);
+    }
   }
 
   getLlmConfig(): ApiServiceConfig | null {
@@ -1356,10 +1462,34 @@ export struct PatientDetailPage {
   parseRecommendations(responseText: string): GuidelineRecommendation[] {
     const result: GuidelineRecommendation[] = [];
     let jsonStr = responseText;
-    const jsonStart = responseText.indexOf('{');
-    const jsonEnd = responseText.lastIndexOf('}');
-    if (jsonStart >= 0 && jsonEnd > jsonStart) {
-      jsonStr = responseText.substring(jsonStart, jsonEnd + 1);
+    const codeBlockStart = responseText.indexOf('```json');
+    if (codeBlockStart >= 0) {
+      const afterStart = responseText.indexOf('{', codeBlockStart);
+      const codeBlockEnd = responseText.indexOf('```', afterStart >= 0 ? afterStart : codeBlockStart + 7);
+      if (afterStart >= 0 && codeBlockEnd > afterStart) {
+        jsonStr = responseText.substring(afterStart, codeBlockEnd);
+      }
+    } else {
+      const jsonStart = responseText.indexOf('{');
+      const jsonEnd = responseText.indexOf('}', jsonStart >= 0 ? jsonStart : 0);
+      if (jsonStart >= 0 && jsonEnd > jsonStart) {
+        let depth = 0;
+        let endIdx = -1;
+        for (let i = jsonStart; i < responseText.length; i++) {
+          if (responseText.charAt(i) === '{') {
+            depth++;
+          } else if (responseText.charAt(i) === '}') {
+            depth--;
+            if (depth === 0) {
+              endIdx = i;
+              break;
+            }
+          }
+        }
+        if (endIdx > jsonStart) {
+          jsonStr = responseText.substring(jsonStart, endIdx + 1);
+        }
+      }
     }
     const parsed: Object | null = JSON.parse(jsonStr);
     if (parsed === null) {
@@ -1371,18 +1501,57 @@ export struct PatientDetailPage {
       return result;
     }
     const recArr = arr as Array<Record<string, string>>;
-    const validCategories: string[] = ['病理生理', '诊断', '监测', '治疗'];
+    const validCategories: string[] = ['病理生理', '诊断要点', '监测评估', '治疗建议'];
+    const categoryMap: Record<string, string> = { '病理生理': '病理生理', '诊断': '诊断要点', '诊断要点': '诊断要点', '监测': '监测评估', '监测评估': '监测评估', '治疗': '治疗建议', '治疗建议': '治疗建议' };
     for (const rec of recArr) {
       const gr = new GuidelineRecommendation();
       gr.text = rec['text'] || '';
       gr.evidenceLevel = rec['evidenceLevel'] || '未标注';
       gr.source = rec['source'] || '';
       gr.category = rec['category'] || '';
-      if (validCategories.indexOf(gr.category) < 0) {
-        gr.category = '治疗';
+      gr.type = rec['type'] || '';
+      const validTypes: string[] = ['推荐意见', '知识要点', '混合'];
+      if (validTypes.indexOf(gr.type) < 0) {
+        gr.type = '';
+      }
+      const mapped = categoryMap[gr.category];
+      if (mapped !== undefined) {
+        gr.category = mapped;
+      } else {
+        gr.category = '治疗建议';
       }
       if (gr.text.length > 0) {
         result.push(gr);
+      }
+    }
+    return result;
+  }
+
+  parseRecommendationsAndSummary(responseText: string): ParsedRecommendations {
+    const result = new ParsedRecommendations();
+    const summaryMarker = '## 临床要点';
+    const markerIdx = responseText.indexOf(summaryMarker);
+    let jsonPart = responseText;
+    let summaryPart = '';
+    if (markerIdx >= 0) {
+      jsonPart = responseText.substring(0, markerIdx);
+      summaryPart = responseText.substring(markerIdx);
+    }
+    result.recommendations = this.parseRecommendations(jsonPart);
+    if (summaryPart.length > 0) {
+      const headerEnd = summaryPart.indexOf('\n');
+      if (headerEnd >= 0 && summaryPart.substring(0, headerEnd).trim() === '## 临床要点') {
+        result.summary = summaryPart.substring(headerEnd + 1).trim();
+      } else {
+        result.summary = summaryPart.trim();
+      }
+    } else {
+      const afterJson = responseText.lastIndexOf('```');
+      if (afterJson >= 0 && afterJson < responseText.length - 3) {
+        const remaining = responseText.substring(afterJson + 3).trim();
+        if (remaining.length > 20) {
+          result.summary = remaining;
+        }
       }
     }
     return result;
@@ -1408,7 +1577,7 @@ export struct PatientDetailPage {
   getRecommendationSummary(recs: GuidelineRecommendation[]): string {
     let count = 0;
     const catCount: string[] = [];
-    const categories: string[] = ['病理生理', '诊断', '监测', '治疗'];
+    const categories: string[] = ['病理生理', '诊断要点', '监测评估', '治疗建议'];
     for (const cat of categories) {
       let c = 0;
       for (const rec of recs) {
@@ -1441,13 +1610,13 @@ export struct PatientDetailPage {
     if (cat === '病理生理') {
       return '#7A6B9D';
     }
-    if (cat === '诊断') {
+    if (cat === '诊断要点') {
       return '#5B7FA5';
     }
-    if (cat === '监测') {
+    if (cat === '监测评估') {
       return '#C8881A';
     }
-    if (cat === '治疗') {
+    if (cat === '治疗建议') {
       return '#3D6B4F';
     }
     return '#7A8074';
@@ -1455,15 +1624,15 @@ export struct PatientDetailPage {
 
   getCategoryLabel(cat: string): string {
     if (cat === '病理生理') {
-      return '机制';
+      return '病理';
     }
-    if (cat === '诊断') {
+    if (cat === '诊断要点') {
       return '诊断';
     }
-    if (cat === '监测') {
+    if (cat === '监测评估') {
       return '监测';
     }
-    if (cat === '治疗') {
+    if (cat === '治疗建议') {
       return '治疗';
     }
     return '其他';
@@ -1576,7 +1745,7 @@ export struct PatientDetailPage {
             .fontWeight(FontWeight.Bold)
             .fontColor('#1F3D2F');
           if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
-            Text(this.getDiagnosisKb(diag.ruleId)!.refsExpanded ? ' ▲' : ' ▼')
+            Text(this.expandedRefIds.has(diag.ruleId) ? ' ▲' : ' ▼')
               .fontSize(11)
               .fontColor('#7A8074')
               .margin({ left: 4 });
@@ -1592,18 +1761,37 @@ export struct PatientDetailPage {
             }
           }
           Blank();
+          if (!this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
+            Text('重搜')
+              .fontSize(10)
+              .fontColor('#9A6B1E')
+              .backgroundColor('#FFF3E0')
+              .borderRadius(3)
+              .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+              .margin({ right: 8 })
+              .onClick(() => {
+                this.diagnosisKbMap = this.diagnosisKbMap.filter((d: DiagnosisKbData): boolean => d.ruleId !== diag.ruleId);
+                this.expandedRefIds.delete(diag.ruleId);
+                this.expandedRefIds = new Set(this.expandedRefIds);
+                const prefsService = PreferencesService.getInstance();
+                prefsService.saveDiagnosisKbData(this.currentPatientId, diag.ruleId, '');
+                this.loadDiagnosisKb();
+              });
+          }
           if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
-            Text(this.getDiagnosisKb(diag.ruleId)!.refsExpanded ? '收起' : '展开')
+            Text(this.expandedRefIds.has(diag.ruleId) ? '收起' : '展开')
               .fontSize(11)
               .fontColor('#2B6CB0');
           }
         }
         .width('100%')
         .onClick(() => {
-          if (this.getDiagnosisKb(diag.ruleId) !== null) {
-            this.getDiagnosisKb(diag.ruleId)!.refsExpanded = !this.getDiagnosisKb(diag.ruleId)!.refsExpanded;
-            this.diagnosisKbMap = [...this.diagnosisKbMap];
+          if (this.expandedRefIds.has(diag.ruleId)) {
+            this.expandedRefIds.delete(diag.ruleId);
+          } else {
+            this.expandedRefIds.add(diag.ruleId);
           }
+          this.expandedRefIds = new Set(this.expandedRefIds);
         });
 
         if (this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
@@ -1615,23 +1803,34 @@ export struct PatientDetailPage {
               .margin({ left: 6 });
           }
           .margin({ top: 4 });
-        } else if (this.getDiagnosisKb(diag.ruleId)!.refsExpanded && this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
+        } else if (this.expandedRefIds.has(diag.ruleId) && this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
           Column() {
             ForEach(this.getDiagnosisKb(diag.ruleId)!.searchResults, (sr: SearchResult) => {
               Column() {
+                Row() {
+                  Text(this.getKbSearchResultTitle(sr))
+                    .fontSize(10)
+                    .fontColor('#2B6CB0')
+                    .maxLines(1)
+                    .textOverflow({ overflow: TextOverflow.Ellipsis })
+                    .layoutWeight(1);
+                  if (this.getDiagnosisKb(diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
+                    Text('片段')
+                      .fontSize(8)
+                      .fontColor('#9A6B1E')
+                      .backgroundColor('#FFF3E0')
+                      .borderRadius(2)
+                      .padding({ left: 3, right: 3, top: 0, bottom: 0 })
+                      .margin({ left: 4 });
+                  }
+                }
+                .width('100%');
                 Text(this.getKbGuidelineName(sr))
-                  .fontSize(10)
+                  .fontSize(9)
                   .fontColor('#7A8074')
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .width('100%');
-                Text(this.getKbSearchResultTitle(sr))
-                  .fontSize(10)
-                  .fontColor('#2B6CB0')
-                  .maxLines(2)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .width('100%')
-                  .margin({ top: 1 });
               }
               .width('100%')
               .padding({ top: 4, bottom: 4 })
@@ -1651,7 +1850,16 @@ export struct PatientDetailPage {
           .backgroundColor('#E0DCC8')
           .margin({ top: 8, bottom: 8 });
 
-        if (this.getDiagnosisKb(diag.ruleId)!.loadingAdvice) {
+        if (this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
+          Row() {
+            LoadingProgress().width(14).height(14).color('#7A8074');
+            Text('搜索指南中...')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ left: 6 });
+          }
+          .margin({ top: 6 });
+        } else if (this.getDiagnosisKb(diag.ruleId)!.loadingAdvice) {
           Row() {
             LoadingProgress().width(14).height(14).color('#7A8074');
             Text('提取指南建议中...')
@@ -1660,33 +1868,35 @@ export struct PatientDetailPage {
               .margin({ left: 6 });
           }
           .margin({ top: 6 });
-        } else if (this.getDiagnosisKb(diag.ruleId)!.expanded) {
-          if (this.getDiagnosisKb(diag.ruleId)!.recommendations.length > 0) {
-            Row() {
-              Text('指南建议 · ' + this.getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
-                .fontSize(12)
-                .fontColor('#1F3D2F')
-                .fontWeight(FontWeight.Medium);
-              Blank();
-              Text('查看 >')
-                .fontSize(12)
-                .fontColor('#2B6CB0');
+        } else if (this.getDiagnosisKb(diag.ruleId)!.recommendations.length > 0) {
+          Row() {
+            Text('指南建议 · ' + this.getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
+              .fontSize(12)
+              .fontColor('#1F3D2F')
+              .fontWeight(FontWeight.Medium);
+            Blank();
+            if (this.adviceReadyRuleId === diag.ruleId) {
+              Text('已就绪')
+                .fontSize(10)
+                .fontColor('#2D6A4F')
+                .backgroundColor('#E8F5E9')
+                .borderRadius(3)
+                .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+                .margin({ right: 4 });
             }
-            .width('100%')
-            .padding({ top: 6, bottom: 6 })
-            .onClick(() => {
-               this.activeAdviceRuleId = diag.ruleId;
-               const kbData2 = this.getDiagnosisKb(diag.ruleId);
-               this.summaryLines = kbData2 !== null && kbData2.summary.length > 0 ? parseKbMarkdown(kbData2.summary) : [];
-               this.showRecommendationsDetail = true;
-            });
-          } else {
-            Text('暂无指南建议')
-              .fontSize(11)
-              .fontColor('#7A8074')
-              .margin({ top: 4 });
+            Text('查看 >')
+              .fontSize(12)
+              .fontColor('#2B6CB0');
           }
-        } else {
+          .width('100%')
+          .padding({ top: 6, bottom: 6 })
+          .onClick(() => {
+             this.activeAdviceRuleId = diag.ruleId;
+             const kbData2 = this.getDiagnosisKb(diag.ruleId);
+             this.summaryLines = kbData2 !== null && kbData2.summary.length > 0 ? parseKbMarkdown(kbData2.summary) : [];
+             this.showRecommendationsDetail = true;
+          });
+        } else if (this.getDiagnosisKb(diag.ruleId)!.verifiedPaths.length > 0) {
           Row() {
             Text('查看指南建议')
               .fontSize(12)
@@ -1699,6 +1909,11 @@ export struct PatientDetailPage {
           .width('100%')
           .padding({ top: 6, bottom: 6 })
           .onClick(() => { this.loadDiagnosisAdvice(diag); });
+        } else {
+          Text('暂无指南建议')
+            .fontSize(11)
+            .fontColor('#7A8074')
+            .margin({ top: 4 });
         }
       }
       .width('100%');
@@ -1768,7 +1983,24 @@ export struct PatientDetailPage {
       Scroll() {
         Column() {
           if (this.activeAdviceRuleId.length > 0 && this.getDiagnosisKb(this.activeAdviceRuleId) !== null) {
-            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.summary.length > 0 || this.getDiagnosisKb(this.activeAdviceRuleId)!.loadingSummary) {
+            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.isLowRelevance) {
+              Row() {
+                Text('⚠️ 低相关性文献')
+                  .fontSize(11)
+                  .fontColor('#9A6B1E')
+                  .fontWeight(FontWeight.Medium)
+                Text('未找到高度相关文献，以下内容可能仅供参考')
+                  .fontSize(10)
+                  .fontColor('#9A9E94')
+                  .margin({ left: 6 })
+              }
+              .width('100%')
+              .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+              .backgroundColor('#FFF8E1')
+              .borderRadius(6)
+              .margin({ bottom: 8 });
+            }
+            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.summary.length > 0) {
               Column() {
                 Row() {
                   Text('临床要点')
@@ -1783,19 +2015,9 @@ export struct PatientDetailPage {
                   .fontColor('#9A9E94')
                   .width('100%')
                   .margin({ bottom: 6 });
-                if (this.getDiagnosisKb(this.activeAdviceRuleId)!.loadingSummary) {
-                  Row() {
-                    LoadingProgress().width(14).height(14).color('#7A8074');
-                    Text('生成临床要点中...')
-                      .fontSize(11)
-                      .fontColor('#7A8074')
-                      .margin({ left: 6 });
-                  }
-                } else {
-                  ForEach(this.summaryLines, (ml: MarkdownLine) => {
-                    this.KbMarkdownLineView(ml);
-                  }, (ml: MarkdownLine, index: number) => index.toString());
-                }
+                ForEach(this.summaryLines, (ml: MarkdownLine) => {
+                  this.KbMarkdownLineView(ml);
+                }, (ml: MarkdownLine, index: number) => index.toString());
               }
               .width('100%')
               .padding(10)
@@ -1804,10 +2026,10 @@ export struct PatientDetailPage {
               .border({ width: 1, color: '#E8DCC8' })
               .margin({ bottom: 8 });
             }
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '病理生理', '病理生理要点');
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '诊断', '诊断要点');
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '监测', '监测与评估');
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '治疗', '治疗建议');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '病理生理', '病理生理');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '诊断要点', '诊断要点');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '监测评估', '监测评估');
+            this.RecommendationCategorySection(this.activeAdviceRuleId, '治疗建议', '治疗建议');
           }
         }
         .padding({ left: 16, right: 16, top: 8, bottom: 16 })
@@ -1865,41 +2087,37 @@ export struct PatientDetailPage {
                     .fontSize(13)
                     .fontColor('#4A5247')
                     .width('100%');
-                  if (category === '病理生理') {
-                    Text('机制')
-                      .fontSize(10)
-                      .fontColor('#7A6B9D')
-                      .backgroundColor('#F0EBF5')
-                      .borderRadius(3)
-                      .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-                      .margin({ top: 2 });
-                    if (rec.source.length > 0) {
-                      Text(rec.source)
+                  Row() {
+                    if (rec.type.length > 0) {
+                      Text(rec.type)
                         .fontSize(9)
-                        .fontColor('#9A9E94')
-                        .maxLines(2)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .width('100%')
-                        .margin({ top: 2 });
+                        .fontColor(rec.type === '推荐意见' ? '#2D6A4F' : (rec.type === '知识要点' ? '#2B5C8A' : '#7A6B9D'))
+                        .backgroundColor(rec.type === '推荐意见' ? '#E8F5E9' : (rec.type === '知识要点' ? '#E3F2FD' : '#F0EBF5'))
+                        .borderRadius(3)
+                        .padding({ left: 4, right: 4, top: 1, bottom: 1 });
                     }
-                  } else {
-                    Text(rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注' ? rec.evidenceLevel : '未分级')
-                      .fontSize(10)
-                      .fontColor(this.getEvidenceColor(rec.evidenceLevel))
-                      .backgroundColor(this.getEvidenceBgColor(rec.evidenceLevel))
-                      .borderRadius(3)
-                      .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-                      .margin({ top: 2 });
+                    if (rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注' && rec.evidenceLevel !== '-') {
+                      Text(rec.evidenceLevel)
+                        .fontSize(10)
+                        .fontColor(this.getEvidenceColor(rec.evidenceLevel))
+                        .backgroundColor(this.getEvidenceBgColor(rec.evidenceLevel))
+                        .borderRadius(3)
+                        .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+                        .margin({ left: 4 });
+                    }
+                    Blank();
                     if (rec.source.length > 0) {
                       Text(rec.source)
                         .fontSize(9)
                         .fontColor('#9A9E94')
-                        .maxLines(2)
+                        .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .width('100%')
-                        .margin({ top: 2 });
+                        .layoutWeight(1)
+                        .textAlign(TextAlign.End);
                     }
                   }
+                  .width('100%')
+                  .margin({ top: 2 });
                 }
                 .width('100%')
                 .alignItems(HorizontalAlign.Start)
@@ -2874,6 +3092,7 @@ export struct PatientDetailPage {
           .layoutWeight(1);
       }
       .width('100%')
+      .alignItems(VerticalAlign.Top)
       .padding({ left: ml.indent * 12 + 8, top: 1, bottom: 1 });
     } else if (ml.type === 'quote') {
       Row() {
