@@ -540,6 +540,61 @@ export class KnowledgeService {
     return results;
   }
 
+  buildSearchKeywordsFromAbnormalLabs(latestData: Map<string, string>): string[] {
+    const keywords: string[] = [];
+    const checks: string[][] = [
+      ['pct', '0.5', 'gt', '细菌感染 脓毒症'],
+      ['pct', '2', 'gt', '脓毒症 严重感染'],
+      ['crp', '10', 'gt', '炎症 感染'],
+      ['crp', '100', 'gt', '严重感染 脓毒症'],
+      ['ctni', '0.018', 'gt', '心肌损伤 心梗 冠脉'],
+      ['myo', '95.2', 'gt', '心肌损伤 骨骼肌损伤'],
+      ['bnp', '100', 'gt', '心衰 心功能不全'],
+      ['dDimer', '1.0', 'gt', '肺栓塞 深静脉血栓 血栓'],
+      ['dDimer', '5', 'gt', 'DIC 纤溶'],
+      ['fib', '1.5', 'lt', 'DIC 低纤维蛋白原 出血'],
+      ['fdp', '5', 'gt', 'DIC 纤溶亢进'],
+      ['pt', '18', 'gt', '凝血障碍 肝病'],
+      ['ck', '5000', 'gt', '横纹肌溶解'],
+      ['ck', '1000', 'gt', '肌损伤'],
+      ['alt', '216', 'gt', '肝损伤 肝损害'],
+      ['ammonia', '50', 'gt', '肝性脑病'],
+      ['mg', '0.7', 'lt', '低镁 心律失常'],
+      ['p', '0.85', 'lt', '低磷 呼吸肌无力 撤机困难'],
+      ['ft4', '77', 'gt', '甲亢危象'],
+      ['tsh', '10', 'gt', '甲减 黏液水肿'],
+      ['cortisol', '140', 'lt', '肾上腺危象'],
+    ];
+    for (let i = 0; i < checks.length; i++) {
+      const c = checks[i];
+      const val = latestData.get(c[0]);
+      if (val === undefined || val.length === 0) {
+        continue;
+      }
+      const numVal = parseFloat(val);
+      if (isNaN(numVal)) {
+        continue;
+      }
+      const threshold = parseFloat(c[1]);
+      const op = c[2];
+      let matched = false;
+      if (op === 'gt' && numVal > threshold) {
+        matched = true;
+      } else if (op === 'lt' && numVal < threshold) {
+        matched = true;
+      }
+      if (matched) {
+        const kws = c[3].split(' ');
+        for (let j = 0; j < kws.length; j++) {
+          if (!keywords.includes(kws[j])) {
+            keywords.push(kws[j]);
+          }
+        }
+      }
+    }
+    return keywords;
+  }
+
   async smartSearch(query: string, limit: number = 10): Promise<SearchResult[]> {
     const prefsService = PreferencesService.getInstance();
     const config = prefsService.getActiveLlmConfig();

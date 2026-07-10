@@ -102,17 +102,28 @@ export class ImageStore {
       fileIo.mkdirSync(this.tempDir, true);
       const ext = this.getExtFromUri(uri);
       const filePath = this.tempDir + '/' + id + '.' + ext;
-      const srcFile = fileIo.openSync(uri, fileIo.OpenMode.READ_ONLY);
-      const stat = fileIo.statSync(srcFile.fd);
-      const buf = new ArrayBuffer(stat.size);
-      fileIo.readSync(srcFile.fd, buf);
-      fileIo.closeSync(srcFile.fd);
-      const dstFile = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.WRITE_ONLY);
-      fileIo.writeSync(dstFile.fd, buf);
-      fileIo.closeSync(dstFile.fd);
+      fileIo.copyFileSync(uri, filePath);
       return filePath;
     } catch (_e) {
-      return '';
+      try {
+        const srcFile = fileIo.openSync(uri, fileIo.OpenMode.READ_ONLY);
+        const buf = new ArrayBuffer(1024 * 1024 * 50);
+        const bytesRead = fileIo.readSync(srcFile.fd, buf);
+        fileIo.closeSync(srcFile.fd);
+        const ext = this.getExtFromUri(uri);
+        const filePath = this.tempDir + '/' + id + '.' + ext;
+        const dstFile = fileIo.openSync(filePath, fileIo.OpenMode.CREATE | fileIo.OpenMode.WRITE_ONLY);
+        const trimmed = new Uint8Array(bytesRead);
+        const srcView = new Uint8Array(buf);
+        for (let i = 0; i < bytesRead; i++) {
+          trimmed[i] = srcView[i];
+        }
+        fileIo.writeSync(dstFile.fd, trimmed.buffer);
+        fileIo.closeSync(dstFile.fd);
+        return filePath;
+      } catch (_e2) {
+        return '';
+      }
     }
   }
 

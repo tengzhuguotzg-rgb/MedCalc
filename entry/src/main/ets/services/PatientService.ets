@@ -1,4 +1,4 @@
-import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientDashboard, DATA_DOMAINS } from '../model/Patient';
+import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientLabAlert, PatientDashboard, DATA_DOMAINS } from '../model/Patient';
 import { PatientRepository } from './PatientRepository';
 import { ImageStore } from './ImageStore';
 import { AssistantService, CalcMatch, DataFieldSpec, CalcInputSpec } from './AssistantService';
@@ -16,6 +16,54 @@ class CalcResultJson {
   tier: string = '';
   tierClass: string = '';
   footnote: string = '';
+}
+
+const FIELD_PRIORITY: string[] = [
+  'sbp', 'dbp', 'map', 'hr', 'rr', 'temp', 'spo2',
+  'crp', 'pct', 'esr', 'il6',
+  'tnt', 'ckmb', 'ntprobnp',
+  'ph', 'paco2', 'pao2', 'hco3', 'lac', 'fio2',
+  'na', 'k', 'cl', 'ca', 'mg', 'p',
+  'creatinine', 'bun', 'urineOutput', 'gfr',
+  'bilirubin', 'alb', 'alt', 'ast', 'ammonia',
+  'hgb', 'platelet', 'wbc', 'mcv',
+  'inr', 'aptt', 'fib', 'dDimer',
+  'glu', 'ck', 'ldh',
+  'tsh', 'ft3', 'ft4', 'cortisol',
+  'gcs', 'rassScore', 'vaso', 'peep',
+];
+
+function buildDataSummaryWithLabels(latestData: Map<string, string>, specs: DataFieldSpec[], maxFields: number): string {
+  const labelMap = new Map<string, string>();
+  for (let i = 0; i < specs.length; i++) {
+    labelMap.set(specs[i].key, specs[i].label);
+  }
+  const prioritized: string[] = [];
+  const remaining: string[] = [];
+  const prioritySet = new Set<string>();
+  for (let i = 0; i < FIELD_PRIORITY.length; i++) {
+    prioritySet.add(FIELD_PRIORITY[i]);
+  }
+  const keys = Array.from(latestData.keys());
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i] === 'reportdate' || keys[i] === 'reporttime' || keys[i].endsWith('Unit')) {
+      continue;
+    }
+    if (latestData.has(keys[i]) && prioritySet.has(keys[i])) {
+      prioritized.push(keys[i]);
+    } else if (latestData.has(keys[i])) {
+      remaining.push(keys[i]);
+    }
+  }
+  const ordered = prioritized.concat(remaining);
+  let summary = '';
+  for (let i = 0; i < ordered.length && i < maxFields; i++) {
+    const key = ordered[i];
+    const label = labelMap.get(key);
+    const displayLabel = label !== undefined && label.length > 0 ? label : key;
+    summary += displayLabel + '=' + (latestData.get(key) || '') + ' ';
+  }
+  return summary;
 }
 
 export class PatientService {
@@ -63,6 +111,7 @@ export class PatientService {
   async deletePatient(id: string): Promise<void> {
     this.imageStore.deletePatientImages(id);
     await this.repo.deleteDiagnosesByPatient(id);
+    await this.repo.deleteLabAlertsByPatient(id);
     await this.repo.deletePatient(id);
   }
 
@@ -216,6 +265,9 @@ export class PatientService {
       patient.updatedAt = Date.now();
       await this.repo.updatePatient(patient);
     }
+    await this.repo.resolveAllDiagnoses(record.patientId);
+    await this.repo.resolveAllLabAlerts(record.patientId);
+    await this.repo.resolveAllAlerts(record.patientId);
     await this.refreshAlerts(record.patientId);
   }
 
@@ -271,6 +323,7 @@ export class PatientService {
     dashboard.latestData = await this.repo.getLatestData(patientId);
     dashboard.alerts = await this.repo.getActiveAlerts(patientId);
     dashboard.diagnoses = await this.repo.getActiveDiagnoses(patientId);
+    dashboard.labAlerts = await this.repo.getActiveLabAlerts(patientId);
     dashboard.records = await this.repo.getRecordsByPatient(patientId);
     let warningAlertCount = 0;
     for (let i = 0; i < dashboard.alerts.length; i++) {
@@ -285,6 +338,7 @@ export class PatientService {
     }
     dashboard.alertCount = warningAlertCount;
     dashboard.diagnosisCount = dashboard.diagnoses.length;
+    dashboard.labAlertCount = dashboard.labAlerts.length;
     dashboard.domainTags = this.computeDomainTags(dashboard.latestData);
     return dashboard;
   }
@@ -352,6 +406,7 @@ export class PatientService {
     const diagnosisResult = this.diagnosisEngine.evaluate(latestData, alertResults);
     const now = Date.now();
     const matchedRuleIds = new Set<string>();
+    const matchedLabRuleIds = new Set<string>();
     const newMatches: DiagnosisMatch[] = [];
 
     const existingDiagnoses = await this.repo.getActiveDiagnoses(patientId);
@@ -360,13 +415,22 @@ export class PatientService {
       existingRuleIds.add(existingDiagnoses[i].ruleId);
     }
 
+    const fieldSpecs = this.assistantService.getDataFieldSpecs();
+    const labelMap = new Map<string, string>();
+    const unitMap = new Map<string, string>();
+    for (let i = 0; i < fieldSpecs.length; i++) {
+      labelMap.set(fieldSpecs[i].key, fieldSpecs[i].label);
+      unitMap.set(fieldSpecs[i].key, fieldSpecs[i].unit);
+    }
+
     for (let i = 0; i < diagnosisResult.confirmed.length; i++) {
       const match = diagnosisResult.confirmed[i];
       matchedRuleIds.add(match.rule.id);
       const isNew = !existingRuleIds.has(match.rule.id);
+      const sortOrder = this.computeSortOrder('rule', existingDiagnoses);
       await this.repo.upsertDiagnosis(
         patientId, match.rule.id, match.rule.name, match.rule.category,
-        match.rule.urgency, 'rule', '', 0, '', now
+        match.rule.urgency, 'rule', '', 0, '', now, sortOrder
       );
       if (isNew) {
         newMatches.push(match);
@@ -378,16 +442,42 @@ export class PatientService {
       matchedRuleIds.add(partial.rule.id);
       const missingStr = partial.missingCriteria.join('; ');
       const isNew = !existingRuleIds.has(partial.rule.id);
+      const sortOrder = this.computeSortOrder('partial', existingDiagnoses);
       await this.repo.upsertDiagnosis(
         patientId, partial.rule.id, partial.rule.name, partial.rule.category,
-        partial.rule.urgency, 'suggestion', missingStr, 0, '', now
+        partial.rule.urgency, 'partial', missingStr, 0, '', now, sortOrder
       );
+    }
+
+    for (let i = 0; i < diagnosisResult.labAlerts.length; i++) {
+      const match = diagnosisResult.labAlerts[i];
+      matchedLabRuleIds.add(match.rule.id);
+      const fieldKey = match.rule.criteria.length > 0 ? match.rule.criteria[0].field : '';
+      const rawValue = fieldKey.length > 0 ? (latestData.get(fieldKey) || '') : '';
+      const fieldLabel = labelMap.get(fieldKey) || fieldKey;
+      const unit = unitMap.get(fieldKey) || '';
+      const op = match.rule.criteria.length > 0 ? match.rule.criteria[0].operator : '';
+      const val = match.rule.criteria.length > 0 ? match.rule.criteria[0].value : '';
+      const thresholdStr = this.buildThresholdStr(op, val, unit);
+      await this.repo.upsertLabAlert(
+        patientId, match.rule.id, match.rule.name, match.rule.category,
+        match.rule.urgency, fieldKey, fieldLabel, rawValue,
+        thresholdStr, unit, match.rule.description, now
+      );
+      await this.repo.resolveDiagnosesForRule(patientId, match.rule.id);
     }
 
     const allRules = this.diagnosisEngine.getDiagnosisRules();
     for (let i = 0; i < allRules.length; i++) {
-      if (!matchedRuleIds.has(allRules[i].id)) {
-        await this.repo.resolveDiagnosesForRule(patientId, allRules[i].id);
+      const rule = allRules[i];
+      if (rule.ruleType === 'alert') {
+        if (!matchedLabRuleIds.has(rule.id)) {
+          await this.repo.resolveLabAlertsForRule(patientId, rule.id);
+        }
+      } else {
+        if (!matchedRuleIds.has(rule.id)) {
+          await this.repo.resolveDiagnosesForRule(patientId, rule.id);
+        }
       }
     }
 
@@ -402,6 +492,26 @@ export class PatientService {
     if (diagnosisResult.confirmed.length === 0 && latestData.size >= 5) {
       this.suggestDiagnosesWithLlm(patientId, latestData, alertResults, confirmedRuleIds);
     }
+  }
+
+  private buildThresholdStr(op: string, val: string, unit: string): string {
+    const unitStr = unit.length > 0 ? unit : '';
+    if (op === 'gt') {
+      return '>' + val + unitStr;
+    }
+    if (op === 'gte') {
+      return '≥' + val + unitStr;
+    }
+    if (op === 'lt') {
+      return '<' + val + unitStr;
+    }
+    if (op === 'lte') {
+      return '≤' + val + unitStr;
+    }
+    if (op === 'eq') {
+      return '=' + val + unitStr;
+    }
+    return op + ' ' + val + unitStr;
   }
 
   private async confirmDiagnosesWithLlm(patientId: string, newMatches: DiagnosisMatch[],
@@ -420,10 +530,8 @@ export class PatientService {
       }
 
       let dataSummary = '';
-      const dataKeys = Array.from(latestData.keys());
-      for (let i = 0; i < dataKeys.length && i < 30; i++) {
-        dataSummary += dataKeys[i] + '=' + (latestData.get(dataKeys[i]) || '') + ' ';
-      }
+      const fieldSpecs = this.assistantService.getDataFieldSpecs();
+      dataSummary = buildDataSummaryWithLabels(latestData, fieldSpecs, 60);
 
       let alertSummary = '';
       const alertKeys = Array.from(alertResults.keys());
@@ -479,6 +587,98 @@ export class PatientService {
     }
   }
 
+  async reconfirmPendingDiagnoses(patientId: string): Promise<void> {
+    try {
+      const activeDiagnoses = await this.repo.getActiveDiagnoses(patientId);
+      const pending = activeDiagnoses.filter((d: PatientDiagnosis): boolean => d.source === 'rule' && d.llmConfirmed === 0);
+      if (pending.length === 0) {
+        return;
+      }
+      const prefsService = PreferencesService.getInstance();
+      const config = prefsService.getActiveLlmConfig();
+      if (!config) {
+        return;
+      }
+      const latestData = await this.repo.getLatestData(patientId);
+      const dataRecord: Record<string, string> = {};
+      latestData.forEach((value: string, key: string) => {
+        dataRecord[key] = value;
+      });
+      const matches = this.assistantService.computeAllMatchesFromRecord(dataRecord);
+      const alertResults = new Map<string, CalcResult>();
+      for (let i = 0; i < matches.length; i++) {
+        const match = matches[i];
+        if (match.completeness < 100 || !match.result) {
+          continue;
+        }
+        alertResults.set(match.calcId, match.result);
+      }
+      let diagnosisList = '';
+      for (let i = 0; i < pending.length; i++) {
+        diagnosisList += (i + 1).toString() + '. ' + pending[i].name +
+          ' (规则ID: ' + pending[i].ruleId + ')\n';
+      }
+      const fieldSpecs = this.assistantService.getDataFieldSpecs();
+      let dataSummary = buildDataSummaryWithLabels(latestData, fieldSpecs, 60);
+      let alertSummary = '';
+      const alertKeys = Array.from(alertResults.keys());
+      for (let i = 0; i < alertKeys.length; i++) {
+        const r = alertResults.get(alertKeys[i]);
+        if (r) {
+          alertSummary += alertKeys[i] + '=' + (r.value !== null ? r.value.toFixed(1) : 'null') + '(' + r.tier + ') ';
+        }
+      }
+      const systemPrompt = '你是一名ICU主治医师。根据患者数据和计算器结果，系统已自动匹配以下疑似诊断。' +
+        '请对每项诊断确认是否成立，并补充说明。' +
+        '严格按以下JSON格式回复，不要添加其他内容：' +
+        '{"confirmations":[{"ruleId":"id","status":"confirmed或rejected或uncertain","note":"补充说明"}]}';
+      const userText = '疑似诊断：\n' + diagnosisList + '\n患者数据：' + dataSummary +
+        '\n计算器结果：' + alertSummary;
+      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      hilog.info(0xF000, 'PatientService', 'LLM re-confirm response: ' + response);
+      const parsed: Object | null = JSON.parse(response);
+      if (parsed === null) {
+        return;
+      }
+      const obj = parsed as Record<string, Object>;
+      const confirmArr = obj['confirmations'];
+      if (confirmArr === undefined || confirmArr === null) {
+        return;
+      }
+      const confirmations = confirmArr as Array<Record<string, string>>;
+      for (let i = 0; i < confirmations.length; i++) {
+        const conf = confirmations[i];
+        const ruleId = conf['ruleId'];
+        const status = conf['status'];
+        const note = conf['note'] || '';
+        if (ruleId === undefined) {
+          continue;
+        }
+        for (let j = 0; j < activeDiagnoses.length; j++) {
+          if (activeDiagnoses[j].ruleId === ruleId) {
+            const confirmed = status === 'confirmed' ? 1 : (status === 'uncertain' ? 2 : -1);
+            await this.repo.updateDiagnosisLlmResult(activeDiagnoses[j].id, confirmed, note);
+            break;
+          }
+        }
+      }
+    } catch (e) {
+      hilog.error(0xF000, 'PatientService', 'LLM re-confirm failed: ' +
+        (e instanceof Error ? e.message : String(e)));
+    }
+  }
+
+  async fullReDiagnose(patientId: string): Promise<void> {
+    await this.repo.resolveAllDiagnoses(patientId);
+    await this.repo.resolveAllLabAlerts(patientId);
+    await this.repo.resolveAllAlerts(patientId);
+    await this.refreshAlerts(patientId);
+    const latestData = await this.repo.getLatestData(patientId);
+    if (latestData.size >= 3) {
+      this.reconfirmPendingDiagnoses(patientId);
+    }
+  }
+
   private async suggestDiagnosesWithLlm(patientId: string,
     latestData: Map<string, string>, alertResults: Map<string, CalcResult>,
     existingRuleIds: Set<string>): Promise<void> {
@@ -490,11 +690,8 @@ export class PatientService {
       }
 
       let dataSummary = '';
-      const dataKeys = Array.from(latestData.keys());
-      for (let i = 0; i < dataKeys.length && i < 30; i++) {
-        const val = latestData.get(dataKeys[i]);
-        dataSummary += dataKeys[i] + '=' + (val !== undefined ? val : '') + ' ';
-      }
+      const fieldSpecs = this.assistantService.getDataFieldSpecs();
+      dataSummary = buildDataSummaryWithLabels(latestData, fieldSpecs, 60);
 
       let alertSummary = '';
       const alertKeys = Array.from(alertResults.keys());
@@ -542,9 +739,11 @@ export class PatientService {
         if (existingRuleIds.has(ruleId)) {
           continue;
         }
+        const activeDiags = await this.repo.getActiveDiagnoses(patientId);
+        const sortOrder = this.computeSortOrder('llm_hint', activeDiags);
         await this.repo.upsertDiagnosis(
           patientId, ruleId, name, category,
-          urgency, 'suggestion', missingChecks, 0, '', now
+          urgency, 'llm_hint', missingChecks, 0, '', now, sortOrder
         );
       }
     } catch (e) {
@@ -556,13 +755,72 @@ export class PatientService {
   async addUserDiagnosis(patientId: string, name: string, category: string): Promise<PatientDiagnosis> {
     const now = Date.now();
     const ruleId = 'user_' + name.replace(/[^a-zA-Z\u4e00-\u9fa50-9]/g, '_').substring(0, 30) + '_' + now.toString();
+    const existingDiagnoses = await this.repo.getActiveDiagnoses(patientId);
+    const sortOrder = this.computeSortOrder('user', existingDiagnoses);
     await this.repo.upsertDiagnosis(
       patientId, ruleId, name, category,
-      'attention', 'user', '', 0, '', now
+      'attention', 'user', '', 0, '', now, sortOrder
     );
     const diagnoses = await this.repo.getActiveDiagnoses(patientId);
     const found = diagnoses.find((d: PatientDiagnosis): boolean => d.ruleId === ruleId);
     return found !== undefined ? found : new PatientDiagnosis();
+  }
+
+  async moveDiagnosisUp(patientId: string, diagnosisId: number): Promise<void> {
+    const diagnoses = await this.repo.getActiveDiagnoses(patientId);
+    const idx = diagnoses.findIndex((d: PatientDiagnosis): boolean => d.id === diagnosisId);
+    if (idx <= 0) {
+      return;
+    }
+    const current = diagnoses[idx];
+    const prev = diagnoses[idx - 1];
+    if (current.source !== prev.source) {
+      return;
+    }
+    const tmpSort = current.sortOrder;
+    await this.repo.updateDiagnosisSortOrder(current.id, prev.sortOrder);
+    await this.repo.updateDiagnosisSortOrder(prev.id, tmpSort);
+  }
+
+  async moveDiagnosisDown(patientId: string, diagnosisId: number): Promise<void> {
+    const diagnoses = await this.repo.getActiveDiagnoses(patientId);
+    const idx = diagnoses.findIndex((d: PatientDiagnosis): boolean => d.id === diagnosisId);
+    if (idx < 0 || idx >= diagnoses.length - 1) {
+      return;
+    }
+    const current = diagnoses[idx];
+    const next = diagnoses[idx + 1];
+    if (current.source !== next.source) {
+      return;
+    }
+    const tmpSort = current.sortOrder;
+    await this.repo.updateDiagnosisSortOrder(current.id, next.sortOrder);
+    await this.repo.updateDiagnosisSortOrder(next.id, tmpSort);
+  }
+
+  private computeSortOrder(source: string, existingDiagnoses: PatientDiagnosis[]): number {
+    const sourcePriority: Record<string, number> = {
+      'rule': 0,
+      'user': 1,
+      'partial': 2,
+      'llm_hint': 3
+    };
+    const priority = sourcePriority[source];
+    if (priority === undefined) {
+      return 0;
+    }
+    const base = priority * 10000;
+    let maxSeq = 0;
+    for (let i = 0; i < existingDiagnoses.length; i++) {
+      const d = existingDiagnoses[i];
+      if (d.source === source) {
+        const seq = d.sortOrder - base;
+        if (seq > maxSeq) {
+          maxSeq = seq;
+        }
+      }
+    }
+    return base + maxSeq + 100;
   }
 
   async deleteUserDiagnosis(diagnosisId: number): Promise<void> {

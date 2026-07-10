@@ -1,4 +1,4 @@
-import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientDashboard, DATA_DOMAINS, DOMAIN_COLORS } from '../model/Patient';
+import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientLabAlert, PatientDashboard, DATA_DOMAINS, DOMAIN_COLORS } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
 import { AssistantService, DataFieldSpec, CalcMatch } from '../services/AssistantService';
 import { CalcResult, getTierColor, getTierBgColor } from '../engine/CalcEngine';
@@ -274,6 +274,7 @@ export struct PatientDetailPage {
     this.loadSavedKbData();
     if (this.dashboard.diagnoses.length > 0) {
       this.loadDiagnosisKb();
+      this.patientService.reconfirmPendingDiagnoses(this.currentPatientId);
     }
   }
 
@@ -810,8 +811,8 @@ export struct PatientDetailPage {
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor('#1F3D2F')
-        if (this.getWarningAlerts().length > 0) {
-          Text(this.getWarningAlerts().length.toString())
+        if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
+          Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
             .fontSize(12)
             .fontColor('#FFFFFF')
             .backgroundColor('#B1452A')
@@ -868,7 +869,7 @@ export struct PatientDetailPage {
             .padding({ top: 4, bottom: 4 })
           }, (alert: PatientAlert) => alert.id.toString())
           if (this.getWarningAlerts().length > 3) {
-            Text('还有' + (this.getWarningAlerts().length - 3) + '项...')
+            Text('还有' + (this.getWarningAlerts().length - 3) + '项评分预警...')
               .fontSize(11)
               .fontColor('#7A8074')
               .margin({ top: 2 })
@@ -876,7 +877,49 @@ export struct PatientDetailPage {
         }
         .width('100%')
         .margin({ top: 8 })
-      } else {
+      }
+
+      if (this.dashboard.labAlerts.length > 0) {
+        Column() {
+          Row()
+            .width('100%')
+            .height(1)
+            .backgroundColor('#E0DCC8')
+            .margin({ top: 4, bottom: 4 });
+          ForEach(this.dashboard.labAlerts.slice(0, 3), (la: PatientLabAlert) => {
+            Row() {
+              Column()
+                .width(3)
+                .height(12)
+                .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
+                .borderRadius(1)
+                .margin({ right: 6 })
+              Text(la.fieldLabel + ' ' + la.value)
+                .fontSize(12)
+                .fontColor('#1F3D2F')
+                .layoutWeight(1)
+                .maxLines(1)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+              Text(la.threshold)
+                .fontSize(10)
+                .fontColor(this.getLabAlertUrgencyColor(la.urgency))
+                .maxLines(1)
+            }
+            .width('100%')
+            .padding({ top: 3, bottom: 3 })
+          }, (la: PatientLabAlert) => la.id.toString())
+          if (this.dashboard.labAlerts.length > 3) {
+            Text('还有' + (this.dashboard.labAlerts.length - 3) + '项检验预警...')
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .margin({ top: 2 })
+          }
+        }
+        .width('100%')
+        .margin({ top: 4 })
+      }
+
+      if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
         Text('暂无异常预警')
           .fontSize(12)
           .fontColor('#7A8074')
@@ -939,10 +982,6 @@ export struct PatientDetailPage {
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text(this.getSourceLabel(diag.source))
-                .fontSize(9)
-                .fontColor(this.getSourceColor(diag.source))
-                .margin({ left: 4 })
               Text(this.getUrgencyLabel(diag.urgency))
                 .fontSize(9)
                 .fontColor(this.getUrgencyColor(diag.urgency))
@@ -1014,6 +1053,15 @@ export struct PatientDetailPage {
             .padding({ left: 6, right: 6, top: 2, bottom: 2 })
             .margin({ left: 4 })
           }
+          if (this.dashboard.labAlertCount > 0) {
+            Text('检验' + this.dashboard.labAlertCount.toString())
+              .fontSize(10)
+              .fontColor('#FFFFFF')
+              .backgroundColor('#7A6B9D')
+              .borderRadius(8)
+              .padding({ left: 5, right: 5, top: 2, bottom: 2 })
+              .margin({ left: 4 })
+          }
         }
       }
       .width('100%')
@@ -1022,7 +1070,7 @@ export struct PatientDetailPage {
 
       Scroll() {
         Column() {
-          if (this.getWarningAlerts().length === 0) {
+          if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
             Text('当前无异常预警')
               .fontSize(14)
               .fontColor('#7A8074')
@@ -1030,9 +1078,39 @@ export struct PatientDetailPage {
               .textAlign(TextAlign.Center)
               .padding(40)
           } else {
-            ForEach(this.getWarningAlerts(), (alert: PatientAlert) => {
-              this.AlertCard(alert);
-            }, (alert: PatientAlert) => alert.id.toString())
+            if (this.getWarningAlerts().length > 0) {
+              Column() {
+                Row() {
+                  Text('评分预警')
+                    .fontSize(13)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor('#1F3D2F')
+                }
+                .width('100%')
+                .margin({ bottom: 4 })
+                ForEach(this.getWarningAlerts(), (alert: PatientAlert) => {
+                  this.AlertCard(alert);
+                }, (alert: PatientAlert) => alert.id.toString())
+              }
+              .width('100%')
+              .margin({ bottom: 8 });
+            }
+            if (this.dashboard.labAlerts.length > 0) {
+              Column() {
+                Row() {
+                  Text('检验预警')
+                    .fontSize(13)
+                    .fontWeight(FontWeight.Bold)
+                    .fontColor('#1F3D2F')
+                }
+                .width('100%')
+                .margin({ bottom: 4 })
+                ForEach(this.dashboard.labAlerts, (la: PatientLabAlert) => {
+                  this.LabAlertCard(la);
+                }, (la: PatientLabAlert) => la.id.toString())
+              }
+              .width('100%');
+            }
           }
         }
         .padding({ left: 16, right: 16, top: 8, bottom: 16 })
@@ -1073,15 +1151,6 @@ export struct PatientDetailPage {
           .layoutWeight(1)
           .margin({ left: 8 })
         Row() {
-          ForEach(this.getDiagnosisCategoryTags(), (tag: string) => {
-            Text(tag)
-              .fontSize(10)
-              .fontColor('#1F3D2F')
-              .backgroundColor('#E8E5D8')
-              .borderRadius(4)
-              .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-              .margin({ left: 3 })
-          }, (tag: string) => tag)
           Text('+')
             .fontSize(14)
             .fontColor('#2B6CB0')
@@ -1090,6 +1159,16 @@ export struct PatientDetailPage {
               this.addDiagName = '';
               this.addDiagCategory = '代谢';
               this.showAddDiagnosis = true;
+            })
+          Text('⟳')
+            .fontSize(16)
+            .fontColor('#3D6B4F')
+            .margin({ left: 8 })
+            .onClick(async () => {
+              this.loading = true;
+              await this.patientService.fullReDiagnose(this.currentPatientId);
+              this.loading = false;
+              this.loadDashboard();
             })
         }
       }
@@ -1107,9 +1186,10 @@ export struct PatientDetailPage {
               .textAlign(TextAlign.Center)
               .padding(40)
           } else {
-            ForEach(this.dashboard.diagnoses, (diag: PatientDiagnosis) => {
-              this.DiagnosisCard(diag);
-            }, (diag: PatientDiagnosis) => diag.id.toString())
+            this.DiagnosisGroup('rule', '确定性', '#1F3D2F', false);
+            this.DiagnosisGroup('user', '自添加', '#3D6B4F', false);
+            this.DiagnosisGroup('partial', '可能性', '#C8881A', false);
+            this.DiagnosisGroup('llm_hint', 'LLM提示', '#7A6B9D', true);
           }
           Row() {
             Text('+ 添加诊断')
@@ -1134,6 +1214,45 @@ export struct PatientDetailPage {
     .width('100%')
     .height('100%')
     .backgroundColor('#F5F4EF')
+  }
+
+  getDiagnosesBySource(source: string): PatientDiagnosis[] {
+    return this.dashboard.diagnoses.filter((d: PatientDiagnosis): boolean => d.source === source);
+  }
+
+  @Builder
+  DiagnosisGroup(source: string, label: string, color: string, isLlmGroup: boolean) {
+    if (this.getDiagnosesBySource(source).length > 0) {
+      Column() {
+        Row() {
+          Column()
+            .width(4)
+            .height(16)
+            .backgroundColor(color)
+            .borderRadius(2)
+            .margin({ right: 6 })
+          Text(label)
+            .fontSize(13)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(color)
+          Text(this.getDiagnosesBySource(source).length.toString())
+            .fontSize(11)
+            .fontColor('#7A8074')
+            .margin({ left: 4 })
+        }
+        .width('100%')
+        .margin({ top: 8, bottom: 4 })
+
+        ForEach(this.getDiagnosesBySource(source), (diag: PatientDiagnosis) => {
+          Row() {
+            this.DiagnosisCard(diag, isLlmGroup);
+          }
+          .width('100%')
+          .alignItems(VerticalAlign.Top)
+        }, (diag: PatientDiagnosis) => diag.id.toString())
+      }
+      .width('100%');
+    }
   }
 
   getDangerCount(): number {
@@ -1211,8 +1330,11 @@ export struct PatientDetailPage {
   }
 
   getSourceLabel(source: string): string {
-    if (source === 'suggestion') {
-      return '提示';
+    if (source === 'partial') {
+      return '可能性';
+    }
+    if (source === 'llm_hint') {
+      return 'LLM提示';
     }
     if (source === 'user') {
       return '自添加';
@@ -1221,8 +1343,11 @@ export struct PatientDetailPage {
   }
 
   getSourceColor(source: string): string {
-    if (source === 'suggestion') {
+    if (source === 'partial') {
       return '#C8881A';
+    }
+    if (source === 'llm_hint') {
+      return '#7A6B9D';
     }
     if (source === 'user') {
       return '#3D6B4F';
@@ -1240,7 +1365,12 @@ export struct PatientDetailPage {
       kbData.ruleId = diag.ruleId;
       kbData.loadingKb = true;
       this.diagnosisKbMap = [...this.diagnosisKbMap, kbData];
-      const query = diag.name;
+      let query = diag.name;
+      const labKeywords = this.kbService.buildSearchKeywordsFromAbnormalLabs(this.dashboard.latestData);
+      if (labKeywords.length > 0) {
+        const keywordStr = labKeywords.slice(0, 5).join(' ');
+        query = query + ' ' + keywordStr;
+      }
       try {
         const smartResults = await this.kbService.smartSearch(query, 10);
         kbData.searchResults = smartResults;
@@ -1639,21 +1769,19 @@ export struct PatientDetailPage {
   }
 
   @Builder
-  DiagnosisCard(diag: PatientDiagnosis) {
+  DiagnosisCard(diag: PatientDiagnosis, isLlmGroup: boolean) {
     Column() {
       Row() {
+        if (isLlmGroup) {
+          Text('💡')
+            .fontSize(12)
+            .margin({ right: 4 })
+        }
         Text(diag.name)
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
           .fontColor('#1F3D2F')
           .layoutWeight(1)
-        Text(this.getSourceLabel(diag.source))
-          .fontSize(10)
-          .fontColor(this.getSourceColor(diag.source))
-          .backgroundColor(this.getSourceColor(diag.source) + '20')
-          .borderRadius(4)
-          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-          .margin({ left: 4 })
         Text(this.getUrgencyLabel(diag.urgency))
           .fontSize(10)
           .fontColor(this.getUrgencyColor(diag.urgency))
@@ -1661,7 +1789,7 @@ export struct PatientDetailPage {
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
           .margin({ left: 4 })
-        if (diag.source === 'rule') {
+        if (diag.source === 'rule' && diag.llmConfirmed !== 1) {
           Text(this.getLlmConfirmLabel(diag.llmConfirmed))
             .fontSize(10)
             .fontColor(this.getLlmConfirmColor(diag.llmConfirmed))
@@ -1670,7 +1798,7 @@ export struct PatientDetailPage {
             .padding({ left: 4, right: 4, top: 1, bottom: 1 })
             .margin({ left: 4 })
         }
-        if (diag.source !== 'rule') {
+        if (diag.source === 'user') {
           Text('×')
             .fontSize(14)
             .fontColor('#7A8074')
@@ -1723,7 +1851,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor(diag.source === 'rule' ? '#FFFFFF' : (diag.source === 'suggestion' ? '#FFFCF5' : '#F5FFF5'))
+    .backgroundColor(diag.source === 'rule' ? '#FFFFFF' : (diag.source === 'partial' ? '#FFFCF5' : (diag.source === 'llm_hint' ? '#F8F5FF' : '#F5FFF5')))
     .borderRadius(8)
     .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getSourceColor(diag.source) })
     .margin({ bottom: 6 })
@@ -2205,6 +2333,82 @@ export struct PatientDetailPage {
     .width('100%')
     .padding({ top: 6 })
     .alignItems(HorizontalAlign.Start)
+  }
+
+  @Builder
+  LabAlertCard(la: PatientLabAlert) {
+    Column() {
+      Row() {
+        Column()
+          .width(4)
+          .height(16)
+          .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
+          .borderRadius(2)
+          .margin({ right: 8 })
+        Column() {
+          Text(la.name)
+            .fontSize(13)
+            .fontWeight(FontWeight.Bold)
+            .fontColor('#1F3D2F')
+            .width('100%')
+          Row() {
+            Text(la.fieldLabel + ' ' + la.value + ' ' + la.unit)
+              .fontSize(12)
+              .fontColor('#4A5247')
+              .layoutWeight(1)
+            Text(la.threshold)
+              .fontSize(11)
+              .fontColor(this.getLabAlertUrgencyColor(la.urgency))
+              .fontWeight(FontWeight.Medium)
+          }
+          .width('100%')
+          .margin({ top: 2 })
+          if (la.description.length > 0) {
+            Text(la.description)
+              .fontSize(11)
+              .fontColor('#7A8074')
+              .width('100%')
+              .margin({ top: 2 })
+          }
+        }
+        .layoutWeight(1)
+        .alignItems(HorizontalAlign.Start)
+        Text(this.getLabAlertUrgencyLabel(la.urgency))
+          .fontSize(10)
+          .fontColor('#FFFFFF')
+          .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
+          .borderRadius(4)
+          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+          .margin({ left: 4 })
+      }
+      .width('100%')
+      .alignItems(VerticalAlign.Top)
+    }
+    .width('100%')
+    .padding(10)
+    .backgroundColor('#FFFFFF')
+    .borderRadius(8)
+    .margin({ bottom: 6 })
+  }
+
+  getLabAlertUrgencyColor(urgency: string): string {
+    if (urgency === 'critical') {
+      return '#B1452A';
+    }
+    if (urgency === 'warning') {
+      return '#C8881A';
+    }
+    return '#3D6B4F';
+  }
+
+  getLabAlertUrgencyLabel(urgency: string): string {
+    if (urgency === 'critical') {
+      return '危急';
+    }
+    if (urgency === 'warning') {
+      return '警示';
+    }
+    return '关注';
   }
 
   getDataFieldCount(): number {

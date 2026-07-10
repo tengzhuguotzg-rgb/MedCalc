@@ -17,6 +17,7 @@ export class PartialMatch {
 export class DiagnosisResult {
   confirmed: DiagnosisMatch[] = [];
   partial: PartialMatch[] = [];
+  labAlerts: DiagnosisMatch[] = [];
 }
 
 export class DiagnosisEngine {
@@ -60,7 +61,11 @@ export class DiagnosisEngine {
         const match = new DiagnosisMatch();
         match.rule = rule;
         match.matchedCriteria = matchedCriteria;
-        result.confirmed.push(match);
+        if (rule.ruleType === 'alert') {
+          result.labAlerts.push(match);
+        } else {
+          result.confirmed.push(match);
+        }
       } else if (matchedCriteria.length > 0 && matchedCriteria.length >= rule.criteria.length * 0.5) {
         const partial = new PartialMatch();
         partial.rule = rule;

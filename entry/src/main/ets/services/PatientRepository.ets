@@ -1,8 +1,8 @@
 import { relationalStore, ValuesBucket } from '@kit.ArkData';
-import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis } from '../model/Patient';
+import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientLabAlert } from '../model/Patient';
 
 const DB_NAME: string = 'medcalc_patients.db';
-const DB_VERSION: number = 3;
+const DB_VERSION: number = 5;
 const DB_SECURITY: relationalStore.SecurityLevel = relationalStore.SecurityLevel.S3;
 
 const CREATE_PATIENTS: string =
@@ -35,6 +35,9 @@ const ALTER_ADD_SOURCE: string =
 
 const ALTER_ADD_MISSING: string =
   'ALTER TABLE patient_diagnoses ADD COLUMN missingCriteria TEXT DEFAULT \'\'';
+
+const ALTER_ADD_SORTORDER: string =
+  'ALTER TABLE patient_diagnoses ADD COLUMN sortOrder INTEGER DEFAULT 0';
 
 const CREATE_PATIENT_RECORDS: string =
   'CREATE TABLE IF NOT EXISTS patient_records (' +
@@ -78,13 +81,36 @@ const CREATE_PATIENT_DIAGNOSES: string =
   'name TEXT NOT NULL,' +
   'category TEXT NOT NULL,' +
   'urgency TEXT NOT NULL,' +
+  'source TEXT DEFAULT \'rule\',' +
+  'missingCriteria TEXT DEFAULT \'\',' +
   'llmConfirmed INTEGER DEFAULT 0,' +
   'llmNote TEXT,' +
   'triggeredAt INTEGER NOT NULL,' +
+  'sortOrder INTEGER DEFAULT 0,' +
   'status TEXT DEFAULT \'active\')';
 
 const IDX_DIAGNOSES_PATIENT_STATUS: string =
   'CREATE INDEX IF NOT EXISTS idx_diagnoses_patient_status ON patient_diagnoses(patientId, status)';
+
+const CREATE_PATIENT_LAB_ALERTS: string =
+  'CREATE TABLE IF NOT EXISTS patient_lab_alerts (' +
+  'id INTEGER PRIMARY KEY AUTOINCREMENT,' +
+  'patientId TEXT NOT NULL,' +
+  'ruleId TEXT NOT NULL,' +
+  'name TEXT NOT NULL,' +
+  'category TEXT NOT NULL,' +
+  'urgency TEXT NOT NULL,' +
+  'fieldKey TEXT,' +
+  'fieldLabel TEXT,' +
+  'value TEXT,' +
+  'threshold TEXT,' +
+  'unit TEXT,' +
+  'description TEXT,' +
+  'triggeredAt INTEGER NOT NULL,' +
+  'status TEXT DEFAULT \'active\')';
+
+const IDX_LAB_ALERTS_PATIENT_STATUS: string =
+  'CREATE INDEX IF NOT EXISTS idx_lab_alerts_patient_status ON patient_lab_alerts(patientId, status)';
 
 export class PatientRepository {
   private static instance: PatientRepository | null = null;
@@ -127,6 +153,8 @@ export class PatientRepository {
         await this.store.executeSql(IDX_ALERTS_PATIENT_STATUS);
         await this.store.executeSql(CREATE_PATIENT_DIAGNOSES);
         await this.store.executeSql(IDX_DIAGNOSES_PATIENT_STATUS);
+        await this.store.executeSql(CREATE_PATIENT_LAB_ALERTS);
+        await this.store.executeSql(IDX_LAB_ALERTS_PATIENT_STATUS);
       }
       if (currentVersion >= 1 && currentVersion < 2) {
         await this.store.executeSql(ALTER_ADD_EXAM_TIME);
@@ -134,6 +162,13 @@ export class PatientRepository {
       if (currentVersion >= 1 && currentVersion < 3) {
         await this.store.executeSql(ALTER_ADD_SOURCE);
         await this.store.executeSql(ALTER_ADD_MISSING);
+      }
+      if (currentVersion >= 1 && currentVersion < 4) {
+        await this.store.executeSql(CREATE_PATIENT_LAB_ALERTS);
+        await this.store.executeSql(IDX_LAB_ALERTS_PATIENT_STATUS);
+      }
+      if (currentVersion >= 1 && currentVersion < 5) {
+        await this.store.executeSql(ALTER_ADD_SORTORDER);
       }
       this.store.version = DB_VERSION;
     }
@@ -494,6 +529,14 @@ export class PatientRepository {
     await db.update(bucket, pred);
   }
 
+  async resolveAllAlerts(patientId: string): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = { 'status': 'resolved' };
+    const pred = new relationalStore.RdbPredicates('patient_alerts');
+    pred.equalTo('patientId', patientId).equalTo('status', 'active');
+    await db.update(bucket, pred);
+  }
+
   async getAlertCount(patientId: string): Promise<number> {
     const db = this.ensureStore();
     const predicates = new relationalStore.RdbPredicates('patient_alerts');
@@ -523,21 +566,23 @@ export class PatientRepository {
 
   async upsertDiagnosis(patientId: string, ruleId: string, name: string, category: string,
     urgency: string, source: string, missingCriteria: string,
-    llmConfirmed: number, llmNote: string, triggeredAt: number): Promise<number> {
+    llmConfirmed: number, llmNote: string, triggeredAt: number,
+    sortOrder: number): Promise<number> {
     const db = this.ensureStore();
     const pred = new relationalStore.RdbPredicates('patient_diagnoses');
     pred.equalTo('patientId', patientId).equalTo('ruleId', ruleId).equalTo('status', 'active');
     const rs = await db.query(pred);
     if (rs.rowCount > 0) {
       rs.goToFirstRow();
-      const existingId = rs.getLong(0);
-      const existingConfirmed = rs.getLong(6);
+      const existingId = rs.getLong(rs.getColumnIndex('id'));
+      const existingConfirmed = rs.getLong(rs.getColumnIndex('llmConfirmed'));
       rs.close();
       const bucket: ValuesBucket = {
         'urgency': urgency,
         'source': source,
         'missingCriteria': missingCriteria,
-        'triggeredAt': triggeredAt
+        'triggeredAt': triggeredAt,
+        'sortOrder': sortOrder
       };
       if (llmConfirmed > existingConfirmed) {
         bucket['llmConfirmed'] = llmConfirmed;
@@ -560,6 +605,7 @@ export class PatientRepository {
       'llmConfirmed': llmConfirmed,
       'llmNote': llmNote,
       'triggeredAt': triggeredAt,
+      'sortOrder': sortOrder,
       'status': 'active'
     };
     await db.insert('patient_diagnoses', bucket);
@@ -574,29 +620,38 @@ export class PatientRepository {
     await db.update(bucket, pred);
   }
 
+  async resolveAllDiagnoses(patientId: string): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = { 'status': 'resolved' };
+    const pred = new relationalStore.RdbPredicates('patient_diagnoses');
+    pred.equalTo('patientId', patientId).equalTo('status', 'active');
+    await db.update(bucket, pred);
+  }
+
   async getActiveDiagnoses(patientId: string): Promise<PatientDiagnosis[]> {
     const db = this.ensureStore();
     const predicates = new relationalStore.RdbPredicates('patient_diagnoses');
     predicates.equalTo('patientId', patientId).equalTo('status', 'active');
-    predicates.orderByDesc('triggeredAt');
+    predicates.orderByAsc('sortOrder');
     const rs = await db.query(predicates);
     const list: PatientDiagnosis[] = [];
     if (rs.rowCount > 0) {
       rs.goToFirstRow();
       do {
         const d = new PatientDiagnosis();
-        d.id = rs.getLong(0);
-        d.patientId = rs.getString(1);
-        d.ruleId = rs.getString(2);
-        d.name = rs.getString(3);
-        d.category = rs.getString(4);
-        d.urgency = rs.getString(5);
-        d.llmConfirmed = rs.getLong(6);
-        d.llmNote = rs.getString(7);
-        d.triggeredAt = rs.getLong(8);
-        d.status = rs.getString(9);
-        d.source = rs.getString(10);
-        d.missingCriteria = rs.getString(11);
+        d.id = rs.getLong(rs.getColumnIndex('id'));
+        d.patientId = rs.getString(rs.getColumnIndex('patientId'));
+        d.ruleId = rs.getString(rs.getColumnIndex('ruleId'));
+        d.name = rs.getString(rs.getColumnIndex('name'));
+        d.category = rs.getString(rs.getColumnIndex('category'));
+        d.urgency = rs.getString(rs.getColumnIndex('urgency'));
+        d.source = rs.getString(rs.getColumnIndex('source'));
+        d.missingCriteria = rs.getString(rs.getColumnIndex('missingCriteria'));
+        d.llmConfirmed = rs.getLong(rs.getColumnIndex('llmConfirmed'));
+        d.llmNote = rs.getString(rs.getColumnIndex('llmNote'));
+        d.triggeredAt = rs.getLong(rs.getColumnIndex('triggeredAt'));
+        d.sortOrder = rs.getLong(rs.getColumnIndex('sortOrder'));
+        d.status = rs.getString(rs.getColumnIndex('status'));
         list.push(d);
       } while (rs.goToNextRow());
     }
@@ -613,6 +668,44 @@ export class PatientRepository {
     const pred = new relationalStore.RdbPredicates('patient_diagnoses');
     pred.equalTo('id', id);
     await db.update(bucket, pred);
+  }
+
+  async updateDiagnosisSortOrder(id: number, sortOrder: number): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = {
+      'sortOrder': sortOrder
+    };
+    const pred = new relationalStore.RdbPredicates('patient_diagnoses');
+    pred.equalTo('id', id);
+    await db.update(bucket, pred);
+  }
+
+  async getDiagnosisById(id: number): Promise<PatientDiagnosis | null> {
+    const db = this.ensureStore();
+    const predicates = new relationalStore.RdbPredicates('patient_diagnoses');
+    predicates.equalTo('id', id);
+    const rs = await db.query(predicates);
+    let result: PatientDiagnosis | null = null;
+    if (rs.rowCount > 0) {
+      rs.goToFirstRow();
+      const d = new PatientDiagnosis();
+      d.id = rs.getLong(rs.getColumnIndex('id'));
+      d.patientId = rs.getString(rs.getColumnIndex('patientId'));
+      d.ruleId = rs.getString(rs.getColumnIndex('ruleId'));
+      d.name = rs.getString(rs.getColumnIndex('name'));
+      d.category = rs.getString(rs.getColumnIndex('category'));
+      d.urgency = rs.getString(rs.getColumnIndex('urgency'));
+      d.source = rs.getString(rs.getColumnIndex('source'));
+      d.missingCriteria = rs.getString(rs.getColumnIndex('missingCriteria'));
+      d.llmConfirmed = rs.getLong(rs.getColumnIndex('llmConfirmed'));
+      d.llmNote = rs.getString(rs.getColumnIndex('llmNote'));
+      d.triggeredAt = rs.getLong(rs.getColumnIndex('triggeredAt'));
+      d.sortOrder = rs.getLong(rs.getColumnIndex('sortOrder'));
+      d.status = rs.getString(rs.getColumnIndex('status'));
+      result = d;
+    }
+    rs.close();
+    return result;
   }
 
   async getDiagnosisCount(patientId: string): Promise<number> {
@@ -648,5 +741,95 @@ export class PatientRepository {
     const pred = new relationalStore.RdbPredicates('patient_diagnoses');
     pred.equalTo('id', id);
     await db.update(bucket, pred);
+  }
+
+  async upsertLabAlert(patientId: string, ruleId: string, name: string, category: string,
+    urgency: string, fieldKey: string, fieldLabel: string, value: string,
+    threshold: string, unit: string, description: string, triggeredAt: number): Promise<void> {
+    const db = this.ensureStore();
+    const pred = new relationalStore.RdbPredicates('patient_lab_alerts');
+    pred.equalTo('patientId', patientId).equalTo('ruleId', ruleId).equalTo('status', 'active');
+    const rs = await db.query(pred);
+    if (rs.rowCount > 0) {
+      rs.goToFirstRow();
+      const existingId = rs.getLong(rs.getColumnIndex('id'));
+      rs.close();
+      const resolveBucket: ValuesBucket = { 'status': 'resolved' };
+      const resolvePred = new relationalStore.RdbPredicates('patient_lab_alerts');
+      resolvePred.equalTo('id', existingId);
+      await db.update(resolveBucket, resolvePred);
+    } else {
+      rs.close();
+    }
+    const bucket: ValuesBucket = {
+      'patientId': patientId,
+      'ruleId': ruleId,
+      'name': name,
+      'category': category,
+      'urgency': urgency,
+      'fieldKey': fieldKey,
+      'fieldLabel': fieldLabel,
+      'value': value,
+      'threshold': threshold,
+      'unit': unit,
+      'description': description,
+      'triggeredAt': triggeredAt,
+      'status': 'active'
+    };
+    await db.insert('patient_lab_alerts', bucket);
+  }
+
+  async resolveLabAlertsForRule(patientId: string, ruleId: string): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = { 'status': 'resolved' };
+    const pred = new relationalStore.RdbPredicates('patient_lab_alerts');
+    pred.equalTo('patientId', patientId).equalTo('ruleId', ruleId).equalTo('status', 'active');
+    await db.update(bucket, pred);
+  }
+
+  async resolveAllLabAlerts(patientId: string): Promise<void> {
+    const db = this.ensureStore();
+    const bucket: ValuesBucket = { 'status': 'resolved' };
+    const pred = new relationalStore.RdbPredicates('patient_lab_alerts');
+    pred.equalTo('patientId', patientId).equalTo('status', 'active');
+    await db.update(bucket, pred);
+  }
+
+  async getActiveLabAlerts(patientId: string): Promise<PatientLabAlert[]> {
+    const db = this.ensureStore();
+    const predicates = new relationalStore.RdbPredicates('patient_lab_alerts');
+    predicates.equalTo('patientId', patientId).equalTo('status', 'active').orderByDesc('triggeredAt');
+    const rs = await db.query(predicates);
+    const list: PatientLabAlert[] = [];
+    if (rs.rowCount > 0) {
+      rs.goToFirstRow();
+      do {
+        const a = new PatientLabAlert();
+        a.id = rs.getLong(rs.getColumnIndex('id'));
+        a.patientId = rs.getString(rs.getColumnIndex('patientId'));
+        a.ruleId = rs.getString(rs.getColumnIndex('ruleId'));
+        a.name = rs.getString(rs.getColumnIndex('name'));
+        a.category = rs.getString(rs.getColumnIndex('category'));
+        a.urgency = rs.getString(rs.getColumnIndex('urgency'));
+        a.fieldKey = rs.getString(rs.getColumnIndex('fieldKey'));
+        a.fieldLabel = rs.getString(rs.getColumnIndex('fieldLabel'));
+        a.value = rs.getString(rs.getColumnIndex('value'));
+        a.threshold = rs.getString(rs.getColumnIndex('threshold'));
+        a.unit = rs.getString(rs.getColumnIndex('unit'));
+        a.description = rs.getString(rs.getColumnIndex('description'));
+        a.triggeredAt = rs.getLong(rs.getColumnIndex('triggeredAt'));
+        a.status = rs.getString(rs.getColumnIndex('status'));
+        list.push(a);
+      } while (rs.goToNextRow());
+    }
+    rs.close();
+    return list;
+  }
+
+  async deleteLabAlertsByPatient(patientId: string): Promise<void> {
+    const db = this.ensureStore();
+    const pred = new relationalStore.RdbPredicates('patient_lab_alerts');
+    pred.equalTo('patientId', patientId);
+    await db.delete(pred);
   }
 }
