@@ -373,6 +373,13 @@ function normalizeFieldKey(raw: string): string {
       cleaned += c;
     }
   }
+  if (cleaned.length === 0 && raw.length > 0) {
+    for (const f of DATA_FIELDS) {
+      if (f.label === raw || normalizeForSearch(f.label) === normalizeForSearch(raw)) {
+        return f.key;
+      }
+    }
+  }
   return cleaned;
 }
 
@@ -668,17 +675,38 @@ export class AssistantService {
       const matchedStr = parsed['matched'];
 
       if (extractedStr !== undefined && extractedStr !== null && typeof extractedStr === 'object') {
-        const entries = Object.entries(extractedStr as Record<string, string>);
-        for (let i = 0; i < entries.length; i++) {
-          const key = entries[i][0];
-          const val = entries[i][1];
-          const normalized = normalizeFieldKey(key);
-          const aliasKey = FIELD_KEY_ALIASES[normalized];
-          const resolvedKey = aliasKey !== undefined ? aliasKey : normalized;
-          if (typeof val === 'string' && val.length > 0) {
-            result.fields.set(resolvedKey, val);
-          } else if (typeof val === 'number') {
-            result.fields.set(resolvedKey, String(val));
+        if (Array.isArray(extractedStr)) {
+          const arr = extractedStr as Object[];
+          for (let ai = 0; ai < arr.length; ai++) {
+            if (typeof arr[ai] === 'object' && arr[ai] !== null) {
+              const itemEntries = Object.entries(arr[ai] as Record<string, string>);
+              for (let ei = 0; ei < itemEntries.length; ei++) {
+                const k = itemEntries[ei][0];
+                const v = itemEntries[ei][1];
+                const normalized = normalizeFieldKey(k);
+                const aliasKey = FIELD_KEY_ALIASES[normalized];
+                const resolvedKey = aliasKey !== undefined ? aliasKey : normalized;
+                if (typeof v === 'string' && v.length > 0) {
+                  result.fields.set(resolvedKey, v);
+                } else if (typeof v === 'number') {
+                  result.fields.set(resolvedKey, String(v));
+                }
+              }
+            }
+          }
+        } else {
+          const entries = Object.entries(extractedStr as Record<string, string>);
+          for (let i = 0; i < entries.length; i++) {
+            const key = entries[i][0];
+            const val = entries[i][1];
+            const normalized = normalizeFieldKey(key);
+            const aliasKey = FIELD_KEY_ALIASES[normalized];
+            const resolvedKey = aliasKey !== undefined ? aliasKey : normalized;
+            if (typeof val === 'string' && val.length > 0) {
+              result.fields.set(resolvedKey, val);
+            } else if (typeof val === 'number') {
+              result.fields.set(resolvedKey, String(val));
+            }
           }
         }
       }
@@ -713,17 +741,38 @@ export class AssistantService {
             const extractedStr2 = parsed2['extracted'];
             const matchedStr2 = parsed2['matched'];
             if (extractedStr2 !== undefined && extractedStr2 !== null && typeof extractedStr2 === 'object') {
-              const entries2 = Object.entries(extractedStr2 as Record<string, string>);
-              for (let i = 0; i < entries2.length; i++) {
-                const key2 = entries2[i][0];
-                const val2 = entries2[i][1];
-                const keyLower2 = key2.toLowerCase().trim();
-                const aliasKey2 = FIELD_KEY_ALIASES[keyLower2];
-                const resolvedKey2 = aliasKey2 !== undefined ? aliasKey2 : keyLower2;
-                if (typeof val2 === 'string' && val2.length > 0) {
-                  result.fields.set(resolvedKey2, val2);
-                } else if (typeof val2 === 'number') {
-                  result.fields.set(resolvedKey2, String(val2));
+              if (Array.isArray(extractedStr2)) {
+                const arr2 = extractedStr2 as Object[];
+                for (let ai = 0; ai < arr2.length; ai++) {
+                  if (typeof arr2[ai] === 'object' && arr2[ai] !== null) {
+                    const itemEntries = Object.entries(arr2[ai] as Record<string, string>);
+                    for (let ei = 0; ei < itemEntries.length; ei++) {
+                      const k = itemEntries[ei][0];
+                      const v = itemEntries[ei][1];
+                      const normalized2 = normalizeFieldKey(k);
+                      const aliasKey2 = FIELD_KEY_ALIASES[normalized2];
+                      const resolvedKey2 = aliasKey2 !== undefined ? aliasKey2 : normalized2;
+                      if (typeof v === 'string' && v.length > 0) {
+                        result.fields.set(resolvedKey2, v);
+                      } else if (typeof v === 'number') {
+                        result.fields.set(resolvedKey2, String(v));
+                      }
+                    }
+                  }
+                }
+              } else {
+                const entries2 = Object.entries(extractedStr2 as Record<string, string>);
+                for (let i = 0; i < entries2.length; i++) {
+                  const key2 = entries2[i][0];
+                  const val2 = entries2[i][1];
+                  const normalized2 = normalizeFieldKey(key2);
+                  const aliasKey2 = FIELD_KEY_ALIASES[normalized2];
+                  const resolvedKey2 = aliasKey2 !== undefined ? aliasKey2 : normalized2;
+                  if (typeof val2 === 'string' && val2.length > 0) {
+                    result.fields.set(resolvedKey2, val2);
+                  } else if (typeof val2 === 'number') {
+                    result.fields.set(resolvedKey2, String(val2));
+                  }
                 }
               }
             }
