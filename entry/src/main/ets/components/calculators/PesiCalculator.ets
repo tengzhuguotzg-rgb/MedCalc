@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculatePesi } from '../../engine/PesiCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct PesiCalculator {
@@ -52,7 +53,7 @@ export struct PesiCalculator {
     Column() {
       Column() { Text('用于肺栓塞 30 天死亡风险分层').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('11 项, 总分 0-300+, sPESI 简化版 (Aujesky 2005)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— PESI 参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
@@ -132,21 +133,10 @@ export struct PesiCalculator {
             Button('< 90%').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.osp === 20 ? AppColors.card : AppColors.textOption).backgroundColor(this.osp === 20 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.osp === 20 ? AppColors.primary : AppColors.border }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.osp = 20; this.calculate(); });
           }.width('100%');
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('PESI 总分').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'PESI 总分', value: this.result!.value, unit: '', decimals: 0, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
