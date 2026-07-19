@@ -51,7 +51,8 @@
 
 ## ⚪ 低优先级（工程欠债，待议）
 
-- [ ] **11. 色彩零 token 化**：3323 处硬编码色值遍布 53 个文件；`color.json` 仅 1 条。新发现：BloodGas 结果区用 `#DC3545/#28A745`、Apache2/Nrs2002 用 `#3D6B4F` 作分级色，与 CalcEngine tier 色系不统一（一并纳入）。建议：先建 `AppColors`/`Dimens` 常量类，再迁移 color.json
+- [x] **11. 色彩零 token 化**：3323 处硬编码色值遍布 53 个文件；`color.json` 仅 1 条。新发现：BloodGas 结果区用 `#DC3545/#28A745`、Apache2/Nrs2002 用 `#3D6B4F` 作分级色，与 CalcEngine tier 色系不统一（一并纳入）。建议：先建 `AppColors`/`Dimens` 常量类，再迁移 color.json
+  - 已做：新建 `utils/AppColors.ets`/`utils/AppDimens.ets` token 层（`10047c5`）；CalcEngine tier 色改为引用 AppColors，全 App 分级色单一定义；12 个色板色值全局迁移 1990 处（52 文件，`a5fcfe0`/`57e7042`/`a298f08`）；BloodGas/Apache2/Nrs2002 分级色统一走 CalcEngine.getTierColor（`514e5dd`）；高频尺寸 .height(44/48)/.borderRadius(12)/.padding(16) 迁移 556 处（`9ad3ed5`）。注：色板外中性色（#1F2421 正文、#E0E0E0 描边、#999999 占位等）暂未 token 化
 - [ ] **12. 样式全量复制粘贴**：卡片样式 108 处重复。建议抽公共组件：`CalcCard`/`InputRow`/`ResultCard`/`OptionChip`
 - [ ] **13. `PatientDetailPage.ets` 单文件 4166 行**、8 个独立 Scroll。建议拆分子组件文件
 - [ ] **14. 暗黑模式准备度≈0**：resources/dark/ 仅 1 条。前置依赖第 11 条
@@ -61,9 +62,9 @@
 
 ## 修复过程中新发现的问题（未改）
 
-- [ ] **18.** 删除确认弹窗的"删除"按钮背景仍是预警橙 `#E76F2C`，应统一危险红 `#B1452A`（`PatientListPage.ets` 弹窗）
-- [ ] **19.** 知识库面包屑父级链接与"相关章节"wikilink 仍用系统蓝 `#2B6CB0`/`#EBF2FA`，与品牌色脱节
-- [ ] **20.** `KbMarkdownParser` 的 callout/annotation 配色仍是 Material 色系（`#E65100`/`#1565C0` 等）
+- [x] **18.** 删除确认弹窗的"删除"按钮背景仍是预警橙 `#E76F2C`，应统一危险红 `#B1452A`（`PatientListPage.ets` 弹窗）— 已改 `AppColors.danger`（`deaacdf`）
+- [x] **19.** 知识库面包屑父级链接与"相关章节"wikilink 仍用系统蓝 `#2B6CB0`/`#EBF2FA`，与品牌色脱节 — 链接改 `AppColors.primary`、底色改 `AppColors.background`（`deaacdf`）
+- [x] **20.** `KbMarkdownParser` 的 callout/annotation 配色仍是 Material 色系（`#E65100`/`#1565C0` 等）— 信息类改深绿系、警告改橙、危险改红、提示/成功改 tier 绿（`deaacdf`）
 - [ ] **21.** 年龄/肌酐等已有 `.type(InputType.Number)` 的输入框是整数键盘，肌酐等实际需小数，评估换 NUMBER_DECIMAL
 - [ ] **22.** Apache2Calculator 的 FiO₂ 输入无"小数/百分比"切换但 placeholder 是 '21'（百分比），与其它计算器 FiO₂ 交互不一致
 - [ ] **23.** 死代码：`getDangerCount`/`getWarnCount`/`getSourceColor`/`getTierIcon` 已无调用方（第 7 项后遗留）
@@ -82,4 +83,5 @@
 | 1 | #1 空态不出分 `8495916` | ✅ 构建通过 |
 | 2 | #2 `0a9af8c` / #3 `43fd7f7` / #4 `f5b85c9` / #5 `11c3c3d` / #9 `03e2c2a` / #10 `a3f8ca8` | ✅ 构建通过 |
 | 3 | #6 `56fa191` / #7 `9c4c999` / #8 `1b6c67f` | ✅ 构建通过 |
-| 4 | #11-#17 工程项 + #18-#23 新发现 | 待议 |
+| 4 | #11 色彩 token 化 `10047c5`/`a5fcfe0`/`57e7042`/`a298f08`/`514e5dd`/`9ad3ed5` + #18/#19/#20 `deaacdf` | ✅ 构建通过 |
+| 5 | #12-#17 工程项 + #21-#23 新发现 | 待议 |
