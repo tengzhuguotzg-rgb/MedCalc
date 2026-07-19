@@ -127,6 +127,8 @@ export struct ResultCard {
   tierMarginTop: number = 8;
   /** 单位是否内联在数值后（默认 true；false 时单位独占一行小字） */
   unitInline: boolean = true;
+  /** 标题是否 Medium 字重（默认 true；个别计算器标题无字重设置传 false） */
+  titleMedium: boolean = true;
 
   private mainText(): string {
     if (this.value === null) {
@@ -153,7 +155,7 @@ export struct ResultCard {
             .fontSize(12)
             .fontColor(AppColors.textSecondary)
             .letterSpacing(1.5)
-            .fontWeight(FontWeight.Medium);
+            .fontWeight(this.titleMedium ? FontWeight.Medium : FontWeight.Regular);
           Text(this.mainText())
             .fontSize(this.valueFontSize)
             .fontWeight(FontWeight.Bold)
