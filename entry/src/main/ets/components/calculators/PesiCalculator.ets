@@ -115,7 +115,7 @@ export struct PesiCalculator {
         Row() {
           Column() {
             Text('体温 (°C)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '体温' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((v: string) => { this.temp = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '体温' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((v: string) => { this.temp = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('意识状态').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });

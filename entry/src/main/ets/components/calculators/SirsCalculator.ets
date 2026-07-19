@@ -48,7 +48,7 @@ export struct SirsCalculator {
         Row() {
           Column() {
             Text('体温 (°C)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '体温' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+            TextInput({ placeholder: '体温' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
@@ -74,12 +74,12 @@ export struct SirsCalculator {
         Row() {
           Column() {
             Text('WBC (×10⁹/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: 'WBC' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+            TextInput({ placeholder: 'WBC' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .onChange((value: string) => { this.wbc = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('未成熟粒细胞 %').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: 'Bands' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+            TextInput({ placeholder: 'Bands' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .onChange((value: string) => { this.bands = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');

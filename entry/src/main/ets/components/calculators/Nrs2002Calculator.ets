@@ -88,8 +88,8 @@ export struct Nrs2002Calculator {
         ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
-        InputRow({ label: '身高 (cm)', placeholder: '请输入身高', onTextChange: (value: string) => { this.patientHeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
-        InputRow({ label: '体重 (kg)', placeholder: '请输入体重', onTextChange: (value: string) => { this.patientWeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
+        InputRow({ label: '身高 (cm)', placeholder: '请输入身高', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.patientHeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: '体重 (kg)', placeholder: '请输入体重', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.patientWeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });

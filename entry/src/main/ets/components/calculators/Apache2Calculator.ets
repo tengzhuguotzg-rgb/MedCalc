@@ -253,7 +253,7 @@ export struct Apache2Calculator {
 
       Row() {
         Column() {
-          InputRow({ label: '肌酐', placeholder: '80', onTextChange: (value: string) => { this.cr = parseFloat(value) || 0; this.calculate(); } });
+          InputRow({ label: '肌酐', placeholder: '80', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.cr = parseFloat(value) || 0; this.calculate(); } });
           Row() {
             OptionChip({ label: 'µmol/L', selected: this.crUnit === 'umol', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.crUnit = 'umol'; this.calculate(); } }).layoutWeight(1);
             OptionChip({ label: 'mg/dL', selected: this.crUnit === 'mgdl', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.crUnit = 'mgdl'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
@@ -289,8 +289,8 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        InputRow({ label: 'HCT (%)', placeholder: '40', onTextChange: (value: string) => { this.hct = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
-        InputRow({ label: 'WBC (×10⁹/L)', placeholder: '8', onTextChange: (value: string) => { this.wbc = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
+        InputRow({ label: 'HCT (%)', placeholder: '40', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.hct = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: 'WBC (×10⁹/L)', placeholder: '8', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.wbc = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });

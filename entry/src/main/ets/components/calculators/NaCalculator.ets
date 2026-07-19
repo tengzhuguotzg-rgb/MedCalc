@@ -83,7 +83,7 @@ export struct NaCalculator {
               .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Glu' })
-              .type(InputType.Number)
+              .type(InputType.NUMBER_DECIMAL)
               .height(AppDimens.inputHeight)
               .fontSize(16)
               .backgroundColor(AppColors.card)

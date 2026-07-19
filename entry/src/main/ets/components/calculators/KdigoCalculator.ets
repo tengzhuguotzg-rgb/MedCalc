@@ -55,7 +55,7 @@ export struct KdigoCalculator {
         Row() {
           Column() {
             Text('基础 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '基础 Cr' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((value: string) => { this.cr0Raw = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '基础 Cr' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((value: string) => { this.cr0Raw = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('单位').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
@@ -70,7 +70,7 @@ export struct KdigoCalculator {
         Row() {
           Column() {
             Text('当前 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '当前 Cr' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((value: string) => { this.cr1Raw = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '当前 Cr' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((value: string) => { this.cr1Raw = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('单位').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
@@ -83,7 +83,7 @@ export struct KdigoCalculator {
 
         Column() {
           Text('尿量 (mL/kg/h)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-          TextInput({ placeholder: '未监测可不填' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((value: string) => { this.urine = parseFloat(value) || 0; this.calculate(); });
+          TextInput({ placeholder: '未监测可不填' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((value: string) => { this.urine = parseFloat(value) || 0; this.calculate(); });
           Text('≤0.3×≥24h=3期 · ≤0.5×≥12h=2期 · <0.5×6-12h=1期').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
         }.width('100%').margin({ bottom: 12 });
 

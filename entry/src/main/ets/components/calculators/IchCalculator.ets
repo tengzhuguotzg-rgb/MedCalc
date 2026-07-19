@@ -47,7 +47,7 @@ export struct IchCalculator {
       CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
-        InputRow({ label: '血肿体积 (mL)', placeholder: '请输入体积', onTextChange: (value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
+        InputRow({ label: '血肿体积 (mL)', placeholder: '请输入体积', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
 
         Column() {
           Text('出血部位').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });

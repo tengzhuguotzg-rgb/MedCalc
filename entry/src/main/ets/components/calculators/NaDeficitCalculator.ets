@@ -71,7 +71,7 @@ export struct NaDeficitCalculator {
               .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'kg' })
-              .type(InputType.Number)
+              .type(InputType.NUMBER_DECIMAL)
               .height(AppDimens.inputHeight)
               .fontSize(16)
               .backgroundColor(AppColors.card)

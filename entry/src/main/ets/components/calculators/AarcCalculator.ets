@@ -53,7 +53,7 @@ export struct AarcCalculator {
       CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
-        InputRow({ label: '胆红素', placeholder: '请输入', onTextChange: (value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 6 });
+        InputRow({ label: '胆红素', placeholder: '请输入', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 6 });
         Row() { OptionChip({ label: 'µmol/L', selected: this.bilUnit === 'umol', fontSize: 12, bold: true, chipHeight: 32, onChipClick: () => { this.bilUnit = 'umol'; this.calculate(); } }).layoutWeight(1);
           OptionChip({ label: 'mg/dL', selected: this.bilUnit === 'mgdl', fontSize: 12, bold: true, chipHeight: 32, onChipClick: () => { this.bilUnit = 'mgdl'; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
         }.width('100%').margin({ bottom: 12 });

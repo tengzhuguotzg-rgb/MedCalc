@@ -3740,7 +3740,7 @@ export struct PatientDetailPage {
         TextInput({ placeholder: '输入数值' })
           .height(40)
           .fontSize(14)
-          .type(InputType.Number)
+          .type(InputType.NUMBER_DECIMAL)
           .margin({ bottom: 12 })
           .onChange((value: string) => { this.manualFieldValue = value; })
 

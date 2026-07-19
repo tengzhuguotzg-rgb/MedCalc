@@ -64,7 +64,7 @@ export struct CagCalculator {
         Column() {
           Text('血清白蛋白').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            TextInput({ placeholder: '白蛋白' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).layoutWeight(1)
+            TextInput({ placeholder: '白蛋白' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).layoutWeight(1)
               .onChange((value: string) => { this.alb = parseFloat(value) || 0; this.calculate(); });
             Row() {
               Button('g/L').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gl' ? AppColors.card : AppColors.textOption)

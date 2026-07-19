@@ -49,7 +49,7 @@ export struct GfrCalculator {
         InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 12 });
 
         Column() {
-          InputRow({ label: '血肌酐', placeholder: '肌酐', onTextChange: (value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); } });
+          InputRow({ label: '血肌酐', placeholder: '肌酐', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); } });
           Flex({ wrap: FlexWrap.Wrap }) {
             OptionChip({ label: 'µmol/L', selected: this.crUnit === 'umol', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, horizontalPadding: 6, onChipClick: () => { this.crUnit = 'umol'; this.calculate(); } }).margin({ right: 4, bottom: 4 });
             OptionChip({ label: 'mg/dL', selected: this.crUnit === 'mgdl', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, horizontalPadding: 6, onChipClick: () => { this.crUnit = 'mgdl'; this.calculate(); } }).margin({ bottom: 4 });
