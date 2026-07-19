@@ -1395,26 +1395,6 @@ export struct PatientDetailPage {
     }
   }
 
-  getDangerCount(): number {
-    let count = 0;
-    for (let i = 0; i < this.dashboard.alerts.length; i++) {
-      if (this.parseAlertResult(this.dashboard.alerts[i]).tierClass === 'tier-danger') {
-        count++;
-      }
-    }
-    return count;
-  }
-
-  getWarnCount(): number {
-    let count = 0;
-    for (let i = 0; i < this.dashboard.alerts.length; i++) {
-      if (this.parseAlertResult(this.dashboard.alerts[i]).tierClass === 'tier-warn') {
-        count++;
-      }
-    }
-    return count;
-  }
-
   getDiagnosisCategoryTags(): string[] {
     const tagSet = new Set<string>();
     for (let i = 0; i < this.dashboard.diagnoses.length; i++) {
@@ -1467,32 +1447,6 @@ export struct PatientDetailPage {
       return AppColors.tierWarn;
     }
     return AppColors.textSecondary;
-  }
-
-  getSourceLabel(source: string): string {
-    if (source === 'partial') {
-      return '可能性';
-    }
-    if (source === 'llm_hint') {
-      return 'LLM提示';
-    }
-    if (source === 'user') {
-      return '自添加';
-    }
-    return '确定性';
-  }
-
-  getSourceColor(source: string): string {
-    if (source === 'partial') {
-      return AppColors.tierWarn;
-    }
-    if (source === 'llm_hint') {
-      return AppColors.aiAccent;
-    }
-    if (source === 'user') {
-      return AppColors.tierOk;
-    }
-    return AppColors.primary;
   }
 
   async loadDiagnosisKb() {
