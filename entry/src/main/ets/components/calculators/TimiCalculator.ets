@@ -1,7 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateTimiStemi, calculateTimiNstemi } from '../../engine/TimiCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct TimiStemiCalculator {
@@ -60,7 +61,7 @@ export struct TimiStemiCalculator {
     Column() {
       Column() { Text('TIMI STEMI — ST段抬高型心肌梗死').fontSize(16).fontColor(AppColors.primary).fontWeight(FontWeight.Bold); Text('30天死亡风险 · 0-14分 (InTIME-II 2000)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 患者因素').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 10 });
         Column() { Text('年龄').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
           Flex({ wrap: FlexWrap.Wrap }) {
@@ -91,16 +92,10 @@ export struct TimiStemiCalculator {
 
         Row() { Text('前壁STEMI 或 LBBB').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1); this.YesNoBtn(this.anteriorLbbb, (v) => { this.anteriorLbbb = v; this.calculate(); }); }.width('100%').margin({ bottom: 10 });
         Row() { Text('就诊到再灌注 > 4h').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1); this.YesNoBtn(this.timeToTreat, (v) => { this.timeToTreat = v; this.calculate(); }); }.width('100%').margin({ bottom: 0 });
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() { Row() {
-          Column() { Text('TIMI STEMI').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-            Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-            Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-          }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-          Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-        }.width('100%'); }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'TIMI STEMI', value: this.result!.value, unit: this.result!.unit, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
@@ -174,7 +169,7 @@ export struct TimiNstemiCalculator {
     Column() {
       Column() { Text('TIMI NSTEMI — 非ST段抬高型心肌梗死/不稳定型心绞痛').fontSize(16).fontColor(AppColors.primary).fontWeight(FontWeight.Bold); Text('14天死亡/MI风险 · 0-7分 (Antman 2000)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 患者因素').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 10 });
         Row() { Column() { Text('年龄 ≥ 65 岁').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.ageGte65, (v) => { this.ageGte65 = v; this.calculate(); }); }.layoutWeight(1);
           Column() { Text('冠脉狭窄 ≥ 50% (已知CAD)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.knownCAD, (v) => { this.knownCAD = v; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
@@ -200,16 +195,10 @@ export struct TimiNstemiCalculator {
         Row() { Column() { Text('ST段偏移 ≥ 0.5mm').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.stDevGte05, (v) => { this.stDevGte05 = v; this.calculate(); }); }.layoutWeight(1);
           Column() { Text('心肌标志物升高').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.biomarkerElevated, (v) => { this.biomarkerElevated = v; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() { Row() {
-          Column() { Text('TIMI NSTEMI').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-            Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-            Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-          }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-          Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-        }.width('100%'); }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'TIMI NSTEMI', value: this.result!.value, unit: this.result!.unit, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }

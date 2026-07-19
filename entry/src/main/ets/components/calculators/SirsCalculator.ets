@@ -1,7 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateSirs } from '../../engine/CommonCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct SirsCalculator {
@@ -41,9 +42,9 @@ export struct SirsCalculator {
     Column() {
       Column() { Text('用于筛查全身炎症反应综合征/脓毒症').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('4项：体温+心率+呼吸+WBC，≥2项阳性').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
-        
+
         Row() {
           Column() {
             Text('体温 (°C)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
@@ -82,24 +83,10 @@ export struct SirsCalculator {
               .onChange((value: string) => { this.bands = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('SIRS Total').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
-                .fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass))
-                .borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'SIRS Total', value: this.result!.value, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }

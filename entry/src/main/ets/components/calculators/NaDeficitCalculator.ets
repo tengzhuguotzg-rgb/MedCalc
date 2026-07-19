@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNaDeficit } from '../../engine/CommonCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct NaDeficitCalculator {
@@ -59,7 +60,7 @@ export struct NaDeficitCalculator {
       .width('100%')
       .margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
@@ -171,47 +172,9 @@ export struct NaDeficitCalculator {
         .alignItems(HorizontalAlign.Start)
         .margin({ top: 8 });
       }
-      .padding(AppDimens.cardPadding)
-      .backgroundColor(AppColors.card)
-      .borderRadius(AppDimens.cardRadius)
-      .width('100%')
-      .margin({ bottom: 16 });
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('Na⁺ 缺失量')
-                .fontSize(12)
-                .fontColor(AppColors.textSecondary)
-                .letterSpacing(1.5);
-              Text(this.result!.value !== null ?
-                `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
-                .fontSize(32)
-                .fontWeight(FontWeight.Bold)
-                .fontColor(AppColors.primary)
-                .margin({ top: 4 });
-              Text(this.result!.tier)
-                .fontSize(13)
-                .fontWeight(FontWeight.Bold)
-                .fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass))
-                .borderRadius(20)
-                .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-                .margin({ top: 4 });
-            }
-            .alignItems(HorizontalAlign.Start)
-            .layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }
-          .width('100%');
-        }
-        .padding(AppDimens.cardPadding)
-        .backgroundColor(AppColors.card)
-        .borderRadius(AppDimens.cardRadius)
-        .width('100%');
+        ResultCard({ title: 'Na⁺ 缺失量', value: this.result!.value, unit: this.result!.unit, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }
     .width('100%')
