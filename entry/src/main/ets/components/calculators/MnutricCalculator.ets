@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateMnutric } from '../../engine/MnutricCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct MnutricCalculator {
@@ -40,15 +41,15 @@ export struct MnutricCalculator {
     Column() {
       Column() { Text('用于 ICU 患者营养风险评估').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5 项, 总分 0-9, ≥5 高营养风险 (Heyland 2011)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Column() {
           Text('年龄').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            Button('< 50').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.age === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 0 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.age = 0; this.calculate(); });
-            Button('50-74').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.age === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 1 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4, right: 4 }).onClick(() => { this.age = 1; this.calculate(); });
-            Button('≥ 75').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 2 ? AppColors.card : AppColors.textOption).backgroundColor(this.age === 2 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 2 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.age = 2; this.calculate(); });
+            OptionChip({ label: '< 50', selected: this.age === 0, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.age = 0; this.calculate(); } }).layoutWeight(1).margin({ right: 4 });
+            OptionChip({ label: '50-74', selected: this.age === 1, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.age = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 4, right: 4 });
+            OptionChip({ label: '≥ 75', selected: this.age === 2, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.age = 2; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
           }.width('100%');
         }.width('100%').margin({ bottom: 10 });
 
@@ -67,33 +68,22 @@ export struct MnutricCalculator {
         Column() {
           Text('合并症数量').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            Button('0-1 种').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.comorb === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.comorb === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.comorb === 0 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.comorb = 0; this.calculate(); });
-            Button('≥ 2 种').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.comorb === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.comorb === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.comorb === 1 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.comorb = 1; this.calculate(); });
+            OptionChip({ label: '0-1 种', selected: this.comorb === 0, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.comorb = 0; this.calculate(); } }).layoutWeight(1).margin({ right: 4 });
+            OptionChip({ label: '≥ 2 种', selected: this.comorb === 1, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.comorb = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
           }.width('100%');
         }.width('100%').margin({ bottom: 10 });
 
         Column() {
           Text('住院→ICU 天数').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            Button('直接入ICU').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.icuDay === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.icuDay === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.icuDay === 0 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.icuDay = 0; this.calculate(); });
-            Button('≥ 1 天后').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.icuDay === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.icuDay === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.icuDay === 1 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.icuDay = 1; this.calculate(); });
+            OptionChip({ label: '直接入ICU', selected: this.icuDay === 0, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.icuDay = 0; this.calculate(); } }).layoutWeight(1).margin({ right: 4 });
+            OptionChip({ label: '≥ 1 天后', selected: this.icuDay === 1, fontSize: 14, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.icuDay = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
           }.width('100%');
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('mNUTRIC').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'mNUTRIC', value: this.result!.value, unit: this.result!.unit, decimals: 0, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }

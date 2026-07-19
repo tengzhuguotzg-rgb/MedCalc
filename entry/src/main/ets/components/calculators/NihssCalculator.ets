@@ -1,7 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNihss } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct NihssCalculator {
@@ -54,40 +55,35 @@ export struct NihssCalculator {
   CalcContent() {
     Column() {
       Column() { Text('用于评估脑卒中神经功能缺损严重程度').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('11项评估，总分0-42，≥6分考虑溶栓/取栓').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
-          Column() { Text('1a 意识水平').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-3' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.ia = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('1b 提问').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.ib = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
-          Column() { Text('1c 指令').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.ic = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '1a 意识水平', placeholder: '0-3', onTextChange: (value: string) => { this.ia = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '1b 提问', placeholder: '0-2', onTextChange: (value: string) => { this.ib = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '1c 指令', placeholder: '0-2', onTextChange: (value: string) => { this.ic = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
         Row() {
-          Column() { Text('2 凝视').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.gaze = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('3 视野').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-3' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.vis = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
-          Column() { Text('4 面瘫').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-3' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.face = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '2 凝视', placeholder: '0-2', onTextChange: (value: string) => { this.gaze = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '3 视野', placeholder: '0-3', onTextChange: (value: string) => { this.vis = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '4 面瘫', placeholder: '0-3', onTextChange: (value: string) => { this.face = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
         Row() {
-          Column() { Text('5a 左上肢').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-4' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.armA = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('5b 右上肢').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-4' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.armB = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '5a 左上肢', placeholder: '0-4', onTextChange: (value: string) => { this.armA = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '5b 右上肢', placeholder: '0-4', onTextChange: (value: string) => { this.armB = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
         Row() {
-          Column() { Text('6 共济失调').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.ata = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('7 感觉').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.sens = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
-          Column() { Text('8 语言').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-3' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.lang = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '6 共济失调', placeholder: '0-2', onTextChange: (value: string) => { this.ata = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '7 感觉', placeholder: '0-2', onTextChange: (value: string) => { this.sens = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '8 语言', placeholder: '0-3', onTextChange: (value: string) => { this.lang = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
         Row() {
-          Column() { Text('9 构音').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.dys = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('10 忽视').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.neg = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });
+          InputRow({ label: '9 构音', placeholder: '0-2', onTextChange: (value: string) => { this.dys = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '10 忽视', placeholder: '0-2', onTextChange: (value: string) => { this.neg = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
-      if (this.result) { Column() { Row() {
-        Column() { Text('NIHSS Total').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-          Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-          Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-            .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-        }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-        Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-      }.width('100%'); }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%'); }
+      }
+      if (this.result) {
+        ResultCard({ title: 'NIHSS Total', value: this.result!.value, unit: '', decimals: 0, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
+      }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
