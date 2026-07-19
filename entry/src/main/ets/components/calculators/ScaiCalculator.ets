@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateScai } from '../../engine/ScaiCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct ScaiCalculator {
@@ -40,7 +41,7 @@ export struct ScaiCalculator {
     Column() {
       Column() { Text('用于心源性休克分层 (SCAI 2019/2024)').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('A-E 五级, 基于血压/乳酸/血管活性药/灌注/CPR').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
@@ -57,9 +58,9 @@ export struct ScaiCalculator {
         Column() {
           Text('血管活性药').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Flex({ wrap: FlexWrap.Wrap }) {
-            Button('无').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'none' ? AppColors.card : AppColors.textOption).backgroundColor(this.vaso === 'none' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'none' ? AppColors.primary : AppColors.border }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'none'; this.calculate(); });
-            Button('1种低剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'low' ? AppColors.card : AppColors.textOption).backgroundColor(this.vaso === 'low' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'low' ? AppColors.primary : AppColors.border }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'low'; this.calculate(); });
-            Button('≥2种/高剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'high' ? AppColors.card : AppColors.textOption).backgroundColor(this.vaso === 'high' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'high' ? AppColors.primary : AppColors.border }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.vaso = 'high'; this.calculate(); });
+            OptionChip({ label: '无', selected: this.vaso === 'none', bold: true, chipHeight: 34, horizontalPadding: 8, onChipClick: () => { this.vaso = 'none'; this.calculate(); } }).margin({ right: 6, bottom: 4 });
+            OptionChip({ label: '1种低剂量', selected: this.vaso === 'low', bold: true, chipHeight: 34, horizontalPadding: 8, onChipClick: () => { this.vaso = 'low'; this.calculate(); } }).margin({ right: 6, bottom: 4 });
+            OptionChip({ label: '≥2种/高剂量', selected: this.vaso === 'high', bold: true, chipHeight: 34, horizontalPadding: 8, onChipClick: () => { this.vaso = 'high'; this.calculate(); } }).margin({ bottom: 4 });
           }.width('100%');
         }.width('100%').margin({ bottom: 8 });
 
@@ -78,21 +79,10 @@ export struct ScaiCalculator {
             Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.resus === 'yes' ? AppColors.card : AppColors.textOption).backgroundColor(this.resus === 'yes' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.resus === 'yes' ? AppColors.primary : AppColors.border }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.resus = 'yes'; this.calculate(); });
           }.width('100%');
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('SCAI 休克').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
-              Text(this.result!.value !== null ? `Stage ${this.result!.unit}` : '—').fontSize(28).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
-              Text(this.result!.tier).fontSize(12).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'SCAI 休克', value: this.result!.value, valueText: `Stage ${this.result!.unit}`, valueFontSize: 28, valueMarginTop: 4, tierFontSize: 12, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
