@@ -70,7 +70,7 @@ export struct CalcKbLinks {
           Blank();
           Text(this.expanded ? '收起' : '查看')
             .fontSize(12)
-            .fontColor('#2B6CB0')
+            .fontColor(AppColors.primary)
             .onClick(() => { this.expanded = !this.expanded; });
         }
         .width('100%');
@@ -82,7 +82,7 @@ export struct CalcKbLinks {
                 Column() {
                   Text(this.getResultTitle(sr))
                     .fontSize(12)
-                    .fontColor('#2B6CB0')
+                    .fontColor(AppColors.primary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1);
@@ -107,7 +107,7 @@ export struct CalcKbLinks {
         } else {
           Text(this.kbResults.map((sr: SearchResult): string => this.getResultTitle(sr)).join(' \u00B7 '))
             .fontSize(12)
-            .fontColor('#2B6CB0')
+            .fontColor(AppColors.primary)
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .margin({ top: 4 })

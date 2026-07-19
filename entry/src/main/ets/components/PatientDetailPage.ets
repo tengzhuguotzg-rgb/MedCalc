@@ -1293,7 +1293,7 @@ export struct PatientDetailPage {
         Row() {
           Text('+')
             .fontSize(14)
-            .fontColor('#2B6CB0')
+            .fontColor(AppColors.primary)
             .margin({ left: 6 })
             .onClick(() => {
               this.addDiagName = '';
@@ -1334,7 +1334,7 @@ export struct PatientDetailPage {
           Row() {
             Text('+ 添加诊断')
               .fontSize(13)
-              .fontColor('#2B6CB0')
+              .fontColor(AppColors.primary)
               .margin({ top: 8 })
           }
           .width('100%')
@@ -2473,7 +2473,7 @@ export struct PatientDetailPage {
           if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
             Text(this.expandedRefIds.has(diag.ruleId) ? '收起' : '展开')
               .fontSize(11)
-              .fontColor('#2B6CB0');
+              .fontColor(AppColors.primary);
           }
         }
         .width('100%')
@@ -2523,7 +2523,7 @@ export struct PatientDetailPage {
                 Row() {
                   Text(this.getKbSearchResultTitle(sr))
                     .fontSize(10)
-                    .fontColor('#2B6CB0')
+                    .fontColor(AppColors.primary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1);
@@ -2625,7 +2625,7 @@ export struct PatientDetailPage {
             }
             Text('查看 >')
               .fontSize(12)
-              .fontColor('#2B6CB0');
+              .fontColor(AppColors.primary);
           }
           .width('100%')
           .padding({ top: 6, bottom: 6 })
@@ -2649,7 +2649,7 @@ export struct PatientDetailPage {
               if (this.getDiagnosisKb(diag.ruleId)!.summary.length > 0) {
                 Text('详情 >')
                   .fontSize(10)
-                  .fontColor('#2B6CB0')
+                  .fontColor(AppColors.primary)
                   .onClick(() => {
                     this.activeAdviceRuleId = diag.ruleId;
                     const kbD = this.getDiagnosisKb(diag.ruleId);
@@ -2660,7 +2660,7 @@ export struct PatientDetailPage {
               if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
                 Text('重试建议')
                   .fontSize(10)
-                  .fontColor('#2B6CB0')
+                  .fontColor(AppColors.primary)
                   .margin({ left: 8 })
                   .onClick(() => {
                     const kbD2 = this.getDiagnosisKb(diag.ruleId);
@@ -2676,7 +2676,7 @@ export struct PatientDetailPage {
               Blank();
               Text('重搜')
                 .fontSize(10)
-                .fontColor('#2B6CB0')
+                .fontColor(AppColors.primary)
                 .onClick(() => {
                   this.diagnosisKbMap = this.diagnosisKbMap.filter((d: DiagnosisKbData): boolean => d.ruleId !== diag.ruleId);
                   this.expandedRefIds.delete(diag.ruleId);
@@ -2698,11 +2698,11 @@ export struct PatientDetailPage {
           Row() {
             Text('查看指南建议')
               .fontSize(12)
-              .fontColor('#2B6CB0');
+              .fontColor(AppColors.primary);
             Blank();
             Text('>')
               .fontSize(12)
-              .fontColor('#2B6CB0');
+              .fontColor(AppColors.primary);
           }
           .width('100%')
           .padding({ top: 6, bottom: 6 })
@@ -2864,7 +2864,7 @@ export struct PatientDetailPage {
             Blank();
             Text(this.expandedCategories.has(category) ? '▲ 收起' : '▼ 展开')
               .fontSize(11)
-              .fontColor('#2B6CB0');
+              .fontColor(AppColors.primary);
           }
           .width('100%')
           .margin({ top: 8, bottom: 4 })
@@ -2889,8 +2889,8 @@ export struct PatientDetailPage {
                     if (rec.type.length > 0) {
                       Text(rec.type)
                         .fontSize(9)
-                        .fontColor(rec.type === '推荐意见' ? AppColors.tierOk : (rec.type === '知识要点' ? AppColors.infoAccent : AppColors.aiAccent))
-                        .backgroundColor(rec.type === '推荐意见' ? AppColors.tierOkBg : (rec.type === '知识要点' ? '#E3F2FD' : AppColors.aiAccentBg))
+                        .fontColor(rec.type === '推荐意见' ? AppColors.tierOk : (rec.type === '知识要点' ? AppColors.primary : AppColors.aiAccent))
+                        .backgroundColor(rec.type === '推荐意见' ? AppColors.tierOkBg : (rec.type === '知识要点' ? AppColors.background : AppColors.aiAccentBg))
                         .borderRadius(3)
                         .padding({ left: 4, right: 4, top: 1, bottom: 1 });
                     }
@@ -4066,8 +4066,8 @@ export struct PatientDetailPage {
         ForEach(ml.text.split(/\s+/).filter((t: string): boolean => t.startsWith('#') && t.length > 1), (tag: string) => {
           Text(tag.substring(1))
             .fontSize(11)
-            .fontColor('#2B6CB0')
-            .backgroundColor('#EBF2FA')
+            .fontColor(AppColors.primary)
+            .backgroundColor(AppColors.background)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 2, bottom: 2 })
             .margin({ right: 4, bottom: 4 });

@@ -114,7 +114,7 @@ export const DATA_DOMAINS: Record<string, string[]> = {
 export const DOMAIN_COLORS: Record<string, string> = {
   '人口学': AppColors.textSecondary,
   '生命体征': AppColors.tierWarn,
-  '血气分析': '#2B6CB0',
+  '血气分析': AppColors.primary,
   '电解质': '#6B8E23',
   '肾功能': '#D4760A',
   '肝功能': '#8B6914',
@@ -124,7 +124,7 @@ export const DOMAIN_COLORS: Record<string, string> = {
   '心肌标志物': '#E74C3C',
   '神经': '#6B4FA0',
   '心脏': AppColors.danger,
-  '呼吸': '#2B6CB0',
+  '呼吸': AppColors.primary,
   '营养': AppColors.tierOk,
   '代谢': AppColors.tierWarn,
   '内分泌': '#9B59B6',
