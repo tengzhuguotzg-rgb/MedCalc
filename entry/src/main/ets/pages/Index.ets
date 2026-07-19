@@ -48,6 +48,7 @@ import { KnowledgeSearchPage } from '../components/KnowledgeSearchPage';
 import { CalcKbLinks } from '../components/CalcKbLinks';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
+import { AppColors } from '../utils/AppColors';
 
 @Entry
 @Component
@@ -130,7 +131,7 @@ struct Index {
       }
       .tabBar(this.TabBarBuilder('设置', 4))
     }
-    .barBackgroundColor('#FFFFFF')
+    .barBackgroundColor(AppColors.card)
     .barMode(BarMode.Fixed)
     .scrollable(false)
     .onChange((index: number) => { this.currentTab = index; })
@@ -145,12 +146,12 @@ struct Index {
       Text(title)
         .fontSize(14)
         .fontWeight(this.currentTab === index ? FontWeight.Medium : FontWeight.Normal)
-        .fontColor(this.currentTab === index ? '#1F3D2F' : '#5F6654')
+        .fontColor(this.currentTab === index ? AppColors.primary : AppColors.textSecondary)
       Row()
         .width(24)
         .height(2)
         .borderRadius(1)
-        .backgroundColor(this.currentTab === index ? '#1F3D2F' : 'transparent')
+        .backgroundColor(this.currentTab === index ? AppColors.primary : 'transparent')
     }
     .width('100%')
     .height('100%')
@@ -263,7 +264,7 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F4F1EA');
+      .backgroundColor(AppColors.background);
 
       if (!this.sidebarCollapsed) {
         Column()
@@ -302,7 +303,7 @@ struct Index {
         Text(this.getCurrentCalculatorName())
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F');
+          .fontColor(AppColors.primary);
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
@@ -311,7 +312,7 @@ struct Index {
       Button() {
         Text(this.isFavorite() ? '★' : '☆')
           .fontSize(18)
-          .fontColor(this.isFavorite() ? '#E76F2C' : '#5F6654')
+          .fontColor(this.isFavorite() ? AppColors.warning : AppColors.textSecondary)
       }
       .width(44)
       .height(44)
@@ -323,16 +324,16 @@ struct Index {
     .width('100%')
     .height(44)
     .padding({ left: 12, right: 12 })
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .border({ width: { bottom: 1 }, color: '#E0DCC8' });
   }
 
   @Builder
   MenuIcon() {
     Column({ space: 3.5 }) {
-      Row().width(18).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
-      Row().width(18).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
-      Row().width(12).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
+      Row().width(18).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
+      Row().width(18).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
+      Row().width(12).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
     }
     .width(24)
     .height(24)
@@ -346,7 +347,7 @@ struct Index {
       Text('开发中...')
         .fontSize(17)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F');
+        .fontColor(AppColors.primary);
       Text('此计算器正在移植中，敬请期待')
         .fontSize(11.5)
         .fontColor('#4A5247')

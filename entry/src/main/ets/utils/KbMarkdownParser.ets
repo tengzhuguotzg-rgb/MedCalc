@@ -1,3 +1,5 @@
+import { AppColors } from './AppColors';
+
 export class MarkdownLine {
   text: string = '';
   type: string = 'text';
@@ -393,7 +395,7 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
   const boldMatch = text.match(/^\*\*([^*]+)\*\*(.*)/);
   if (boldMatch !== null && boldMatch.length > 2) {
     const keyword = boldMatch[1];
-    let color = '#5F6654';
+    let color = AppColors.textSecondary;
     if (keyword.indexOf('新增') >= 0 || keyword.indexOf('New') >= 0) {
       color = '#2E7D32';
     } else if (keyword.indexOf('重新审视') >= 0 || keyword.indexOf('Revisited') >= 0) {
@@ -410,14 +412,14 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
   const badge = new AnnotationBadge();
   badge.keyword = text.replace(/\*\*/g, '');
   badge.detail = '';
-  badge.color = '#5F6654';
+  badge.color = AppColors.textSecondary;
   return badge;
 }
 
 export class AnnotationBadge {
   keyword: string = '';
   detail: string = '';
-  color: string = '#5F6654';
+  color: string = AppColors.textSecondary;
 }
 
 export function getCalloutStyle(calloutType: string): CalloutStyle {
@@ -425,11 +427,11 @@ export function getCalloutStyle(calloutType: string): CalloutStyle {
     case 'warning':
       return new CalloutStyle('#E65100', '#FFF3E0', '\u26A0');
     case 'danger':
-      return new CalloutStyle('#C62828', '#FFEBEE', '\u274C');
+      return new CalloutStyle('#C62828', AppColors.tierDangerBg, '\u274C');
     case 'important':
       return new CalloutStyle('#7B1FA2', '#F3E5F5', '\u2757');
     case 'tip':
-      return new CalloutStyle('#2E7D32', '#E8F5E9', '\uD83D\uDCA1');
+      return new CalloutStyle('#2E7D32', AppColors.tierOkBg, '\uD83D\uDCA1');
     case 'note':
       return new CalloutStyle('#1565C0', '#E3F2FD', '\uD83D\uDCDD');
     case 'info':
@@ -439,13 +441,13 @@ export function getCalloutStyle(calloutType: string): CalloutStyle {
     case 'example':
       return new CalloutStyle('#F57F17', '#FFFDE7', '\uD83D\uDCD6');
     case 'success':
-      return new CalloutStyle('#1B5E20', '#E8F5E9', '\u2705');
+      return new CalloutStyle('#1B5E20', AppColors.tierOkBg, '\u2705');
     case 'quote':
-      return new CalloutStyle('#C8881A', '#FFF8E1', '\uD83D\uDCAC');
+      return new CalloutStyle(AppColors.tierWarn, AppColors.tierWarnBg, '\uD83D\uDCAC');
     case 'faq':
       return new CalloutStyle('#6A1B9A', '#F3E5F5', '\u2753');
     default:
-      return new CalloutStyle('#5F6654', '#F5F4EF', '\uD83D\uDCC4');
+      return new CalloutStyle(AppColors.textSecondary, '#F5F4EF', '\uD83D\uDCC4');
   }
 }
 
