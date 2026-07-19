@@ -7,7 +7,6 @@ export struct PfCalculator {
   @State fio2: number = 0;
   @State fio2Mode: string = 'dec';
   @State peep: number | null = null;
-  @State peepText: string = '';
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -18,7 +17,6 @@ export struct PfCalculator {
     this.fio2 = 0;
     this.fio2Mode = 'dec';
     this.peep = null;
-    this.peepText = '';
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
