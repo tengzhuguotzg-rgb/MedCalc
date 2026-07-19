@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateScai } from '../../engine/ScaiCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct ScaiCalculator {
@@ -45,11 +46,11 @@ export struct ScaiCalculator {
         Row() {
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('乳酸 (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
 
@@ -77,7 +78,7 @@ export struct ScaiCalculator {
             Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.resus === 'yes' ? AppColors.card : '#2D5440').backgroundColor(this.resus === 'yes' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.resus === 'yes' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.resus = 'yes'; this.calculate(); });
           }.width('100%');
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -91,8 +92,8 @@ export struct ScaiCalculator {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

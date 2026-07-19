@@ -1,6 +1,7 @@
 import { LlmModelConfig, LlmFormat, ApiServiceConfig, sendVisionRequest } from '../services/LlmService';
 import { PreferencesService } from '../services/PreferencesService';
 import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 let settingsLlmIdCounter: number = 0;
 
@@ -212,7 +213,7 @@ export struct SettingsPage {
           .fontColor(AppColors.primary)
       }
       .width('100%')
-      .height(44)
+      .height(AppDimens.touchTarget)
       .padding({ left: 16, right: 16 })
       .backgroundColor(AppColors.card)
       .border({ width: { bottom: 1 }, color: '#E0DCC8' })
@@ -246,7 +247,7 @@ export struct SettingsPage {
                   .textAlign(TextAlign.Center)
               }
               .width('100%')
-              .padding(16)
+              .padding(AppDimens.cardPadding)
               .backgroundColor('#F9F8F3')
               .borderRadius(8)
             }
@@ -359,9 +360,9 @@ export struct SettingsPage {
               })
           }
           .width('100%')
-          .padding(16)
+          .padding(AppDimens.cardPadding)
           .backgroundColor(AppColors.card)
-          .borderRadius(12)
+          .borderRadius(AppDimens.cardRadius)
 
           Text('关于')
             .fontSize(16)
@@ -378,11 +379,11 @@ export struct SettingsPage {
               .fontColor(AppColors.textSecondary)
           }
           .width('100%')
-          .padding(16)
+          .padding(AppDimens.cardPadding)
           .backgroundColor(AppColors.card)
-          .borderRadius(12)
+          .borderRadius(AppDimens.cardRadius)
         }
-        .padding(16)
+        .padding(AppDimens.cardPadding)
       }
       .layoutWeight(1)
       .width('100%')

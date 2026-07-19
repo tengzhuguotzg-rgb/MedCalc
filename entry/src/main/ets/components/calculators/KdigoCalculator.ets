@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateKdigo } from '../../engine/KdigoCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct KdigoCalculator {
@@ -53,7 +54,7 @@ export struct KdigoCalculator {
         Row() {
           Column() {
             Text('基础 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '基础 Cr' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((value: string) => { this.cr0Raw = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '基础 Cr' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((value: string) => { this.cr0Raw = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('单位').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
@@ -68,7 +69,7 @@ export struct KdigoCalculator {
         Row() {
           Column() {
             Text('当前 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '当前 Cr' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((value: string) => { this.cr1Raw = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '当前 Cr' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((value: string) => { this.cr1Raw = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('单位').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
@@ -81,7 +82,7 @@ export struct KdigoCalculator {
 
         Column() {
           Text('尿量 (mL/kg/h)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-          TextInput({ placeholder: '未监测可不填' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((value: string) => { this.urine = parseFloat(value) || 0; this.calculate(); });
+          TextInput({ placeholder: '未监测可不填' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((value: string) => { this.urine = parseFloat(value) || 0; this.calculate(); });
           Text('≤0.3×≥24h=3期 · ≤0.5×≥12h=2期 · <0.5×6-12h=1期').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
         }.width('100%').margin({ bottom: 12 });
 
@@ -92,7 +93,7 @@ export struct KdigoCalculator {
             Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.rrt === 1 ? AppColors.card : '#2D5440').backgroundColor(this.rrt === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.rrt === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.rrt = 1; this.calculate(); });
           }.width('100%');
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -106,8 +107,8 @@ export struct KdigoCalculator {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateIch } from '../../engine/IchCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct IchCalculator {
@@ -45,24 +46,24 @@ export struct IchCalculator {
       Column() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
-        Column() { Text('血肿体积 (mL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入体积' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
+        Column() { Text('血肿体积 (mL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入体积' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
 
         Column() {
           Text('出血部位').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 8 });
           Row() {
-            Button('幕上').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.location === 0 ? AppColors.card : '#2D5440').backgroundColor(this.location === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.location === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.location = 0; this.calculate(); });
-            Button('幕下').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.location === 1 ? AppColors.card : '#2D5440').backgroundColor(this.location === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.location === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 8 }).onClick(() => { this.location = 1; this.calculate(); });
+            Button('幕上').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.location === 0 ? AppColors.card : '#2D5440').backgroundColor(this.location === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.location === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.location = 0; this.calculate(); });
+            Button('幕下').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.location === 1 ? AppColors.card : '#2D5440').backgroundColor(this.location === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.location === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ left: 8 }).onClick(() => { this.location = 1; this.calculate(); });
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
 
         Row() { Text('脑室出血').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 0 ? AppColors.card : '#2D5440').backgroundColor(this.ivh === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.ivh === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.ivh = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 1 ? AppColors.card : '#2D5440').backgroundColor(this.ivh === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.ivh === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.ivh = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 0 ? AppColors.card : '#2D5440').backgroundColor(this.ivh === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.ivh === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.ivh = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 1 ? AppColors.card : '#2D5440').backgroundColor(this.ivh === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.ivh === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.ivh = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 16 });
 
-        Column() { Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+        Column() { Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%');
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -74,8 +75,8 @@ export struct IchCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -20,6 +20,7 @@ import { image } from '@kit.ImageKit';
 import { pdfService } from '@kit.PDFKit';
 import { ImageEditor } from './ImageEditor';
 import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 class DomainEntry {
   name: string = '';
@@ -3589,7 +3590,7 @@ export struct PatientDetailPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')
@@ -3684,7 +3685,7 @@ export struct PatientDetailPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')
@@ -3779,7 +3780,7 @@ export struct PatientDetailPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')
@@ -3835,7 +3836,7 @@ export struct PatientDetailPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')
@@ -3890,7 +3891,7 @@ export struct PatientDetailPage {
     .width('95%')
     .height('85%')
     .backgroundColor(AppColors.card)
-    .borderRadius(12);
+    .borderRadius(AppDimens.cardRadius);
   }
 
   @State kbReaderLines: MarkdownLine[] = [];
@@ -4203,7 +4204,7 @@ export struct PatientDetailPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')

@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateKcc } from '../../engine/KccCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct KccCalculator {
@@ -48,24 +49,24 @@ export struct KccCalculator {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
-          Column() { Text('INR').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
-          Column() { Text(this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
+          Column() { Text('INR').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
+          Column() { Text(this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 8 });
 
         Row() {
           Text('胆红素单位').fontSize(12).fontColor(AppColors.textSecondary).layoutWeight(1);
-          Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'umol' ? AppColors.card : '#2D5440').backgroundColor(this.bilirubinUnit === 'umol' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.bilirubinUnit === 'umol' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).onClick(() => { this.bilirubinUnit = 'umol'; this.calculate(); });
-          Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'mgdl' ? AppColors.card : '#2D5440').backgroundColor(this.bilirubinUnit === 'mgdl' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.bilirubinUnit === 'mgdl' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).margin({ left: 6 }).onClick(() => { this.bilirubinUnit = 'mgdl'; this.calculate(); });
+          Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'umol' ? AppColors.card : '#2D5440').backgroundColor(this.bilirubinUnit === 'umol' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.bilirubinUnit === 'umol' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).onClick(() => { this.bilirubinUnit = 'umol'; this.calculate(); });
+          Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'mgdl' ? AppColors.card : '#2D5440').backgroundColor(this.bilirubinUnit === 'mgdl' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.bilirubinUnit === 'mgdl' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).margin({ left: 6 }).onClick(() => { this.bilirubinUnit = 'mgdl'; this.calculate(); });
         }.width('100%').margin({ bottom: 8 });
 
-        Column() { Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
+        Column() { Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
 
         Row() { Text('病因：扑热息痛/不明原因').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.etiology === 0 ? AppColors.card : '#2D5440').backgroundColor(this.etiology === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.etiology === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.etiology = 0; this.calculate(); });
-            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.etiology === 1 ? AppColors.card : '#2D5440').backgroundColor(this.etiology === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.etiology === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.etiology = 1; this.calculate(); });
+          Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.etiology === 0 ? AppColors.card : '#2D5440').backgroundColor(this.etiology === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.etiology === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.etiology = 0; this.calculate(); });
+            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.etiology === 1 ? AppColors.card : '#2D5440').backgroundColor(this.etiology === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.etiology === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.etiology = 1; this.calculate(); });
           }.width(100);
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -77,8 +78,8 @@ export struct KccCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

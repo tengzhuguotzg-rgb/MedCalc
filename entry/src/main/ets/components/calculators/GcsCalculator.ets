@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateGcs } from '../../engine/GcsCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct GcsCalculator {
@@ -43,7 +44,7 @@ export struct GcsCalculator {
             ForEach(['4自动', '3呼唤', '2刺激', '1无'], (item: string) => {
               Button(item).fontSize(13).fontWeight(FontWeight.Medium).fontColor(this.eye === parseInt(item[0]) ? AppColors.card : '#2D5440')
                 .backgroundColor(this.eye === parseInt(item[0]) ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.eye === parseInt(item[0]) ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(44).margin({ right: 8, bottom: 8 }).onClick(() => { this.eye = parseInt(item[0]); this.calculate(); });
+                .borderRadius(8).height(AppDimens.touchTarget).margin({ right: 8, bottom: 8 }).onClick(() => { this.eye = parseInt(item[0]); this.calculate(); });
             });
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
@@ -54,7 +55,7 @@ export struct GcsCalculator {
             ForEach(['5正常', '4含糊', '3吐词', '2发音', '1无'], (item: string) => {
               Button(item).fontSize(13).fontWeight(FontWeight.Medium).fontColor(this.verbal === parseInt(item[0]) ? AppColors.card : '#2D5440')
                 .backgroundColor(this.verbal === parseInt(item[0]) ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.verbal === parseInt(item[0]) ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(44).margin({ right: 8, bottom: 8 }).onClick(() => { this.verbal = parseInt(item[0]); this.calculate(); });
+                .borderRadius(8).height(AppDimens.touchTarget).margin({ right: 8, bottom: 8 }).onClick(() => { this.verbal = parseInt(item[0]); this.calculate(); });
             });
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
@@ -65,11 +66,11 @@ export struct GcsCalculator {
             ForEach(['6遵嘱', '5定位', '4退缩', '3屈曲', '2伸直', '1无'], (item: string) => {
               Button(item).fontSize(13).fontWeight(FontWeight.Medium).fontColor(this.motor === parseInt(item[0]) ? AppColors.card : '#2D5440')
                 .backgroundColor(this.motor === parseInt(item[0]) ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.motor === parseInt(item[0]) ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(44).margin({ right: 8, bottom: 8 }).onClick(() => { this.motor = parseInt(item[0]); this.calculate(); });
+                .borderRadius(8).height(AppDimens.touchTarget).margin({ right: 8, bottom: 8 }).onClick(() => { this.motor = parseInt(item[0]); this.calculate(); });
             });
           }.width('100%');
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -82,8 +83,8 @@ export struct GcsCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

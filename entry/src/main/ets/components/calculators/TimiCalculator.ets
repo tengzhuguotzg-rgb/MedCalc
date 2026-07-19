@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateTimiStemi, calculateTimiNstemi } from '../../engine/TimiCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct TimiStemiCalculator {
@@ -27,8 +28,8 @@ export struct TimiStemiCalculator {
 
   @Builder
   YesNoBtn(value: number, onSelect: (v: number) => void) {
-    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 0 ? AppColors.card : '#2D5440').backgroundColor(value === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => onSelect(0));
-      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 1 ? AppColors.card : '#2D5440').backgroundColor(value === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(1));
+    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 0 ? AppColors.card : '#2D5440').backgroundColor(value === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => onSelect(0));
+      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 1 ? AppColors.card : '#2D5440').backgroundColor(value === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(1));
     }.width(100);
   }
 
@@ -90,7 +91,7 @@ export struct TimiStemiCalculator {
 
         Row() { Text('前壁STEMI 或 LBBB').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1); this.YesNoBtn(this.anteriorLbbb, (v) => { this.anteriorLbbb = v; this.calculate(); }); }.width('100%').margin({ bottom: 10 });
         Row() { Text('就诊到再灌注 > 4h').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1); this.YesNoBtn(this.timeToTreat, (v) => { this.timeToTreat = v; this.calculate(); }); }.width('100%').margin({ bottom: 0 });
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() { Row() {
@@ -99,9 +100,9 @@ export struct TimiStemiCalculator {
             Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
           }.alignItems(HorizontalAlign.Start).layoutWeight(1);
           Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-        }.width('100%'); }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.width('100%'); }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 
@@ -138,8 +139,8 @@ export struct TimiNstemiCalculator {
 
   @Builder
   YesNoBtn(value: number, onSelect: (v: number) => void) {
-    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 0 ? AppColors.card : '#2D5440').backgroundColor(value === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => onSelect(0));
-      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 1 ? AppColors.card : '#2D5440').backgroundColor(value === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(1));
+    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 0 ? AppColors.card : '#2D5440').backgroundColor(value === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => onSelect(0));
+      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 1 ? AppColors.card : '#2D5440').backgroundColor(value === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: value === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(1));
     }.width(100);
   }
 
@@ -199,7 +200,7 @@ export struct TimiNstemiCalculator {
         Row() { Column() { Text('ST段偏移 ≥ 0.5mm').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.stDevGte05, (v) => { this.stDevGte05 = v; this.calculate(); }); }.layoutWeight(1);
           Column() { Text('心肌标志物升高').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.biomarkerElevated, (v) => { this.biomarkerElevated = v; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() { Row() {
@@ -208,8 +209,8 @@ export struct TimiNstemiCalculator {
             Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
           }.alignItems(HorizontalAlign.Start).layoutWeight(1);
           Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-        }.width('100%'); }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.width('100%'); }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

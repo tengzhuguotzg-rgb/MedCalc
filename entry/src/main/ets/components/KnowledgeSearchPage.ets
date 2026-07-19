@@ -4,6 +4,7 @@ import {
   parseKbMarkdown, extractToc, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
 import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 interface CrumbItem {
   label: string;
@@ -534,7 +535,7 @@ export struct KnowledgeSearchPage {
         .fontColor(AppColors.background)
         .fontWeight(FontWeight.Bold)
         .width(44)
-        .height(44)
+        .height(AppDimens.touchTarget)
         .borderRadius(10)
         .backgroundColor(this.getCategoryColor(entry.name))
         .textAlign(TextAlign.Center);
@@ -974,7 +975,7 @@ export struct KnowledgeSearchPage {
             .fontSize(11)
             .fontColor(AppColors.primary)
             .backgroundColor(AppColors.background)
-            .borderRadius(12)
+            .borderRadius(AppDimens.cardRadius)
             .border({ width: 1, color: '#E0DCC8' })
             .padding({ left: 8, right: 8, top: 3, bottom: 3 })
             .margin({ right: 6, bottom: 6 })
@@ -1104,7 +1105,7 @@ export struct KnowledgeSearchPage {
                 .fontColor(AppColors.primary);
             }
             .backgroundColor(AppColors.background)
-            .borderRadius(12)
+            .borderRadius(AppDimens.cardRadius)
             .padding({ left: 8, right: 10, top: 4, bottom: 4 })
             .margin({ right: 6, bottom: 6 })
             .onClick(() => { this.handleWikilinkClick(link); });

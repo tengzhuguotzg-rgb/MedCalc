@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateGfr } from '../../engine/GfrCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct GfrCalculator {
@@ -42,22 +43,22 @@ export struct GfrCalculator {
         Row() {
           Button('男').fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.sex === 'male' ? AppColors.card : '#2D5440')
             .backgroundColor(this.sex === 'male' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.sex === 'male' ? AppColors.primary : '#E0E0E0' })
-            .borderRadius(8).height(48).layoutWeight(1).onClick(() => { this.sex = 'male'; this.calculate(); });
+            .borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).onClick(() => { this.sex = 'male'; this.calculate(); });
           Button('女').fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.sex === 'female' ? AppColors.card : '#2D5440')
             .backgroundColor(this.sex === 'female' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.sex === 'female' ? AppColors.primary : '#E0E0E0' })
-            .borderRadius(8).height(48).layoutWeight(1).onClick(() => { this.sex = 'female'; this.calculate(); });
+            .borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).onClick(() => { this.sex = 'female'; this.calculate(); });
         }.width('100%').margin({ bottom: 16 });
 
         Column() {
           Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-          TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+          TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
             .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); });
         }.width('100%').margin({ bottom: 12 });
 
         Column() {
           Text('血肌酐').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-          TextInput({ placeholder: '肌酐' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+          TextInput({ placeholder: '肌酐' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
             .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); });
           Flex({ wrap: FlexWrap.Wrap }) {
@@ -65,7 +66,7 @@ export struct GfrCalculator {
             Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.crUnit === 'mgdl' ? AppColors.card : '#2D5440').backgroundColor(this.crUnit === 'mgdl' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.crUnit === 'mgdl' ? AppColors.primary : '#E0E0E0' }).borderRadius(6).height(28).padding({ left: 6, right: 6 }).margin({ bottom: 4 }).onClick(() => { this.crUnit = 'mgdl'; this.calculate(); });
           }.width('100%').margin({ top: 4 });
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -83,8 +84,8 @@ export struct GfrCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -1,6 +1,7 @@
 import { Patient } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
 import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 @Component
 export struct PatientListPage {
@@ -69,7 +70,7 @@ export struct PatientListPage {
       .padding({ left: 16, right: 16, top: 12, bottom: 12 })
 
       TextInput({ placeholder: '搜索姓名/床号...' })
-        .height(48)
+        .height(AppDimens.inputHeight)
         .fontSize(14)
         .backgroundColor(AppColors.card)
         .borderRadius(8)
@@ -182,19 +183,19 @@ export struct PatientListPage {
           .margin({ bottom: 16 })
 
         TextInput({ placeholder: '姓名*' })
-          .height(48)
+          .height(AppDimens.inputHeight)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newName = value; })
 
         TextInput({ placeholder: '床号' })
-          .height(48)
+          .height(AppDimens.inputHeight)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newBedNo = value; })
 
         TextInput({ placeholder: '年龄' })
-          .height(48)
+          .height(AppDimens.inputHeight)
           .fontSize(14)
           .type(InputType.Number)
           .margin({ bottom: 8 })
@@ -212,7 +213,7 @@ export struct PatientListPage {
             .backgroundColor(this.newSex === 'male' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.newSex === 'male' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .onClick(() => { this.newSex = 'male'; })
           Button('女')
@@ -222,7 +223,7 @@ export struct PatientListPage {
             .backgroundColor(this.newSex === 'female' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.newSex === 'female' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => { this.newSex = 'female'; })
@@ -236,7 +237,7 @@ export struct PatientListPage {
             .fontColor(AppColors.textSecondary)
             .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .onClick(() => {
               this.showCreateDialog = false;
@@ -250,7 +251,7 @@ export struct PatientListPage {
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.primary)
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(async () => {
@@ -274,7 +275,7 @@ export struct PatientListPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')
@@ -330,7 +331,7 @@ export struct PatientListPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')

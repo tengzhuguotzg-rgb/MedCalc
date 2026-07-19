@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateSf } from '../../engine/SfCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct SfCalculator {
@@ -40,13 +41,13 @@ export struct SfCalculator {
         Row() {
           Column() {
             Text('SpO₂ (%)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: '请输入SpO2' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: '请输入SpO2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.spo2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('FiO₂').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 12 });
@@ -55,12 +56,12 @@ export struct SfCalculator {
         Row() {
           Button('小数').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.fio2Mode === 'dec' ? AppColors.card : '#2D5440')
             .backgroundColor(this.fio2Mode === 'dec' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.fio2Mode === 'dec' ? AppColors.primary : '#E0E0E0' })
-            .borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.fio2Mode = 'dec'; this.calculate(); });
+            .borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.fio2Mode = 'dec'; this.calculate(); });
           Button('百分比').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.fio2Mode === 'pct' ? AppColors.card : '#2D5440')
             .backgroundColor(this.fio2Mode === 'pct' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.fio2Mode === 'pct' ? AppColors.primary : '#E0E0E0' })
-            .borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.fio2Mode = 'pct'; this.calculate(); });
+            .borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.fio2Mode = 'pct'; this.calculate(); });
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -73,8 +74,8 @@ export struct SfCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

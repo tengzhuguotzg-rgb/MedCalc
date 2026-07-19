@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateWells } from '../../engine/WellsCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct WellsCalculator {
@@ -48,35 +49,35 @@ export struct WellsCalculator {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('深静脉血栓临床表现').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 0 ? AppColors.card : '#2D5440').backgroundColor(this.clinical === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.clinical === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.clinical = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 1 ? AppColors.card : '#2D5440').backgroundColor(this.clinical === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.clinical === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.clinical = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 0 ? AppColors.card : '#2D5440').backgroundColor(this.clinical === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.clinical === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.clinical = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 1 ? AppColors.card : '#2D5440').backgroundColor(this.clinical === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.clinical === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.clinical = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('心率>100次/分').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr === 0 ? AppColors.card : '#2D5440').backgroundColor(this.hr === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hr === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.hr = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr === 1 ? AppColors.card : '#2D5440').backgroundColor(this.hr === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hr === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.hr = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr === 0 ? AppColors.card : '#2D5440').backgroundColor(this.hr === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hr === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.hr = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr === 1 ? AppColors.card : '#2D5440').backgroundColor(this.hr === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hr === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.hr = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('近期手术或制动').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery === 0 ? AppColors.card : '#2D5440').backgroundColor(this.surgery === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.surgery === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.surgery = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery === 1 ? AppColors.card : '#2D5440').backgroundColor(this.surgery === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.surgery === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.surgery = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery === 0 ? AppColors.card : '#2D5440').backgroundColor(this.surgery === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.surgery === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.surgery = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery === 1 ? AppColors.card : '#2D5440').backgroundColor(this.surgery === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.surgery === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.surgery = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('咯血').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis === 0 ? AppColors.card : '#2D5440').backgroundColor(this.hemoptysis === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hemoptysis === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.hemoptysis = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis === 1 ? AppColors.card : '#2D5440').backgroundColor(this.hemoptysis === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hemoptysis === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.hemoptysis = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis === 0 ? AppColors.card : '#2D5440').backgroundColor(this.hemoptysis === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hemoptysis === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.hemoptysis = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis === 1 ? AppColors.card : '#2D5440').backgroundColor(this.hemoptysis === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hemoptysis === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.hemoptysis = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('活动性癌症').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer === 0 ? AppColors.card : '#2D5440').backgroundColor(this.cancer === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.cancer === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.cancer = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer === 1 ? AppColors.card : '#2D5440').backgroundColor(this.cancer === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.cancer === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.cancer = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer === 0 ? AppColors.card : '#2D5440').backgroundColor(this.cancer === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.cancer === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.cancer = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer === 1 ? AppColors.card : '#2D5440').backgroundColor(this.cancer === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.cancer === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.cancer = 1; this.calculate(); });
           }.width(100);
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -88,8 +89,8 @@ export struct WellsCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

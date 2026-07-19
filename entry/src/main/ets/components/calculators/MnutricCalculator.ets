@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateMnutric } from '../../engine/MnutricCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct MnutricCalculator {
@@ -45,9 +46,9 @@ export struct MnutricCalculator {
         Column() {
           Text('年龄').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
           Row() {
-            Button('< 50').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 0 ? AppColors.card : '#2D5440').backgroundColor(this.age === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.age = 0; this.calculate(); });
-            Button('50-74').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 1 ? AppColors.card : '#2D5440').backgroundColor(this.age === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ left: 4, right: 4 }).onClick(() => { this.age = 1; this.calculate(); });
-            Button('≥ 75').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 2 ? AppColors.card : '#2D5440').backgroundColor(this.age === 2 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 2 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.age = 2; this.calculate(); });
+            Button('< 50').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 0 ? AppColors.card : '#2D5440').backgroundColor(this.age === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.age = 0; this.calculate(); });
+            Button('50-74').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 1 ? AppColors.card : '#2D5440').backgroundColor(this.age === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4, right: 4 }).onClick(() => { this.age = 1; this.calculate(); });
+            Button('≥ 75').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age === 2 ? AppColors.card : '#2D5440').backgroundColor(this.age === 2 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age === 2 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.age = 2; this.calculate(); });
           }.width('100%');
         }.width('100%').margin({ bottom: 10 });
 
@@ -55,30 +56,30 @@ export struct MnutricCalculator {
         Row() {
           Column() {
             Text('APACHE II').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '0-71' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.apache2 = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '0-71' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.apache2 = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('SOFA 评分').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '0-24' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sofa = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '0-24' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sofa = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 10 });
 
         Column() {
           Text('合并症数量').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
           Row() {
-            Button('0-1 种').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.comorb === 0 ? AppColors.card : '#2D5440').backgroundColor(this.comorb === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.comorb === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.comorb = 0; this.calculate(); });
-            Button('≥ 2 种').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.comorb === 1 ? AppColors.card : '#2D5440').backgroundColor(this.comorb === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.comorb === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.comorb = 1; this.calculate(); });
+            Button('0-1 种').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.comorb === 0 ? AppColors.card : '#2D5440').backgroundColor(this.comorb === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.comorb === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.comorb = 0; this.calculate(); });
+            Button('≥ 2 种').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.comorb === 1 ? AppColors.card : '#2D5440').backgroundColor(this.comorb === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.comorb === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.comorb = 1; this.calculate(); });
           }.width('100%');
         }.width('100%').margin({ bottom: 10 });
 
         Column() {
           Text('住院→ICU 天数').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
           Row() {
-            Button('直接入ICU').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.icuDay === 0 ? AppColors.card : '#2D5440').backgroundColor(this.icuDay === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.icuDay === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.icuDay = 0; this.calculate(); });
-            Button('≥ 1 天后').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.icuDay === 1 ? AppColors.card : '#2D5440').backgroundColor(this.icuDay === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.icuDay === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(48).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.icuDay = 1; this.calculate(); });
+            Button('直接入ICU').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.icuDay === 0 ? AppColors.card : '#2D5440').backgroundColor(this.icuDay === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.icuDay === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.icuDay = 0; this.calculate(); });
+            Button('≥ 1 天后').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.icuDay === 1 ? AppColors.card : '#2D5440').backgroundColor(this.icuDay === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.icuDay === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.icuDay = 1; this.calculate(); });
           }.width('100%');
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -92,8 +93,8 @@ export struct MnutricCalculator {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

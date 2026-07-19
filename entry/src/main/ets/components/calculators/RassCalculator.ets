@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateRass } from '../../engine/RassCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 interface RassLevel {
   score: number;
@@ -57,10 +58,10 @@ export struct RassCalculator {
           ForEach([4, 3, 2, 1, 0, -1, -2, -3, -4, -5], (item: number) => {
             Button(`${item >= 0 ? '+' : ''}${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.score === item ? AppColors.card : '#2D5440')
               .backgroundColor(this.score === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.score === item ? AppColors.primary : '#E0E0E0' })
-              .borderRadius(8).height(48).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.score = item; this.calculate(); });
+              .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.score = item; this.calculate(); });
           }, (item: number) => item.toString() + '-' + this.score.toString());
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -73,14 +74,14 @@ export struct RassCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
 
       Column() {
         Text('完整评分参考').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         RassTable({ levels: RASS_LEVELS, current: this.score });
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 

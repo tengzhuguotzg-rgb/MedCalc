@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor as calcTierColor, getTierBgColor as calcTierBgColor } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct Nrs2002Calculator {
@@ -55,7 +56,7 @@ export struct Nrs2002Calculator {
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
@@ -94,7 +95,7 @@ export struct Nrs2002Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '请输入身高' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -117,7 +118,7 @@ export struct Nrs2002Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '请输入体重' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -151,7 +152,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.weightLoss === 'none' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.weightLoss === 'none' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .onClick(() => {
               this.weightLoss = 'none';
@@ -164,7 +165,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.weightLoss === 'mild' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.weightLoss === 'mild' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -178,7 +179,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.weightLoss === 'mod' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.weightLoss === 'mod' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -192,7 +193,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.weightLoss === 'severe' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.weightLoss === 'severe' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -219,7 +220,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.intake === 'none' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.intake === 'none' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .onClick(() => {
               this.intake = 'none';
@@ -232,7 +233,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.intake === 'mild' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.intake === 'mild' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -246,7 +247,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.intake === 'mod' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.intake === 'mod' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -260,7 +261,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.intake === 'severe' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.intake === 'severe' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -287,7 +288,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.disease === 'none' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.disease === 'none' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .onClick(() => {
               this.disease = 'none';
@@ -300,7 +301,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.disease === 'moderate' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.disease === 'moderate' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => {
@@ -314,7 +315,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.disease === 'severe' ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.disease === 'severe' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => {
@@ -341,7 +342,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.ageAdj === 0 ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.ageAdj === 0 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .onClick(() => {
               this.ageAdj = 0;
@@ -354,7 +355,7 @@ export struct Nrs2002Calculator {
             .backgroundColor(this.ageAdj === 1 ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.ageAdj === 1 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(() => {
@@ -367,9 +368,9 @@ export struct Nrs2002Calculator {
       .width('100%')
       .margin({ bottom: 16 });
     }
-    .padding(16)
+    .padding(AppDimens.cardPadding)
     .backgroundColor(AppColors.card)
-    .borderRadius(12)
+    .borderRadius(AppDimens.cardRadius)
     .width('100%')
     .margin({ bottom: 16 });
   }
@@ -413,9 +414,9 @@ export struct Nrs2002Calculator {
       }
       .width('100%');
     }
-    .padding(16)
+    .padding(AppDimens.cardPadding)
     .backgroundColor(AppColors.card)
-    .borderRadius(12)
+    .borderRadius(AppDimens.cardRadius)
     .width('100%');
   }
 

@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateNews2 } from '../../engine/News2Calculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct News2Calculator {
@@ -48,13 +49,13 @@ export struct News2Calculator {
         Row() {
           Column() {
             Text('呼吸频率 (次/分)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: '呼吸频率' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: '呼吸频率' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.resp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('SpO₂ (%)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: 'SpO2' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: 'SpO2' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.spo2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 12 });
@@ -66,10 +67,10 @@ export struct News2Calculator {
             Row() {
               Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.o2supplement === 'no' ? AppColors.card : '#2D5440')
                 .backgroundColor(this.o2supplement === 'no' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.o2supplement === 'no' ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(48).layoutWeight(1).onClick(() => { this.o2supplement = 'no'; this.calculate(); });
+                .borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).onClick(() => { this.o2supplement = 'no'; this.calculate(); });
               Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.o2supplement === 'yes' ? AppColors.card : '#2D5440')
                 .backgroundColor(this.o2supplement === 'yes' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.o2supplement === 'yes' ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(48).layoutWeight(1).onClick(() => { this.o2supplement = 'yes'; this.calculate(); });
+                .borderRadius(8).height(AppDimens.inputHeight).layoutWeight(1).onClick(() => { this.o2supplement = 'yes'; this.calculate(); });
             }.width('100%');
           }.layoutWeight(1);
         }.width('100%').margin({ bottom: 12 });
@@ -77,18 +78,18 @@ export struct News2Calculator {
         Row() {
           Column() {
             Text('体温 (°C)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '体温' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '体温' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: 'SBP' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
             Text('脉搏 (次/分)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: '脉搏' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: '脉搏' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.pulse = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
@@ -97,14 +98,14 @@ export struct News2Calculator {
             Flex({ wrap: FlexWrap.Wrap }) {
               Button('清醒').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.consciousness === 'alert' ? AppColors.card : '#2D5440')
                 .backgroundColor(this.consciousness === 'alert' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.consciousness === 'alert' ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(44).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.consciousness = 'alert'; this.calculate(); });
+                .borderRadius(8).height(AppDimens.touchTarget).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.consciousness = 'alert'; this.calculate(); });
               Button('新意识模糊').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.consciousness === 'confusion' ? AppColors.card : '#2D5440')
                 .backgroundColor(this.consciousness === 'confusion' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.consciousness === 'confusion' ? AppColors.primary : '#E0E0E0' })
-                .borderRadius(8).height(44).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.consciousness = 'confusion'; this.calculate(); });
+                .borderRadius(8).height(AppDimens.touchTarget).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.consciousness = 'confusion'; this.calculate(); });
             }.width('100%');
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -117,8 +118,8 @@ export struct News2Calculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

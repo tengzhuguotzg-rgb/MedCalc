@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateFssicu } from '../../engine/FssicuCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct FssicuCalculator {
@@ -47,7 +48,7 @@ export struct FssicuCalculator {
         FssRowComponent({ label: '③ 床缘静坐平衡', value: this.sit, onChange: (v: number): void => { this.sit = v; this.calculate(); } });
         FssRowComponent({ label: '④ 坐位→站立', value: this.standup, onChange: (v: number): void => { this.standup = v; this.calculate(); } });
         FssRowComponent({ label: '⑤ 站立平衡', value: this.stand, onChange: (v: number): void => { this.stand = v; this.calculate(); } });
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -61,9 +62,9 @@ export struct FssicuCalculator {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 

@@ -11,6 +11,7 @@ import { ImageEditor } from './ImageEditor';
 import { ImageStore } from '../services/ImageStore';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 class DataDisplayItem {
   key: string = '';
@@ -312,14 +313,14 @@ export struct AssistantPage {
           .fontColor(AppColors.textSecondary)
       }
       .width(44)
-      .height(44)
+      .height(AppDimens.touchTarget)
       .backgroundColor('transparent')
       .onClick(() => {
         this.clearSession();
       })
     }
     .width('100%')
-    .height(44)
+    .height(AppDimens.touchTarget)
     .padding({ left: 16, right: 16 })
     .backgroundColor(AppColors.card)
     .border({ width: { bottom: 1 }, color: '#E0DCC8' })
@@ -349,10 +350,10 @@ export struct AssistantPage {
       .borderRadius(8)
     }
     .width('100%')
-    .padding(16)
+    .padding(AppDimens.cardPadding)
     .alignItems(HorizontalAlign.Center)
     .backgroundColor(AppColors.card)
-    .borderRadius(12)
+    .borderRadius(AppDimens.cardRadius)
   }
 
   @Builder
@@ -899,7 +900,7 @@ export struct AssistantPage {
             .width(24)
             .height(24)
             .textAlign(TextAlign.Center)
-            .borderRadius(12)
+            .borderRadius(AppDimens.cardRadius)
             .backgroundColor('#E8E5D8')
             .onClick(() => {
               this.clearImage();
@@ -907,7 +908,7 @@ export struct AssistantPage {
             .flexShrink(0)
         }
         .width('100%')
-        .height(48)
+        .height(AppDimens.inputHeight)
         .padding({ left: 8, right: 8 })
         .alignItems(VerticalAlign.Center)
         .borderRadius({ topLeft: 8, topRight: 8 })
@@ -921,7 +922,7 @@ export struct AssistantPage {
               .fontWeight(FontWeight.Bold)
           }
           .width(44)
-          .height(44)
+          .height(AppDimens.touchTarget)
           .backgroundColor('transparent')
           .onClick(() => {
             this.showAttachMenu = !this.showAttachMenu;
@@ -957,7 +958,7 @@ export struct AssistantPage {
 
         Stack({ alignContent: Alignment.TopEnd }) {
           TextArea({ text: this.userInput, placeholder: '描述病情或补充数据...' })
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(14)
             .layoutWeight(1)
             .backgroundColor(AppColors.background)
@@ -991,7 +992,7 @@ export struct AssistantPage {
           }
         }
         .width(40)
-        .height(48)
+        .height(AppDimens.inputHeight)
         .backgroundColor(this.loading ? AppColors.textSecondary : AppColors.primary)
         .borderRadius(20)
         .margin({ left: 8 })
@@ -1049,7 +1050,7 @@ export struct AssistantPage {
         .borderRadius(0)
         .layoutWeight(1)
         .width('100%')
-        .padding(16)
+        .padding(AppDimens.cardPadding)
         .onChange((v: string) => {
           this.expandedEditorText = v;
         })

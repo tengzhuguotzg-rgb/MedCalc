@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor as calcTierColor, getTierBgColor as calcTierBgColor } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct Apache2Calculator {
@@ -99,7 +100,7 @@ export struct Apache2Calculator {
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
@@ -137,7 +138,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '37.0' }).type(InputType.NUMBER_DECIMAL)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -160,7 +161,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -189,7 +190,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '120' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -212,7 +213,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -240,7 +241,7 @@ export struct Apache2Calculator {
           .margin({ bottom: 6 });
         TextInput({ placeholder: '16' })
           .type(InputType.Number)
-          .height(48)
+          .height(AppDimens.inputHeight)
           .fontSize(16)
           .fontColor('#1F2421')
           .placeholderColor('#999999')
@@ -271,7 +272,7 @@ export struct Apache2Calculator {
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         TextInput({ placeholder: '21' }).type(InputType.NUMBER_DECIMAL)
-          .height(48)
+          .height(AppDimens.inputHeight)
           .fontSize(16)
           .fontColor('#1F2421')
           .placeholderColor('#999999')
@@ -328,7 +329,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -351,7 +352,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '40' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -380,8 +381,8 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? AppColors.card : '#2D5440').backgroundColor(this.phFilled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.phFilled ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
-        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? AppColors.card : '#2D5440').backgroundColor(this.hco3Filled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hco3Filled ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
+        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? AppColors.card : '#2D5440').backgroundColor(this.phFilled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.phFilled ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
+        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? AppColors.card : '#2D5440').backgroundColor(this.hco3Filled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hco3Filled ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
       }.width('100%').margin({ bottom: 10 });
 
       Row() {
@@ -392,7 +393,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '7.40' }).type(InputType.NUMBER_DECIMAL)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -415,7 +416,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '24' }).type(InputType.NUMBER_DECIMAL)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -452,7 +453,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '140' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -474,7 +475,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '4.0' }).type(InputType.NUMBER_DECIMAL)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -503,7 +504,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -567,7 +568,7 @@ export struct Apache2Calculator {
             .backgroundColor(this.arf === 0 ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.arf === 0 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .onClick(() => {
               this.arf = 0;
@@ -580,7 +581,7 @@ export struct Apache2Calculator {
             .backgroundColor(this.arf === 1 ? AppColors.primary : AppColors.fillNeutral)
             .border({ width: 1, color: this.arf === 1 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(() => {
@@ -609,7 +610,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '40' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -632,7 +633,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '8' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -668,7 +669,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '15' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -691,7 +692,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '50' })
             .type(InputType.Number)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -726,7 +727,7 @@ export struct Apache2Calculator {
           .backgroundColor(this.chronic === 'none' ? AppColors.primary : AppColors.fillNeutral)
           .border({ width: 1, color: this.chronic === 'none' ? AppColors.primary : '#E0E0E0' })
           .borderRadius(8)
-          .height(44)
+          .height(AppDimens.touchTarget)
           .layoutWeight(1)
           .onClick(() => {
             this.chronic = 'none';
@@ -739,7 +740,7 @@ export struct Apache2Calculator {
           .backgroundColor(this.chronic === 'elective' ? AppColors.primary : AppColors.fillNeutral)
           .border({ width: 1, color: this.chronic === 'elective' ? AppColors.primary : '#E0E0E0' })
           .borderRadius(8)
-          .height(44)
+          .height(AppDimens.touchTarget)
           .layoutWeight(1)
           .margin({ left: 4 })
           .onClick(() => {
@@ -753,7 +754,7 @@ export struct Apache2Calculator {
           .backgroundColor(this.chronic === 'nonop' ? AppColors.primary : AppColors.fillNeutral)
           .border({ width: 1, color: this.chronic === 'nonop' ? AppColors.primary : '#E0E0E0' })
           .borderRadius(8)
-          .height(44)
+          .height(AppDimens.touchTarget)
           .layoutWeight(1)
           .margin({ left: 4 })
           .onClick(() => {
@@ -764,9 +765,9 @@ export struct Apache2Calculator {
       .width('100%')
       .margin({ bottom: 16 });
     }
-    .padding(16)
+    .padding(AppDimens.cardPadding)
     .backgroundColor(AppColors.card)
-    .borderRadius(12)
+    .borderRadius(AppDimens.cardRadius)
     .width('100%')
     .margin({ bottom: 16 });
   }
@@ -810,9 +811,9 @@ export struct Apache2Calculator {
       }
       .width('100%');
     }
-    .padding(16)
+    .padding(AppDimens.cardPadding)
     .backgroundColor(AppColors.card)
-    .borderRadius(12)
+    .borderRadius(AppDimens.cardRadius)
     .width('100%');
   }
 

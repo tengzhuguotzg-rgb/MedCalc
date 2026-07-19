@@ -1,6 +1,7 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateNaDeficit } from '../../engine/CommonCalculators';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct NaDeficitCalculator {
@@ -70,7 +71,7 @@ export struct NaDeficitCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'kg' })
               .type(InputType.Number)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
@@ -91,7 +92,7 @@ export struct NaDeficitCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
@@ -117,7 +118,7 @@ export struct NaDeficitCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: '140', text: this.targetNa > 0 ? this.targetNa.toString() : '' })
               .type(InputType.Number)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
@@ -170,9 +171,9 @@ export struct NaDeficitCalculator {
         .alignItems(HorizontalAlign.Start)
         .margin({ top: 8 });
       }
-      .padding(16)
+      .padding(AppDimens.cardPadding)
       .backgroundColor(AppColors.card)
-      .borderRadius(12)
+      .borderRadius(AppDimens.cardRadius)
       .width('100%')
       .margin({ bottom: 16 });
 
@@ -207,14 +208,14 @@ export struct NaDeficitCalculator {
           }
           .width('100%');
         }
-        .padding(16)
+        .padding(AppDimens.cardPadding)
         .backgroundColor(AppColors.card)
-        .borderRadius(12)
+        .borderRadius(AppDimens.cardRadius)
         .width('100%');
       }
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

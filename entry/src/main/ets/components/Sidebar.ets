@@ -1,5 +1,6 @@
 import { CALCULATORS, GROUP_ORDER, Calculator } from '../model/CalculatorRegistry';
 import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 @Component
 export struct Sidebar {
@@ -134,7 +135,7 @@ export struct Sidebar {
             Text(calc.icon)
               .fontSize(18)
               .width(40)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .textAlign(TextAlign.Center)
               .borderRadius(4)
               .backgroundColor(calc.id === this.currentCalc ? AppColors.card : 'transparent')

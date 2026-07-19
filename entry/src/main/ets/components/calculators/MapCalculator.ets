@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateMap } from '../../engine/MapCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct MapCalculator {
@@ -37,18 +38,18 @@ export struct MapCalculator {
         Row() {
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: '请输入SBP' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: '请输入SBP' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('舒张压 DBP (mmHg)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: '请输入DBP' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: '请输入DBP' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.dbp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 12 });
         }.width('100%');
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -61,8 +62,8 @@ export struct MapCalculator {
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

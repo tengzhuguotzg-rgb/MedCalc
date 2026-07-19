@@ -1,5 +1,6 @@
 import { vasopressorMlhToDose, vasopressorDoseToMlh, vasopressinMlhToDose, vasopressinDoseToMlh } from '../../engine/VasopressorCalculator';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 const VP_DRUGS: string[][] = [
   ['norepinephrine', '去甲肾上腺素 (NE)'],
@@ -159,7 +160,7 @@ export struct VasopressorCalculator {
         if (!this.isVp()) {
           Column() {
             Text('体重 (kg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '体重' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: '体重' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onWeightChange(value); });
           }.width('100%').margin({ bottom: 12 });
         }
@@ -179,12 +180,12 @@ export struct VasopressorCalculator {
         Row() {
           Column() {
             Text(this.getConcLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onConcAChange(value); });
           }.layoutWeight(1);
           Column() {
             Text('配成 (mL)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'mL' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'mL' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onConcBChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
@@ -197,12 +198,12 @@ export struct VasopressorCalculator {
         Row() {
           Column() {
             Text('速度 (mL/h)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'mL/h' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'mL/h' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onMlhChange(value); });
           }.layoutWeight(1);
           Column() {
             Text(this.getDoseLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onDoseChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');
@@ -212,12 +213,12 @@ export struct VasopressorCalculator {
           .fontColor(AppColors.card)
           .backgroundColor(AppColors.primary)
           .borderRadius(8)
-          .height(48)
+          .height(AppDimens.inputHeight)
           .width('100%')
           .margin({ top: 12 })
           .enabled(this.canCalculate())
           .onClick(() => { this.onCalculate(); })
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.calculated) {
         Column() {
@@ -228,8 +229,8 @@ export struct VasopressorCalculator {
               Text(`${this.resultMlh.toFixed(2)} mL/h  =  ${this.resultDose.toFixed(4)} ${this.resultUnit}`).fontSize(15).fontColor('#4A5247').margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

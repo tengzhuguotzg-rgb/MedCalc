@@ -1,6 +1,7 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateChadsvasc } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
 
 @Component
 export struct ChadsvascCalculator {
@@ -54,53 +55,53 @@ export struct ChadsvascCalculator {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('C 心衰').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 0 ? AppColors.card : '#2D5440').backgroundColor(this.chf === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.chf === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.chf = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 1 ? AppColors.card : '#2D5440').backgroundColor(this.chf === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.chf === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.chf = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 0 ? AppColors.card : '#2D5440').backgroundColor(this.chf === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.chf === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.chf = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 1 ? AppColors.card : '#2D5440').backgroundColor(this.chf === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.chf === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.chf = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('H 高血压').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.htn === 0 ? AppColors.card : '#2D5440').backgroundColor(this.htn === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.htn === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.htn = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.htn === 1 ? AppColors.card : '#2D5440').backgroundColor(this.htn === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.htn === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.htn = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.htn === 0 ? AppColors.card : '#2D5440').backgroundColor(this.htn === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.htn === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.htn = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.htn === 1 ? AppColors.card : '#2D5440').backgroundColor(this.htn === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.htn === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.htn = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('A₂ 年龄 ≥ 75 岁').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age75 === 0 ? AppColors.card : '#2D5440').backgroundColor(this.age75 === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age75 === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.age75 = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age75 === 1 ? AppColors.card : '#2D5440').backgroundColor(this.age75 === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age75 === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.age75 = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age75 === 0 ? AppColors.card : '#2D5440').backgroundColor(this.age75 === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age75 === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.age75 = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age75 === 1 ? AppColors.card : '#2D5440').backgroundColor(this.age75 === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age75 === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.age75 = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('D 糖尿病').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm === 0 ? AppColors.card : '#2D5440').backgroundColor(this.dm === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.dm === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.dm = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm === 1 ? AppColors.card : '#2D5440').backgroundColor(this.dm === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.dm === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.dm = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm === 0 ? AppColors.card : '#2D5440').backgroundColor(this.dm === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.dm === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.dm = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm === 1 ? AppColors.card : '#2D5440').backgroundColor(this.dm === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.dm === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.dm = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('S₂ 卒中/TIA/血栓史').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.stroke === 0 ? AppColors.card : '#2D5440').backgroundColor(this.stroke === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.stroke === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.stroke = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.stroke === 1 ? AppColors.card : '#2D5440').backgroundColor(this.stroke === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.stroke === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.stroke = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.stroke === 0 ? AppColors.card : '#2D5440').backgroundColor(this.stroke === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.stroke === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.stroke = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.stroke === 1 ? AppColors.card : '#2D5440').backgroundColor(this.stroke === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.stroke === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.stroke = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('V 血管疾病').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vasc === 0 ? AppColors.card : '#2D5440').backgroundColor(this.vasc === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vasc === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.vasc = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vasc === 1 ? AppColors.card : '#2D5440').backgroundColor(this.vasc === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vasc === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.vasc = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vasc === 0 ? AppColors.card : '#2D5440').backgroundColor(this.vasc === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vasc === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.vasc = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.vasc === 1 ? AppColors.card : '#2D5440').backgroundColor(this.vasc === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vasc === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.vasc = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('A 年龄 65-74 岁').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age65 === 0 ? AppColors.card : '#2D5440').backgroundColor(this.age65 === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age65 === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.age65 = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age65 === 1 ? AppColors.card : '#2D5440').backgroundColor(this.age65 === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age65 === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.age65 = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age65 === 0 ? AppColors.card : '#2D5440').backgroundColor(this.age65 === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age65 === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.age65 = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.age65 === 1 ? AppColors.card : '#2D5440').backgroundColor(this.age65 === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.age65 === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.age65 = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('Sc 女性').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.female === 0 ? AppColors.card : '#2D5440').backgroundColor(this.female === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.female === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.female = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.female === 1 ? AppColors.card : '#2D5440').backgroundColor(this.female === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.female === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.female = 1; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.female === 0 ? AppColors.card : '#2D5440').backgroundColor(this.female === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.female === 0 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.female = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.female === 1 ? AppColors.card : '#2D5440').backgroundColor(this.female === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.female === 1 ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.female = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
-      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
@@ -108,8 +109,8 @@ export struct ChadsvascCalculator {
             Column() { Text('CHADS₂-VASc 总分').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium); Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 }); Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 }); }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
+        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
