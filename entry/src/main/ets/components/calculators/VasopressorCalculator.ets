@@ -1,4 +1,5 @@
 import { vasopressorMlhToDose, vasopressorDoseToMlh, vasopressinMlhToDose, vasopressinDoseToMlh } from '../../engine/VasopressorCalculator';
+import { AppColors } from '../../utils/AppColors';
 
 const VP_DRUGS: string[][] = [
   ['norepinephrine', '去甲肾上腺素 (NE)'],
@@ -151,83 +152,83 @@ export struct VasopressorCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('支持双向换算：调速→剂量 或 剂量→调速').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('支持双向换算：调速→剂量 或 剂量→调速').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 患者参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 患者参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         if (!this.isVp()) {
           Column() {
             Text('体重 (kg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '体重' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: '体重' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onWeightChange(value); });
           }.width('100%').margin({ bottom: 12 });
         }
 
-        Text('— 药物选择').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 药物选择').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach(VP_DRUGS, (d: string[]) => {
-            Button(d[1]).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.drug === d[0] ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.drug === d[0] ? '#1F3D2F' : '#F5F5F5')
-              .border({ width: 1, color: this.drug === d[0] ? '#1F3D2F' : '#E0E0E0' })
+            Button(d[1]).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.drug === d[0] ? AppColors.card : '#2D5440')
+              .backgroundColor(this.drug === d[0] ? AppColors.primary : AppColors.fillNeutral)
+              .border({ width: 1, color: this.drug === d[0] ? AppColors.primary : '#E0E0E0' })
               .borderRadius(8).height(32).margin({ right: 6, bottom: 6 })
               .onClick(() => { this.drug = d[0]; });
           }, (d: string[]) => d[0]);
         }.width('100%').margin({ bottom: 12 });
 
-        Text(`— 配药浓度`).fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text(`— 配药浓度`).fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text(this.getConcLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onConcAChange(value); });
           }.layoutWeight(1);
           Column() {
             Text('配成 (mL)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'mL' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'mL' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onConcBChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
 
         if (this.getConcValue()) {
-          Text(this.getConcValue()).fontSize(12).fontColor('#5F6654').margin({ bottom: 8 });
+          Text(this.getConcValue()).fontSize(12).fontColor(AppColors.textSecondary).margin({ bottom: 8 });
         }
 
-        Text('— 双向换算').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 双向换算').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text('速度 (mL/h)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'mL/h' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'mL/h' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onMlhChange(value); });
           }.layoutWeight(1);
           Column() {
             Text(this.getDoseLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onDoseChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');
 
         Button('计算')
           .fontSize(14)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#1F3D2F')
+          .fontColor(AppColors.card)
+          .backgroundColor(AppColors.primary)
           .borderRadius(8)
           .height(48)
           .width('100%')
           .margin({ top: 12 })
           .enabled(this.canCalculate())
           .onClick(() => { this.onCalculate(); })
-      }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
 
       if (this.calculated) {
         Column() {
           Row() {
             Column() {
-              Text('换算结果').fontSize(12).fontColor('#5F6654').letterSpacing(1.5);
-              Text(this.getDrugName()).fontSize(22).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
+              Text('换算结果').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
+              Text(this.getDrugName()).fontSize(22).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
               Text(`${this.resultMlh.toFixed(2)} mL/h  =  ${this.resultDose.toFixed(4)} ${this.resultUnit}`).fontSize(15).fontColor('#4A5247').margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
           }.width('100%');
-        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
+        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }

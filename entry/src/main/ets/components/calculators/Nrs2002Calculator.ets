@@ -1,5 +1,6 @@
 import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
+import { AppColors } from '../../utils/AppColors';
 
 @Component
 export struct Nrs2002Calculator {
@@ -62,11 +63,11 @@ export struct Nrs2002Calculator {
     Column() {
       Text('用于住院患者营养风险筛查')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('4项：BMI+体重下降+摄食减少+疾病严重度，≥3有营养风险')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
     .alignItems(HorizontalAlign.Start)
@@ -79,10 +80,10 @@ export struct Nrs2002Calculator {
     Column() {
       Row() { Text('— 输入参数')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Column() {
@@ -97,7 +98,7 @@ export struct Nrs2002Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -120,7 +121,7 @@ export struct Nrs2002Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -146,9 +147,9 @@ export struct Nrs2002Calculator {
           Button('无')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'none' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'none' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'none' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.weightLoss === 'none' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.weightLoss === 'none' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.weightLoss === 'none' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -159,9 +160,9 @@ export struct Nrs2002Calculator {
           Button('>5%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'mild' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'mild' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'mild' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.weightLoss === 'mild' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.weightLoss === 'mild' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.weightLoss === 'mild' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -173,9 +174,9 @@ export struct Nrs2002Calculator {
           Button('>10%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'mod' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'mod' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'mod' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.weightLoss === 'mod' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.weightLoss === 'mod' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.weightLoss === 'mod' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -187,9 +188,9 @@ export struct Nrs2002Calculator {
           Button('>15%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'severe' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'severe' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'severe' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.weightLoss === 'severe' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.weightLoss === 'severe' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.weightLoss === 'severe' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -214,9 +215,9 @@ export struct Nrs2002Calculator {
           Button('正常')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'none' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'none' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'none' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.intake === 'none' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.intake === 'none' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.intake === 'none' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -227,9 +228,9 @@ export struct Nrs2002Calculator {
           Button('>50%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'mild' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'mild' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'mild' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.intake === 'mild' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.intake === 'mild' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.intake === 'mild' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -241,9 +242,9 @@ export struct Nrs2002Calculator {
           Button('25-50%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'mod' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'mod' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'mod' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.intake === 'mod' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.intake === 'mod' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.intake === 'mod' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -255,9 +256,9 @@ export struct Nrs2002Calculator {
           Button('<25%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'severe' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'severe' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'severe' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.intake === 'severe' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.intake === 'severe' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.intake === 'severe' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -282,9 +283,9 @@ export struct Nrs2002Calculator {
           Button('无/轻')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.disease === 'none' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.disease === 'none' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.disease === 'none' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.disease === 'none' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.disease === 'none' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.disease === 'none' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -295,9 +296,9 @@ export struct Nrs2002Calculator {
           Button('中度')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.disease === 'moderate' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.disease === 'moderate' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.disease === 'moderate' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.disease === 'moderate' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.disease === 'moderate' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.disease === 'moderate' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -309,9 +310,9 @@ export struct Nrs2002Calculator {
           Button('重度')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.disease === 'severe' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.disease === 'severe' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.disease === 'severe' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.disease === 'severe' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.disease === 'severe' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.disease === 'severe' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -336,9 +337,9 @@ export struct Nrs2002Calculator {
           Button('否')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.ageAdj === 0 ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.ageAdj === 0 ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.ageAdj === 0 ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.ageAdj === 0 ? AppColors.card : '#2D5440')
+            .backgroundColor(this.ageAdj === 0 ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.ageAdj === 0 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(48)
             .layoutWeight(1)
@@ -349,9 +350,9 @@ export struct Nrs2002Calculator {
           Button('是')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.ageAdj === 1 ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.ageAdj === 1 ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.ageAdj === 1 ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.ageAdj === 1 ? AppColors.card : '#2D5440')
+            .backgroundColor(this.ageAdj === 1 ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.ageAdj === 1 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(48)
             .layoutWeight(1)
@@ -367,7 +368,7 @@ export struct Nrs2002Calculator {
       .margin({ bottom: 16 });
     }
     .padding(16)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(12)
     .width('100%')
     .margin({ bottom: 16 });
@@ -380,14 +381,14 @@ export struct Nrs2002Calculator {
         Column() {
           Text('NRS-2002')
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .letterSpacing(1.5)
             .fontWeight(FontWeight.Medium);
           Text(this.result!.value !== null ? 
             `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
             .fontSize(32)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .margin({ top: 8 });
           Text(this.result!.tier)
             .fontSize(13)
@@ -413,7 +414,7 @@ export struct Nrs2002Calculator {
       .width('100%');
     }
     .padding(16)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(12)
     .width('100%');
   }
@@ -421,26 +422,26 @@ export struct Nrs2002Calculator {
   private getTierTextColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#3D6B4F';
+        return AppColors.tierOk;
       case 'tier-warn':
-        return '#C8881A';
+        return AppColors.tierWarn;
       case 'tier-danger':
-        return '#B1452A';
+        return AppColors.danger;
       default:
-        return '#5F6654';
+        return AppColors.textSecondary;
     }
   }
 
   private getTierBgColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#3D6B4F';
+        return AppColors.tierOk;
       case 'tier-warn':
-        return '#C8881A';
+        return AppColors.tierWarn;
       case 'tier-danger':
-        return '#B1452A';
+        return AppColors.danger;
       default:
-        return '#F5F5F5';
+        return AppColors.fillNeutral;
     }
   }
 }

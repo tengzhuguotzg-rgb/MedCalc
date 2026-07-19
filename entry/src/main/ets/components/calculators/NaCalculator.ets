@@ -1,5 +1,6 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateNa } from '../../engine/CommonCalculators';
+import { AppColors } from '../../utils/AppColors';
 
 @Component
 export struct NaCalculator {
@@ -37,11 +38,11 @@ export struct NaCalculator {
       Column() {
         Text('用于校正高血糖所致假性低钠血症')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('校正Na = 实测Na + 1.6×(Glu-5.6)/5.6')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
@@ -49,7 +50,7 @@ export struct NaCalculator {
       .margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
@@ -62,7 +63,7 @@ export struct NaCalculator {
               .type(InputType.Number)
               .height(48)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 })
@@ -83,7 +84,7 @@ export struct NaCalculator {
               .type(InputType.Number)
               .height(48)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 })
@@ -99,7 +100,7 @@ export struct NaCalculator {
         .width('100%');
       }
       .padding(16)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('100%')
       .margin({ bottom: 16 });
@@ -110,13 +111,13 @@ export struct NaCalculator {
             Column() {
               Text('校正 Na⁺')
                 .fontSize(12)
-                .fontColor('#5F6654')
+                .fontColor(AppColors.textSecondary)
                 .letterSpacing(1.5);
               Text(this.result!.value !== null ? 
                 `${this.result!.value!.toFixed(1)} ${this.result!.unit}` : '—')
                 .fontSize(32)
                 .fontWeight(FontWeight.Bold)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .margin({ top: 4 });
               Text(this.result!.tier)
                 .fontSize(13)
@@ -136,7 +137,7 @@ export struct NaCalculator {
           .width('100%');
         }
         .padding(16)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
         .borderRadius(12)
         .width('100%');
       }

@@ -1,5 +1,6 @@
 import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateNaDeficit } from '../../engine/CommonCalculators';
+import { AppColors } from '../../utils/AppColors';
 
 @Component
 export struct NaDeficitCalculator {
@@ -46,11 +47,11 @@ export struct NaDeficitCalculator {
       Column() {
         Text('计算低钠血症的钠缺失量')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('Na缺失 = TBW因子 × 体重 × (目标Na - 实测Na)')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
@@ -58,7 +59,7 @@ export struct NaDeficitCalculator {
       .margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
@@ -71,7 +72,7 @@ export struct NaDeficitCalculator {
               .type(InputType.Number)
               .height(48)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 })
@@ -92,7 +93,7 @@ export struct NaDeficitCalculator {
               .type(InputType.Number)
               .height(48)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 })
@@ -118,7 +119,7 @@ export struct NaDeficitCalculator {
               .type(InputType.Number)
               .height(48)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 })
@@ -141,7 +142,7 @@ export struct NaDeficitCalculator {
             .margin({ bottom: 8 });
           Row() {
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 0 })
-              .selectedColor('#1F3D2F')
+              .selectedColor(AppColors.primary)
               .onChange((isOn: boolean) => {
                 if (isOn) { this.tbwGroup = 0; this.calculate(); }
               })
@@ -149,7 +150,7 @@ export struct NaDeficitCalculator {
             Text('男0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 1 })
-              .selectedColor('#1F3D2F')
+              .selectedColor(AppColors.primary)
               .onChange((isOn: boolean) => {
                 if (isOn) { this.tbwGroup = 1; this.calculate(); }
               })
@@ -157,7 +158,7 @@ export struct NaDeficitCalculator {
             Text('女0.5').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 2 })
-              .selectedColor('#1F3D2F')
+              .selectedColor(AppColors.primary)
               .onChange((isOn: boolean) => {
                 if (isOn) { this.tbwGroup = 2; this.calculate(); }
               })
@@ -170,7 +171,7 @@ export struct NaDeficitCalculator {
         .margin({ top: 8 });
       }
       .padding(16)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('100%')
       .margin({ bottom: 16 });
@@ -181,13 +182,13 @@ export struct NaDeficitCalculator {
             Column() {
               Text('Na⁺ 缺失量')
                 .fontSize(12)
-                .fontColor('#5F6654')
+                .fontColor(AppColors.textSecondary)
                 .letterSpacing(1.5);
               Text(this.result!.value !== null ?
                 `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
                 .fontSize(32)
                 .fontWeight(FontWeight.Bold)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .margin({ top: 4 });
               Text(this.result!.tier)
                 .fontSize(13)
@@ -207,7 +208,7 @@ export struct NaDeficitCalculator {
           .width('100%');
         }
         .padding(16)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
         .borderRadius(12)
         .width('100%');
       }

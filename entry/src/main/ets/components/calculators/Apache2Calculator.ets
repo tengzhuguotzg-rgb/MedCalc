@@ -1,5 +1,6 @@
 import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
+import { AppColors } from '../../utils/AppColors';
 
 @Component
 export struct Apache2Calculator {
@@ -106,11 +107,11 @@ export struct Apache2Calculator {
     Column() {
       Text('用于ICU患者病情严重度及死亡风险预测')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('14生理参数+年龄+慢性健康，总分0-71')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
     .alignItems(HorizontalAlign.Start)
@@ -123,10 +124,10 @@ export struct Apache2Calculator {
     Column() {
       Row() { Text('— 生命体征')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Column() {
@@ -140,7 +141,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -163,7 +164,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -192,7 +193,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -215,7 +216,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -243,7 +244,7 @@ export struct Apache2Calculator {
           .fontSize(16)
           .fontColor('#1F2421')
           .placeholderColor('#999999')
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(AppColors.card)
           .borderRadius(8)
           .border({ width: 1, color: '#E0E0E0' })
           .padding({ left: 12, right: 12 })
@@ -258,7 +259,7 @@ export struct Apache2Calculator {
 
       Text('— 氧合参数')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
@@ -274,7 +275,7 @@ export struct Apache2Calculator {
           .fontSize(16)
           .fontColor('#1F2421')
           .placeholderColor('#999999')
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(AppColors.card)
           .borderRadius(8)
           .border({ width: 1, color: '#E0E0E0' })
           .padding({ left: 12, right: 12 })
@@ -287,9 +288,9 @@ export struct Apache2Calculator {
           Button('%')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.fio2Mode === 'pct' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.fio2Mode === 'pct' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.fio2Mode === 'pct' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.fio2Mode === 'pct' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(6)
             .height(28)
             .layoutWeight(1)
@@ -300,9 +301,9 @@ export struct Apache2Calculator {
           Button('小数')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.fio2Mode === 'dec' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.fio2Mode === 'dec' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.fio2Mode === 'dec' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.fio2Mode === 'dec' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(6)
             .height(28)
             .layoutWeight(1)
@@ -331,7 +332,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -354,7 +355,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -373,14 +374,14 @@ export struct Apache2Calculator {
 
       Text('— 酸碱状态')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
 
       Row() {
-        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? '#FFFFFF' : '#2D5440').backgroundColor(this.phFilled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.phFilled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
-        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? '#FFFFFF' : '#2D5440').backgroundColor(this.hco3Filled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hco3Filled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
+        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? AppColors.card : '#2D5440').backgroundColor(this.phFilled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.phFilled ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
+        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? AppColors.card : '#2D5440').backgroundColor(this.hco3Filled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hco3Filled ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
       }.width('100%').margin({ bottom: 10 });
 
       Row() {
@@ -395,7 +396,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -418,7 +419,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -437,7 +438,7 @@ export struct Apache2Calculator {
 
       Text('— 电解质与肾功能')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
@@ -455,7 +456,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -477,7 +478,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -506,7 +507,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -519,9 +520,9 @@ export struct Apache2Calculator {
             Button('µmol/L')
               .fontSize(12)
               .fontWeight(FontWeight.Bold)
-              .fontColor(this.crUnit === 'umol' ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.crUnit === 'umol' ? '#1F3D2F' : '#F5F5F5')
-              .border({ width: 1, color: this.crUnit === 'umol' ? '#1F3D2F' : '#E0E0E0' })
+              .fontColor(this.crUnit === 'umol' ? AppColors.card : '#2D5440')
+              .backgroundColor(this.crUnit === 'umol' ? AppColors.primary : AppColors.fillNeutral)
+              .border({ width: 1, color: this.crUnit === 'umol' ? AppColors.primary : '#E0E0E0' })
               .borderRadius(6)
               .height(28)
               .layoutWeight(1)
@@ -532,9 +533,9 @@ export struct Apache2Calculator {
             Button('mg/dL')
               .fontSize(12)
               .fontWeight(FontWeight.Bold)
-              .fontColor(this.crUnit === 'mgdl' ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.crUnit === 'mgdl' ? '#1F3D2F' : '#F5F5F5')
-              .border({ width: 1, color: this.crUnit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' })
+              .fontColor(this.crUnit === 'mgdl' ? AppColors.card : '#2D5440')
+              .backgroundColor(this.crUnit === 'mgdl' ? AppColors.primary : AppColors.fillNeutral)
+              .border({ width: 1, color: this.crUnit === 'mgdl' ? AppColors.primary : '#E0E0E0' })
               .borderRadius(6)
               .height(28)
               .layoutWeight(1)
@@ -562,9 +563,9 @@ export struct Apache2Calculator {
           Button('否')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.arf === 0 ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.arf === 0 ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.arf === 0 ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.arf === 0 ? AppColors.card : '#2D5440')
+            .backgroundColor(this.arf === 0 ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.arf === 0 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(48)
             .layoutWeight(1)
@@ -575,9 +576,9 @@ export struct Apache2Calculator {
           Button('是')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.arf === 1 ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.arf === 1 ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.arf === 1 ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.arf === 1 ? AppColors.card : '#2D5440')
+            .backgroundColor(this.arf === 1 ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.arf === 1 ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(48)
             .layoutWeight(1)
@@ -594,7 +595,7 @@ export struct Apache2Calculator {
 
       Text('— 血液学')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
@@ -612,7 +613,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -635,7 +636,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -653,7 +654,7 @@ export struct Apache2Calculator {
 
       Text('— 神经与年龄')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
@@ -671,7 +672,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -694,7 +695,7 @@ export struct Apache2Calculator {
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .border({ width: 1, color: '#E0E0E0' })
             .padding({ left: 12, right: 12 })
@@ -712,7 +713,7 @@ export struct Apache2Calculator {
 
       Text('— 慢性健康状态')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
@@ -721,9 +722,9 @@ export struct Apache2Calculator {
         Button('无')
           .fontSize(12)
           .fontWeight(FontWeight.Bold)
-          .fontColor(this.chronic === 'none' ? '#FFFFFF' : '#2D5440')
-          .backgroundColor(this.chronic === 'none' ? '#1F3D2F' : '#F5F5F5')
-          .border({ width: 1, color: this.chronic === 'none' ? '#1F3D2F' : '#E0E0E0' })
+          .fontColor(this.chronic === 'none' ? AppColors.card : '#2D5440')
+          .backgroundColor(this.chronic === 'none' ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.chronic === 'none' ? AppColors.primary : '#E0E0E0' })
           .borderRadius(8)
           .height(44)
           .layoutWeight(1)
@@ -734,9 +735,9 @@ export struct Apache2Calculator {
         Button('择期术后')
           .fontSize(12)
           .fontWeight(FontWeight.Bold)
-          .fontColor(this.chronic === 'elective' ? '#FFFFFF' : '#2D5440')
-          .backgroundColor(this.chronic === 'elective' ? '#1F3D2F' : '#F5F5F5')
-          .border({ width: 1, color: this.chronic === 'elective' ? '#1F3D2F' : '#E0E0E0' })
+          .fontColor(this.chronic === 'elective' ? AppColors.card : '#2D5440')
+          .backgroundColor(this.chronic === 'elective' ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.chronic === 'elective' ? AppColors.primary : '#E0E0E0' })
           .borderRadius(8)
           .height(44)
           .layoutWeight(1)
@@ -748,9 +749,9 @@ export struct Apache2Calculator {
         Button('非手术/急诊')
           .fontSize(12)
           .fontWeight(FontWeight.Bold)
-          .fontColor(this.chronic === 'nonop' ? '#FFFFFF' : '#2D5440')
-          .backgroundColor(this.chronic === 'nonop' ? '#1F3D2F' : '#F5F5F5')
-          .border({ width: 1, color: this.chronic === 'nonop' ? '#1F3D2F' : '#E0E0E0' })
+          .fontColor(this.chronic === 'nonop' ? AppColors.card : '#2D5440')
+          .backgroundColor(this.chronic === 'nonop' ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.chronic === 'nonop' ? AppColors.primary : '#E0E0E0' })
           .borderRadius(8)
           .height(44)
           .layoutWeight(1)
@@ -764,7 +765,7 @@ export struct Apache2Calculator {
       .margin({ bottom: 16 });
     }
     .padding(16)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(12)
     .width('100%')
     .margin({ bottom: 16 });
@@ -777,14 +778,14 @@ export struct Apache2Calculator {
         Column() {
           Text('APACHE II')
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .letterSpacing(1.5)
             .fontWeight(FontWeight.Medium);
           Text(this.result!.value !== null ? 
             `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
             .fontSize(32)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .margin({ top: 8 });
           Text(this.result!.tier)
             .fontSize(13)
@@ -810,7 +811,7 @@ export struct Apache2Calculator {
       .width('100%');
     }
     .padding(16)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(12)
     .width('100%');
   }
@@ -818,26 +819,26 @@ export struct Apache2Calculator {
   private getTierTextColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#3D6B4F';
+        return AppColors.tierOk;
       case 'tier-warn':
-        return '#C8881A';
+        return AppColors.tierWarn;
       case 'tier-danger':
-        return '#B1452A';
+        return AppColors.danger;
       default:
-        return '#5F6654';
+        return AppColors.textSecondary;
     }
   }
 
   private getTierBgColor(tierClass: string): ResourceColor {
     switch (tierClass) {
       case 'tier-ok':
-        return '#3D6B4F';
+        return AppColors.tierOk;
       case 'tier-warn':
-        return '#C8881A';
+        return AppColors.tierWarn;
       case 'tier-danger':
-        return '#B1452A';
+        return AppColors.danger;
       default:
-        return '#F5F5F5';
+        return AppColors.fillNeutral;
     }
   }
 }

@@ -1,5 +1,6 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateCurb65 } from '../../engine/CommonCalculators';
+import { AppColors } from '../../utils/AppColors';
 
 @Component
 export struct Curb65Calculator {
@@ -45,19 +46,19 @@ export struct Curb65Calculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于评估社区获得性肺炎严重程度及住院决策').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：意识+BUN+呼吸+血压+年龄≥65，0-5分').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估社区获得性肺炎严重程度及住院决策').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项：意识+BUN+呼吸+血压+年龄≥65，0-5分').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         
         Row() {
           Text('C 意识混乱').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
           Row() {
-            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion === 0 ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.confusion === 0 ? '#1F3D2F' : '#F5F5F5').borderRadius(8).border({ width: 1, color: this.confusion === 0 ? '#1F3D2F' : '#E0E0E0' }).layoutWeight(1)
+            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion === 0 ? AppColors.card : '#2D5440')
+              .backgroundColor(this.confusion === 0 ? AppColors.primary : AppColors.fillNeutral).borderRadius(8).border({ width: 1, color: this.confusion === 0 ? AppColors.primary : '#E0E0E0' }).layoutWeight(1)
               .onClick(() => { this.confusion = 0; this.calculate(); });
-            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion === 1 ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.confusion === 1 ? '#1F3D2F' : '#F5F5F5').borderRadius(8).border({ width: 1, color: this.confusion === 1 ? '#1F3D2F' : '#E0E0E0' }).layoutWeight(1)
+            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion === 1 ? AppColors.card : '#2D5440')
+              .backgroundColor(this.confusion === 1 ? AppColors.primary : AppColors.fillNeutral).borderRadius(8).border({ width: 1, color: this.confusion === 1 ? AppColors.primary : '#E0E0E0' }).layoutWeight(1)
               .onClick(() => { this.confusion = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 8 });
@@ -65,12 +66,12 @@ export struct Curb65Calculator {
         Row() {
           Column() {
             Text('尿素氮').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'Urea' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'Urea' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.urea = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('呼吸频率').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'RR' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'RR' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.rr = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
@@ -78,29 +79,29 @@ export struct Curb65Calculator {
         Row() {
           Column() {
             Text('收缩压 SBP').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'SBP' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('舒张压 DBP').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'DBP' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'DBP' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.dbp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
 
         Column() {
           Text('年龄').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-          TextInput({ placeholder: '年龄' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+          TextInput({ placeholder: '年龄' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
             .onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); });
         }.width('100%');
-      }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
           Row() {
             Column() {
-              Text('CURB-65 Total').fontSize(12).fontColor('#5F6654').letterSpacing(1.5);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
+              Text('CURB-65 Total').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
+              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
                 .fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass))
@@ -110,7 +111,7 @@ export struct Curb65Calculator {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
+        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }

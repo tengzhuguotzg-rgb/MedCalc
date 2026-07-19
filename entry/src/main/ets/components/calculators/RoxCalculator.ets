@@ -1,5 +1,6 @@
 import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
 import { calculateRox } from '../../engine/MoreCalculators';
+import { AppColors } from '../../utils/AppColors';
 
 @Component
 export struct RoxCalculator {
@@ -33,36 +34,36 @@ export struct RoxCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于预测高流量氧疗(HFNC)失败风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('ROX = SpO₂/(FiO₂×RR)，Roca 2016').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于预测高流量氧疗(HFNC)失败风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('ROX = SpO₂/(FiO₂×RR)，Roca 2016').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() {
             Text('SpO₂ (%)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SpO2' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'SpO2' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.spo2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('FiO₂').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'FiO2' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'FiO2' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
         
         Column() {
           Text('呼吸频率 RR (次/分)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-          TextInput({ placeholder: 'RR' }).type(InputType.Number).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+          TextInput({ placeholder: 'RR' }).type(InputType.Number).height(48).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
             .onChange((value: string) => { this.rr = parseFloat(value) || 0; this.calculate(); });
         }.width('100%');
-      }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
+      }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%').margin({ bottom: 16 });
 
       if (this.result) {
         Column() {
           Row() {
             Column() {
-              Text('ROX').fontSize(12).fontColor('#5F6654').letterSpacing(1.5);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(2)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
+              Text('ROX').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
+              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(2)}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
                 .fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass))
@@ -72,7 +73,7 @@ export struct RoxCalculator {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
-        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
+        }.padding(16).backgroundColor(AppColors.card).borderRadius(12).width('100%');
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
