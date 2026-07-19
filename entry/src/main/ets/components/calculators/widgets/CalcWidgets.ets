@@ -129,6 +129,8 @@ export struct ResultCard {
   unitInline: boolean = true;
   /** 标题是否 Medium 字重（默认 true；个别计算器标题无字重设置传 false） */
   titleMedium: boolean = true;
+  /** 结果卡底部外边距（默认 0；Hunt-Hess/WFNS/Fisher 为 16） */
+  bottomMargin: number = 0;
 
   private mainText(): string {
     if (this.value === null) {
@@ -192,7 +194,8 @@ export struct ResultCard {
     .padding(AppDimens.cardPadding)
     .backgroundColor(AppColors.card)
     .borderRadius(AppDimens.cardRadius)
-    .width('100%');
+    .width('100%')
+    .margin({ bottom: this.bottomMargin });
   }
 }
 

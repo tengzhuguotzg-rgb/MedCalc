@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateHuntHess, calculateWfns, calculateFisher } from '../../engine/HuntHessCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
 
 interface GradeInfo {
   grade: number;
@@ -63,34 +64,23 @@ export struct HuntHessCalculator {
     Column() {
       Column() { Text('用于蛛网膜下腔出血手术风险分层').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('0-5级，基于临床症状严重程度').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([0, 1, 2, 3, 4, 5], (item: number) => {
-            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : AppColors.textOption)
-              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : AppColors.border })
-              .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
+            OptionChip({ label: `${item}`, selected: this.grade === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.grade = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });
           }, (item: number) => item.toString() + '-' + this.grade.toString());
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
-
-      if (this.result) {
-        Column() {
-          Row() {
-            Column() { Text('Hunt-Hess').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? `${this.result!.value} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
 
-      Column() {
+      if (this.result) {
+        ResultCard({ title: 'Hunt-Hess', value: this.result!.value, valueText: `${this.result!.value} ${this.result!.unit}`, bottomMargin: 16, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
+      }
+
+      CalcCard({ bottomMargin: 0 }) {
         Text('完整分级参考').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         GradeTable({ levels: HH_LEVELS, current: this.grade });
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+      }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
@@ -124,34 +114,23 @@ export struct WfnsCalculator {
     Column() {
       Column() { Text('用于蛛网膜下腔出血临床分级及预后评估').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('I-V级，基于GCS和局灶体征').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4, 5], (item: number) => {
-            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : AppColors.textOption)
-              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : AppColors.border })
-              .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
+            OptionChip({ label: `${item}`, selected: this.grade === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.grade = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });
           }, (item: number) => item.toString() + '-' + this.grade.toString());
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
-
-      if (this.result) {
-        Column() {
-          Row() {
-            Column() { Text('WFNS').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? `${this.result!.value} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
 
-      Column() {
+      if (this.result) {
+        ResultCard({ title: 'WFNS', value: this.result!.value, valueText: `${this.result!.value} ${this.result!.unit}`, bottomMargin: 16, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
+      }
+
+      CalcCard({ bottomMargin: 0 }) {
         Text('完整分级参考').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         GradeTable({ levels: WFNS_LEVELS, current: this.grade });
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+      }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
@@ -185,34 +164,23 @@ export struct FisherCalculator {
     Column() {
       Column() { Text('用于预测蛛网膜下腔出血后脑血管痉挛风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('1-4级，基于CT出血量').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4], (item: number) => {
-            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : AppColors.textOption)
-              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : AppColors.border })
-              .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
+            OptionChip({ label: `${item}`, selected: this.grade === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.grade = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });
           }, (item: number) => item.toString() + '-' + this.grade.toString());
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
-
-      if (this.result) {
-        Column() {
-          Row() {
-            Column() { Text('Fisher').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? `${this.result!.value} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
 
-      Column() {
+      if (this.result) {
+        ResultCard({ title: 'Fisher', value: this.result!.value, valueText: `${this.result!.value} ${this.result!.unit}`, bottomMargin: 16, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
+      }
+
+      CalcCard({ bottomMargin: 0 }) {
         Text('完整分级参考').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         GradeTable({ levels: FISHER_LEVELS, current: this.grade });
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+      }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

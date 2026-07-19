@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateFssicu } from '../../engine/FssicuCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct FssicuCalculator {
@@ -40,7 +41,7 @@ export struct FssicuCalculator {
     Column() {
       Column() { Text('用于 ICU 患者功能状态评估').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5 项各 0-7, 总分 0-35 (Thrush 2012)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(12).fontColor(AppColors.textSecondary); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });
@@ -48,21 +49,10 @@ export struct FssicuCalculator {
         FssRowComponent({ label: '③ 床缘静坐平衡', value: this.sit, onChange: (v: number): void => { this.sit = v; this.calculate(); } });
         FssRowComponent({ label: '④ 坐位→站立', value: this.standup, onChange: (v: number): void => { this.standup = v; this.calculate(); } });
         FssRowComponent({ label: '⑤ 站立平衡', value: this.stand, onChange: (v: number): void => { this.stand = v; this.calculate(); } });
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('FSS-ICU').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'FSS-ICU', value: this.result!.value, unit: this.result!.unit, decimals: 0, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
