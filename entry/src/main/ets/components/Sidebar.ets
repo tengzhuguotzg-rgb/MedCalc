@@ -36,8 +36,8 @@ export struct Sidebar {
           .fontWeight(FontWeight.Bold)
           .fontColor('#1F3D2F');
         Text('Teng.ZG')
-          .fontSize(10)
-          .fontColor('#7A8074');
+          .fontSize(12)
+          .fontColor('#5F6654');
       }
       .alignItems(HorizontalAlign.Start)
       .margin({ left: 8 });
@@ -51,8 +51,8 @@ export struct Sidebar {
     if (this.favorites.length > 0) {
       Column() {
         Text('★ 收藏')
-          .fontSize(10)
-          .fontColor('#7A8074')
+          .fontSize(12)
+          .fontColor('#5F6654')
           .letterSpacing(1.5)
           .margin({ bottom: 4 });
         ForEach(this.favorites, (favId: string) => {
@@ -85,8 +85,8 @@ export struct Sidebar {
   @Builder
   GroupHeader(groupName: string) {
     Text(groupName)
-      .fontSize(10)
-      .fontColor('#7A8074')
+      .fontSize(12)
+      .fontColor('#5F6654')
       .letterSpacing(1.5)
       .padding({ left: 12, right: 12, top: 8, bottom: 4 });
   }
@@ -133,7 +133,7 @@ export struct Sidebar {
             Text(calc.icon)
               .fontSize(18)
               .width(40)
-              .height(40)
+              .height(48)
               .textAlign(TextAlign.Center)
               .borderRadius(4)
               .backgroundColor(calc.id === this.currentCalc ? '#FFFFFF' : 'transparent')

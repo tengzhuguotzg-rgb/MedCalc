@@ -41,7 +41,7 @@ export struct NaCalculator {
           .fontWeight(FontWeight.Medium);
         Text('校正Na = 实测Na + 1.6×(Glu-5.6)/5.6')
           .fontSize(12)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
@@ -49,7 +49,7 @@ export struct NaCalculator {
       .margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
@@ -60,7 +60,7 @@ export struct NaCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -81,7 +81,7 @@ export struct NaCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Glu' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -109,8 +109,8 @@ export struct NaCalculator {
           Row() {
             Column() {
               Text('校正 Na⁺')
-                .fontSize(10)
-                .fontColor('#7A8074')
+                .fontSize(12)
+                .fontColor('#5F6654')
                 .letterSpacing(1.5);
               Text(this.result!.value !== null ? 
                 `${this.result!.value!.toFixed(1)} ${this.result!.unit}` : '—')

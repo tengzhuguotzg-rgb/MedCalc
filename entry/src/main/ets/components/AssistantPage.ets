@@ -308,10 +308,10 @@ export struct AssistantPage {
       Button() {
         Text('🗑')
           .fontSize(16)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
       }
-      .width(36)
-      .height(36)
+      .width(44)
+      .height(44)
       .backgroundColor('transparent')
       .onClick(() => {
         this.clearSession();
@@ -333,14 +333,14 @@ export struct AssistantPage {
         .fontColor('#1F3D2F')
       Text('输入病情描述或上传检查报告图片，自动提取数据并计算相关评分')
         .fontSize(12)
-        .fontColor('#7A8074')
+        .fontColor('#5F6654')
         .margin({ top: 4 })
         .textAlign(TextAlign.Center)
       Column() {
-        Text('示例输入：').fontSize(11).fontColor('#7A8074').margin({ bottom: 4 })
-        Text('• 65岁男性，肌酐200μmol/L，体重70kg').fontSize(11).fontColor('#4A5247')
-        Text('• 患者GCS 8分，收缩压90，心率110').fontSize(11).fontColor('#4A5247')
-        Text('• [上传血气分析报告图片]').fontSize(11).fontColor('#4A5247')
+        Text('示例输入：').fontSize(12).fontColor('#5F6654').margin({ bottom: 4 })
+        Text('• 65岁男性，肌酐200μmol/L，体重70kg').fontSize(12).fontColor('#4A5247')
+        Text('• 患者GCS 8分，收缩压90，心率110').fontSize(12).fontColor('#4A5247')
+        Text('• [上传血气分析报告图片]').fontSize(12).fontColor('#4A5247')
       }
       .margin({ top: 8 })
       .padding(8)
@@ -412,8 +412,8 @@ export struct AssistantPage {
   ExtractedDataCard(data: Record<string, string>) {
     Column() {
       Text('提取数据')
-        .fontSize(11)
-        .fontColor('#7A8074')
+        .fontSize(12)
+        .fontColor('#5F6654')
         .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
@@ -422,7 +422,7 @@ export struct AssistantPage {
         Row() {
           Text(item.label)
             .fontSize(12)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .width('40%')
           Text(item.value)
             .fontSize(12)
@@ -445,8 +445,8 @@ export struct AssistantPage {
   MatchesCards(matches: CalcMatch[]) {
     Column() {
       Text('📊 计算结果')
-        .fontSize(11)
-        .fontColor('#7A8074')
+        .fontSize(12)
+        .fontColor('#5F6654')
         .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
@@ -501,13 +501,13 @@ export struct AssistantPage {
 
         if (match.completeness < 100) {
           Text(' ' + match.availableFields.length + '/' + (match.availableFields.length + match.missingFields.length))
-            .fontSize(11)
-            .fontColor('#7A8074')
+            .fontSize(12)
+            .fontColor('#5F6654')
         }
 
         Text(this.isCalcExpanded(match) ? ' ▲' : ' ▼')
-          .fontSize(10)
-          .fontColor('#7A8074')
+          .fontSize(12)
+          .fontColor('#5F6654')
           .margin({ left: 4 })
       }
       .width('100%')
@@ -540,8 +540,8 @@ export struct AssistantPage {
             .fontWeight(FontWeight.Bold)
             .fontColor('#1F3D2F')
           Text(match.result!.unit)
-            .fontSize(11)
-            .fontColor('#7A8074')
+            .fontSize(12)
+            .fontColor('#5F6654')
             .margin({ top: 2 })
           Text(match.result!.tier)
             .fontSize(12)
@@ -586,7 +586,7 @@ export struct AssistantPage {
     Column() {
       Text('还需: ' + match.missingFields.map((k: string) => this.assistantService.getFieldLabel(k)).join(', '))
         .fontSize(12)
-        .fontColor('#7A8074')
+        .fontColor('#5F6654')
         .width('100%')
         .margin({ top: 6, bottom: 6 })
 
@@ -613,7 +613,7 @@ export struct AssistantPage {
         Row() {
           Text(this.assistantService.getFieldLabel(fieldKey))
             .fontSize(12)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .width('35%')
           this.FieldInput(fieldKey)
         }
@@ -630,7 +630,7 @@ export struct AssistantPage {
       Row() {
         ForEach(this.getFieldOptions(fieldKey), (opt: string) => {
           Button(this.getOptionLabel(fieldKey, opt))
-            .fontSize(11)
+            .fontSize(12)
             .fontColor(this.supplementFields[fieldKey] === opt ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.supplementFields[fieldKey] === opt ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.supplementFields[fieldKey] === opt ? '#1F3D2F' : '#E0E0E0' })
@@ -861,11 +861,11 @@ export struct AssistantPage {
         LoadingProgress()
           .width(18)
           .height(18)
-          .color('#7A8074')
+          .color('#5F6654')
           .margin({ right: 8 })
         Text('分析中...')
           .fontSize(13)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
       }
       .padding(12)
       .backgroundColor('#FFFFFF')
@@ -886,7 +886,7 @@ export struct AssistantPage {
             .objectFit(ImageFit.Cover)
             .flexShrink(0)
           Text('已选择图片')
-            .fontSize(11)
+            .fontSize(12)
             .fontColor('#4A5247')
             .layoutWeight(1)
             .margin({ left: 6 })
@@ -894,7 +894,7 @@ export struct AssistantPage {
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text('×')
             .fontSize(16)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .width(24)
             .height(24)
             .textAlign(TextAlign.Center)
@@ -919,8 +919,8 @@ export struct AssistantPage {
               .fontSize(22)
               .fontWeight(FontWeight.Bold)
           }
-          .width(36)
-          .height(36)
+          .width(44)
+          .height(44)
           .backgroundColor('transparent')
           .onClick(() => {
             this.showAttachMenu = !this.showAttachMenu;
@@ -956,7 +956,7 @@ export struct AssistantPage {
 
         Stack({ alignContent: Alignment.TopEnd }) {
           TextArea({ text: this.userInput, placeholder: '描述病情或补充数据...' })
-            .height(40)
+            .height(48)
             .fontSize(14)
             .layoutWeight(1)
             .backgroundColor('#F4F1EA')
@@ -968,7 +968,7 @@ export struct AssistantPage {
 
           Text('⤢')
             .fontSize(18)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .padding({ top: 4, right: 8 })
             .onClick(() => {
               this.expandedEditorText = this.userInput;
@@ -990,8 +990,8 @@ export struct AssistantPage {
           }
         }
         .width(40)
-        .height(40)
-        .backgroundColor(this.loading ? '#7A8074' : '#1F3D2F')
+        .height(48)
+        .backgroundColor(this.loading ? '#5F6654' : '#1F3D2F')
         .borderRadius(20)
         .margin({ left: 8 })
         .enabled(!this.loading)
@@ -1015,7 +1015,7 @@ export struct AssistantPage {
       Row() {
         Text('取消')
           .fontSize(16)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .padding({ left: 16, top: 12, bottom: 12 })
           .onClick(() => {
             this.showExpandedEditor = false;

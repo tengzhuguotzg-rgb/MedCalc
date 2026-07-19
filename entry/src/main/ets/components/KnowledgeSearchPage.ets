@@ -206,7 +206,7 @@ export struct KnowledgeSearchPage {
 
   getCategoryColor(name: string): string {
     // 品牌大地色系：深绿 / 墨绿 / 灰绿 / 暖棕
-    const colors: string[] = ['#1F3D2F', '#3A5F4F', '#7A8074', '#8B6B4A'];
+    const colors: string[] = ['#1F3D2F', '#3A5F4F', '#5F6654', '#8B6B4A'];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = (hash * 31 + name.charCodeAt(i)) % colors.length;
@@ -380,10 +380,10 @@ export struct KnowledgeSearchPage {
   SearchResultsView() {
     if (this.isSearching) {
       Column() {
-        LoadingProgress().width(36).height(36).color('#7A8074');
+        LoadingProgress().width(36).height(36).color('#5F6654');
         Text('搜索中...')
           .fontSize(13)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 8 });
       }
       .width('100%')
@@ -393,7 +393,7 @@ export struct KnowledgeSearchPage {
       Column() {
         Text('未找到相关内容')
           .fontSize(15)
-          .fontColor('#7A8074');
+          .fontColor('#5F6654');
         Text('试试其他关键词，如"脓毒症""ARDS""镇静"')
           .fontSize(12)
           .fontColor('#B0B0A8')
@@ -406,7 +406,7 @@ export struct KnowledgeSearchPage {
       Column() {
         Text('找到 ' + this.searchResults.length + ' 条结果')
           .fontSize(12)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .width('100%')
           .padding({ left: 16, top: 8, bottom: 4 });
 
@@ -431,13 +431,13 @@ export struct KnowledgeSearchPage {
         Text(this.getPathCategory(sr.path))
           .fontSize(10)
           .fontColor('#FFFFFF')
-          .backgroundColor('#7A8074')
+          .backgroundColor('#5F6654')
           .borderRadius(3)
           .padding({ left: 5, right: 5, top: 1, bottom: 1 });
         if (sr.sourceInfo.length > 0) {
           Text(sr.sourceInfo)
             .fontSize(10)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .maxLines(1)
             .margin({ left: 6 })
             .layoutWeight(1);
@@ -482,10 +482,10 @@ export struct KnowledgeSearchPage {
   RootBrowseView() {
     if (this.isKbIniting) {
       Column() {
-        LoadingProgress().width(36).height(36).color('#7A8074');
+        LoadingProgress().width(36).height(36).color('#5F6654');
         Text('知识库加载中...')
           .fontSize(13)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 8 });
       }
       .width('100%')
@@ -495,7 +495,7 @@ export struct KnowledgeSearchPage {
       Column() {
         Text('知识库为空')
           .fontSize(15)
-          .fontColor('#7A8074');
+          .fontColor('#5F6654');
         Text('请检查知识库数据是否已正确部署')
           .fontSize(12)
           .fontColor('#B0B0A8')
@@ -578,10 +578,10 @@ export struct KnowledgeSearchPage {
 
       if (this.isLoadingCategory) {
         Column() {
-          LoadingProgress().width(36).height(36).color('#7A8074');
+          LoadingProgress().width(36).height(36).color('#5F6654');
           Text('加载中...')
             .fontSize(13)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .margin({ top: 8 });
         }
         .width('100%')
@@ -617,7 +617,7 @@ export struct KnowledgeSearchPage {
           if (this.getGroupSourceInfo(groupName).length > 0) {
             Text(this.getGroupSourceInfo(groupName))
               .fontSize(11)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .margin({ left: 8 })
               .layoutWeight(1);
           }
@@ -657,7 +657,7 @@ export struct KnowledgeSearchPage {
         if (page.summary.length > 0) {
           Text(page.summary)
             .fontSize(11)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .maxLines(2)
             .margin({ top: 2 })
             .width('100%');
@@ -722,7 +722,7 @@ export struct KnowledgeSearchPage {
                 }
                 Text(item.label)
                   .fontSize(10)
-                  .fontColor(item.clickable ? '#2B6CB0' : '#7A8074')
+                  .fontColor(item.clickable ? '#2B6CB0' : '#5F6654')
                   .onClick(() => {
                     if (item.clickable) {
                       this.openPage(item.targetPath.endsWith('.md') ? item.targetPath : item.targetPath + '/index.md');
@@ -740,7 +740,7 @@ export struct KnowledgeSearchPage {
         if (this.tocEntries.length > 0) {
           Text('\u2630')
             .fontSize(18)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .padding({ left: 8 })
             .onClick(() => { this.showToc = !this.showToc; });
         }
@@ -768,7 +768,7 @@ export struct KnowledgeSearchPage {
             }
             Text('\u2022')
               .fontSize(10)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .margin({ right: 6 });
             Text(entry.text)
               .fontSize(12)
@@ -791,7 +791,7 @@ export struct KnowledgeSearchPage {
   ReaderContent() {
     if (this.isPageLoading) {
       Column() {
-        LoadingProgress().width(36).height(36).color('#7A8074');
+        LoadingProgress().width(36).height(36).color('#5F6654');
       }
       .width('100%')
       .layoutWeight(1)
@@ -803,7 +803,7 @@ export struct KnowledgeSearchPage {
             Row() {
               Text(this.readingPage.sourceInfo)
                 .fontSize(11)
-                .fontColor('#7A8074')
+                .fontColor('#5F6654')
                 .layoutWeight(1)
                 .maxLines(2);
             }
@@ -1052,7 +1052,7 @@ export struct KnowledgeSearchPage {
       if (getAnnotationBadgeInfo(ml.text).detail.length > 0) {
         Text(getAnnotationBadgeInfo(ml.text).detail)
           .fontSize(11)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ left: 6 });
       }
     }
@@ -1129,7 +1129,7 @@ export struct KnowledgeSearchPage {
                   .textOverflow({ overflow: TextOverflow.Ellipsis });
                 Text(this.getPathCategory(sr.path) + (sr.sourceInfo.length > 0 ? ' \u00B7 ' + sr.sourceInfo : ''))
                   .fontSize(10)
-                  .fontColor('#7A8074')
+                  .fontColor('#5F6654')
                   .maxLines(1)
                   .margin({ top: 1 });
               }

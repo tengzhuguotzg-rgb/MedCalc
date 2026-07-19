@@ -393,7 +393,7 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
   const boldMatch = text.match(/^\*\*([^*]+)\*\*(.*)/);
   if (boldMatch !== null && boldMatch.length > 2) {
     const keyword = boldMatch[1];
-    let color = '#7A8074';
+    let color = '#5F6654';
     if (keyword.indexOf('新增') >= 0 || keyword.indexOf('New') >= 0) {
       color = '#2E7D32';
     } else if (keyword.indexOf('重新审视') >= 0 || keyword.indexOf('Revisited') >= 0) {
@@ -410,14 +410,14 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
   const badge = new AnnotationBadge();
   badge.keyword = text.replace(/\*\*/g, '');
   badge.detail = '';
-  badge.color = '#7A8074';
+  badge.color = '#5F6654';
   return badge;
 }
 
 export class AnnotationBadge {
   keyword: string = '';
   detail: string = '';
-  color: string = '#7A8074';
+  color: string = '#5F6654';
 }
 
 export function getCalloutStyle(calloutType: string): CalloutStyle {
@@ -445,7 +445,7 @@ export function getCalloutStyle(calloutType: string): CalloutStyle {
     case 'faq':
       return new CalloutStyle('#6A1B9A', '#F3E5F5', '\u2753');
     default:
-      return new CalloutStyle('#7A8074', '#F5F4EF', '\uD83D\uDCC4');
+      return new CalloutStyle('#5F6654', '#F5F4EF', '\uD83D\uDCC4');
   }
 }
 

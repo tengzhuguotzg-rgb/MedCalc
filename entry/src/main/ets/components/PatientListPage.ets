@@ -68,7 +68,7 @@ export struct PatientListPage {
       .padding({ left: 16, right: 16, top: 12, bottom: 12 })
 
       TextInput({ placeholder: '搜索姓名/床号...' })
-        .height(40)
+        .height(48)
         .fontSize(14)
         .backgroundColor('#FFFFFF')
         .borderRadius(8)
@@ -82,11 +82,11 @@ export struct PatientListPage {
         Column() {
           Text('还没有患者记录')
             .fontSize(16)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .margin({ bottom: 8 })
           Text('点击右上角新建患者开始')
             .fontSize(13)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
         }
         .width('100%')
         .layoutWeight(1)
@@ -107,7 +107,7 @@ export struct PatientListPage {
                     if (patient.bedNo.length > 0) {
                       Text(patient.bedNo + '床')
                         .fontSize(12)
-                        .fontColor('#7A8074')
+                        .fontColor('#5F6654')
                         .backgroundColor('#E8E5D8')
                         .borderRadius(4)
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
@@ -116,7 +116,7 @@ export struct PatientListPage {
                   .margin({ bottom: 4 })
                   Text(this.formatTime(patient.updatedAt))
                     .fontSize(12)
-                    .fontColor('#7A8074')
+                    .fontColor('#5F6654')
                 }
                 .alignItems(HorizontalAlign.Start)
                 .layoutWeight(1)
@@ -134,7 +134,8 @@ export struct PatientListPage {
                   }
                   Text('删除')
                     .fontSize(12)
-                    .fontColor('#E76F2C')
+                    .fontColor('#B1452A')
+                    .padding({ left: 14, right: 14, top: 14, bottom: 14 })
                     .margin({ top: 4 })
                     .onClick(() => {
                       this.deletePatientId = patient.id;
@@ -180,19 +181,19 @@ export struct PatientListPage {
           .margin({ bottom: 16 })
 
         TextInput({ placeholder: '姓名*' })
-          .height(40)
+          .height(48)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newName = value; })
 
         TextInput({ placeholder: '床号' })
-          .height(40)
+          .height(48)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newBedNo = value; })
 
         TextInput({ placeholder: '年龄' })
-          .height(40)
+          .height(48)
           .fontSize(14)
           .type(InputType.Number)
           .margin({ bottom: 8 })
@@ -210,7 +211,7 @@ export struct PatientListPage {
             .backgroundColor(this.newSex === 'male' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.newSex === 'male' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .onClick(() => { this.newSex = 'male'; })
           Button('女')
@@ -220,7 +221,7 @@ export struct PatientListPage {
             .backgroundColor(this.newSex === 'female' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.newSex === 'female' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => { this.newSex = 'female'; })
@@ -231,10 +232,10 @@ export struct PatientListPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .backgroundColor('#F5F5F5')
             .borderRadius(8)
-            .height(40)
+            .height(48)
             .layoutWeight(1)
             .onClick(() => {
               this.showCreateDialog = false;
@@ -248,7 +249,7 @@ export struct PatientListPage {
             .fontColor('#FFFFFF')
             .backgroundColor('#1F3D2F')
             .borderRadius(8)
-            .height(40)
+            .height(48)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(async () => {
@@ -298,7 +299,7 @@ export struct PatientListPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .backgroundColor('#F5F5F5')
             .borderRadius(8)
             .height(36)

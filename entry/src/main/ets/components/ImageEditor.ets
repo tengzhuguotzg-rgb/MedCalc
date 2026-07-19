@@ -422,7 +422,7 @@ export struct ImageEditor {
         Row() {
           Text('取消')
             .fontSize(16)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .padding({ left: 16, top: 12, bottom: 12 })
             .onClick(() => {
               this.showEditor = false;
@@ -513,7 +513,7 @@ export struct ImageEditor {
         Row() {
           Text('笔刷:')
             .fontSize(13)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
           Slider({
             value: this.brushSize,
             min: 10,

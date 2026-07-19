@@ -36,19 +36,19 @@ export struct ScaiCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于心源性休克分层 (SCAI 2019/2024)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('A-E 五级, 基于血压/乳酸/血管活性药/灌注/CPR').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于心源性休克分层 (SCAI 2019/2024)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('A-E 五级, 基于血压/乳酸/血管活性药/灌注/CPR').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('乳酸 (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
 
@@ -82,7 +82,7 @@ export struct ScaiCalculator {
         Column() {
           Row() {
             Column() {
-              Text('SCAI 休克').fontSize(10).fontColor('#7A8074').letterSpacing(1.5);
+              Text('SCAI 休克').fontSize(12).fontColor('#5F6654').letterSpacing(1.5);
               Text(this.result!.value !== null ? `Stage ${this.result!.unit}` : '—').fontSize(28).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(this.result!.tier).fontSize(12).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);

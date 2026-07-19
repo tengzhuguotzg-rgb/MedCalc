@@ -36,10 +36,10 @@ export struct FssicuCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于 ICU 患者功能状态评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5 项各 0-7, 总分 0-35 (Thrush 2012)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于 ICU 患者功能状态评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5 项各 0-7, 总分 0-35 (Thrush 2012)').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(10).fontColor('#7A8074'); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(12).fontColor('#5F6654'); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });
         FssRowComponent({ label: '② 卧位→坐位', value: this.situp, onChange: (v: number): void => { this.situp = v; this.calculate(); } });
@@ -52,7 +52,7 @@ export struct FssicuCalculator {
         Column() {
           Row() {
             Column() {
-              Text('FSS-ICU').fontSize(10).fontColor('#7A8074').letterSpacing(1.5);
+              Text('FSS-ICU').fontSize(12).fontColor('#5F6654').letterSpacing(1.5);
               Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);

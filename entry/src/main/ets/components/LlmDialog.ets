@@ -151,7 +151,7 @@ export struct LlmDialog {
       Button() {
         Text('✕')
           .fontSize(16)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
       }
       .width(32)
       .height(32)
@@ -169,7 +169,7 @@ export struct LlmDialog {
     Row() {
       Text(this.getActiveServiceName())
         .fontSize(11)
-        .fontColor('#7A8074')
+        .fontColor('#5F6654')
     }
     .width('100%')
     .padding({ bottom: 8 })
@@ -199,7 +199,7 @@ export struct LlmDialog {
       }
       .width('100%')
       .height(40)
-      .backgroundColor(this.loading ? '#7A8074' : '#1F3D2F')
+      .backgroundColor(this.loading ? '#5F6654' : '#1F3D2F')
       .borderRadius(8)
       .margin({ top: 8 })
       .enabled(!this.loading && this.userInput.trim().length > 0)
@@ -236,7 +236,7 @@ export struct LlmDialog {
       Column() {
         Text('✅ 推荐结果')
           .fontSize(11)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .letterSpacing(1)
           .width('100%')
           .margin({ bottom: 8 })

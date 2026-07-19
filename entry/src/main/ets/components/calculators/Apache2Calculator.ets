@@ -110,7 +110,7 @@ export struct Apache2Calculator {
           .fontWeight(FontWeight.Medium);
         Text('14生理参数+年龄+慢性健康，总分0-71')
           .fontSize(12)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 2 });
       }
     .alignItems(HorizontalAlign.Start)
@@ -126,7 +126,7 @@ export struct Apache2Calculator {
         .fontColor('#E76F2C')
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Column() {
@@ -136,7 +136,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '37.0' }).type(InputType.NUMBER_DECIMAL)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -159,7 +159,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -188,7 +188,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '120' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -211,7 +211,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -239,7 +239,7 @@ export struct Apache2Calculator {
           .margin({ bottom: 6 });
         TextInput({ placeholder: '16' })
           .type(InputType.Number)
-          .height(40)
+          .height(48)
           .fontSize(16)
           .fontColor('#1F2421')
           .placeholderColor('#999999')
@@ -270,7 +270,7 @@ export struct Apache2Calculator {
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         TextInput({ placeholder: '21' }).type(InputType.NUMBER_DECIMAL)
-          .height(40)
+          .height(48)
           .fontSize(16)
           .fontColor('#1F2421')
           .placeholderColor('#999999')
@@ -285,7 +285,7 @@ export struct Apache2Calculator {
           });
         Row() {
           Button('%')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5')
@@ -298,7 +298,7 @@ export struct Apache2Calculator {
               this.calculate();
             });
           Button('小数')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5')
@@ -327,7 +327,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -350,7 +350,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '40' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -379,8 +379,8 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? '#FFFFFF' : '#2D5440').backgroundColor(this.phFilled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.phFilled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
-        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? '#FFFFFF' : '#2D5440').backgroundColor(this.hco3Filled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hco3Filled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
+        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? '#FFFFFF' : '#2D5440').backgroundColor(this.phFilled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.phFilled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
+        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? '#FFFFFF' : '#2D5440').backgroundColor(this.hco3Filled ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hco3Filled ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
       }.width('100%').margin({ bottom: 10 });
 
       Row() {
@@ -391,7 +391,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '7.40' }).type(InputType.NUMBER_DECIMAL)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -414,7 +414,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '24' }).type(InputType.NUMBER_DECIMAL)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -451,7 +451,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '140' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -473,7 +473,7 @@ export struct Apache2Calculator {
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '4.0' }).type(InputType.NUMBER_DECIMAL)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -502,7 +502,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '80' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -517,7 +517,7 @@ export struct Apache2Calculator {
             });
           Row() {
             Button('µmol/L')
-              .fontSize(11)
+              .fontSize(12)
               .fontWeight(FontWeight.Bold)
               .fontColor(this.crUnit === 'umol' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.crUnit === 'umol' ? '#1F3D2F' : '#F5F5F5')
@@ -530,7 +530,7 @@ export struct Apache2Calculator {
                 this.calculate();
               });
             Button('mg/dL')
-              .fontSize(11)
+              .fontSize(12)
               .fontWeight(FontWeight.Bold)
               .fontColor(this.crUnit === 'mgdl' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.crUnit === 'mgdl' ? '#1F3D2F' : '#F5F5F5')
@@ -566,7 +566,7 @@ export struct Apache2Calculator {
             .backgroundColor(this.arf === 0 ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.arf === 0 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(40)
+            .height(48)
             .layoutWeight(1)
             .onClick(() => {
               this.arf = 0;
@@ -579,7 +579,7 @@ export struct Apache2Calculator {
             .backgroundColor(this.arf === 1 ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.arf === 1 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(40)
+            .height(48)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(() => {
@@ -608,7 +608,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '40' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -631,7 +631,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '8' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -667,7 +667,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '15' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -690,7 +690,7 @@ export struct Apache2Calculator {
             .margin({ bottom: 6 });
           TextInput({ placeholder: '50' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -719,26 +719,26 @@ export struct Apache2Calculator {
 
       Row() {
         Button('无')
-          .fontSize(11)
+          .fontSize(12)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.chronic === 'none' ? '#FFFFFF' : '#2D5440')
           .backgroundColor(this.chronic === 'none' ? '#1F3D2F' : '#F5F5F5')
           .border({ width: 1, color: this.chronic === 'none' ? '#1F3D2F' : '#E0E0E0' })
           .borderRadius(8)
-          .height(36)
+          .height(44)
           .layoutWeight(1)
           .onClick(() => {
             this.chronic = 'none';
             this.calculate();
           });
         Button('择期术后')
-          .fontSize(11)
+          .fontSize(12)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.chronic === 'elective' ? '#FFFFFF' : '#2D5440')
           .backgroundColor(this.chronic === 'elective' ? '#1F3D2F' : '#F5F5F5')
           .border({ width: 1, color: this.chronic === 'elective' ? '#1F3D2F' : '#E0E0E0' })
           .borderRadius(8)
-          .height(36)
+          .height(44)
           .layoutWeight(1)
           .margin({ left: 4 })
           .onClick(() => {
@@ -746,13 +746,13 @@ export struct Apache2Calculator {
             this.calculate();
           });
         Button('非手术/急诊')
-          .fontSize(11)
+          .fontSize(12)
           .fontWeight(FontWeight.Bold)
           .fontColor(this.chronic === 'nonop' ? '#FFFFFF' : '#2D5440')
           .backgroundColor(this.chronic === 'nonop' ? '#1F3D2F' : '#F5F5F5')
           .border({ width: 1, color: this.chronic === 'nonop' ? '#1F3D2F' : '#E0E0E0' })
           .borderRadius(8)
-          .height(36)
+          .height(44)
           .layoutWeight(1)
           .margin({ left: 4 })
           .onClick(() => {
@@ -777,7 +777,7 @@ export struct Apache2Calculator {
         Column() {
           Text('APACHE II')
             .fontSize(12)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .letterSpacing(1.5)
             .fontWeight(FontWeight.Medium);
           Text(this.result!.value !== null ? 
@@ -824,7 +824,7 @@ export struct Apache2Calculator {
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#7A8074';
+        return '#5F6654';
     }
   }
 

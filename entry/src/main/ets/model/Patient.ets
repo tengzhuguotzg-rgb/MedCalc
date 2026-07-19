@@ -110,7 +110,7 @@ export const DATA_DOMAINS: Record<string, string[]> = {
 };
 
 export const DOMAIN_COLORS: Record<string, string> = {
-  '人口学': '#7A8074',
+  '人口学': '#5F6654',
   '生命体征': '#C8881A',
   '血气分析': '#2B6CB0',
   '电解质': '#6B8E23',

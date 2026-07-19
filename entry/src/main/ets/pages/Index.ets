@@ -145,7 +145,7 @@ struct Index {
       Text(title)
         .fontSize(14)
         .fontWeight(this.currentTab === index ? FontWeight.Medium : FontWeight.Normal)
-        .fontColor(this.currentTab === index ? '#1F3D2F' : '#7A8074')
+        .fontColor(this.currentTab === index ? '#1F3D2F' : '#5F6654')
       Row()
         .width(24)
         .height(2)
@@ -291,8 +291,8 @@ struct Index {
       Button() {
         this.MenuIcon()
       }
-      .width(36)
-      .height(36)
+      .width(44)
+      .height(44)
       .backgroundColor('transparent')
       .onClick(() => {
         this.sidebarCollapsed = false;
@@ -311,10 +311,10 @@ struct Index {
       Button() {
         Text(this.isFavorite() ? '★' : '☆')
           .fontSize(18)
-          .fontColor(this.isFavorite() ? '#E76F2C' : '#7A8074')
+          .fontColor(this.isFavorite() ? '#E76F2C' : '#5F6654')
       }
-      .width(36)
-      .height(36)
+      .width(44)
+      .height(44)
       .backgroundColor('transparent')
       .onClick(() => {
         this.toggleFavorite();

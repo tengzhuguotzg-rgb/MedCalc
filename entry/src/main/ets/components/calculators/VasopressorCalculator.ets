@@ -151,14 +151,14 @@ export struct VasopressorCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('支持双向换算：调速→剂量 或 剂量→调速').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('支持双向换算：调速→剂量 或 剂量→调速').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 患者参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 患者参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         if (!this.isVp()) {
           Column() {
             Text('体重 (kg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '体重' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: '体重' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onWeightChange(value); });
           }.width('100%').margin({ bottom: 12 });
         }
@@ -178,30 +178,30 @@ export struct VasopressorCalculator {
         Row() {
           Column() {
             Text(this.getConcLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onConcAChange(value); });
           }.layoutWeight(1);
           Column() {
             Text('配成 (mL)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'mL' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'mL' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onConcBChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
 
         if (this.getConcValue()) {
-          Text(this.getConcValue()).fontSize(11).fontColor('#7A8074').margin({ bottom: 8 });
+          Text(this.getConcValue()).fontSize(12).fontColor('#5F6654').margin({ bottom: 8 });
         }
 
         Text('— 双向换算').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text('速度 (mL/h)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'mL/h' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'mL/h' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onMlhChange(value); });
           }.layoutWeight(1);
           Column() {
             Text(this.getDoseLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.onDoseChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');
@@ -211,7 +211,7 @@ export struct VasopressorCalculator {
           .fontColor('#FFFFFF')
           .backgroundColor('#1F3D2F')
           .borderRadius(8)
-          .height(40)
+          .height(48)
           .width('100%')
           .margin({ top: 12 })
           .enabled(this.canCalculate())
@@ -222,7 +222,7 @@ export struct VasopressorCalculator {
         Column() {
           Row() {
             Column() {
-              Text('换算结果').fontSize(10).fontColor('#7A8074').letterSpacing(1.5);
+              Text('换算结果').fontSize(12).fontColor('#5F6654').letterSpacing(1.5);
               Text(this.getDrugName()).fontSize(22).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(`${this.resultMlh.toFixed(2)} mL/h  =  ${this.resultDose.toFixed(4)} ${this.resultUnit}`).fontSize(15).fontColor('#4A5247').margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
