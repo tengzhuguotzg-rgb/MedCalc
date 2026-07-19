@@ -81,4 +81,22 @@ export class AppColors {
   static readonly infoAccent: string = '#2B5C8A';
   /** 信息蓝浅底（原 #DBEAFE）：证据 GPS 级底色 */
   static readonly infoAccentBg: string = '#DBEAFE';
+
+  // ─── 数据域分组色（DOMAIN_COLORS 专用，多色设计保留原值） ───
+  /** 电解质·橄榄绿（原 #6B8E23） */
+  static readonly domainElectrolyte: string = '#6B8E23';
+  /** 肾功能·橙棕（原 #D4760A） */
+  static readonly domainKidney: string = '#D4760A';
+  /** 肝功能·暗黄（原 #8B6914） */
+  static readonly domainLiver: string = '#8B6914';
+  /** 炎症标志物·红（原 #C0392B） */
+  static readonly domainInflammation: string = '#C0392B';
+  /** 心肌标志物·亮红（原 #E74C3C） */
+  static readonly domainCardiacMarker: string = '#E74C3C';
+  /** 神经·紫（原 #6B4FA0） */
+  static readonly domainNeuro: string = '#6B4FA0';
+  /** 内分泌·亮紫（原 #9B59B6） */
+  static readonly domainEndocrine: string = '#9B59B6';
+  /** 肌肉·橙（原 #E67E22） */
+  static readonly domainMuscle: string = '#E67E22';
 }
