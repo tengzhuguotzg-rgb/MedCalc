@@ -53,7 +53,7 @@ export struct News2Calculator {  @State resp: number = 0;
         Row() {
           Column() {
             Text('体温 (°C)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '体温' }).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '体温' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

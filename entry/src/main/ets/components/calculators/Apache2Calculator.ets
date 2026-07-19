@@ -95,7 +95,7 @@ export struct Apache2Calculator {  @State temp: number = 0;
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '37.0' })
+          TextInput({ placeholder: '37.0' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -229,7 +229,7 @@ export struct Apache2Calculator {  @State temp: number = 0;
           .fontColor('#1F2421')
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
-        TextInput({ placeholder: '21' })
+        TextInput({ placeholder: '21' }).type(InputType.NUMBER_DECIMAL)
           .height(40)
           .fontSize(16)
           .fontColor('#1F2421')
@@ -350,7 +350,7 @@ export struct Apache2Calculator {  @State temp: number = 0;
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '7.40' })
+          TextInput({ placeholder: '7.40' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -373,7 +373,7 @@ export struct Apache2Calculator {  @State temp: number = 0;
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '24' })
+          TextInput({ placeholder: '24' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -432,7 +432,7 @@ export struct Apache2Calculator {  @State temp: number = 0;
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '4.0' })
+          TextInput({ placeholder: '4.0' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')

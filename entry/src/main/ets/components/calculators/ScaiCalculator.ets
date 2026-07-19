@@ -23,11 +23,11 @@ export struct ScaiCalculator {
         Row() {
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('乳酸 (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '乳酸' }).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
 

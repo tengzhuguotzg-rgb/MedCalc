@@ -38,7 +38,7 @@ export struct ChildPughCalculator {  @State bilirubin: number = 0;
           Button('g/dL').fontSize(11).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.albUnit === 'gdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.albUnit === 'gdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).margin({ left: 6 }).onClick(() => { this.albUnit = 'gdl'; this.calculate(); });
         }.width('100%').margin({ bottom: 8 });
 
-        Column() { Text('INR').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
+        Column() { Text('INR').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
 
         Column() {
           Text('腹水').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 8 });

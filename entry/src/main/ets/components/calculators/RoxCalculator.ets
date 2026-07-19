@@ -25,7 +25,7 @@ export struct RoxCalculator {  @State spo2: number = 0;
           }.layoutWeight(1);
           Column() {
             Text('FiO₂').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'FiO2' }).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
+            TextInput({ placeholder: 'FiO2' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999')
               .onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });

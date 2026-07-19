@@ -269,7 +269,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '7.35-7.45' })
+          TextInput({ placeholder: '7.35-7.45' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -288,7 +288,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '22-27' })
+          TextInput({ placeholder: '22-27' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -313,7 +313,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '35-45' })
+          TextInput({ placeholder: '35-45' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -355,7 +355,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '80-100' })
+          TextInput({ placeholder: '80-100' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -397,7 +397,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '-3~+3' })
+          TextInput({ placeholder: '-3~+3' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -416,7 +416,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '95-100' })
+          TextInput({ placeholder: '95-100' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -441,7 +441,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '0-2' })
+          TextInput({ placeholder: '0-2' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -460,7 +460,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '3.5-5.5' })
+          TextInput({ placeholder: '3.5-5.5' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -485,7 +485,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '120-160' })
+          TextInput({ placeholder: '120-160' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -527,7 +527,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '135-145' })
+          TextInput({ placeholder: '135-145' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -546,7 +546,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '98-106' })
+          TextInput({ placeholder: '98-106' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -571,7 +571,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '3.9-7.8' })
+          TextInput({ placeholder: '3.9-7.8' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -595,7 +595,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '0.21-1.0' })
+          TextInput({ placeholder: '0.21-1.0' }).type(InputType.NUMBER_DECIMAL)
             .height(40)
             .fontSize(16)
             .fontColor('#1F2421')
@@ -658,7 +658,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             Row() {
-              TextInput({ placeholder: '40-50' })
+              TextInput({ placeholder: '40-50' }).type(InputType.NUMBER_DECIMAL)
                 .height(40)
                 .fontSize(16)
                 .fontColor('#1F2421')
@@ -699,7 +699,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .fontColor('#1F2421')
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
-            TextInput({ placeholder: '60-80' })
+            TextInput({ placeholder: '60-80' }).type(InputType.NUMBER_DECIMAL)
               .height(40)
               .fontSize(16)
               .fontColor('#1F2421')
@@ -721,7 +721,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             Row() {
-              TextInput({ placeholder: '35-45' })
+              TextInput({ placeholder: '35-45' }).type(InputType.NUMBER_DECIMAL)
                 .height(40)
                 .fontSize(16)
                 .fontColor('#1F2421')

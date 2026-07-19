@@ -26,7 +26,7 @@ export struct SfCalculator {  @State spo2: number = 0;
           }.layoutWeight(1);
           Column() {
             Text('FiO₂').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)' }).height(40).fontSize(16).fontColor('#1F2421')
+            TextInput({ placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).fontColor('#1F2421')
               .placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' })
               .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 12 });
