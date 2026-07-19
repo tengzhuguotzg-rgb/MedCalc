@@ -206,9 +206,8 @@ export struct KnowledgeSearchPage {
     this.openPage(resolvedPath);
   }
 
-  getCategoryColor(name: string): string {
-    // 品牌大地色系：深绿 / 墨绿 / 灰绿 / 暖棕
-    const colors: string[] = [AppColors.primary, AppColors.kbDeepGreen, AppColors.textSecondary, AppColors.kbWarmBrown];
+  getCategoryColor(name: string): ResourceStr {
+    const colors: ResourceStr[] = [AppColors.primary, AppColors.kbDeepGreen, AppColors.textSecondary, AppColors.kbWarmBrown];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = (hash * 31 + name.charCodeAt(i)) % colors.length;

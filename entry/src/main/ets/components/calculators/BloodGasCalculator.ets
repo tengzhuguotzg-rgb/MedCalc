@@ -180,11 +180,11 @@ export struct BloodGasCalculator {
     }
   }
 
-  getTierColor(cls: string): string {
+  getTierColor(cls: string): ResourceStr {
     return calcTierColor(cls);
   }
 
-  getCritItemColor(level: string): string {
+  getCritItemColor(level: string): ResourceStr {
     if (level === 'danger') {
       return calcTierColor('tier-danger');
     }

@@ -419,7 +419,7 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
 export class AnnotationBadge {
   keyword: string = '';
   detail: string = '';
-  color: string = AppColors.textSecondary;
+  color: ResourceStr = AppColors.textSecondary;
 }
 
 export function getCalloutStyle(calloutType: string): CalloutStyle {
@@ -452,11 +452,11 @@ export function getCalloutStyle(calloutType: string): CalloutStyle {
 }
 
 export class CalloutStyle {
-  borderColor: string = '';
-  bgColor: string = '';
+  borderColor: ResourceStr = '';
+  bgColor: ResourceStr = '';
   icon: string = '';
 
-  constructor(borderColor: string, bgColor: string, icon: string) {
+  constructor(borderColor: ResourceStr, bgColor: ResourceStr, icon: string) {
     this.borderColor = borderColor;
     this.bgColor = bgColor;
     this.icon = icon;

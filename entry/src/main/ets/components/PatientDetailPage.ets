@@ -553,7 +553,7 @@ export struct PatientDetailPage {
     return out.join('；');
   }
 
-  getDomainColor(domainName: string): string {
+  getDomainColor(domainName: string): ResourceStr {
     const color = DOMAIN_COLORS[domainName];
     if (color !== undefined && color !== null) {
       return color;
@@ -1361,7 +1361,7 @@ export struct PatientDetailPage {
   }
 
   @Builder
-  DiagnosisGroup(source: string, label: string, color: string, isLlmGroup: boolean) {
+  DiagnosisGroup(source: string, label: string, color: ResourceStr, isLlmGroup: boolean) {
     if (this.getDiagnosesBySource(source).length > 0) {
       Column() {
         Row() {
@@ -1403,7 +1403,7 @@ export struct PatientDetailPage {
     return Array.from(tagSet);
   }
 
-  getUrgencyColor(urgency: string): string {
+  getUrgencyColor(urgency: string): ResourceStr {
     if (urgency === 'critical') {
       return AppColors.danger;
     }
@@ -1436,7 +1436,7 @@ export struct PatientDetailPage {
     return '待确认';
   }
 
-  getLlmConfirmColor(confirmed: number): string {
+  getLlmConfirmColor(confirmed: number): ResourceStr {
     if (confirmed === 1) {
       return AppColors.tierOk;
     }
@@ -2260,7 +2260,7 @@ export struct PatientDetailPage {
     return c;
   }
 
-  getCategoryBorderColor(cat: string): string {
+  getCategoryBorderColor(cat: string): ResourceStr {
     if (cat === '病理生理') {
       return AppColors.aiAccent;
     }
@@ -2672,7 +2672,7 @@ export struct PatientDetailPage {
     }
   }
 
-  getEvidenceColor(level: string): string {
+  getEvidenceColor(level: string): ResourceStr {
     if (level.indexOf('强') >= 0) {
       return AppColors.tierOk;
     }
@@ -2685,7 +2685,7 @@ export struct PatientDetailPage {
     return AppColors.textSecondary;
   }
 
-  getEvidenceBgColor(level: string): string {
+  getEvidenceBgColor(level: string): ResourceStr {
     if (level.indexOf('强') >= 0) {
       return AppColors.tierOkBg;
     }
@@ -3023,7 +3023,7 @@ export struct PatientDetailPage {
     .margin({ bottom: 6 })
   }
 
-  getLabAlertUrgencyColor(urgency: string): string {
+  getLabAlertUrgencyColor(urgency: string): ResourceStr {
     if (urgency === 'critical') {
       return AppColors.danger;
     }

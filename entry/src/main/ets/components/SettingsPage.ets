@@ -2,6 +2,8 @@ import { LlmModelConfig, LlmFormat, ApiServiceConfig, sendVisionRequest } from '
 import { PreferencesService } from '../services/PreferencesService';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
+import { ConfigurationConstant } from '@kit.AbilityKit';
+import { common } from '@kit.AbilityKit';
 
 let settingsLlmIdCounter: number = 0;
 
@@ -29,16 +31,34 @@ export struct SettingsPage {
   @State testResultId: string = '';
   @State testResultOk: boolean = false;
   @State testResultMsg: string = '';
+  @State themeMode: string = 'system';
 
   private prefsService = PreferencesService.getInstance();
 
   aboutToAppear() {
     this.llmModels = this.prefsService.getLlmModels();
     this.selectedLlmId = this.prefsService.getSelectedLlmId();
+    this.themeMode = this.prefsService.getThemeMode();
   }
 
   persistLlm(): void {
     this.prefsService.saveLlmModels(this.llmModels, this.selectedLlmId);
+  }
+
+  applyTheme(mode: string): void {
+    this.themeMode = mode;
+    this.prefsService.saveThemeMode(mode);
+    const ctx = AppStorage.get<common.UIAbilityContext>('context');
+    if (ctx === undefined || ctx === null) {
+      return;
+    }
+    let colorMode: ConfigurationConstant.ColorMode = ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
+    if (mode === 'light') {
+      colorMode = ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+    } else if (mode === 'dark') {
+      colorMode = ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+    }
+    ctx.getApplicationContext().setColorMode(colorMode);
   }
 
   getGroupedProviders(): string[] {
@@ -364,6 +384,63 @@ export struct SettingsPage {
           .backgroundColor(AppColors.card)
           .borderRadius(AppDimens.cardRadius)
 
+          Text('外观')
+            .fontSize(16)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(AppColors.primary)
+            .width('100%')
+
+          Column({ space: 8 }) {
+            Row() {
+              Radio({ value: 'system', group: 'themeSelect' })
+                .checked(this.themeMode === 'system')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) { this.applyTheme('system'); }
+                })
+                .width(20)
+                .height(20)
+              Text('跟随系统')
+                .fontSize(14)
+                .fontColor(AppColors.textPrimary)
+                .margin({ left: 8 })
+            }
+            .width('100%')
+
+            Row() {
+              Radio({ value: 'light', group: 'themeSelect' })
+                .checked(this.themeMode === 'light')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) { this.applyTheme('light'); }
+                })
+                .width(20)
+                .height(20)
+              Text('浅色模式')
+                .fontSize(14)
+                .fontColor(AppColors.textPrimary)
+                .margin({ left: 8 })
+            }
+            .width('100%')
+
+            Row() {
+              Radio({ value: 'dark', group: 'themeSelect' })
+                .checked(this.themeMode === 'dark')
+                .onChange((isChecked: boolean) => {
+                  if (isChecked) { this.applyTheme('dark'); }
+                })
+                .width(20)
+                .height(20)
+              Text('深色模式')
+                .fontSize(14)
+                .fontColor(AppColors.textPrimary)
+                .margin({ left: 8 })
+            }
+            .width('100%')
+          }
+          .width('100%')
+          .padding(AppDimens.cardPadding)
+          .backgroundColor(AppColors.card)
+          .borderRadius(AppDimens.cardRadius)
+
           Text('关于')
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
@@ -394,7 +471,7 @@ export struct SettingsPage {
     .bindSheet($$this.showLlmDialog, this.LlmDialogBuilder(), {
       height: SheetSize.FIT_CONTENT,
       dragBar: true,
-      backgroundColor: Color.White,
+      backgroundColor: AppColors.card,
       onWillDisappear: () => { this.showLlmDialog = false; }
     })
   }

@@ -111,7 +111,7 @@ export const DATA_DOMAINS: Record<string, string[]> = {
   'ICU评分': ['apache2Score', 'sofaScore', 'icuDay', 'vaso', 'comorb'],
 };
 
-export const DOMAIN_COLORS: Record<string, string> = {
+export const DOMAIN_COLORS: Record<string, ResourceStr> = {
   '人口学': AppColors.textSecondary,
   '生命体征': AppColors.tierWarn,
   '血气分析': AppColors.primary,

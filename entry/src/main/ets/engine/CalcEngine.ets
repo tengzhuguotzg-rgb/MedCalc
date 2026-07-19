@@ -30,7 +30,7 @@ export function getTierClass(tier: string): string {
   return 'tier-info';
 }
 
-export function getTierColor(tierClass: string): string {
+export function getTierColor(tierClass: string): ResourceStr {
   if (tierClass === 'tier-ok') {
     return AppColors.tierOk;
   }
@@ -43,7 +43,7 @@ export function getTierColor(tierClass: string): string {
   return AppColors.tierInfo;
 }
 
-export function getTierBgColor(tierClass: string): string {
+export function getTierBgColor(tierClass: string): ResourceStr {
   if (tierClass === 'tier-ok') {
     return AppColors.tierOkBg;
   }
