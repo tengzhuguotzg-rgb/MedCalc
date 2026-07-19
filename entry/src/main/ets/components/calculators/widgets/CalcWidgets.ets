@@ -50,8 +50,8 @@ export struct CalcCard {
  */
 @Component
 export struct InputRow {
-  /** 字段标签（静态） */
-  label: string = '';
+  /** 字段标签（多数静态；Child-Pugh 等随单位切换的字段需响应式更新，故用 @Prop） */
+  @Prop label: string = '';
   /** 占位文本；FiO₂ 等随模式切换的字段需响应式更新，故用 @Prop */
   @Prop placeholder: string = '';
   /** 键盘类型 */
