@@ -1,0 +1,25 @@
+---
+title: TOP TAKE-HOME MESSAGES
+tags: [急性缺血性脑卒中, 脑梗死, 脑卒中, 缺血性卒中, 卒中, 脑血管病, 卒中系统, 院前管理, 急诊评估, 静脉溶栓, tPA, 替奈普酶, 血管内取栓, EVT, 血压管理, 抗血小板, 抗凝, 脑水肿, 卒中单元, 康复, acute ischemic stroke, AIS, stroke, cerebrovascular accident, CVA, thrombolysis, tPA, tenecteplase, thrombectomy, EVT]
+diagnoses: [急性缺血性脑卒中, 脑梗死, 脑卒中, 缺血性卒中, 卒中, 脑血管病]
+topics: [卒中系统, 院前管理, 急诊评估, 静脉溶栓, tPA, 替奈普酶, 血管内取栓, EVT, 血压管理, 抗血小板, 抗凝, 脑水肿, 卒中单元, 康复]
+source: AHA/ASA 2026 Acute Ischemic Stroke Guideline
+source_type: 临床指南
+date: 2026年
+year: 2026
+lang: en
+aliases: [acute ischemic stroke, AIS, stroke, cerebrovascular accident, CVA, thrombolysis, tPA, tenecteplase, thrombectomy, EVT]
+---
+
+# TOP TAKE-HOME MESSAGES
+
+1. Mobile stroke units (MSU) enable rapid identification and treatment of thrombolytic-eligible patients with acute ischemic stroke (AIS). Recent studies have highlighted the benefit of MSUs over conventional emergency medical services and, when available, the guideline now includes recommendations related to the implementation of MSUs, based on their safety and benefit.
+2. Identification of appropriate transport destination for patients with suspected stroke in the prehospital setting remains challenging. Previous guidelines recommended transport to the nearest thrombolyticcapable facility. Given recent evidence, this guideline endorses consideration of the characteristics of the local system of care and direct transport to the closest endovascular thrombectomy (EVT)-capable hospital in the absence of well-functioning systems with rapid interhospital transfer processes.
+3. Intravenous thrombolysis (IVT) is a mainstay of medical management for patients with AIS. Given numerous international trials showing noninferiority and the potential advantages of intravenous tenecteplase compared with alteplase, the new guidelines endorse the use of either alteplase or tenecteplase in the 4.5- hour thrombolytic treatment window. Furthermore, we emphasize rapid thrombolytic treatment in eligible patients with disabling deficits, regardless of National Institutes of Health Stroke Scale (NIHSS) score, within the 4.5-hour window without advanced imaging selection. In addition, the guidelines provide support for extended window thrombolysis for select patients with stroke of unknown onset or 4.5–9 hours from onset using advanced imaging criteria (eg, diffusion weighted imaging-fluid attenuated recovery or perfusion-based mismatch).
+4. For patients with non-disabling (eg, isolated sensory syndrome) deficits in the 4.5-hour window, trials have failed to demonstrate benefit of thrombolysis. Dual antiplatelet therapy is preferred and recommended in this population.
+5. New studies have examined the role of adjuvant antithrombotic therapy, such as argatroban and eptifibatide, concurrently with IVT. These studies have shown no benefit and, therefore, adjuvant antithrombotic drugs are not recommended to enhance the outcomes from thrombolytic therapy.
+6. EVT has been established as a standard treatment for patients with AIS with large vessel occlusion (LVO) based on numerous randomized controlled trials. Recent evidence supports expanding EVT to populations previously considered ineligible. Specifically, several studies indicate that EVT benefits some patients with larger ischemic core strokes as determined by diagnostic imaging.
+7. Based on several trials showing improvement in functional outcomes compared with medical management alone, the guidelines also provide a strong recommendation for EVT in patients with basilar artery occlusion presenting within 24 hours of symptom onset and NIHSS score ≥10.
+8. For the first time, the guidelines include recommendations for interventional treatment in pediatric patients with AIS. Although much work remains to adapt prehospital and hospital stroke protocols for pediatric patients, expert consensus and recent studies highlight the importance of early stroke recognition in children and support the safety and potential benefit of endovascular interventions in select pediatric patients with AIS. These recommendations serve as a foundation for future recommendations and address the phases of pediatric acute stroke care.
+9. Glycemic management in patients with AIS has been updated since the prior guidelines such that intensive glucose control to the range of 80 to 130 mg/ dL is not recommended to improve clinical outcome and increases the risk of severe hypoglycemia.
+10. Several new trials have assessed the efficacy and safety of blood pressure (BP) lowering after IVT and EVT in adult patients, providing new evidence that more intensive BP reduction does not improve functional outcome after IVT and may result in harm after EVT. Therefore, intensive systolic BP lowering to <140 mm Hg is not recommended even in the setting of complete reperfusion (eg, Thrombolysis In Cerebral Infarction grade 3 flow).

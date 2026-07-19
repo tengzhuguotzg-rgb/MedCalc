@@ -1,0 +1,30 @@
+---
+title: "Uncontrolled organ donation after circulatory death"
+tags: [心肺复苏, CPR, 高级生命支持, ALS, 心脏骤停, 除颤, 肾上腺素, 气道管理, 心律失常, 室颤, ROSC, cardiac arrest, resuscitation, defibrillation, adrenaline, arrhythmia, 胺碘酮, 气管插管, 波形二氧化碳图, 复苏, 器官捐献, 循环死亡后捐献, uDCD, cDCD, DBD, 马斯特里赫特分类, 肾移植, 肝移植, 胰腺移植, 肺移植, 热缺血时间, 无灌流时间, 自动复苏, 无触碰期, 体外膜氧合, 股静脉-股动脉旁路, 器官保存, 知情同意, 默认同意, 器官功能延迟, 原发无功能, 终止复苏, TOR, 伦理, ECPR]
+source: "2025 ERC Guidelines Adult Advanced Life Support"
+source_type: 临床指南
+year: 2025
+lang: en
+---
+
+# Uncontrolled organ donation after circulatory death
+
+Less than half of patients achieve ROSC after resuscitation from cardiac arrest.47,640 When standard ALS fails to achieve ROSC, there are three broad treatment strategies:641
+
+Stop resuscitation and declare death. In selected patients, consider ECPR. In settings with an uncontrolled organ donation after circulatory death (uDCD) programme, continue CPR to preserve organ perfusion and transport the patient to a hospital with a designated uDCD pathway, following local protocols and legal requirements.
+
+This ERC Guidelines 2025 ALS focuses on uDCDs. These are defined as donors after unsuccessful resuscitation from unwitnessed (Maastricht category I) or witnessed (Maastricht category II) cardiac arrest, either in- hospital or out- of- hospital.642 The ERC Guidelines 2025 on Post Resuscitation Care include guidance for organ donation pathways following brain death (donation after brain death: DBD) or controlled donation after circulatory death (cDCD, Maastricht category Ill donors) in patients who achieve ROSC or are treated with ECPR.147,643 We acknowledge the ethical, cultural, and legislative issues that lead to variations in the use of uDCD.
+
+There is a mismatch between the availability of organs and demand across the world. Uncontrolled donation after circulatory death (uDCD) provides an opportunity for cardiac arrest victims in whom ROSC cannot be achieved to become organ donors. In Europe, uDCD is currently undertaken in Austria, Belgium, Israel, Italy, Lithuania, Portugal, Russia, and Spain.642,644 Organs that can be recovered include kidneys, liver, pancreas and lungs. In 2025, an ILCOR systematic review showed that the rates of early dysfunction (primary non- function or delayed graft function) of kidneys and longterm function of livers recovered from uDCD were higher than in DBD or cDCD.1,645 However, in most studies, long- term graft function was comparable.644,646- 649 This difference may be partly due to the longer warm ischaemia time of uDCD compared with other organ recovery approaches.
+
+There is no universal consensus on selection criteria for uDCD, and identifying a potential donor currently follows regional/national protocols. Criteria generally include age above those of consent (variable by nation, but usually above18 years) and not over 55- 65 years, a no- flow time (the interval from emergency call or witnessed arrest to CPR start) within 15 min, and a total warm ischaemia time (the interval between cardiac arrest and the start of organ preservation) not longer than 150 min. Exclusion criteria generally include trauma, homicide, or suicide as a cause of arrest and comorbidities such as cancer, sepsis, and, according to local programmes and the targeted organ to transplant, kidney and liver disease.6o In a 2024 study conducted on the Parisian registry, of 19,976 adult patients who were resuscitated from 2011 to 2020, 12,890 \((65\%)\) had no ROSC, 9461 \((47\%)\) met termination of resuscitation (TOR) criteria, and 6720 \((52\%)\) could be considered for uDCD kidney donors.640
+
+Uncontrolled donation after circulatory death is a time- critical, resource- intensive, complex and ethically challenging process.651 Following the termination of resuscitation efforts, a 'no- touch' period is observed to rule out the possibility of autoresuscitation, i.e., ROSC after CPR has been stopped or life- sustaining measures have been withdrawn in the intensive care unit. In most countries where uDCD is practised, the prescribed duration of the no- touch period is five minutes,652 but some require \(20~\mathrm{min}\) 653 An updated systematic review on autoresuscitation identified seven observational studies, of which one investigated OHCA.654 Among 840 patients whose resuscitation measures were terminated on site, the study reported five cases of ROSC occurring 3 to 8 min after cessation of CPR. Three of these five patients died on scene, while two died in hospital, one within 1.5 h and the other within 26 h.
+
+After the no- touch period, organ preservation procedures are started and continued until consent for organ recovery is ascertained.655- 657 Obtaining consent from a surrogate decision maker (e.g., a family member) is particularly challenging for uDCD, given the unexpected nature of the arrest, the considerable time pressure, and the difficult environment of an emergency department. Establishing clear local protocols and legislative and societal acceptance is crucial for this process.658 Previous consent registered on a donor card or a public registry is invaluable and must be rapidly retrieved. Adopting an opt- out system with implied consent to donation is an effective strategy to improve the rates of organ donation if the legal and cultural context allows.659 The ERC Guidelines 2025 Ethics in Resuscitation includes further details on these issues.
+
+For abdominal organs, organ preservation typically uses extracorporeal circulation with membrane oxygenation via a femorofemoral bypass.65 Catheters with balloons are used to limit circulation to the abdominal cavity.660
+
+Acknowledgements
+
+The authors acknowledge the following individuals who contributed to the previous versions of the ERC ALS guidelines: Therese Djarv, Rudolph W. Koster, Carsten Lott, Theresa Olasveengen, Tommaso Pellis, Gavin D. Perkins, Gary B. Smith, Kjetil Sunde.

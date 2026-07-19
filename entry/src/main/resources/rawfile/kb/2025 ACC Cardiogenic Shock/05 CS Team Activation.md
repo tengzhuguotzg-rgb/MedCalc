@@ -1,0 +1,17 @@
+---
+diagnoses: [心源性休克, 休克]
+topics: [休克团队, 多学科协作, 团队激活, 中心分级]
+source: ACC 2025 Concise Clinical Guidance
+source_type: 共识声明
+year: 2025
+lang: en
+aliases: [shock team, CS team activation, multidisciplinary team]
+---
+
+# 4.3 CS Team Activation
+
+A standardized, interdisciplinary, team- based approach to CS management has been associated with improved clinical outcomes. Several single- center protocols initially established the proof of concept with associated lower inhospital mortality.34,35 A multicenter observational analysis among 10 of 24 centers with shock teams showed that shock team centers were more likely to obtain invasive hemodynamics, use advanced types of tMCS (ie, beyond an intra- aortic balloon pump), and have lower riskadjusted cardiac intensive care unit mortality.36 While the exact composition of CS teams has varied across institutions, key stakeholders from the following specialties have typically been included: critical care cardiology (whenever available) or general critical care in collaboration with a cardiac intensive care unit cardiologist (when it is not); advanced HF and transplant cardiology; interventional cardiology; and cardiac surgery. Extracorporeal membrane oxygenation intensivists or perfusionist and/ or palliative care specialists may be included in some centers. For Level 2 and 3 CS hospital centers that may not have on- site expertise or an established CS team, the writing committee strongly recommends early contact with the regional Level 1 CS hospital center after confirming the initial diagnosis of CS. The following key considerations may be helpful for triage, potential transfer, appropriate risk stratification, and treatment of CS patients: 1) What is the SCAI Stage and Shock Academic Research Consortium classification? 2) Does the patient need or require escalation of tMCS support at this time? 3) Are there any absolute contraindications to escalation of treatment (eg, do not resuscitate order, or terminal illness, etc)? 4) Does the institution have the resources to support this patient's anticipated needs (eg, intensive care unit bed availability, clinical expertise, and tMCS resources and availability)? 5) Is the patient hemodynamically stable for transfer?
+
+Common elements across shock team models at Level 1 CS hospital centers include early interdisciplinary engagement and consultation to deliver necessary multifaceted care, a coordinating physician (eg, a cardiac intensive care unit cardiologist, advanced HF and transplant cardiologist, or interventional cardiologist, depending on clinical setting) for efficient patient triage, a rapid system for concurrent team activation, efficient virtual and/or bedside communication, and use of invasive hemodynamics to guide therapy selection (Figure 4).21,26
+
+Depending on the institutional resources and personnel, all elements of the shock team model may not be readily available. Additional expertise may be needed in certain clinical scenarios, such as cardiac electrophysiology for patients with electrical storm, maternal fetal medicine for critically ill pregnant patients, and adult congenital heart disease consultation for patients with complex adult congenital heart disease physiology. The writing committee affirms the importance and value of building and growing shock teams across time and frequently reviewing CS cases as patient safety and quality improvement initiatives to assess opportunities to refine protocols and strengthen relationships.

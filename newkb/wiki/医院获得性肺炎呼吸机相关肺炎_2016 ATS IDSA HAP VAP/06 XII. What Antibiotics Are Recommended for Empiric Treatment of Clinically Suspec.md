@@ -1,0 +1,42 @@
+---
+title: "XII. What Antibiotics Are Recommended for Empiric Treatment of Clinically Suspected HAP (Non-VAP)? Recommendations (See Table 4 for Specific Antibiotic Recommendations)"
+tags: [医院获得性肺炎, 呼吸机相关性肺炎, HAP, VAP, 肺炎, 重症肺炎, 抗生素, 经验性治疗, MRSA, 铜绿假单胞菌, hospital-acquired pneumonia, ventilator-associated pneumonia, antibiotic, Pseudomonas, 万古霉素, 利奈唑胺, 碳青霉烯, 降钙素原, CPIS, 休克, 脓毒性休克, MSSA, 苯唑西林, 萘夫西林, 头孢唑林, 头孢吡肟, 头孢他啶, 哌拉西林他唑巴坦, 左氧氟沙星, 环丙沙星, 亚胺培南, 美罗培南, 氨曲南, 艰难梭菌, 支气管扩张, 囊性纤维化, 革兰染色, 肠杆菌, 不动杆菌]
+source: "ATS/IDSA 2016 HAP/VAP Guidelines"
+source_type: 临床指南
+year: 2016
+lang: en
+---
+
+# XII. What Antibiotics Are Recommended for Empiric Treatment of Clinically Suspected HAP (Non-VAP)? Recommendations (See Table 4 for Specific Antibiotic Recommendations)
+
+# XII. What Antibiotics Are Recommended for Empiric Treatment of Clinically Suspected HAP (Non-VAP)? Recommendations (See Table 4 for Specific Antibiotic Recommendations)
+
+1. For patients being treated empirically for HAP, we recommend prescribing an antibiotic with activity against S. aureus (strong recommendation, very low-quality evidence). (See below for recommendations regarding empiric coverage of MRSA vs MSSA.) i. For patients with HAP who are being treated empirically and have either a risk factor for MRSA infection (ie, prior intravenous antibiotic use within 90 days, hospitalization in a unit where \(>20\%\) of S. aureus isolates are methicillin resistant, or the prevalence of MRSA is not known, or who are at high risk for mortality, we suggest prescribing an antibiotic with activity against MRSA (weak recommendation, very low-quality evidence). (Risk factors for mortality include need for ventilatory support due to HAP and septic shock).
+ii. For patients with HAP who require empiric coverage for MRSA, we recommend vancomycin or linezolid rather than an alternative antibiotic (strong recommendation, low-quality evidence).
+iii. For patients with HAP who are being treated empirically and have no risk factors for MRSA infection and are not at high risk of mortality, we suggest prescribing an antibiotic with activity against MSSA. When empiric coverage for MSSA (and not MRSA) is indicated, we suggest a regimen including piperacillin-tazobactam, cefepime, levofloxacin, imipenem, or meropenem. Oxacillin, nafcillin, or cefazolin are preferred for the treatment of proven MSSA, but are not necessary for empiric coverage of HAP if one of the above agents is used (weak recommendation, very low-quality evidence).
+
+Table 4. Recommended Initial Empiric Antibiotic Therapy for Hospital-Acquired Pneumonia (Non-Ventilator-Associated Pneumonia)
+
+| **Not at High Risk of Mortality<sup>a</sup> and No Factors Increasing the Likelihood of MRSA<sup>b</sup>** | **Not at High Risk of Mortality<sup>a</sup> But With Factors Increasing the Likelihood of MRSA<sup>b</sup>** | **High Risk of Mortality<sup>a</sup> or Receipt of Intravenous Antibiotics During the Prior 90 days<sup>c</sup>** |
+| One of the following:<br>Piperacillin-tazobactam<sup>d</sup> 4.5 g IV q6h<br>OR<br>Cefepime<sup>d</sup> 2 g IV q8h<br>OR<br>Levofloxacin 750 mg IV daily<br>OR<br>Imipenem<sup>d</sup> 500 mg IV q6h<br>OR<br>Meropenem<sup>d</sup> 1 g IV q8h | One of the following:<br>Piperacillin-tazobactam<sup>d</sup> 4.5 g IV q6h<br>OR<br>Cefepime<sup>d</sup> or ceftazidime<sup>d</sup> 2 g IV q8h<br>OR<br>Levofloxacin 750 mg IV daily<br>OR<br>Ciprofloxacin 400 mg IV q8h<br>OR<br>Imipenem<sup>d</sup> 500 mg IV q6h<br>OR<br>Meropenem<sup>d</sup> 1 g IV q8h<br>OR<br>Aztreonam<sup>e</sup> 2 g IV q8h<br>**Plus:**<br>Vancomycin 15 mg/kg IV q8-12h with goal to target 15-20 mg/mL trough level (consider a loading dose of 25-30 mg/kg x 1 for severe illness)<br>OR<br>Linezolid 600 mg IV q12h | Two of the following, avoid 2 β-lactams:<br>Piperacillin-tazobactam<sup>d</sup> 4.5 g IV q6h<br>OR<br>Cefepime<sup>d</sup> or ceftazidime<sup>d</sup> 2 g IV q8h<br>OR<br>Levofloxacin 750 mg IV daily<br>OR<br>Ciprofloxacin 400 mg IV q8h<br>OR<br>Imipenem<sup>d</sup> 500 mg IV q6h<br>OR<br>Meropenem<sup>d</sup> 1 g IV q8h<br>OR<br>Aztreonam<sup>e</sup> 2 g IV q8h<br>**Plus:**<br>Vancomycin 15 mg/kg IV q8-12h with goal to target 15-20 mg/mL trough level (consider a loading dose of 25-30 mg/kg x 1 for severe illness)<br>OR<br>Linezolid 600 mg IV q12h<br>If MRSA coverage is not going to be used, include coverage for MSSA. Piperacillin-tazobactam, cefepime, levofloxacin, imipenem, or meropenem; Oxacillin, nafcillin, and cefazolin are preferred for the treatment of proven MSSA, but would ordinarily not be used in an empiric regimen for HAP. |
+
+Abbreviations: HAP, hospital-acquired pneumonia; IV, intravenous; MRSA, methicillin-resistant Staphylococcus aureus; MSSA, methicillin-sensitive Staphylococcus aureus.
+
+<sup>a</sup> Risk factors for mortality include need for ventilatory support due to pneumonia and septic shock.
+<sup>b</sup> Indications for MRSA coverage include intravenous antibiotic treatment during the prior 90 days, and treatment in a unit where the prevalence of MRSA among S. aureus isolates is not known or is >20%. The 20% threshold was chosen to balance the need for effective initial antibiotic therapy against the risks of excessive antibiotic use. Other patient-specific factors that could increase the likelihood of MRSA infection include prior MRSA colonization. The 20% threshold was chosen to balance the need for effective initial antibiotic therapy against the risks of excessive antibiotic use. Other patient-specific factors that could increase the likelihood of MRSA infection include prior MRSA colonization.
+<sup>c</sup> If MRSA coverage is indicated, vancomycin or linezolid should be used. If the patient is at high risk for MRSA, empiric antibiotic regimens should include coverage for MRSA.
+<sup>d</sup> Routine antimicrobial susceptibility testing should include assessment of the sensitivity of the gram-negative pathogen to the antibiotics listed.
+<sup>e</sup> Extended infusions may be appropriate.
+<sup>f</sup> In the absence of other options, it is acceptable to use aztreonam as an adjunctive agent with another β-lactam-based agent because it has different targets within the bacterial cell wall [137].
+
+Management of Adults With HAP/VAP • CID 2016:63 (1 September) • e65
+
+2. For patients with HAP who are being treated empirically, we recommend prescribing antibiotics with activity against P. aeruginosa and other gram-negative bacilli (strong recommendation, very low-quality evidence).
+
+i. For patients with HAP who are being treated empirically and have factors increasing the likelihood for Pseudomonas or other gram-negative infection (ie, prior intravenous antibiotic use within 90 days; also see Remarks) or a high risk for mortality, we suggest prescribing antibiotics from 2 different classes with activity against P. aeruginosa (weak recommendation, very low-quality evidence). (Risk factors for mortality include need for ventilatory support due to HAP and septic shock). All other patients with HAP who are being treated empirically may be prescribed a single antibiotic with activity against P. aeruginosa.
+
+ii. For patients with HAP who are being treated empirically, we recommend not using an aminoglycoside as the sole antipseudomonal agent (strong recommendation, very low-quality evidence).
+
+Values and Preferences: These recommendations are a compromise between the competing goals of providing early appropriate antibiotic coverage and avoiding superfluous treatment that may lead to adverse drug effects, C. difficile infections, antibiotic resistance, and increased cost.
+
+Remarks: The \(20\%\) threshold for deciding whether or not to target MRSA or MSSA was chosen in an effort to balance the need for effective initial antibiotic therapy against the risks of excessive antibiotic use; when implementing these recommendations, individual units may elect to modify this threshold. If patient has structural lung disease increasing the risk of gram- negative infection (ie, bronchiectasis or cystic fibrosis), 2 antipseudomonal agents are recommended. A high- quality Gram stain from a respiratory specimen with numerous and predominant gram- negative bacilli provides further support for the diagnosis of a gram- negative pneumonia, including fermenting and non- glucose- fermenting microorganisms.

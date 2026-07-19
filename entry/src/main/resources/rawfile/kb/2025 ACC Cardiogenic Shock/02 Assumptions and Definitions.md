@@ -1,0 +1,39 @@
+---
+diagnoses: [心源性休克, 休克, 急性心肌梗死, 心力衰竭]
+topics: [定义, 假设, CS定义, AMI-CS定义, HF-CS定义, SCAI分期]
+source: ACC 2025 Concise Clinical Guidance
+source_type: 共识声明
+year: 2025
+lang: en
+aliases: [cardiogenic shock definition, CS definition, AMI-CS, HF-CS, SCAI staging]
+---
+
+# 2. Assumptions and Definitions
+
+### 2.1. General Clinical Assumptions
+
+1. The guidance in this Concise Clinical Guidance is intended for adult patients noting that pediatric presentations of CS differ and may require a modified Society for Cardiovascular Angiography and Intervention (SCAI) system.10
+
+2. The principal focus of this document applies to patients hospitalized due to CS secondary to AMI (AMI- CS) or HF (HF-CS).
+
+3. The guidance is intended for clinicians across a broad array of disciplines who routinely evaluate and manage patients in CS in diverse clinical settings.
+
+4. The writing committee endorses the evidence-based approach to CS diagnosis and management recommended in the 2021 ACC/American Heart Association/SCAI Guideline for Coronary Artery Revascularization and in the 2022 American Heart Association/ACC/Heart Failure Society of America Guideline for the Management of Heart Failure.12
+
+5. Optimal care decisions should reflect evidence-based guidelines that incorporate the individual patient's preferences, values, and priorities, as well as those of the managing clinician and care team. The writing committee endorses a shared decision-making model framework for care delivery, especially in areas where clinical equipoise exists due to treatment uncertainty.
+
+6. Interdisciplinary consultation, communication, and collaboration is strongly encouraged.
+
+7. As new data emerge, they will likely inform the considerations and suggestions for clinical practice provided here. Clinicians should thoughtfully incorporate novel discoveries and scientific evidence into their clinical practice.
+
+### 2.2. Definitions
+
+**CS**: A cardiac disorder that results in both clinical and biochemical evidence of sustained tissue hypoperfusion irrespective of underlying blood pressure.1
+
+**AMI**: Defined as the irreversible necrosis of heart muscle due to myocardial ischemia. A common cause for infarction is deprivation in myocardial oxygen supply because of interruption of blood flow in \(\geq 1\) coronary arteries because of plaque rupture, erosion, fissure, or coronary dissection. The data element set for a myocardial infarction event requires both subjective and objective findings, including symptoms, cardiac biomarkers, and electrocardiographic abnormalities. The writing committee endorses data elements that were selected based on published peer- reviewed MI definitions developed by national and international cardiovascular subspecialty societies (American Heart Association, ACC, European Society of Cardiology, and SCAI) and are commonly used by regulatory bodies that oversee the conduct of cardiovascular clinical trials.13
+
+**AMI- CS**: AMI- CS includes patients with CS due to AMI in the presence or absence of ST- segment elevation on 12- lead electrocardiography (ie, STEMI and non- STEMI, respectively). Consistent with the Shock Academic Research Consortium standardized definitions, left, right, or biventricular dysfunction may result from ongoing myocardial ischemia, ischemic injury, or mechanical complications of MI as the primary etiology of CS. Note that CS resulting from acute bradyarrhythmias, tachyarrhythmias, or advanced heart block, postcardiac arrest, or any other complications in the setting of AMI are also classified as AMI- CS.1
+
+**HF**: Defined as per the universal definition of \(\mathrm{HF}^{14}\) symptoms and/or signs of HF caused by structural/func tional cardiac abnormalities and \(\approx 1\) of the following: 1) elevated natriuretic peptides; or 2) objective evidence of cardiogenic pulmonary or systemic congestion. A HF event, including hospitalization, is defined by the criteria outlined by the 2014 ACC/American Heart Association Key Data Elements and Definitions for Cardiovascular Endpoint Events in Clinical Trials.15
+
+**HF- CS**: HF- CS is due to CS related to primary myocardial dysfunction ascribed to either ischemic or nonischemic etiologies of cardiomyopathy. It may be further subcategorized into those with either de novo HF- CS (ie, acute myocardial dysfunction that is known or suspected to be new in onset) vs acute- on- chronic HF- CS (ie, acute decompensation of chronic or progressive HF with dilated cardiomyopathy). As with AMI- CS, there may be varying degrees of ventricular involvement, including left, right, or biventricular congestive profiles. HF- CS may be further categorized by the specific etiology of the underlying myocardial dysfunction, including- but not limited to- acute myocarditis, takotsubo cardiomyopathy, peripartum cardiomyopathy, tachycardia- related cardiomyopathy, hypertrophic cardiomyopathy, or infiltrative diseases such as cardiac amyloidosis or sarcoidosis, among many others.1

@@ -5,11 +5,11 @@ import { util } from '@kit.ArkTS';
 import { sendVisionRequest, ApiServiceConfig } from './LlmService';
 import { PreferencesService } from './PreferencesService';
 
-const DOMAIN: number = 0xF000;
-const TAG: string = 'KnowledgeService';
+const DOMAIN: number = 0x0001;
+const TAG: string = 'MedCalc';
 
 const KB_DB_NAME: string = 'medcalc_kb.db';
-const KB_DB_VERSION: number = 6;
+const KB_DB_VERSION: number = 7;
 const KB_DB_SECURITY: relationalStore.SecurityLevel = relationalStore.SecurityLevel.S1;
 
 const CREATE_KB_INDEX: string =
@@ -70,6 +70,21 @@ export class GroupedPageEntry {
   order: number = 0;
 }
 
+export class ExpandedQueryResult {
+  searchTerms: string[] = [];
+  directories: string[] = [];
+  etiologyTerms: string[] = [];
+  treatmentTerms: string[] = [];
+  monitoringTerms: string[] = [];
+  allTerms: string[] = [];
+}
+
+export class SmartSearchResult {
+  expanded: ExpandedQueryResult = new ExpandedQueryResult();
+  matchedDirs: string[] = [];
+  candidatePaths: string[] = [];
+}
+
 export class KnowledgeService {
   private static instance: KnowledgeService | null = null;
   private store: relationalStore.RdbStore | null = null;
@@ -78,6 +93,29 @@ export class KnowledgeService {
   private context: Context | null = null;
   lastExpandedCount: number = 0;
   lastPartialPaths: string[] = [];
+  lastVerifyFallback: boolean = false;
+
+  private static readonly KB_DIRECTORIES: string =
+    '保肝药物|创伤性脑损伤|低镁血症|低镁血症专家共识|癫痫|肺结核|肺炎|急性冠脉综合征|' +
+    '急性呼吸窘迫综合征|急性慢加急性肝衰竭|急性缺血性卒中|急性肾损伤|急性胰腺炎|' +
+    '慢性阻塞性肺病|泌尿感染|凝血病|脓毒症|热射病|上消化道出血|社区获得性肺炎|' +
+    '神经重症撤机|神经重症镇痛镇静|噬血细胞性淋巴组织细胞增生症|糖尿病|微循环障碍|' +
+    '哮喘|心脏骤停|休克|血乳酸|血小板输注|液体复苏|' +
+    '医院获得性肺炎-呼吸机相关肺炎|应激性溃疡|中枢神经系统感染|自发性脑出血|' +
+    '自发性蛛网膜下腔出血|ICU PADIS|ICU营养治疗|实用重症医学|' +
+    '2022 AHA ASA Spontaneous Intracerebral Hemorrhage|' +
+    '2023 ESICM ARDS Guidelines|' +
+    '2023 ESPEN ICU Nutrition|' +
+    '2024 ATS ARDS Management Guidelines|' +
+    '2024 New Global Definition of ARDS|' +
+    '2024 SCCM Corticosteroids Sepsis ARDS CAP|' +
+    '2025 ACC Cardiogenic Shock|' +
+    '2025 ATS Community-Acquired Pneumonia|' +
+    '2025 ESICM Shock and Hemodynamic Monitoring|' +
+    '2025 PADIS Focused Update ICU|' +
+    '2026 AHA ASA Acute Ischemic Stroke|' +
+    '2026 KDIGO AKI AKD Guideline|' +
+    '2026 Surviving Sepsis Campaign';
 
   private constructor() {}
 
@@ -595,62 +633,138 @@ export class KnowledgeService {
     return keywords;
   }
 
-  async smartSearch(query: string, limit: number = 10): Promise<SearchResult[]> {
+  async smartSearch(query: string, limit: number = 10, description: string = ''): Promise<SearchResult[]> {
     const prefsService = PreferencesService.getInstance();
     const config = prefsService.getActiveLlmConfig();
+    hilog.info(DOMAIN, TAG, 'smartSearch: query=' + query + ' desc=' + description + ' config=' + (config !== null ? 'ok' : 'null'));
     if (config === null) {
+      hilog.warn(DOMAIN, TAG, 'smartSearch: no LLM config, fallback to basic search');
       return await this.search(query, limit);
     }
 
     let expandedTerms: string[] = [];
     try {
-      expandedTerms = await this.expandQueryWithLlm(query, config);
+      expandedTerms = await this.expandQueryWithLlm(query, config, description);
+      hilog.info(DOMAIN, TAG, 'smartSearch: expandedTerms=' + expandedTerms.join('|'));
     } catch (_e) {
       expandedTerms = [];
+      hilog.warn(DOMAIN, TAG, 'smartSearch: expandQuery failed, fallback');
     }
     let ftsResults: SearchResult[];
     if (expandedTerms.length > 0) {
-      const expandedQuery = query + ' ' + expandedTerms.join(' ');
-      ftsResults = await this.searchWithExpandedQuery(expandedQuery, 50);
+      const allQueries: string[] = [query];
+      for (const term of expandedTerms) {
+        allQueries.push(term);
+      }
+      hilog.info(DOMAIN, TAG, 'smartSearch: searching per-term, count=' + allQueries.length.toString());
+      const seen: Record<string, boolean> = {};
+      const merged: SearchResult[] = [];
+      let rank = 0;
+      for (const q of allQueries) {
+        const perResults = await this.search(q, 120);
+        hilog.info(DOMAIN, TAG, 'smartSearch: term="' + q + '" hits=' + perResults.length.toString());
+        for (const sr of perResults) {
+          if (seen[sr.path] === undefined) {
+            seen[sr.path] = true;
+            sr.rank = rank;
+            rank++;
+            merged.push(sr);
+          }
+        }
+      }
+      ftsResults = merged;
     } else {
-      ftsResults = await this.search(query, 50);
+      hilog.warn(DOMAIN, TAG, 'smartSearch: no expanded terms, using original query');
+      ftsResults = await this.search(query, 120);
     }
 
     if (ftsResults.length === 0) {
       this.lastExpandedCount = 0;
       this.lastPartialPaths = [];
+      this.lastVerifyFallback = false;
       return [];
     }
 
     this.lastExpandedCount = ftsResults.length;
-    const verified = await this.verifyResultsWithLlm(query, ftsResults, config, limit);
+    hilog.info(DOMAIN, TAG, 'smartSearch: merged FTS results=' + ftsResults.length.toString());
+    for (let i = 0; i < Math.min(50, ftsResults.length); i++) {
+      hilog.info(DOMAIN, TAG, '  FTS[' + i.toString() + ']: ' + ftsResults[i].path);
+    }
+    const verified = await this.verifyResultsWithLlm(query, ftsResults, config, limit, description);
     if (verified.length > 0) {
       return verified;
     }
+
+    if (ftsResults.length > 0) {
+      hilog.info(DOMAIN, TAG, 'smartSearch: R1 all rejected, trying R2 with feedback');
+      const feedbackTopics = ftsResults.slice(0, 10).map((sr: SearchResult): string => sr.path.split('/')[0]).join('、');
+      const r2Prompt = '你是重症医学文献检索专家。用户正在ICU知识库中搜索文献，但第一轮搜索未找到相关结果。' +
+        '请根据反馈信息重新生成3-6个扩展检索词。只输出扩展词，每行一个，不要编号，不要解释。' +
+        '扩展词必须是ICU指南和教材中常见的疾病名/综合征名/治疗主题名，不要用学术分类名。' +
+        '例如不要输出"阴离子间隙""高氯性酸中毒"，而应输出"脓毒症""休克""CRRT"等临床词。';
+      const r2Feedback = '查询词"' + query + '"的第一轮搜索结果全部不相关。搜索结果主题包括：' +
+        feedbackTopics + '。请重新生成3-6个更精准的扩展检索词，覆盖不同方向。';
+      try {
+        const r2Terms = await this.expandQueryWithLlm(query, config, r2Prompt, r2Feedback);
+        if (r2Terms.length > 0) {
+          const r2AllQueries: string[] = [query];
+          for (const term of r2Terms) {
+            r2AllQueries.push(term);
+          }
+          const r2Seen: Record<string, boolean> = {};
+          const r2Merged: SearchResult[] = [];
+          let r2Rank = 0;
+          for (const q of r2AllQueries) {
+            const perResults = await this.search(q, 120);
+            for (const sr of perResults) {
+              if (r2Seen[sr.path] === undefined) {
+                r2Seen[sr.path] = true;
+                sr.rank = r2Rank;
+                r2Rank++;
+                r2Merged.push(sr);
+              }
+            }
+          }
+          if (r2Merged.length > 0) {
+            hilog.info(DOMAIN, TAG, 'smartSearch: R2 merged=' + r2Merged.length.toString());
+            const r2Verified = await this.verifyResultsWithLlm(query, r2Merged, config, limit, description);
+            if (r2Verified.length > 0) {
+              return r2Verified;
+            }
+          }
+        }
+      } catch (_e) {
+        hilog.warn(DOMAIN, TAG, 'smartSearch: R2 failed');
+      }
+    }
+
+    this.lastVerifyFallback = true;
     return ftsResults.slice(0, limit);
   }
 
-  private async verifyResultsWithLlm(query: string, results: SearchResult[], config: ApiServiceConfig, limit: number): Promise<SearchResult[]> {
+  private async verifyResultsWithLlm(query: string, results: SearchResult[], config: ApiServiceConfig, limit: number,
+    description: string = ''): Promise<SearchResult[]> {
     try {
+      const summaries = await this.batchGetSummaries(results);
       const docList: string[] = [];
       for (let i = 0; i < results.length; i++) {
-        docList.push((i + 1).toString() + '. [' + results[i].path + '] ' + results[i].title);
+        const summary = summaries[i];
+        docList.push((i + 1).toString() + '. [' + results[i].path + ']' +
+          (summary.length > 0 ? ' 摘要：' + summary : ' ' + results[i].title));
       }
-      const systemPrompt = '你是重症医学知识库搜索验收专家。给定用户查询词和候选文章列表，对每篇文章判断其与查询词的相关程度。' +
+      const systemPrompt = '你是重症医学知识库搜索验收专家。给定用户查询词和候选文章列表（含文章摘要），对每篇文章判断其与查询词的相关程度。' +
         '\n\n三级判断标准：' +
-        'Y(全文相关)：文章的主要主题就是查询词所述的疾病/综合征。文章path中的疾病名与查询词匹配或高度相关。' +
-        'P(片段相关)：文章的主要主题不是查询词疾病，但文章中有**独立段落**专门讨论查询词疾病的诊断、监测、治疗等临床内容。一句话提及或仅作为并发症列举不算P。' +
-        'N(不相关)：文章仅顺带提及查询词（一句话提及、并发症列表、鉴别诊断举例、实验室表现列举等），没有独立段落专门讨论。' +
-        '\n\n输出格式：每篇文章输出"编号:Y"或"编号:P"或"编号:N"，用逗号分隔。不要解释。' +
-        '\n\n示例：' +
-        '查询"代谢性酸中毒"，文章"[酸碱平衡/代谢性酸中毒/诊断]"→1:Y（主题就是代谢性酸中毒）' +
-        '查询"代谢性酸中毒"，文章"[脓毒症/机制/机制-脓毒症-05-代谢改变]"→2:P（脓毒症主题，但有独立段落讨论代谢性酸中毒的机制和处理）' +
-        '查询"代谢性酸中毒"，文章"[休克/分类/分类概述]"→3:N（仅列举"代谢性酸中毒是休克的代谢表现之一"，无独立讨论）' +
-        '查询"AKI"，文章"[脓毒症/机制/肾脏损伤]"→4:P（脓毒症主题，但有独立段落讨论AKI的发生机制和管理）' +
-        '查询"乳酸升高"，文章"[脓毒症/集束化治疗]"→5:P（脓毒症主题，但有独立段落讨论乳酸监测目标和乳酸清除率）' +
-        '查询"肺炎"，文章"[中枢神经系统感染/NICE/NICE-BacM-4-抗生素]"→6:N（仅提及肺炎链球菌作为病原，无独立讨论肺炎）';
-      const userText = '查询词：' + query + '\n候选文章：\n' + docList.join('\n');
+        'Y(全文相关)：文章的主要主题就是查询词所述的疾病/综合征，或者是该疾病的核心病因疾病/核心治疗措施。' +
+        '例如：查询"Ⅰ型呼吸衰竭"，ARDS是核心病因→Y，氧疗/机械通气/无创通气/高流量氧疗是核心治疗→Y，肺炎/肺栓塞是常见病因→Y。' +
+        '查询"代谢性酸中毒"，乳酸酸中毒/酮症酸中毒是核心病因→Y，碳酸氢钠/血液透析/CRRT是核心治疗→Y，糖尿病/休克/急性肾损伤是常见病因→Y。' +
+        'P(片段相关)：文章主要主题不是查询词疾病，但文章中有独立段落专门讨论查询词疾病的诊断、监测、治疗等临床内容。' +
+        'N(不相关)：文章仅顺带提及查询词。' +
+        '\n\n关键：宁可多判Y/P，不要漏掉临床相关文献。' +
+        '\n\n输出格式：每篇文章输出"编号:Y"或"编号:P"或"编号:N"，用逗号分隔。不要解释。';
+      const userText = '查询词：' + query + (description.length > 0 ? '（' + description + '）' : '') + '\n候选文章：\n' + docList.join('\n');
+      hilog.info(DOMAIN, TAG, 'verifyResults: query=' + query + ' candidates=' + results.length.toString() + ' userTextFirst500=' + userText.substring(0, 500));
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      hilog.info(DOMAIN, TAG, 'verifyResults: raw response=' + response);
       const yIndices: number[] = [];
       const pIndices: number[] = [];
       const parts = response.split(/[,\s，、]+/);
@@ -694,10 +808,13 @@ export class KnowledgeService {
       }
       this.lastPartialPaths = partialPaths;
       if (verified.length === 0 && pIndices.length === 0) {
-        hilog.warn(DOMAIN, TAG, 'verifyResults: all rejected, falling back to FTS order');
-        return [];
+        hilog.warn(DOMAIN, TAG, 'verifyResults: all rejected by LLM, trusting FTS top results as partial');
+        this.lastPartialPaths = results.slice(0, Math.min(limit, results.length)).map((sr: SearchResult): string => sr.path);
+        this.lastVerifyFallback = true;
+        return results.slice(0, Math.min(limit, results.length));
       }
       hilog.info(DOMAIN, TAG, 'verifyResults: ' + query + ' Y=' + yIndices.length + ' P=' + pIndices.length + '/' + results.length);
+      this.lastVerifyFallback = false;
       return verified;
     } catch (e) {
       hilog.warn(DOMAIN, TAG, 'verifyResults failed: ' + (e instanceof Error ? e.message : 'unknown') + ', fallback to FTS');
@@ -706,24 +823,267 @@ export class KnowledgeService {
     }
   }
 
-  private async expandQueryWithLlm(query: string, config: ApiServiceConfig): Promise<string[]> {
+  async expandQueryV2(query: string, config: ApiServiceConfig, description: string = ''): Promise<ExpandedQueryResult> {
+    const result = new ExpandedQueryResult();
     try {
-      const systemPrompt = '你是重症医学文献检索专家。用户会给你一个临床检索词，请生成2-5个同义词、相关术语或临床等效表述，' +
-        '用于扩大文献检索范围。只输出扩展词，每行一个，不要编号，不要解释。' +
-        '如果检索词已经很具体无需扩展，输出空行。' +
-        '示例：输入"脓毒症"→输出"败血症\\n全身性感染\\nSepsis"' +
-        '示例：输入"AKI"→输出"急性肾损伤\\n急性肾衰竭\\nARF"';
-      const response = await sendVisionRequest(config, systemPrompt, query, '', '');
+      const systemPrompt =
+        '你是重症医学文献检索专家。用户会给你一个ICU临床诊断，你需要为该诊断在知识库中查找相关文献。' +
+        '\n\n知识库目录分两类，用|分隔列出：' +
+        '\n【中文疾病目录】' + KnowledgeService.KB_DIRECTORIES.split('|').filter((d: string): boolean => d.match(/^[0-9]{4}\s/) === null).join('|') +
+        '\n【英文指南目录（非常重要，含最新国际指南，务必优先选择）】' + KnowledgeService.KB_DIRECTORIES.split('|').filter((d: string): boolean => d.match(/^[0-9]{4}\s/) !== null).join('|') +
+        '\n\n请按以下5行格式输出（严格5行）：' +
+        '\n第1行：搜索词 — 该诊断的同义词/缩写/别名（3-8个），用空格分隔' +
+        '\n第2行：相关目录名 — 从上面目录列表中选择与该诊断直接或间接相关的目录（5-15个），用|分隔，英文指南目录优先' +
+        '\n第3行：病因相关词 — 该诊断的常见病因/诱因/关联疾病的临床检索词（3-8个），用空格分隔' +
+        '\n第4行：治疗相关词 — 该诊断的关键治疗措施/药物/操作的临床检索词（3-8个），用空格分隔' +
+        '\n第5行：监测相关词 — 该诊断的核心监测指标/评估方法/评分工具（3-8个），用空格分隔' +
+        '\n\n输出规则：' +
+        '\n1. 搜索词必须是ICU指南和教材中常见的临床术语，不要用学术分类名' +
+        '\n2. 目录名必须完全照搬上面的目录列表原文（含空格、年份等），不要拆分、缩写或改写目录名，用|分隔多个目录' +
+        '\n3. 英文指南目录与中文疾病目录可能指向同一批文件（如"急性呼吸窘迫综合征"和"2023 ESICM ARDS Guidelines"都含ARDS内容），两者都要选' +
+        '\n4. 病因/治疗/监测词应覆盖该诊断在ICU场景下的主要临床维度' +
+        '\n5. 严格只输出5行，不要编号，不要解释，不要输出原诊断名';
+      const userText = '诊断名称：' + query + (description.length > 0 ? '\n诊断依据：' + description : '');
+      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      hilog.info(DOMAIN, TAG, 'expandQueryV2 raw response for "' + query + '": ' + response);
+      const lines = response.split('\n');
+      const lineCount = Math.min(lines.length, 5);
+      const allTerms: string[] = [];
+      const dirSet = KnowledgeService.KB_DIRECTORIES.split('|');
+      for (let i = 0; i < lineCount; i++) {
+        const terms: string[] = [];
+        if (i === 1) {
+          const dirLine = lines[i];
+          const pipeParts = dirLine.split('|').map((s: string): string => s.trim()).filter((s: string): boolean => s.length > 0);
+          let validPipeDirs = 0;
+          for (const p of pipeParts) {
+            if (dirSet.includes(p)) { validPipeDirs++; }
+          }
+          if (validPipeDirs >= 2 || (pipeParts.length <= 12 && pipeParts.length >= 3 && pipeParts.every((p: string): boolean => p.length > 2))) {
+            for (const part of pipeParts) {
+              if (part.length > 0 && part !== query) {
+                terms.push(part);
+                if (!allTerms.includes(part)) { allTerms.push(part); }
+              }
+            }
+          } else {
+            const words: string[] = dirLine.split(/[\s,，、；;]+/).map((s: string): string => s.trim().replace(/^[0-9.]+[)、]/, '')).filter((s: string): boolean => s.length > 0);
+            const joined = this.reassembleDirectories(words, dirSet);
+            for (const d of joined) {
+              if (d !== query) {
+                terms.push(d);
+                if (!allTerms.includes(d)) { allTerms.push(d); }
+              }
+            }
+          }
+        } else {
+          const parts = lines[i].split(/[\s,，、；;]+/);
+          for (const part of parts) {
+            const trimmed = part.trim().replace(/^[0-9.]+[)、]/, '');
+            if (trimmed.length > 0 && trimmed.length < 30 && trimmed !== query) {
+              terms.push(trimmed);
+              if (!allTerms.includes(trimmed)) { allTerms.push(trimmed); }
+            }
+          }
+        }
+        if (i === 0) { result.searchTerms = terms; }
+        else if (i === 1) { result.directories = terms; }
+        else if (i === 2) { result.etiologyTerms = terms; }
+        else if (i === 3) { result.treatmentTerms = terms; }
+        else if (i === 4) { result.monitoringTerms = terms; }
+      }
+      result.allTerms = allTerms;
+      hilog.info(DOMAIN, TAG, 'expandQueryV2: search=' + result.searchTerms.join(',') +
+        ' dirs=' + result.directories.join(',') +
+        ' etio=' + result.etiologyTerms.join(',') +
+        ' treat=' + result.treatmentTerms.join(',') +
+        ' mon=' + result.monitoringTerms.join(','));
+    } catch (e) {
+      hilog.warn(DOMAIN, TAG, 'expandQueryV2 failed: ' + (e instanceof Error ? e.message : 'unknown'));
+    }
+    return result;
+  }
+
+  async smartSearchV2(query: string, description: string = ''): Promise<string[]> {
+    const prefsService = PreferencesService.getInstance();
+    const config = prefsService.getActiveLlmConfig();
+    if (config === null) {
+      hilog.warn(DOMAIN, TAG, 'smartSearchV2: no LLM config, fallback to basic search');
+      const results = await this.search(query, 30);
+      return results.map((sr: SearchResult): string => sr.path);
+    }
+    const expanded = await this.expandQueryV2(query, config, description);
+    const matchedDirs = this.matchDirectories(expanded.directories);
+    if (!matchedDirs.includes('实用重症医学')) {
+      matchedDirs.push('实用重症医学');
+    }
+    hilog.info(DOMAIN, TAG, 'smartSearchV2: matchedDirs=' + matchedDirs.join(','));
+    const ftsTerms: string[] = [];
+    for (const t of expanded.searchTerms) { ftsTerms.push(t); }
+    for (const t of expanded.etiologyTerms) { ftsTerms.push(t); }
+    for (const t of expanded.treatmentTerms) { ftsTerms.push(t); }
+    for (const t of expanded.monitoringTerms) { ftsTerms.push(t); }
+    const ftsPaths = await this.directoryLimitedFts(matchedDirs, ftsTerms);
+    hilog.info(DOMAIN, TAG, 'smartSearchV2: FTS found ' + ftsPaths.length.toString() + ' articles');
+    const seen: Record<string, boolean> = {};
+    const merged: string[] = [];
+    for (const p of ftsPaths) {
+      if (seen[p] === undefined) { seen[p] = true; merged.push(p); }
+    }
+    this.lastExpandedCount = merged.length;
+    hilog.info(DOMAIN, TAG, 'smartSearchV2: total candidates=' + merged.length.toString());
+    for (let i = 0; i < Math.min(30, merged.length); i++) {
+      hilog.info(DOMAIN, TAG, '  [' + i.toString() + ']: ' + merged[i]);
+    }
+    return merged;
+  }
+
+  async smartSearchV2Full(query: string, description: string = ''): Promise<SmartSearchResult> {
+    const result = new SmartSearchResult();
+    const prefsService = PreferencesService.getInstance();
+    const config = prefsService.getActiveLlmConfig();
+    if (config === null) {
+      hilog.warn(DOMAIN, TAG, 'smartSearchV2Full: no LLM config, fallback');
+      const results = await this.search(query, 30);
+      result.candidatePaths = results.map((sr: SearchResult): string => sr.path);
+      return result;
+    }
+    result.expanded = await this.expandQueryV2(query, config, description);
+    result.matchedDirs = this.matchDirectories(result.expanded.directories);
+    if (!result.matchedDirs.includes('实用重症医学')) {
+      result.matchedDirs.push('实用重症医学');
+    }
+    const ftsTerms: string[] = [];
+    for (const t of result.expanded.searchTerms) { ftsTerms.push(t); }
+    for (const t of result.expanded.etiologyTerms) { ftsTerms.push(t); }
+    for (const t of result.expanded.treatmentTerms) { ftsTerms.push(t); }
+    for (const t of result.expanded.monitoringTerms) { ftsTerms.push(t); }
+    const ftsPaths = await this.directoryLimitedFts(result.matchedDirs, ftsTerms);
+    const seen: Record<string, boolean> = {};
+    for (const p of ftsPaths) {
+      if (seen[p] === undefined) { seen[p] = true; result.candidatePaths.push(p); }
+    }
+    this.lastExpandedCount = result.candidatePaths.length;
+    hilog.info(DOMAIN, TAG, 'smartSearchV2Full: total candidates=' + result.candidatePaths.length.toString());
+    return result;
+  }
+
+  private reassembleDirectories(words: string[], allDirs: string[]): string[] {
+    const result: string[] = [];
+    const used: boolean[] = new Array(words.length).fill(false);
+    for (let start = 0; start < words.length; start++) {
+      if (used[start]) { continue; }
+      let bestEnd = start;
+      let bestDir = '';
+      for (let end = Math.min(start + 8, words.length); end > start; end--) {
+        const candidate = words.slice(start, end).join(' ');
+        if (allDirs.includes(candidate)) {
+          bestEnd = end;
+          bestDir = candidate;
+          break;
+        }
+      }
+      if (bestDir.length > 0) {
+        result.push(bestDir);
+        for (let k = start; k < bestEnd; k++) { used[k] = true; }
+      } else {
+        if (words[start].length > 1) { result.push(words[start]); }
+        used[start] = true;
+      }
+    }
+    return result;
+  }
+
+  private matchDirectories(inputDirs: string[]): string[] {
+    const allDirs = KnowledgeService.KB_DIRECTORIES.split('|');
+    const matched: string[] = [];
+    for (const inputDir of inputDirs) {
+      const normalized = inputDir.trim();
+      if (normalized.length === 0) { continue; }
+      if (allDirs.includes(normalized)) {
+        if (!matched.includes(normalized)) { matched.push(normalized); }
+        continue;
+      }
+      if (normalized.length < 2) { continue; }
+      for (const kbDir of allDirs) {
+        if (kbDir.includes(normalized)) {
+          if (!matched.includes(kbDir)) { matched.push(kbDir); }
+        }
+      }
+    }
+    return matched;
+  }
+
+  async directoryLimitedFts(dirs: string[], terms: string[]): Promise<string[]> {
+    if (dirs.length === 0 || terms.length === 0) { return []; }
+    const db = this.ensureStore();
+    const dirConditions: string[] = [];
+    const dirParams: string[] = [];
+    for (const dir of dirs) {
+      dirConditions.push('path LIKE ?');
+      dirParams.push(dir + '/%');
+    }
+    const escapedTerms: string[] = [];
+    for (const term of terms) {
+      const trimmed = term.trim();
+      if (trimmed.length > 0) {
+        escapedTerms.push('"' + trimmed.replace(/"/g, '""') + '"');
+      }
+    }
+    if (escapedTerms.length === 0) { return []; }
+    const ftsQuery = escapedTerms.join(' OR ');
+    const sql =
+      'SELECT path FROM kb_index WHERE kb_index MATCH ? AND (' +
+      dirConditions.join(' OR ') + ') LIMIT 200';
+    const params: (string | number)[] = [ftsQuery];
+    for (const dp of dirParams) { params.push(dp); }
+    const paths: string[] = [];
+    try {
+      const rs = await db.querySql(sql, params);
+      if (rs.rowCount > 0) {
+        rs.goToFirstRow();
+        do {
+          paths.push(rs.getString(0));
+        } while (rs.goToNextRow());
+      }
+      rs.close();
+    } catch (e) {
+      hilog.warn(DOMAIN, TAG, 'directoryLimitedFts failed: ' + (e instanceof Error ? e.message : 'unknown'));
+    }
+    return paths;
+  }
+
+  private async expandQueryWithLlm(query: string, config: ApiServiceConfig, description: string = '',
+    customSystemPrompt: string = '', customUserText: string = ''): Promise<string[]> {
+    try {
+      const systemPrompt = customSystemPrompt.length > 0 ? customSystemPrompt :
+        '你是重症医学文献检索专家。用户会给你一个临床诊断及其诊断依据，用于在ICU知识库中搜索相关文献。' +
+        '请基于诊断名称和诊断依据，生成3-6个扩展检索词。' +
+        '\n\n扩展策略（按优先级）：' +
+        '1. 同义词/缩写：如"脓毒症"→"败血症""Sepsis"，"AKI"→"急性肾损伤""急性肾衰竭""ARF"' +
+        '2. 核心病因/并发症：如"Ⅰ型呼吸衰竭"→"ARDS""急性呼吸窘迫综合征"，"感染性休克"→"脓毒症休克"' +
+        '3. 关键治疗/监测主题：如"呼吸衰竭"→"氧疗""机械通气""呼吸支持"，"AKI"→"肾替代治疗""CRRT"' +
+        '4. 常见关联疾病：如"Ⅱ型呼吸衰竭"→"COPD""慢性阻塞性肺病"' +
+        '\n只输出扩展词，每行一个，不要编号，不要解释，不要输出原查询词。' +
+        '\n\n重要约束：' +
+        '1. 扩展词应该是ICU指南和教材中常见的疾病名/综合征名/治疗主题名，而不是学术分类名或病理生理描述。' +
+        '2. 例如"代谢性酸中毒"不要扩展为"阴离子间隙""高氯性酸中毒""乳酸性酸中毒"等学术分类，' +
+        '而应扩展为"脓毒症""休克""急性肾损伤""液体复苏""碳酸氢钠""CRRT"等能直接匹配到文献主题的临床词。' +
+        '3. 严格只输出3-6个词，不要输出超过6个。';
+      const userText = customUserText.length > 0 ? customUserText :
+        '诊断名称：' + query + (description.length > 0 ? '\n诊断标准：' + description : '');
+      const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      hilog.info(DOMAIN, TAG, 'expandQuery raw response for "' + query + '": ' + response);
       const lines = response.split(/[\n,，、；;]+/);
       const terms: string[] = [];
       for (const line of lines) {
         const trimmed = line.trim();
-        if (trimmed.length > 0 && trimmed.length < 20 && trimmed !== query) {
+        if (trimmed.length > 0 && trimmed.length < 30 && trimmed !== query) {
           terms.push(trimmed);
         }
       }
       hilog.info(DOMAIN, TAG, 'expandQuery: ' + query + ' -> ' + terms.join(', '));
-      return terms.slice(0, 5);
+      return terms.slice(0, 6);
     } catch (e) {
       hilog.warn(DOMAIN, TAG, 'expandQuery failed: ' + (e instanceof Error ? e.message : 'unknown'));
       return [];
@@ -834,6 +1194,77 @@ export class KnowledgeService {
       hilog.warn(DOMAIN, TAG, 'Failed to read page ' + path + ': ' + msg);
       return null;
     }
+  }
+
+  private async batchGetSummaries(results: SearchResult[]): Promise<string[]> {
+    const db = this.ensureStore();
+    const summaries: string[] = [];
+    const placeholders: string[] = [];
+    const paths: string[] = [];
+    for (const sr of results) {
+      placeholders.push('?');
+      paths.push(sr.path);
+    }
+    const sql = 'SELECT path, content FROM kb_content WHERE path IN (' + placeholders.join(',') + ')';
+    const summaryMap: Record<string, string> = {};
+    try {
+      const rs = await db.querySql(sql, paths);
+      if (rs.rowCount > 0) {
+        rs.goToFirstRow();
+        do {
+          const p = rs.getString(0);
+          const c = rs.getString(1);
+          const frontMatterEnd = c.indexOf('---', 4);
+          let body = frontMatterEnd > 0 ? c.substring(frontMatterEnd + 3).trim() : c;
+          if (body.length > 200) {
+            body = body.substring(0, 200);
+          }
+          summaryMap[p] = body;
+        } while (rs.goToNextRow());
+      }
+      rs.close();
+    } catch (_e) {
+    }
+    for (const sr of results) {
+      const s = summaryMap[sr.path];
+      summaries.push(s !== undefined ? s : '');
+    }
+    return summaries;
+  }
+
+  private diversifyResults(results: SearchResult[], limit: number): SearchResult[] {
+    const topicMap: Record<string, SearchResult[]> = {};
+    const order: string[] = [];
+    for (const sr of results) {
+      const topic = sr.path.split('/')[0];
+      if (topicMap[topic] === undefined) {
+        topicMap[topic] = [];
+        order.push(topic);
+      }
+      if (topicMap[topic].length < 3) {
+        topicMap[topic].push(sr);
+      }
+    }
+    const diversified: SearchResult[] = [];
+    let idx = 0;
+    while (diversified.length < limit && order.length > 0) {
+      let added = false;
+      for (const topic of order) {
+        const bucket = topicMap[topic];
+        if (bucket !== undefined && idx < bucket.length) {
+          diversified.push(bucket[idx]);
+          added = true;
+          if (diversified.length >= limit) {
+            break;
+          }
+        }
+      }
+      if (!added) {
+        break;
+      }
+      idx++;
+    }
+    return diversified;
   }
 
   async searchAndLoad(query: string, limit: number = 3): Promise<KnowledgePage[]> {
@@ -1076,6 +1507,29 @@ export class KnowledgeService {
     prefs.putSync(PREFS_KB_INDEXED, KB_DB_VERSION);
     await prefs.flush();
     hilog.info(DOMAIN, TAG, 'Force reindex done in ' + (Date.now() - startTime) + 'ms');
+  }
+
+  async batchGetIndexedTitles(paths: string[]): Promise<Map<string, string>> {
+    const db = this.ensureStore();
+    const result = new Map<string, string>();
+    if (paths.length === 0) { return result; }
+    const placeholders: string[] = [];
+    for (let i = 0; i < paths.length; i++) {
+      placeholders.push('?');
+    }
+    const sql = 'SELECT path, title FROM kb_index WHERE path IN (' + placeholders.join(',') + ')';
+    try {
+      const rs = await db.querySql(sql, paths);
+      if (rs.rowCount > 0) {
+        rs.goToFirstRow();
+        do {
+          result.set(rs.getString(0), rs.getString(1));
+        } while (rs.goToNextRow());
+      }
+      rs.close();
+    } catch (_e) {
+    }
+    return result;
   }
 
   async testSearch(query: string): Promise<string> {

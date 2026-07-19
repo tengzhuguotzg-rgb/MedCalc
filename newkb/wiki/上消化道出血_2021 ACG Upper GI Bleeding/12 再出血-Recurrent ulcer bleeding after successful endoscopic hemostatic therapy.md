@@ -1,0 +1,20 @@
+---
+title: "Recurrent ulcer bleeding after successful endoscopic hemostatic therapy"
+tags: ["上消化道出血", "再出血", "重复内镜", "手术vs内镜", "再内镜成功率", "穿孔风险", "热探头累积", "溃疡>2cm", "低血压预测", "并发症减少"]
+source: "ACG 2021 Upper GI and Ulcer Bleeding Guideline"
+source_type: 临床指南
+year: 2021
+lang: en
+---
+
+# Recurrent ulcer bleeding after successful endoscopic hemostatic therapy
+
+15. We suggest that patients with recurrent bleeding after endoscopy and endoscopic therapy rather than undergo surgery or transcatheter arterial embolization (conditional recommendation, low-quality evidence for comparison with surgery, very-low-quality evidence for comparison with transcatheter arterial embolization).
+
+**Summary of evidence.** One RCT has assessed repeat endoscopy vs urgent surgery in patients with rebleeding after endoscopic therapy (122) (Table 8; see Supplementary Table 13.1, Supplementary Digital Content, http://links.lww.com/AJG/B962). Lau et al. found more frequent further bleeding with endoscopy vs surgery \((11 / 48\) [22.9%] vs \(3 / 44\) [6.8%]; difference \(= 16\%\) \(2\% - 30\%\) but no significant difference in mortality \((5 / 48\) [10.4%] vs \(8 / 44\) [18.2%]; difference \(= - 8\%\) \(- 23\%\) to \(7\%\) ). Surgery was subsequently required in \(13 / 48\) \((27.1\%)\) assigned to endoscopy while a second surgery was needed in \(4 / 44\) \((9.1\%)\) assigned to surgery (difference \(= 18\%\) \(3\% - 33\%\) ). Complications were less common with endoscopy \((7 / 48\) [14.6%] vs \(16 / 44\) [36.4%]; difference \(= - 22\%\) \(- 39\%\) to \(- 4\%\) and occurred after salvage surgery in all but 1 patient in the endoscopy group. Length of hospital stay was similar in the 2 groups.
+
+Given that a second application of endoscopic therapy was successful in prevention of further bleeding in approximately threequarters of patients with recurrent ulcer bleeding after endoscopic therapy and was associated with far fewer complications than surgical therapy, the panel suggested repeat endoscopy rather than surgical therapy in this population. No RCTs compare repeat endoscopy with interventional radiology with TAE. However, given the relatively high success rate of repeat endoscopic therapy for recurrent bleeding after initial endoscopic therapy reported by Lau et al. (122) and in the RCT of over- the- scope clips cited above (86), as well as the safety, ease, and availability of endoscopy, the panel suggested repeat endoscopy rather than TAE in these patients, although evidence was considered very low quality.
+
+Care should be taken when performing repeat endoscopic therapy. Two of 48 patients treated with repeat heater probe therapy in the RCT (122) developed perforation and a meta- analysis of adverse events in RCTs of endoscopic therapy revealed that approximately half of perforations reported with heater probe occurred in patients receiving 2 consecutive treatments (33). Although the evidence is uncontrolled and very low quality, these reports raise the possibility that thermal contact therapies such as heater probe, when given on consecutive endoscopies during the same hospitalization, may have an increased risk of perforation. Thus, alternate forms of hemostatic therapy may be considered if thermal contact was used at the initial endoscopy. In addition, occasional patients might be considered for treatment with TAE or surgery rather than repeat endoscopy based on clinical or endoscopic features. For example, in the randomized trial by Lau et al. (122), failure of repeat endoscopic hemostatic therapy was associated with hypotension at the time of rebleeding and ulcer size \(>2\) cm.
+
+**Conclusion.** In patient with recurrent bleeding after endoscopic therapy for a bleeding ulcer, repeat endoscopy and endoscopic therapy successfully prevents further bleeding in approximately three- quarters of patients, with fewer complications than surgical therapy. This recommendation is unchanged from the 2012 ACG Guidelines (1).

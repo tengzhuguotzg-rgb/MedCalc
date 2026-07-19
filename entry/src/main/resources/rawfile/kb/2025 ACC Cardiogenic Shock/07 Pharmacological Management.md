@@ -1,0 +1,40 @@
+---
+diagnoses: [心源性休克, 休克, 心力衰竭, 急性心肌梗死]
+topics: [药物治疗, 血管活性药, 正性肌力药, 去甲肾上腺素, 多巴酚丁胺, 米力农, 血管加压素, 充血管理, 利尿剂]
+source: ACC 2025 Concise Clinical Guidance
+source_type: 共识声明
+year: 2025
+lang: en
+aliases: [pharmacological management CS, inotropes, vasopressors, norepinephrine CS, dobutamine CS, milrinone CS, vasoactive agents]
+---
+
+# 4.5 Pharmacological Management of CS
+
+In CS, the goal of pharmacological therapies is to mitigate congestion (whenever present), optimize cardiac output, and enhance perfusion to vital organs.51,52 Whenever a congestive phenotype exists, it should be addressed through intravenous loop diuretics, augmentation with thiazide diuretics, and renal replacement therapy for ultrafiltration if congestion is refractory to medical management. Failure to address congestion may lead to microcirculatory ischemia and damage to multiple organs, including the kidneys, liver, and gastrointestinal tract. In this regard, the transpulmonary perfusion pressure may serve as a useful conceptual model that represents the difference between the MAP and the central venous pressure. Hypoperfusion can be addressed by starting intravenous vasoactive medications, including inotropes, chronotropes, inopressors, inodilators, vasodilators, and vasopressors (Table 2).
+
+These drugs are commonly used in clinical practice for the management of CS but some have been associated with increased adverse effects, including arrhythmias, and increased myocardial oxygen consumption.53 Therefore, the writing committee advises that vasoactive medications be used in CS at the lowest possible dose to support adequate perfusion and for the shortest possible duration.
+
+Inotropes enhance cardiac function by increasing the load-independent contractility of the myocardium. More specifically, cardiac calcitropes, including catecholamines and phosphodiesterase 3 inhibitors, increase the concentration of intracellular calcium to augment contractility. Notably, these agents exert their myocardial forces through direct action as opposed to secondary effects on chronotropy and vascular tone. Chronotropes, on the other hand, increase cardiac output by predominantly increasing the heart rate. Inopressors (eg, dopamine, norepinephrine, and epinephrine) increase cardiac output while increasing systemic vascular resistance, whereas inodilators (eg, milrinone or dobutamine) increase cardiac output and reduce afterload through systemic vasodilation. Vasodilators decrease preload and/or LV afterload through reduction in systemic vascular resistance, thereby potentially augmenting cardiac output. Pure vasopressors increase MAP by increasing systemic vascular resistance. The balance between alpha- and betaadrenergic receptor activity determines the predominant effect of catecholamines, which run the gamut from pure inotropes to pure vasopressors (Table 2).
+
+A Cochrane analysis found insufficient evidence to support the superiority of a particular inotrope or vasodilating agent in CS, especially with respect to mortality benefit.54 The Dobutamine Compared with Milrinone (DOREMI) trial evaluated dobutamine vs milrinone in 192 CS patients in a single quaternary care academic center, ranging from SCAI B through E and excluding patients with cardiac arrest, and found no difference with respect to the primary composite endpoint of in-hospital death from any cause, resuscitated cardiac arrest, receipt of a cardiac transplant or mechanical circulatory support, nonfatal myocardial infarction, transient ischemic attack or stroke diagnosed by a neurologist, or initiation of renal replacement therapy. Given the heterogenous nature of CS and the various physiological derangements, several vasoactive medications may be attempted to normalize a CS patient's hemodynamic and/or metabolic profile. Indulators or vasodilators may be considered in normotensive CS, especially in patients with increased systemic vascular resistance. Intravenous milrinone, given its relatively long half- life and renal excretion, should be judiciously used in patients with worsening renal function. Chronotropes might be trialed in bradycardiainduced CS. Since pure vasopressors (ie, phenylephrine) can cause reflex bradycardia and reduce cardiac output in CS, their use as a single first- line continuous intravenous medication is strongly discouraged. Although there is no clear consensus regarding the choice of first- line vasoactive agent, the writing committee agrees that norepinephrine is a reasonable first choice for most patients with CS who are hypotensive. Level 2 and 3 CS hospital centers should pursue consultation and consider potential transfer to a Level 1 CS hospital center when patients are refractory to the initial pharmacological therapy for consideration of tMCS support and/or advanced therapies.
+
+**TABLE 2** Vasoactive Agents Used in CS
+
+| Category | Agent(s) | Mechanism of Action/Receptor Binding | Dosing | Hemodynamic Effects | | | |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| | | | | **SVR** | **BP** | **CO** | **HR** |
+| **Inopressor** | Norepinephrine | α1 (+++), β1 (++), β2 (+) | 0.05-1 μg/kg/min | ↑↑ | ↑ | ↑ | ↑ |
+| | Epinephrine | β1 (+++), β1 (++), β2 (++) | 0.01-0.5 μg/kg/min | ↑↑ | ↑↑ | ↑↑ | ↑↑ |
+| | Dopamine | D1 (+++), β1 (++), α1 (+) | Low: 2-5 μg/kg/min <br> Intermediate: 5-10 μg/kg/min <br> High: 10-20 μg/kg/min | ↑↑ | ↑↑ | ↑ | ↑↑ |
+| **Inodilator** | Dobutamine | β1 (+++), β2 (++) | 2-10 μg/kg/min | ↓** | ↑** | ↑↑ | ↑ |
+| | Milrinone | PDE-3 inhibitor | 0.125-0.5 μg/kg/min | ↓↓ | ↓↓ | ↑↑ | ↑** |
+| **Vasopressor** | Phenylephrine | α1 (+++) | 0.1-10 μg/kg/min | ↑↑ | ↑↑ | ↓↓ | ↓↓ |
+| | Vasopressin | Vasopressin receptor | 0.01-0.04 U/min | ↑↑ | ↑↑ | ** | ** |
+| **Vasodilator** | Nitroprusside | NO production | 0.3-10 μg/kg/min | ↓↓ | ↓↓ | ↑** | ↑** |
+| | Nitroglycerin | Converts to NO | 25-200 μg/min | ↓↓ | ↓↓ | ↑** | ↑** |
+| **Chronotrope** | Isoproterenol | β1 (+++), β2 (+++) | 2-20 μg/min | ↓↓ | ** | ↑↑ | ↑↑ |
+| | Dopamine | See above | | | | | |
+| **Inotrope** | Levosimendan* | Binds to troponin C, making it more sensitive to calcium, thereby improving interaction between troponin C and T | 0.05-0.2 μg/kg/min | ↓↓ | ↓↓ | ↑ | ↑** |
+
+*\*Not FDA approved for clinical use in the United States.*
+*† = increased effects; ↓ = decreased effects; ** = neutral effects; (+++) = strong binding; (++) = moderate binding; (+) = weak binding; α1 = α-1 receptor; β1 = β-1 receptor; β2 = β-2 receptor; BP = blood pressure; CO = cardiac output; D1 = D-1 receptor; FDA = U.S. Food and Drug Administration; HR = heart rate; NO = nitric oxide; PDE-3 = phosphodiesterase 3; SVR = systemic vascular resistance.*

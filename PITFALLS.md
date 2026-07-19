@@ -149,3 +149,14 @@ Every time a non-trivial UI/ArkTS bug is found and fixed, add it here. Consult t
 **Fix**: Two-layer approach: (1) Data cleaning — systematically replaced cross-topic disease names in summaries/tags with non-triggering equivalents: "肺炎链球菌"→"S.pneumoniae(肺炎双球菌)", "脓毒性休克"→"septic shock", "心源性休克"→"CS(cardiogenic shock)", "液体复苏"→"容量复苏", "癫痫"→"seizure", etc. Scoped tags where the concept is a sub-type: "AKI"→"SA-AKI" in sepsis, "AKI"→"ACLF-AKI" in liver failure, "AKI"→"PPI-AKI" in stress ulcer. (2) Verification agent — added `verifyResultsWithLlm()` as final step in smartSearch. LLM judges each result as relevant/irrelevant based on whether the article's TOPIC is about the query disease, not just mentioning it. This is a binary acceptance filter (unlike rerank which only reorders).
 
 **Rule**: In medical KB search, metadata-only indexing is necessary but not sufficient. Summary/tag fields will always contain some cross-topic disease names because clinical content is inherently interconnected. Two defenses needed: (1) Proactive data cleaning — replace cross-topic disease names with English abbreviations or scoped compound terms in summary/tags; (2) Verification agent — LLM-based acceptance filter that distinguishes "article about X" from "article mentioning X".
+
+---
+
+## Todos
+
+1. **PDF上传扩展名硬编码** — `ImageStore.getExtFromUri()` 不认识 `.pdf`，返回 `jpg`，虽然后续 `copyFileSync` 能复制但扩展名不对，需加 `.pdf` 识别
+2. **RULE_SEARCH_HINTS** — 症状名诊断（如"血小板减少"）搜 KB 时被 HLH/DIC/ITP 等多病种文章淹没，需加搜索定向词
+3. **数据趋势图** — 同指标多次采集后可视化为折线图，包括评分趋势（SOFA、P/F等）
+4. **诊断确认交互** — 用户可对 LLM 提示的诊断手动"确认/排除"
+5. **真机跑完整流程验证** — 上传化验单确认预警/诊断正确触发
+6. **`输入文本`按钮无 onClick** — `PatientDetailPage.ets` 中"输入文本"Button 没有绑定事件处理函数

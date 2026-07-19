@@ -1,0 +1,35 @@
+---
+title: "Domain 1: definition of shock (Fig. 1)"
+tags: [休克, 循环性休克, 血流动力学, 液体反应性, 毛细血管充盈时间, 血乳酸, 中心静脉压, 超声心动图, 心输出量, 休克定义, 休克诊断, shock, hemodynamic monitoring, fluid responsiveness, CRT, lactate, 去甲肾上腺素, 血管活性药物, 微循环, 被动抬腿试验, 心源性休克, 低血容量性休克, 梗阻性休克, 分布性休克, 复苏, 低血压, 心动过速, 组织低灌注, 皮肤花斑, 尿量减少, 意识改变, 休克指数, MAP, 收缩压, 舒张压, 脉压, 高乳酸血症, 乳酸清除率, 血管收缩, 血管扩张, 多模式评估, 氧输送不足, 交感神经激活]
+source: "2025 ESICM Guidelines Shock and Hemodynamic Monitoring"
+source_type: 临床指南
+year: 2025
+lang: en
+---
+
+# Domain 1: definition of shock (Fig. 1)
+
+#### Recommendations 1.1
+
+1.  Shock is defined as a life-threatening acute circulatory failure characterized by decreased tissue perfusion, leading to inadequate oxygen delivery and/or oxygen utilization to meet cellular metabolic demands.
+    *   Ungraded definition/Ungraded evidence/Strong agreement
+2.  The typical features are hypotension, tachycardia, and signs of hypoperfusion, such as abnormal skin perfusion, decreased urine output, and altered mental status. Although hypotension is commonly present, it is not required to define shock.
+    *   Ungraded good practice statement/Ungraded evidence/Strong agreement
+3.  Lactate levels are typically increased ( \(>2\mathrm{mmol / L}\) ) in shock states
+    *   Ungraded good practice statement/Ungraded evidence/Strong agreement
+
+#### Background
+
+Shock is a clinical state in which cellular oxygen availability is insufficient to meet the tissues' demands. This subsequently results in organ dysfunction associated with increased mortality. Hypovolemic, cardiogenic, and obstructive patterns are characterized by low cardiac output (CO) and compensatory vasoconstriction. Conversely, distributive shock, in the context of an underlying inflammatory response, is frequently associated with high CO and peripheral vasodilation, particularly after initial fluid resuscitation. Even though these broad mechanisms are well defined and their treatment seems intuitive, the outcome is also related to the reversibility of the underlying cause, comorbidities, and the duration of shock. Therefore, prompt resolution of the cause and restoration of perfusion are critical elements of treatment. Several compensatory mechanisms maintain tissue perfusion that translate into clinical, hemodynamic, and laboratory characteristics.
+
+#### Consensus on science
+
+The main clinical element of shock, tissue hypoperfusion, in combination with compensatory vasoconstriction in regional and peripheral circulations, results in clinical symptoms of decreased urine output, altered mental state, and abnormal skin perfusion. They represent the "three windows" through which the clinician can explore the patient in shock in order to establish the diagnosis and assess its severity [10].
+
+There is limited evidence for the clinical definition and presenting symptoms of shock, where such symptoms also depend on the type of shock. In a systematic review of the clinical signs characterizing shock, reduced peripheral perfusion/temperature, prolonged capillary refill time (CRT), skin mottling, and a shock index (ratio of systolic arterial pressure over heart rate) \(\geq 0.7 - 0.8\) were identified as valid clinical indicators of shock [11]. The critical element of our recommendation is not to rely on only one variable to diagnose shock but to use a multimodal assessment. This is underscored by the finding that combining several tissue perfusion variables may better relate to patient outcomes [12]. Many of the clinical characteristics of shock are related to morbidity and mortality [1]. However, that does not necessarily imply that outcomes will improve using these as a goal of therapy, as limited interventional studies are available [13, 14].
+
+The two characteristics of shock outside of the "three windows" [10] are hypotension and increased blood lactate levels. Although the activated sympathetic nervous system in shock states may prevent an initial drop in blood pressure [15, 16], hypotension is associated with significantly abnormal markers of tissue perfusion and oxygenation [17]. The definition of hypotension in clinical practice varies, but a threshold of \(65~\mathrm{mmHg}\) for mean arterial pressure (MAP) or of \(90~\mathrm{mmHg}\) for systolic arterial pressure is most frequently used [18]. A MAP \(< 65~\mathrm{mmHg}\) is associated with increased morbidity and mortality [19], but the presence or absence of markers of tissue hypoperfusion affects this association [20]. All values of arterial pressure have physiological meaning. Diastolic arterial pressure depends mainly on arterial tone and heart rate, and pulse pressure is physiologically related to stroke volume and arterial compliance. Both have been associated with prognosis in critically ill patients [21]. Elevated lactate levels are typical for clinical shock. Lactate and lactate clearance are associated with outcomes in various forms of shock [22]. Even small increases above the \(2.0\mathrm{mmol / L}\) upper normal limit are associated with increasing mortality [23]. In addition, the prognostic significance of lactate seems to be superior to blood pressure [13]. Although other mechanisms than tissue hypoxia may contribute to blood lactate levels and their changes over time [24], hyperlactatemia expressed as the absolute level, the time to reach normal levels, and as the area under the curve of the level- time relationship, is associated with increased organ failure and mortality [25]. A recent systematic review shows that decreases in lactate levels following treatment or using lactate levels to guide resuscitation are associated with improved outcomes of patients with septic shock [26]. A RCT targeting reductions in lactate levels compared to standard care in all types of shock with a baseline lactate level above \(3.0\mathrm{mmol / L}\) showed no significant difference in mortality but a significantly lower hazard ratio for less organ failure in the protocol group [27].
+
+#### Expert opinion
+
+The definition of shock is based on the presence of multiple markers of altered tissue perfusion, ultimately leading to a life- threatening condition. Arterial pressure plays a central role, as a decrease in systolic arterial pressure and MAP is a typical feature of shock. Once shock has been diagnosed, diastolic arterial pressure and pulse pressure should be used to characterize the shock profile: typical shock in combination with systemic vasodilation is usually associated with a low diastolic arterial pressure and preserved pulse pressure. In cardiogenic and hypovolemic profiles, pulse pressure is usually low and diastolic arterial pressure is typically high. The main elements of treatment rely on determining the underlying cause and restoring adequate tissue perfusion. For this, serial measurements of these markers are essential. Importantly, while hypotension is common in shock, its absence does not rule out severe tissue hypoperfusion. We recommend a multimodal approach to accurately identify and assess patients with shock.

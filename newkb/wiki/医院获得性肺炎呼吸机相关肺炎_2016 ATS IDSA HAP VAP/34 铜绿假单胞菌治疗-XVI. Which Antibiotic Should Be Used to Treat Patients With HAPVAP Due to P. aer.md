@@ -1,0 +1,53 @@
+---
+title: "XVI. Which Antibiotic Should Be Used to Treat Patients With HAP/VAP Due to P. aeruginosa? Recommendations"
+tags: [医院获得性肺炎, 呼吸机相关性肺炎, HAP, VAP, 肺炎, 重症肺炎, 抗生素, 经验性治疗, MRSA, 铜绿假单胞菌, hospital-acquired pneumonia, ventilator-associated pneumonia, antibiotic, Pseudomonas, 万古霉素, 利奈唑胺, 碳青霉烯, 降钙素原, CPIS, 铜绿假单胞菌治疗, 抗菌药物敏感性试验, 多利培南, 亚胺培南, 美罗培南, 厄他培南, 氨基糖苷单药, 肺渗透性, 肾毒性, 耳毒性, 泛耐药, XDR, MDR, 黏菌素, 多黏菌素B]
+source: "ATS/IDSA 2016 HAP/VAP Guidelines"
+source_type: 临床指南
+year: 2016
+lang: en
+---
+
+# XVI. Which Antibiotic Should Be Used to Treat Patients With HAP/VAP Due to P. aeruginosa? Recommendations
+
+# XVI. Which Antibiotic Should Be Used to Treat Patients With HAP/VAP Due to P. aeruginosa? Recommendations
+
+1. For patients with HAP/VAP due to P. aeruginosa, we recommend that the choice of an antibiotic for definitive (not empiric) therapy be based upon the results of antimicrobial
+
+susceptibility testing (strong recommendation, low-quality evidence).
+2. For patients with HAP/VAP due to P. aeruginosa, we recommend against aminoglycoside monotherapy (strong recommendation, very low-quality evidence).
+
+Remarks: Routine antimicrobial susceptibility testing should include assessment of the sensitivity of the P. aeruginosa isolate to polymyxins (colistin or polymyxin B) in settings that have a high prevalence of extensively resistant organisms.
+
+## Summary of the Evidence
+
+Our systematic review identified no RCTs that compared antibiotic regimens in patients with HAP/VAP caused by P. aeruginosa. The panel therefore considered 2 bodies of evidence: evidence from randomized trials that compared antibiotic regimens in patients with HAP/VAP due to any pathogen, and evidence from subgroup analyses on patients with HAP/VAP caused by P. aeruginosa.
+
+With respect to studies that compared antibiotic regimens in patients with HAP/VAP due to any pathogen, a systematic review of 41 randomized trials found that no specific antimicrobial regimen decreased mortality and treatment failure more than any other regimen [290], and 33 randomized trials found that no specific antimicrobial regimen improved a variety of clinical outcomes more than any other regimen [155- 183, 229, 291- 293]. The panel's confidence in applying these estimated effects to the clinical question was low because they are derived from randomized trials limited by risk of bias (ie, many trials were not blinded) and indirectness (ie, the question is specific to patients with HAP/VAP caused by P. aeruginosa, but the studies were conducted with patients who had HAP/VAP due to any pathogen).
+
+The prevalence of antibiotic resistance among patients with HAP/VAP due to P. aeruginosa is high. An observational study of 314 patients with VAP caused by P. aeruginosa determined that susceptible, MDR, and extensively drug- resistant P. aeruginosa represented \(54\%\) \(32\%\) and \(14\%\) of P. aeruginosa isolates, respectively [294]. In another observational study of 91 episodes of VAP caused by P. aeruginosa, it was found that susceptible, MDR, and extensively drug- resistant P. aeruginosa represented \(34\%\) \(20\%\) and \(46\%\) of P. aeruginosa isolates, respectively [295]. Antibiotic resistance has been associated with an increased ICU length of stay, but not mortality or recurrence of HAP/VAP; however, the lack of statistical power is a common issue with the published evidence [294]. Mortality due to HAP/VAP is more closely associated with severity of illness than antibiotic resistance [296].
+
+With respect to studies that performed subgroup analyses on patients with HAP/VAP caused by P. aeruginosa, the evidence is probably best understood by considering each antibiotic class separately. A review of 36 RCTs confirmed that it was only possible to perform this analysis for the carbapenem antibiotic class, due to lack of comparative studies within a specific antibiotic class or lack of specific data for the P. aeruginosa subgroup for fluoroquinolones and \(\beta\) - lactams.
+
+Doripenem: Three randomized trials were identified that compared doripenem to other antibiotic regimens in a subgroup of patients with P. aeruginosa [157, 158, 179]. The comparisons were to either imipenem [157, 158] or piperacillin- tazobactam [179]. We pooled the subgroup analyses and found no significant differences between doripenem and the other regimens in terms of mortality \(28\%\) vs \(21\%\) RR,1.07; \(95\%\) CI,49- 2.35) and treatment failure rate \(45\%\) vs \(63\%\) RR, \(0.76\%\) \(95\%\) CI,40- 1.42). The panel's confidence in these estimated effects was very low because they are derived from randomized trials limited by risk of bias (ie, many trials were unblinded), inconsistency (ie, \(I^{2}\) test for heterogeneity \(>25\%\) ), and imprecision (ie, few events and wide CIs). In addition, the doripenem FDA label was recently modified due to this drug's association with increased risk of death in patients with VAP due to P. aeruginosa [297].
+
+Imipenem: We identified a published systematic review of 20 randomized trials that compared imipenem to an alternative antibiotic in patients with P. aeruginosa [298]. Patients who received imipenem had a lower clinical cure rate \(45\%\) vs \(75\%\) RR, \(0.60\%\) 95% CI,48- 75) and microbiological cure rate \(48\%\) vs \(53\%\) RR, \(0.91\%\) 95% CI,73- 1.13) than patients who received an alternative antibiotic. Among patients who received imipenem, antibiotic resistance increased from \(15\%\) to \(39\%\) among patients who received an alternative antibiotic, antibiotic resistance increased from \(2.5\%\) to \(22\%\) . The panel's confidence in these estimated effects was low because they are derived from randomized trials limited by risk of bias (ie, many trials were unblinded) and imprecision (ie, few events).
+
+Other carbapenems: We identified a published systematic review of 12 randomized trials that compared a carbapenem (alone or in combination with an aminoglycoside) to an alternative antibiotic in patients with P. aeruginosa [299]. Most of the trials compared a carbapenem to either a fluoroquinolone or a \(\beta\) - lactam. Our meta- analyses found that patients treated with a carbapenem had a lower treatment success rate (6 randomized trials: OR, 0.42; \(95\%\) CI,22- 82) [159, 161, 169, 183, 300, 301], a lower eradication rate (7 randomized trials: OR, \(0.50\%\) 95% CI,24- 89) [159, 161, 169, 173, 183, 299, 300], and a higher incident antibiotic resistance rate (4 randomized trials: OR, \(5.17\%\) 95% CI,1.96- 13.65) [173, 291, 293, 301]. Exceptions to the lower eradication rate existed when the carbapenem was meropenem (3 randomized trials: OR, \(1.10\%\) 95% CI,39- 3.14) [159, 161, 300]. The panel's confidence in these estimated effects was very low because they are derived from randomized trials limited by risk of bias (ie, many trials were unblinded), inconsistency (ie, low \(I^{2}\) test for heterogeneity), and imprecision (ie, few events). Ertapenem has no or limited activity against
+
+P. aeruginosa and is therefore not recommended for treatment of pneumonia due to this organism.
+
+Aminoglycosides: Our systematic review identified no recent trials comparing aminoglycoside monotherapy to other antimicrobial regimens in HAP/VAP and, therefore, there were no data related to the effects of such therapy in patients with HAP/VAP due to P. aeruginosa.
+
+## Rationale for the Recommendations
+
+The evidence synthesis failed to identify an antipseudomonal agent that is clearly preferable to the others, due to either greater benefit or less harm. Thus, the panel did not recommend a preferred antibiotic regimen for patients with confirmed HAP/VAP caused by P. aeruginosa. Some of the outcomes described above suggest that imipenem may have outcomes that are inferior to other regimens (ie, a lower cure rate); however, the panel's confidence in these results was so low that it was unwilling to suggest not using this agent.
+
+The panel recognized that as many as two- thirds of patients with HAP/VAP caused by P. aeruginosa have antibiotic resistance and that the prevalence of antibiotic resistance is widely variable. This variability was the primary reason that the panel agreed that antibiotic choices should be based upon antimicrobial susceptibility testing. The benefits of this approach include assurance that the patient is being treated with an antibiotic with activity against the pathogen, while the downsides are the costs, burdens, and delays associated with testing. The recommendation is strong despite the low quality of evidence because the panel agreed that the importance of avoiding ineffective therapy (ie, potential for harms without benefits) far outweighs the costs, burdens, and time for antibiotic susceptibility testing.
+
+The aminoglycosides are the only exceptions with regard to the panel not making a recommendation for or against a specific antibiotic class in HAP/VAP due to P. aeruginosa. The panel chose to recommend against aminoglycoside monotherapy for 2 reasons. First, aminoglycosides penetrate the lung poorly; therefore, high peak serum concentrations are necessary to obtain microbiologically active concentrations in the alveoli, which increases the risk of nephrotoxicity and ototoxicity [266, 302, 303]. Studies have found no detectable antipseudomonal activity within bronchial secretions despite therapeutic aminoglycoside levels in the serum of patients with Pseudomonas pulmonary infection [304]. Second, there is a lack of studies evaluating the effects of aminoglycoside monotherapy in HAP/VAP.
+
+Occasionally, routine antimicrobial susceptibility testing identifies no antibiotics to which P. aeruginosa is susceptible. Intravenous polymyxins (colistin or polymyxin B) [305- 310] may be an option for the treatment of such extensively resistant P. aeruginosa [184]. For this reason, the panel agreed that polymyxin susceptibility should be routinely assessed for Pseudomonas isolates in settings with a high prevalence of extensively resistant organisms.
+
+## Research Needs
+
+There is a lack of trials that enrolled patients with HAP/VAP caused by P. aeruginosa and compared antibiotic regimens, and subgroup analysis from trials that enrolled patients with HAP/VAP caused by any pathogen are limited by the small sizes of the subgroups. There is an urgent need for multicenter trials that enroll patients with HAP/VAP caused by P. aeruginosa and then evaluate the benefits and harms of various antibiotic regimens. Such trials should measure mortality, treatment failure, side effects, and antibiotic resistance as outcomes, and should control for variables such as severity of illness, bacteremia, organ failure, and aminoglycoside use.

@@ -1,0 +1,28 @@
+---
+title: "Defining the underlying chronic liver disease"
+tags: ["慢加急性肝衰竭", "基础肝病", "非肝硬化", "NAFLD", "NASH", "Laennec分期", "经颈静脉肝活检", "FibroScan局限", "脂肪变性", "病毒血清学"]
+source: "APASL 2014 ACLF Consensus"
+source_type: 专家共识
+year: 2014
+lang: en
+---
+
+# Defining the underlying chronic liver disease
+
+Two aspects were carefully analyzed, what constitutes chronic liver disease, cirrhosis alone or non- cirrhotic chronic liver diseases, and the etiology of the chronic liver disease.
+
+The degree of hepatic fibrosis and the functional hepatocellular mass remains heterogeneous in patients with the chronic hepatitis [32, 33]. Even in patients with stage IV disease, critical mass varies according to the parenchymal reserves. Modified Laennec Scoring System divides stage IV further, according to the thickness of septa into three, ending up in six stages altogether [34, 35]. Moreover, ACLF is not equivalent to the acute decompensation of cirrhosis, which is the result of parenchymal extinction. Majority of the ACLF patients present with liver failure without any previous assessment of liver disease. It is not possible to distinguish accurately patients with different degree of fibrosis at this point in time. The liver with any significant degree of fibrosis, with activated stellate cells, and infiltrated by the inflammatory cells, is expected to respond in a different way to the acute insult compared to the liver without inflammatory infiltrate [36].
+
+The NAFLD is the leading cause of donor rejection in liver transplantation [37]. Experience from liver transplantation centers shows that steatosis > 30% in the donor liver is associated with a higher risk of primary nonfunction and graft initial poor function as compared to grafts with no or < 30% steatosis [38]. Patients with metabolic syndrome and fatty liver, diabetics, male patients of age > 45- 50 years, patients with obesity, and dyslipidemia have the increased risk of fibrosis [39]. While cirrhosis could be a late event, a large proportion of them may have stage 2 or 3 fibrosis. Hence, NASH is indeed an important cause of chronic liver disease [40]. Furthermore, in the East, a large proportion of patients do have reactivation of chronic Hepatitis B. In these patients, while liver failure and ACLF- like presentation does develop, cirrhosis is not necessarily present. The AARC data, based on the liver biopsy studies, corroborated the facts that a fair proportion of patients with ACLF do not have underlying cirrhosis, but still carry a poor prognosis, with mortality above 33% at 4 weeks. Based on the available data, the published literature and the validity of the 2009 consensus on including the non- cirrhotic chronic liver disease were reaffirmed.
+
+Accurate and reliable assessment of underlying CLD in the setting of ACLF is important for the subsequent management and need for liver transplant in these patients. Diagnosis of chronic liver disease in the setting of ACLF is made by history, physical examination, and previously available or recent laboratory, endoscopic or radiologic investigations [41]. Ultrasound and CT abdomen may pick up CLD. However, to assess the degree of fibrosis in an unshrunken liver would require other radiologic modalities. The current noninvasive tests cannot clearly diagnose the presence of chronic liver disease in the presence of inflammation and liver failure. Hence, liver biopsy through the transjugular route remains an important tool to confirm the stage of fibrosis and presence of cirrhotic or non- cirrhotic liver disease.
+
+A liver biopsy through the transjugular route may be of help when the presence of already underlying CLD and the cause of liver disease are not clear. The liver biopsy may highlight the etiology, stage of fibrosis and prognosis, and outcome in patients with ACLF [42]. In addition, transjugular access directly into the hepatic vein allows the hepatic venous pressure gradient to be measured (HVPG). There is a risk of bleeding leading to hemophilia, hemoperitoneum, and hepatic hematoma in the setting of the deranged clotting profile [43]. The need of liver biopsy in ACLF should therefore be individualized. Standardization of liver biopsy assessment would help a uniform approach to the diagnosis and treatment for CLD and the acute insult.
+
+There is a need to have reliable noninvasive tools to assess the severity of fibrosis in a previously undiagnosed CLD. Ultrasound and CT abdomen may pick up CLD. However, to assess the degree of fibrosis in an un- shrunken liver would require other radiologic modalities. Transient elastography (fibroscan) is a good modality to detect fibrosis radiologically [44]. However, the liver tissue stiffness may also increase with hepatitis, steatosis, and inflammation present in the ACLF setting [45].
+
+The second issue was about the etiology of chronic liver disease and cirrhosis in the Asian- Pacific region. Experts reviewed the data from the AARC, and the etiologic profile of cirrhosis in ACLF was found to be similar to the etiology of cirrhosis in general in the respective countries [26, 46, 47]. With the rising incidence of obesity and NAFLD, proportion of burnt- out NASH presenting as cryptogenic cirrhosis is also increasing [48- 50].
+
+Viral serology and nucleic acid testing are required to identify viral etiology. Specialized tests to rule to diagnose metabolic and autoimmune diseases would be needed as well. The presence of stigmata of liver disease on clinical examination, low platelets, evidence of synthetic dysfunction in
+
+previous reports, and altered AST/ALT ratio in previous reports should prompt the diagnosis of the presence of CLD [51, 52].

@@ -1,0 +1,31 @@
+---
+title: "XI. Should Selection of an Empiric Antibiotic Regimen for HAP (Non-VAP) Be Guided by Local Antibiotic Resistance Data? Recommendations"
+tags: [医院获得性肺炎, 呼吸机相关性肺炎, HAP, VAP, 肺炎, 重症肺炎, 抗生素, 经验性治疗, MRSA, 铜绿假单胞菌, hospital-acquired pneumonia, ventilator-associated pneumonia, antibiotic, Pseudomonas, 万古霉素, 利奈唑胺, 碳青霉烯, 降钙素原, CPIS, 抗菌谱, 不动杆菌, 肠杆菌, MSSA, MDR, 非葡萄糖发酵革兰阴性杆菌, 局部耐药率, 病原菌分布, 亚洲, 欧洲, 北美]
+source: "ATS/IDSA 2016 HAP/VAP Guidelines"
+source_type: 临床指南
+year: 2016
+lang: en
+---
+
+# XI. Should Selection of an Empiric Antibiotic Regimen for HAP (Non-VAP) Be Guided by Local Antibiotic Resistance Data? Recommendations
+
+# XI. Should Selection of an Empiric Antibiotic Regimen for HAP (Non-VAP) Be Guided by Local Antibiotic Resistance Data? Recommendations
+
+1. We recommend that all hospitals regularly generate and disseminate a local antibiogram, ideally one that is tailored to their HAP population, if possible.
+2. We recommend that empiric antibiotic regimens be based upon the local distribution of pathogens associated with HAP and their antimicrobial susceptibilities. Remarks: The frequency with which the distribution of pathogens and their antimicrobial susceptibilities are updated should be determined by the institution. Considerations should include their rate of change, resources, and the amount of data available for analysis.
+
+## Summary of the Evidence
+
+We performed a systematic review of both randomized trials and observational studies to determine the prevalence of infecting organisms in HAP. Studies published prior to 2000 were excluded because of changes in resistance patterns and organism prevalence over time. We selected 24 studies that provided relevant data [11, 89, 92, 139, 155, 179, 214- 231]. The studies enrolled patients predominantly in North America, Europe, and Asia, with a small percentage from South America. A meta- analysis determined the following frequencies of potentially drug- resistant pathogens: non- glucose- fermenting gram- negative bacilli \((19\% [95\% \mathrm{CI},15\% - 24\% ]\) of isolates, with Pseudomonas species accounting for \(13\%\) \([95\% \mathrm{CI},10\% - 17\% ]\) and Acinetobacter species accounting for \(4\%\) \([95\% \mathrm{CI},2\% - 6\% ]\) ), enteric gram- negative bacilli \((16\% [95\% \mathrm{CI},13\% - 20\% ]\) of isolates), S. aureus \((16\% [95\% \mathrm{CI},12\% - 21\% ]\) of isolates), MRSA \((10\%\) \([95\% \mathrm{CI}6\% - 14\% ]\) of isolates), and MSSA \((6\%\) of isolates). There was considerable variation in the rates of isolation of specific pathogens across studies, but the study year and geographic area did not account for the variation, with the possible exception of Acinetobacter species. Acinetobacter species increased in prevalence from studies published between 1994 and 1999 to studies published between 2006 and 2012, and are a more common cause of HAP in Asia than in Europe and the United States. One study was not included in the meta- analysis because the number of observations could not be determined [139]; however, exclusion of the study was inconsequential as the results of the study and meta- analysis were concordant.
+
+The systematic review had limitations that should be considered before applying the findings to clinical practice. There was significant variation among studies regarding whether or not patients who were immunosuppressed or did not have a confirmed pathogen were included; inclusion of only patients with positive microbiologic results may bias the data to reflect the sickest patients, as severely ill patients are more likely to have positive microbiology and more likely to have infection with drug- resistant organisms [27, 232, 233]. There was also variation in the unit of analysis (ie, the patient or the isolate). Because specific antibiotic sensitivities were not reported in most studies, the results reflect potentially antibiotic- resistant organisms, not actual antibiotic resistance rates.
+
+Antimicrobial flora and resistance patterns can vary considerably among countries, regions, hospitals, ICUs within a hospital, and specimen sources (ie, pulmonary vs other specimens) [32, 131, 132]. This was illustrated by an observational study that enrolled 405 patients who were consecutively admitted to the medical, surgical, or trauma ICU of a large academic medical center and then followed prospectively for 3 months. There were significant differences in antibiotic susceptibility among ICUs for S. aureus, Enterococcus species, Acinetobacter species, Enterobacter species, Klebsiella species, and Pseudomonas species [132]. However, another study found that resistance rates measured in overall hospital antibiograms are reflected in the resistance rates found in ICU- acquired infections, although the frequency of MRSA might be underestimated [133].
+
+## Rationale for the Recommendations
+
+To balance the competing goals of providing early appropriate antibiotic coverage and avoiding superfluous treatment
+
+that may lead to antibiotic resistance and other adverse consequences, one approach involves preferentially providing broad antimicrobial therapy to patients with the greatest need for such therapy, such as those with risk factors for antimicrobial- resistant pathogens and those in an environment where antibiotic- resistant pathogens are common [131, 133].
+
+Identifying patients who are in an environment where antibiotic- resistant pathogens are common requires that both local prevalence and antibiotic resistance patterns be determined. The distribution of pathogens and antibiotic- resistance patterns associated with HAP should ideally be determined using local data from each medical unit, if possible, because antimicrobial flora and resistance patterns vary considerably among countries, regions, hospitals, ICUs, and specimen sources. The guideline panel agreed that the use of local antibiograms to inform antibiotic selection is the preferred approach to initiating early appropriate antibiotic coverage while avoiding superfluous treatment.

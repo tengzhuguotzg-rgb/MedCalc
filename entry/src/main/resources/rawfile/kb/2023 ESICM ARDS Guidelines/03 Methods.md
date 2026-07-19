@@ -1,0 +1,24 @@
+---
+title: Methods
+tags: [急性呼吸窘迫综合征, ARDS, 呼吸衰竭, 低氧血症, 脓毒症, ARDS定义, ARDS表型, 高流量鼻导管氧疗, HFNC, CPAP, NIV, 无创通气, 低潮气量通气, PEEP, 肺复张, 俯卧位, 神经肌肉阻滞剂, 体外膜肺氧合, ECMO, acute respiratory distress syndrome, ARDS, acute lung injury, ALI, Berlin definition, hypoxemic respiratory failure]
+diagnoses: [急性呼吸窘迫综合征, ARDS, 呼吸衰竭, 低氧血症, 脓毒症]
+topics: [ARDS定义, ARDS表型, 高流量鼻导管氧疗, HFNC, CPAP, NIV, 无创通气, 低潮气量通气, PEEP, 肺复张, 俯卧位, 神经肌肉阻滞剂, 体外膜肺氧合, ECMO]
+source: ESICM 2023 ARDS Guidelines
+source_type: 临床指南
+date: 2023年
+year: 2023
+lang: en
+aliases: [acute respiratory distress syndrome, ARDS, acute lung injury, ALI, Berlin definition, hypoxemic respiratory failure]
+---
+
+# Methods
+
+### Topic and panel composition
+These guidelines were formulated by an international panel of experts on behalf of the ESICM and address three broad topics within ARDS: (1) definition; (2) phenotyping, and (3) respiratory support strategies. The ESICM Executive Committee selected these three topic areas and nominated three chairpersons (CC, LC, GG) and one methodologist (DP), who arranged the guidelines into nine domains of investigations: (1) definition; (2) phenotyping; (3) high-flow nasal cannula oxygen (HFNO); (4) non-invasive ventilation (NIV); (5) tidal volume setting; (6) PEEP and lung RM; (7) prone positioning; (8) neuromuscular blockade, and (9) extracorporeal life support (ECLS). Each domain was assigned to a group of experts within the panel, and each domain was coordinated by a ‘domain chair’. Panelists were invited to join one or more working groups based on their scientific expertise, geographical representation, and expressed interest. Two additional methodologists and eight patient representatives completed the guideline panel.
+### Research question selection and literature search
+Members of each domain formulated questions according to the Patients or Population- Intervention-Comparison-Outcome (PICO) format. Each PICO question was discussed and agreed with the guideline chairs, methodologists, and the wider panel. For each PICO, a dedicated systematic literature search was performed using the PubMed search engine. For the Definition Domain 1 a systematic review of the literature was not performed and only a discussion was performed by the members on ARDS definition. Phenotypes Domain 2 conducted a systematic review of the literature, summarizing evidence without, however, performing any grading of the evidence. Most studies in this field focused on prognosis in different sub-phenotypes. Few others, investigating the effectiveness of intervention in sub-phenotypes, were meant to generate hypotheses to be verified in future trials more than providing evidence in support of treatments. For both Domains 1 and 2 we preferred a narrative approach over systematic Grading of Recommendations, Assessment, Development, and Evaluations (GRADE) assessments.
+Following the literature search, pairs of reviewers from each domain reviewed the titles independently and selected the final list of full-text studies to be included in meta-analysis. The methodologists performed data extraction, synthesis, and risk of bias assessment for individual studies. Details of the meta-analysis procedures are provided in the Supplementary Methods.
+### Formulation of recommendations and consensus methodology
+After reviewing the results of the literature search and meta-analyses, members of each domain formulated statements (recommendations) related to each PICO/narrative question. Recommendations were based on the integration of three main criteria: (1) certainty of evidence (as provided by the methodological assessment); (2) GRADE methodology [[8](/article/10.1007/s00134-023-07050-7#ref-CR8 "Guérin C, Albert RK, Beitler J et al \(2020\) Prone position in ARDS patients: why, when, how and for whom. Intensive Care Med 46:2385–2396. 
+                  https://doi.org/10.1007/s00134-020-06306-w
+                ")], and (3) expert opinion. Proposed recommendations along with corresponding summaries of evidence were presented and discussed in four online panel-wide meetings which included patient representatives. These meetings were recorded for members who were unable to attend and for accurate reporting of the panel discussion. Following each panel-wide meeting, recommendations were revised based on the feedback received. The finalized recommendations were then sent to each panel member for anonymous online voting. Strong recommendations were phrased as “recommendations,” and weak recommendations were phrased as “suggestions.” Approval of a recommendation required at least 80% of the panel to be in agreement. Recommendations with less than 80% agreement were reformulated and re-voted until > 80% approval was achieved for all. A detailed description of the methodology is reported in the Supplementary Materials.

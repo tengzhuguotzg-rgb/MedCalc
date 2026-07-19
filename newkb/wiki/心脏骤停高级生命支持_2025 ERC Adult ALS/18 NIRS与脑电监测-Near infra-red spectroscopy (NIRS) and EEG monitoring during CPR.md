@@ -1,0 +1,14 @@
+---
+title: "Near infra-red spectroscopy (NIRS), and EEG monitoring during CPR"
+tags: [心肺复苏, CPR, 高级生命支持, ALS, 心脏骤停, 除颤, 肾上腺素, 气道管理, 心律失常, 室颤, ROSC, cardiac arrest, resuscitation, defibrillation, adrenaline, arrhythmia, 胺碘酮, 气管插管, 波形二氧化碳图, 复苏, NIRS, 近红外光谱, 脑氧饱和度, rSO2, EEG, 脑电图, 双频指数, BIS, 脑血流, 缺氧缺血性脑损伤, 脑监测]
+source: "2025 ERC Guidelines Adult Advanced Life Support"
+source_type: 临床指南
+year: 2025
+lang: en
+---
+
+# Near infra-red spectroscopy (NIRS), and EEG monitoring during CPR
+
+Although NIRS and EEG monitoring during CPR were within the scope of the ERC Guidelines 2025 ALS update, the ERC has not made any recommendations for their use and the rea sons are set out below. Near infrared spectroscopy is a non- invasive method to monitor the oxygenation of the combination of arterial and venous blood in the brain. NIRS monitoring can be conducted with external electrodes placed on the forehead of the patient. With the emission of infrared light, the monitor can provide the regional oxygen saturation proportion in tissue and blood. When applied to the forehead of a patient this will provide an estimation of the amount of oxygen saturation in brain tissue. Given the risk of hypoxic- ischaemic brain injury in patients undergoing CPR this has raised much interest. According to a systematic review conducted in 2021, NIRS monitoring may provide information on the likelihood of ROSC.540 The systematic review including 17 studies showed that higher initial cerebral regional oxygen saturation \((rSO_{2})\) values were associated with the likelihood of ROSC. Thus far only one study has compared \(\mathrm{ETCO_{2}}\) and NIRS and this study suggested superiority for NIRS compared with \(\mathrm{ETCO_{2}}\) .541 This finding should however be confirmed in future studies. On the other hand, studies have failed to show any association of NIRS values with the quality of chest compressions, the amount of oxygen in the blood or the administration of adrenaline. \(^{3 6 6 , 5 4 2}\) Thus, it is unclear if NIRS can be used to modify the delivery of resuscitation measures in any way. No study to date has assessed the cost effectiveness of NIRS monitoring. Therefore, there is not enough evidence to recommend NIRS as a monitoring tool for patients undergoing CPR.
+
+EEG monitors the electric activity of the brain noninvasively. Changes in EEG correlate with changes in cerebral blood flow. Some studies have assessed the feasibility of using EEG during resuscitation to monitor the efficacy and outcome of CPR.543 The EEG methods used include traditional multichannel EEG as well as the raw EEG signal from monitors of the depth of anaesthesia, including the bispectral index (BIS). The existing evidence is inconclusive and comes mainly from smaller observational studies and case reports. At present, the use of EEG is not recommended by the ERC either for monitoring the performance of CPR or estimating the outcome.

@@ -37,6 +37,8 @@ import { MnutricCalculator } from '../components/calculators/MnutricCalculator';
 import { FssicuCalculator } from '../components/calculators/FssicuCalculator';
 import { KdigoCalculator } from '../components/calculators/KdigoCalculator';
 import { VasopressorCalculator } from '../components/calculators/VasopressorCalculator';
+import { NaDeficitCalculator } from '../components/calculators/NaDeficitCalculator';
+import { NaCorrectionRateCalculator } from '../components/calculators/NaCorrectionRateCalculator';
 import { LlmDialog } from '../components/LlmDialog';
 import { AssistantPage } from '../components/AssistantPage';
 import { SettingsPage } from '../components/SettingsPage';
@@ -225,6 +227,10 @@ struct Index {
               KdigoCalculator();
             } else if (this.currentCalc === 'vasopressor') {
               VasopressorCalculator();
+            } else if (this.currentCalc === 'nadeficit') {
+              NaDeficitCalculator();
+            } else if (this.currentCalc === 'nacorrection') {
+              NaCorrectionRateCalculator();
             } else {
               this.PlaceholderCalculator();
             }

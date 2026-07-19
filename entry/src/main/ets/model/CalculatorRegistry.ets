@@ -504,6 +504,30 @@ export const CALCULATORS: Calculator[] = [
     description: '升压药 mL/h ↔ μg/kg/min 双向换算，垂体后叶素支持 U/min',
     whenToUse: 'ICU 血管活性药滴定 / mL/h ↔ μg/kg/min 双向换算 / 多药同表比较 / 升压素 U/min 换算',
   },
+  {
+    id: 'nadeficit',
+    name: '钠缺失量',
+    enName: 'Sodium Deficit',
+    group: '代谢',
+    icon: '🧂',
+    shortcut: '无',
+    kw: '钠缺失 补钠 低钠 hyponatremia deficit TBW 体液总量 目标钠',
+    compute: 'nadeficit',
+    description: '计算低钠血症的钠缺失量 (TBW因子×体重×ΔNa)',
+    whenToUse: '低钠血症补钠量计算 / 补液方案制定 / 纠正速率规划',
+  },
+  {
+    id: 'nacorrection',
+    name: '钠纠正速率',
+    enName: 'Na Correction Rate',
+    group: '代谢',
+    icon: '🧂',
+    shortcut: '无',
+    kw: '钠纠正速率 低钠纠正 高钠纠正 高渗盐水 Adrogué-Madias 脑桥脱髓鞘 脑水肿 correction rate hyponatremia hypernatremia 3%NaCl D5W',
+    compute: 'nacorrection',
+    description: 'Adrogué-Madias公式计算钠纠正速率/液体选择, 低钠≤8mmol/L/24h防脑桥脱髓鞘, 高钠≤10mmol/L/24h防脑水肿',
+    whenToUse: '低钠/高钠血症纠正速率计算 / 补液类型选择(3%NaCl/0.9%NaCl/0.45%NaCl/D5W) / 自由水缺失计算 / 防纠正过速',
+  },
 ];
 
 export const GROUP_ORDER: string[] = ['呼吸', '心血管', '肾', '肝', '神经', '代谢', '感染', '综合'];

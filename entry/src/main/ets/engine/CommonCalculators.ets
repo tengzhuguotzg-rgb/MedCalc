@@ -89,6 +89,196 @@ export function calculateNa(na: number, glu: number): CalcResult {
   };
 }
 
+export function calculateNaDeficit(weight: number, na: number, targetNa: number, isFemale: boolean, isChild: boolean): CalcResult {
+  if (weight <= 0 || na <= 0 || targetNa <= 0) {
+    return { value: null, unit: 'mmol', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
+  const tbwFactor = isChild ? 0.6 : (isFemale ? 0.5 : 0.6);
+  const deficit = tbwFactor * weight * (targetNa - na);
+  const isHyponatremia = na < targetNa;
+
+  let tier: string;
+  let footnote: string;
+
+  if (isHyponatremia) {
+    if (na < 120) {
+      tier = '重度低钠';
+      footnote = 'Na⁺ < 120 严重低钠, 脑桥脱髓鞘风险极高。\n24h升高 ≤ 8-10 mmol/L, 48h ≤ 18 mmol/L。\n推荐ICU监测, 严重症状时可用3%高渗盐水。';
+    } else if (na < 125) {
+      tier = '中度低钠';
+      footnote = 'Na⁺ 120-125 中度低钠。\n24h升高 ≤ 8-10 mmol/L 防脑桥脱髓鞘。\n积极查找病因(低容/等容/高容)。';
+    } else if (na < 135) {
+      tier = '轻度低钠';
+      footnote = 'Na⁺ 125-135 轻度低钠。\n一般限制自由水摄入即可。\n注意排除SIADH、甲状腺/肾上腺功能减退。';
+    } else {
+      tier = '正常范围';
+      footnote = 'Na⁺ 135-145 正常范围, 无需补钠。';
+    }
+    footnote += `\n\n公式: Na缺失 = ${tbwFactor} × ${weight}kg × (${targetNa} - ${na})\n= ${deficit.toFixed(0)} mmol`;
+  } else {
+    tier = '高钠';
+    footnote = `Na⁺ > ${targetNa}, 当前为高钠。请使用高钠纠正速率计算器。\n24h降低 ≤ 10 mmol/L 防脑水肿。`;
+  }
+
+  return {
+    value: isHyponatremia ? deficit : null,
+    unit: 'mmol',
+    tier: tier,
+    tierClass: getTierClass(tier),
+    footnote: footnote
+  };
+}
+
+export interface FluidOption {
+  name: string;
+  naContent: number;
+  description: string;
+}
+
+export function calculateNaCorrectionRate(weight: number, na: number, targetNa: number, rateMmolPerDay: number,
+  isFemale: boolean, isChild: boolean, fluidNaContent: number): CalcResult {
+  if (weight <= 0 || na <= 0 || targetNa <= 0 || rateMmolPerDay <= 0) {
+    return { value: null, unit: 'mL/h', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
+  const tbw = (isChild ? 0.6 : (isFemale ? 0.5 : 0.6)) * weight;
+  const isHyponatremia = na < targetNa;
+
+  if (!isHyponatremia) {
+    const freeWaterDeficit = tbw * (na / targetNa - 1) * 1000;
+    // Adrogué-Madias also applies to hypernatremia:
+    // ΔNa per 1L infusate = (InfusateNa - SerumNa) / (TBW + 1)
+    // For hypernatremia, infusateNa < serumNa → deltaNa is NEGATIVE (lowers serum Na)
+    const deltaNaPerLiter = (fluidNaContent - na) / (tbw + 1);
+    const safeRate = 10; // 10 mmol/L/24h for hypernatremia
+
+    let tier: string;
+    let rateWarning = '';
+    if (rateMmolPerDay > safeRate + 0.1) {
+      tier = '速率过快';
+      rateWarning = '\n\n⚠ 24h降低 > 10 mmol/L, 脑水肿/癫痫风险!\n需ICU严密监测。';
+    } else if (rateMmolPerDay > safeRate * 0.8) {
+      tier = '速率偏快';
+      rateWarning = '\n\n⚠ 接近安全上限 (10 mmol/L/24h)。';
+    } else {
+      tier = '速率安全';
+    }
+
+    let fluidName = '';
+    if (fluidNaContent >= 513) {
+      fluidName = '3% NaCl';
+    } else if (fluidNaContent >= 154) {
+      fluidName = '0.9% NaCl';
+    } else if (fluidNaContent >= 77) {
+      fluidName = '0.45% NaCl';
+    } else {
+      fluidName = 'D5W';
+    }
+
+    // deltaNaPerLiter is negative for hypernatremia correction
+    // We want to LOWER na by rateMmolPerDay over 24h
+    // volumePerDay = rateMmolPerDay / |deltaNaPerLiter|
+    if (deltaNaPerLiter >= 0) {
+      const tier2 = '液体不当';
+      const footnote2 = `⚠ 所选液体Na⁺含量(${fluidNaContent} mmol/L) ≥ 血清Na⁺(${na} mmol/L)\n` +
+        `该液体不能降低血钠, 反而可能进一步升高!\n\n` +
+        `高钠纠正推荐: D5W(0) 或 0.45% NaCl(77)`;
+      return { value: null, unit: 'mL/h', tier: tier2, tierClass: getTierClass(tier2), footnote: footnote2 };
+    }
+
+    const volumeLitersPerDay = rateMmolPerDay / Math.abs(deltaNaPerLiter);
+    const rateMlPerH = volumeLitersPerDay * 1000 / 24;
+    const deltaNaNeeded = na - targetNa;
+    const hoursToTarget = deltaNaNeeded / (rateMmolPerDay / 24);
+
+    const footnote = `高钠纠正计划 (Na⁺ ${na} → ${targetNa})\n\n` +
+      `自由水缺失 ≈ ${freeWaterDeficit.toFixed(0)} mL\n` +
+      `纠正速率: ${rateMmolPerDay} mmol/L/24h\n` +
+      `安全上限: ≤ 10 mmol/L/24h\n` +
+      `预计达标: ${hoursToTarget.toFixed(1)} h\n\n` +
+      `补液方案: ${fluidName} (${fluidNaContent} mmol/L Na⁺)\n` +
+      `每升ΔNa⁺ = (${fluidNaContent} - ${na}) / (${tbw.toFixed(1)} + 1) = ${deltaNaPerLiter.toFixed(2)} mmol/L\n` +
+      `24h需输注: ${volumeLitersPerDay.toFixed(2)} L = ${(volumeLitersPerDay * 1000).toFixed(0)} mL\n` +
+      `输注速率: ${rateMlPerH.toFixed(0)} mL/h` +
+      rateWarning +
+      `\n\nAdrogué-Madias公式:\nΔNa⁺ = (InfusateNa⁺ - SerumNa⁺) / (TBW + 1)\n= (${fluidNaContent} - ${na}) / (${tbw.toFixed(1)} + 1)\n= ${deltaNaPerLiter.toFixed(2)} mmol/L per L infused`;
+
+    return { value: rateMlPerH, unit: 'mL/h', tier: tier, tierClass: getTierClass(tier), footnote: footnote };
+  }
+
+  // Adrogué-Madias formula:
+  // ΔNa per 1L infusate = (InfusateNa + InfusateK - SerumNa) / (TBW + 1)
+  // For simplicity, InfusateK = 0 (no KCl added)
+  // To raise Na by rateMmolPerDay over 24h:
+  //   total Na rise needed = rateMmolPerDay mmol/L
+  //   volume needed = rateMmolPerDay / deltaNaPerLiter (in Liters over 24h)
+  //   rate in mL/h = volume * 1000 / 24
+
+  const deltaNaPerLiter = (fluidNaContent - na) / (tbw + 1);
+
+  // If fluidNaContent <= na (e.g. D5W for hyponatremia — wrong choice), delta is negative
+  if (deltaNaPerLiter <= 0) {
+    const tier = '液体不当';
+    const footnote = `⚠ 所选液体Na⁺含量(${fluidNaContent} mmol/L) ≤ 血清Na⁺(${na} mmol/L)\n` +
+      `该液体不能升高血钠, 反而可能进一步降低!\n\n` +
+      `低钠纠正推荐: 0.9% NaCl(154) 或 3% NaCl(513)\n` +
+      `严重症状时用3%高渗盐水`;
+    return { value: null, unit: 'mL/h', tier: tier, tierClass: getTierClass(tier), footnote: footnote };
+  }
+
+  const volumeLitersPerDay = rateMmolPerDay / deltaNaPerLiter;
+  const rateMlPerH = volumeLitersPerDay * 1000 / 24;
+
+  const deficit = tbw * (targetNa - na);
+  const deltaNaNeeded = targetNa - na;
+  const hoursToTarget = deltaNaNeeded / (rateMmolPerDay / 24);
+  const safeRate = 8;
+
+  let tier: string;
+  let rateWarning = '';
+  if (rateMmolPerDay > safeRate + 0.1) {
+    rateWarning = '\n\n⚠ 纠正速率 > 8 mmol/L/24h, 脑桥脱髓鞘风险!\n仅严重症状(抽搐/昏迷)时允许快速纠正,\n且需ICU严密监测。';
+    tier = '速率过快';
+  } else if (rateMmolPerDay > safeRate * 0.8) {
+    rateWarning = '\n\n⚠ 接近安全上限 (8 mmol/L/24h), 需严密监测。';
+    tier = '速率偏快';
+  } else {
+    tier = '速率安全';
+  }
+
+  let fluidName = '';
+  if (fluidNaContent >= 513) {
+    fluidName = '3% NaCl';
+  } else if (fluidNaContent >= 154) {
+    fluidName = '0.9% NaCl';
+  } else if (fluidNaContent >= 77) {
+    fluidName = '0.45% NaCl';
+  } else {
+    fluidName = 'D5W';
+  }
+
+  const footnote = `低钠纠正计划 (Na⁺ ${na} → ${targetNa})\n\n` +
+    `Na缺失量: ${deficit.toFixed(0)} mmol\n` +
+    `纠正速率: ${rateMmolPerDay} mmol/L/24h\n` +
+    `安全上限: ≤ 8 mmol/L/24h\n` +
+    `预计达标: ${hoursToTarget.toFixed(1)} h\n\n` +
+    `补液方案: ${fluidName} (${fluidNaContent} mmol/L Na⁺)\n` +
+    `每升ΔNa⁺ = (${fluidNaContent} - ${na}) / (${tbw.toFixed(1)} + 1) = ${deltaNaPerLiter.toFixed(2)} mmol/L\n` +
+    `24h需输注: ${volumeLitersPerDay.toFixed(2)} L = ${(volumeLitersPerDay * 1000).toFixed(0)} mL\n` +
+    `输注速率: ${rateMlPerH.toFixed(0)} mL/h` +
+    rateWarning +
+    `\n\nAdrogué-Madias公式:\nΔNa⁺ = (InfusateNa⁺ - SerumNa⁺) / (TBW + 1)\n= (${fluidNaContent} - ${na}) / (${tbw.toFixed(1)} + 1)\n= ${deltaNaPerLiter.toFixed(2)} mmol/L per L infused`;
+
+  return {
+    value: rateMlPerH,
+    unit: 'mL/h',
+    tier: tier,
+    tierClass: getTierClass(tier),
+    footnote: footnote
+  };
+}
+
 export function calculateCurb65(confusion: boolean, urea: number, ureaUnit: string, rr: number, sbp: number, dbp: number, age: number): CalcResult {
   if (rr <= 0 || sbp <= 0 || age <= 0) {
     return {

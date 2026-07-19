@@ -1,0 +1,27 @@
+---
+title: Methods
+tags: [急性呼吸窘迫综合征, ARDS, 呼吸衰竭, 低氧血症, ARDS新定义, Berlin定义更新, 全球定义, 诊断标准, 氧合指数, P/F比值, 影像学标准, acute respiratory distress syndrome, ARDS, new global definition, Berlin criteria update, Kigali definition]
+diagnoses: [急性呼吸窘迫综合征, ARDS, 呼吸衰竭, 低氧血症]
+topics: [ARDS新定义, Berlin定义更新, 全球定义, 诊断标准, 氧合指数, P/F比值, 影像学标准]
+source: Matthay 2024 New Global ARDS Definition
+source_type: 专家共识
+date: 2024年
+year: 2024
+lang: en
+aliases: [acute respiratory distress syndrome, ARDS, new global definition, Berlin criteria update, Kigali definition]
+---
+
+# Methods
+
+### Process for Membership
+The goal of the organizers of the consensus conference (M.A.M., T.T., and L.B.W.) was to convene a committee of experts representing diverse clinical, geographic, socioeconomic, racial, ethnic, and gender backgrounds, as well as a patient advocate. The target committee membership was approximately 30 to ensure that it was large enough to obtain diverse perspectives and small enough to allow meaningful contributions from each member. Members were selected through an informal cascading recruitment process. The conference chairs identified subject area experts, who then recommended other members, considering the stated diversity goals. A total of 32 members were selected and agreed to participate. Only one person who was invited declined to participate. Although this process to achieve diversity and expertise has some limitations, the resulting committee was more diverse and represented more areas of the world than prior groups that developed working definitions of ARDS (_see_ Figure E1 in the online supplement).
+### Formation of Working Groups and Development of Criteria for an Updated Definition
+Potential topics for an expansion of the Berlin definition were proposed during an initial organizational meeting, after which an anonymous survey was distributed to committee members for their vote on which topics should be addressed. The entire committee agreed to establish working groups to address three major areas for potential revision of the Berlin definition (_see_ Appendix E1): _1_) risk factors, timing, and extrapulmonary organ involvement; _2_) chest imaging; and _3_) oxygenation. The committee also agreed that an updated definition of ARDS should meet several criteria: _1_) identify patients with characteristics in keeping with the agreed-on conceptual framework of ARDS, _2_) facilitate rapid recognition and diagnosis of ARDS for clinical care and research, _3_) be applicable in resource-limited settings, _4_) be useful for testing specific therapies, and _5_) be practical for communication to patients and caregivers.
+### Data Considered
+Several sources of published and unpublished data were used by the working groups on the basis of searches of the National Library of Medicine PubMed database, including recent clinical trials and observational studies (_see_ Appendix E1) (8, 12–14, 19, 20, 23–33). Although a formal comprehensive literature review was not completed, which is a limitation, the data considered included recent clinical trials that have influenced clinical practice.
+### Decision-Making Process
+Each working group assessed changes in clinical practice and new evidence supporting updates to current diagnostic criteria. From June 2021 through March 2022, working groups convened independently (two or three meetings per group) and then returned recommendations to the entire committee. Proposed revisions to the ARDS definition from each working group were discussed by the entire committee during six video conferences.
+### Consensus Process
+After discussion by the committee, the working group recommendations were incorporated into a draft of the updated ARDS definition. Comments and revisions were invited on multiple drafts before convening a meeting at which the final proposed changes were discussed. The committee members agreed unanimously to use a simple, confidential supermajority vote for approval (defined as 70% or greater agreement). The committee did not use the comprehensive processes described for the development of clinical practice guidelines, because the goal was to update the widely used definition for a clinical syndrome rather than to establish a clinical practice guideline, and expert consensus generates similar results when a high degree of agreement is reached (34). The final revised definition received approval from all committee members.
+### Input from Global Critical Care Societies
+The committee obtained comments from members of a convenience sample of 21 global critical care societies (_see_ Appendix E2) that were asked to solicit opinions from their members in any way they deemed appropriate. No requests for formal societal endorsements were made, and the comments do not reflect the official views of individual professional societies. Comments were reviewed and considered by the committee and are included in Appendix E2. Although most society member responses were qualitative, some societies provided quantitative data on member approval of components of the revised definition. The responses do not reflect a comprehensive polling of all members or all leadership of all critical care societies. After these recommendations are published, an interactive website will be established for posting comments that will be available to practitioners and patients around the world (<https://globalardsdefinition.org>).

@@ -6,12 +6,12 @@ import { PreferencesService } from '../services/PreferencesService';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { sendVisionRequest, ApiServiceConfig } from '../services/LlmService';
 import { ImageStore } from '../services/ImageStore';
-import { KnowledgeService, SearchResult, KnowledgePage } from '../services/KnowledgeService';
+import { KnowledgeService, SearchResult, KnowledgePage, ExpandedQueryResult, SmartSearchResult } from '../services/KnowledgeService';
 import {
   MarkdownLine, CalloutStyle, AnnotationBadge,
   parseKbMarkdown, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
-import { DIAGNOSIS_RULES, DIAGNOSIS_CATEGORIES } from '../model/DiagnosisRules';
+import { DIAGNOSIS_RULES, DIAGNOSIS_CATEGORIES, DiagnosisRule } from '../model/DiagnosisRules';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo, picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
@@ -28,6 +28,7 @@ class DomainEntry {
 class ParsedRecommendations {
   recommendations: GuidelineRecommendation[] = [];
   summary: string = '';
+  gaps: GapSignal[] = [];
 }
 
 class GuidelineRecommendation {
@@ -38,17 +39,76 @@ class GuidelineRecommendation {
   type: string = '';
 }
 
+class PathScore {
+  path: string = '';
+  score: number = 0;
+}
+
+class AgentStep {
+  agent: string = '';
+  status: string = '';
+  input: string = '';
+  output: string = '';
+  durationMs: number = 0;
+
+  toJson(): Record<string, Object> {
+    return {
+      'agent': this.agent,
+      'status': this.status,
+      'input': this.input,
+      'output': this.output,
+      'durationMs': this.durationMs,
+    };
+  }
+
+  static fromJson(obj: Record<string, Object>): AgentStep {
+    const s = new AgentStep();
+    s.agent = (obj['agent'] as string) || '';
+    s.status = (obj['status'] as string) || '';
+    s.input = (obj['input'] as string) || '';
+    s.output = (obj['output'] as string) || '';
+    s.durationMs = (obj['durationMs'] as number) || 0;
+    return s;
+  }
+}
+
+class AuditIssue {
+  index: number = 0;
+  type: string = '';
+  description: string = '';
+}
+
+class GapSignal {
+  category: string = '';
+  supplementaryTerms: string[] = [];
+}
+
+class AuditAgentResult {
+  issues: AuditIssue[] = [];
+  gaps: GapSignal[] = [];
+}
+
 class DiagnosisKbData {
   ruleId: string = '';
   searchResults: SearchResult[] = [];
   verifiedPaths: string[] = [];
   partialPaths: string[] = [];
+  candidatePaths: string[] = [];
   recommendations: GuidelineRecommendation[] = [];
   loadingKb: boolean = false;
   loadingAdvice: boolean = false;
   summary: string = '';
   verifyInfo: string = '';
   isLowRelevance: boolean = false;
+  adviceError: string = '';
+  agentSteps: AgentStep[] = [];
+  feedbackRound: number = 0;
+  expandedInfo: string = '';
+  matchedDirs: string[] = [];
+  expandedSearchTerms: string[] = [];
+  expandedEtiologyTerms: string[] = [];
+  expandedTreatmentTerms: string[] = [];
+  expandedMonitoringTerms: string[] = [];
 
   toJson(): string {
     const srList: Record<string, string>[] = [];
@@ -59,15 +119,29 @@ class DiagnosisKbData {
     for (const rec of this.recommendations) {
       recList.push({ 'text': rec.text, 'evidenceLevel': rec.evidenceLevel, 'source': rec.source, 'category': rec.category, 'type': rec.type });
     }
+    const stepsList: Record<string, Object>[] = [];
+    for (const step of this.agentSteps) {
+      stepsList.push(step.toJson());
+    }
     const obj: Record<string, Object> = {
       'ruleId': this.ruleId,
       'searchResults': srList,
       'verifiedPaths': this.verifiedPaths,
       'partialPaths': this.partialPaths,
+      'candidatePaths': this.candidatePaths,
       'recommendations': recList,
       'summary': this.summary,
       'verifyInfo': this.verifyInfo,
       'isLowRelevance': this.isLowRelevance,
+      'adviceError': this.adviceError,
+      'agentSteps': stepsList,
+      'feedbackRound': this.feedbackRound,
+      'expandedInfo': this.expandedInfo,
+      'matchedDirs': this.matchedDirs,
+      'expandedSearchTerms': this.expandedSearchTerms,
+      'expandedEtiologyTerms': this.expandedEtiologyTerms,
+      'expandedTreatmentTerms': this.expandedTreatmentTerms,
+      'expandedMonitoringTerms': this.expandedMonitoringTerms,
     };
     return JSON.stringify(obj);
   }
@@ -112,6 +186,31 @@ class DiagnosisKbData {
     d.summary = (obj['summary'] as string) || '';
     d.verifyInfo = (obj['verifyInfo'] as string) || '';
     d.isLowRelevance = (obj['isLowRelevance'] as boolean) || false;
+    d.adviceError = (obj['adviceError'] as string) || '';
+    const cpArr = obj['candidatePaths'] as Array<string>;
+    if (cpArr !== undefined && cpArr !== null) {
+      d.candidatePaths = cpArr;
+    }
+    const stepsArr = obj['agentSteps'] as Array<Record<string, Object>>;
+    if (stepsArr !== undefined && stepsArr !== null) {
+      for (const stepObj of stepsArr) {
+        d.agentSteps.push(AgentStep.fromJson(stepObj));
+      }
+    }
+    d.feedbackRound = (obj['feedbackRound'] as number) || 0;
+    d.expandedInfo = (obj['expandedInfo'] as string) || '';
+    const mdArr = obj['matchedDirs'] as Array<string>;
+    if (mdArr !== undefined && mdArr !== null) {
+      d.matchedDirs = mdArr;
+    }
+    const estArr = obj['expandedSearchTerms'] as Array<string>;
+    if (estArr !== undefined && estArr !== null) { d.expandedSearchTerms = estArr; }
+    const eetArr = obj['expandedEtiologyTerms'] as Array<string>;
+    if (eetArr !== undefined && eetArr !== null) { d.expandedEtiologyTerms = eetArr; }
+    const ettArr = obj['expandedTreatmentTerms'] as Array<string>;
+    if (ettArr !== undefined && ettArr !== null) { d.expandedTreatmentTerms = ettArr; }
+    const emtArr = obj['expandedMonitoringTerms'] as Array<string>;
+    if (emtArr !== undefined && emtArr !== null) { d.expandedMonitoringTerms = emtArr; }
     return d;
   }
 }
@@ -1365,40 +1464,65 @@ export struct PatientDetailPage {
       kbData.ruleId = diag.ruleId;
       kbData.loadingKb = true;
       this.diagnosisKbMap = [...this.diagnosisKbMap, kbData];
-      let query = diag.name;
-      const labKeywords = this.kbService.buildSearchKeywordsFromAbnormalLabs(this.dashboard.latestData);
-      if (labKeywords.length > 0) {
-        const keywordStr = labKeywords.slice(0, 5).join(' ');
-        query = query + ' ' + keywordStr;
-      }
+      const query = diag.name;
+      const rule = DIAGNOSIS_RULES.find((r: DiagnosisRule): boolean => r.id === diag.ruleId);
+      const ruleDesc = rule !== undefined ? rule.description : '';
+      hilog.info(0x0001, 'MedCalc', 'loadDiagnosisKb: ruleId=' + diag.ruleId + ' name=' + query);
+
+      const expandStep = new AgentStep();
+      expandStep.agent = 'ExpandAgent';
+      expandStep.status = 'running';
+      expandStep.input = query;
+      kbData.agentSteps = [expandStep];
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+
       try {
-        const smartResults = await this.kbService.smartSearch(query, 10);
-        kbData.searchResults = smartResults;
-        const partialPathSet = new Set<string>();
-        for (const pp of this.kbService.lastPartialPaths) {
-          partialPathSet.add(pp);
+        const searchResult = await this.kbService.smartSearchV2Full(query, ruleDesc);
+        const expanded = searchResult.expanded;
+
+        expandStep.status = 'done';
+        expandStep.output = expanded.searchTerms.slice(0, 5).join('/') + ' → ' + expanded.directories.slice(0, 5).join('/');
+        expandStep.durationMs = 0;
+        kbData.expandedInfo = '搜索词: ' + expanded.searchTerms.join(', ') + '\n目录: ' + searchResult.matchedDirs.join(', ');
+        kbData.expandedSearchTerms = expanded.searchTerms.slice();
+        kbData.expandedEtiologyTerms = expanded.etiologyTerms.slice();
+        kbData.expandedTreatmentTerms = expanded.treatmentTerms.slice();
+        kbData.expandedMonitoringTerms = expanded.monitoringTerms.slice();
+
+        const searchStep = new AgentStep();
+        searchStep.agent = 'SearchAgent';
+        searchStep.status = 'done';
+        searchStep.input = searchResult.matchedDirs.length.toString() + '个目录';
+        searchStep.output = searchResult.candidatePaths.length.toString() + '篇候选';
+        kbData.agentSteps = [expandStep, searchStep];
+
+        kbData.candidatePaths = searchResult.candidatePaths;
+        kbData.verifiedPaths = searchResult.candidatePaths;
+        kbData.matchedDirs = searchResult.matchedDirs;
+        const searchResults: SearchResult[] = [];
+        for (const path of searchResult.candidatePaths) {
+          const sr = new SearchResult();
+          sr.path = path;
+          sr.title = path.split('/').pop()?.replace(/\.md$/, '') || '';
+          searchResults.push(sr);
         }
-        kbData.partialPaths = this.kbService.lastPartialPaths;
-        const fullPaths: string[] = [];
-        for (const sr of smartResults) {
-          if (!partialPathSet.has(sr.path)) {
-            fullPaths.push(sr.path);
-          }
-        }
-        kbData.verifiedPaths = fullPaths;
-        const totalExpanded = this.kbService.lastExpandedCount;
-        const yCount = fullPaths.length;
-        const pCount = kbData.partialPaths.length;
-        kbData.verifyInfo = '广搜:' + totalExpanded.toString() + '→全文:' + yCount.toString() + '+片段:' + pCount.toString();
+        kbData.searchResults = searchResults;
+        kbData.verifyInfo = '目录限域FTS: ' + searchResult.candidatePaths.length.toString() + '篇候选';
       } catch (_e) {
+        expandStep.status = 'error';
+        expandStep.output = '搜索异常';
         kbData.searchResults = [];
         kbData.verifiedPaths = [];
-        kbData.partialPaths = [];
+        kbData.candidatePaths = [];
         kbData.verifyInfo = '搜索异常';
       }
       kbData.loadingKb = false;
       this.diagnosisKbMap = [...this.diagnosisKbMap];
       this.saveKbData(kbData);
+      hilog.info(0x0001, 'MedCalc', 'loadDiagnosisKb: done, verifiedPaths=' + kbData.verifiedPaths.length.toString());
+      if (kbData.verifiedPaths.length > 0) {
+        this.loadDiagnosisAdvice(diag);
+      }
     }
   }
 
@@ -1412,17 +1536,26 @@ export struct PatientDetailPage {
   }
 
   async loadDiagnosisAdvice(diag: PatientDiagnosis) {
+    hilog.info(0x0001, 'MedCalc', 'loadDiagnosisAdvice called for ' + diag.ruleId);
     const kbData = this.getDiagnosisKb(diag.ruleId);
     if (kbData === null) {
+      hilog.warn(0x0001, 'MedCalc', 'loadDiagnosisAdvice: kbData is null');
       return;
     }
     if (kbData.recommendations.length > 0) {
+      hilog.info(0x0001, 'MedCalc', 'loadDiagnosisAdvice: already has ' + kbData.recommendations.length.toString() + ' recommendations');
       this.activeAdviceRuleId = diag.ruleId;
       this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
       this.showRecommendationsDetail = true;
       return;
     }
     kbData.loadingAdvice = true;
+    kbData.adviceError = '';
+    const extractStep = new AgentStep();
+    extractStep.agent = 'ExtractAgent';
+    extractStep.status = 'running';
+    extractStep.input = kbData.verifiedPaths.length.toString() + '篇文献';
+    kbData.agentSteps = [...kbData.agentSteps, extractStep];
     this.diagnosisKbMap = [...this.diagnosisKbMap];
 
     const guidelinePaths: string[] = [];
@@ -1435,24 +1568,39 @@ export struct PatientDetailPage {
       }
     }
 
-    let contextText = '';
-    let guidelineChars = 0;
-    for (const path of guidelinePaths) {
-      const page = await this.kbService.getPage(path);
-      if (page !== null && page.content.trim().length >= 100) {
-        contextText += '### [指南] ' + path + '\n---\n' + page.content + '\n\n';
-        guidelineChars += page.content.length;
-      }
-    }
-    const remainingBudget = Math.max(0, 87000 - guidelineChars);
+     const MAX_CONTEXT_CHARS = 80000;
+     const MAX_GUIDELINE_PER_FILE = 15000;
+      const eqr = new ExpandedQueryResult();
+      eqr.searchTerms = kbData.expandedSearchTerms;
+      eqr.etiologyTerms = kbData.expandedEtiologyTerms;
+      eqr.treatmentTerms = kbData.expandedTreatmentTerms;
+      eqr.monitoringTerms = kbData.expandedMonitoringTerms;
+      const guidelinePathsSorted = await this.prioritizePaths(guidelinePaths, diag.name, eqr);
+     let contextText = '';
+     let guidelineChars = 0;
+     for (const path of guidelinePathsSorted) {
+       if (contextText.length >= MAX_CONTEXT_CHARS) { break; }
+       const page = await this.kbService.getPage(path);
+       if (page !== null && page.content.trim().length >= 100) {
+         let content = page.content;
+         if (content.length > MAX_GUIDELINE_PER_FILE) {
+           const kw: string[] = diag.name.split(/\s+/);
+           content = this.kbService.excerptContent(content, kw, MAX_GUIDELINE_PER_FILE);
+         }
+         contextText += '### [指南] ' + path + '\n---\n' + content + '\n\n';
+         guidelineChars += content.length;
+       }
+     }
+     const remainingBudget = Math.max(0, MAX_CONTEXT_CHARS - contextText.length);
     const textbookCount = textbookPaths.length;
     let perChapterBudget = 20000;
     if (textbookCount > 0) {
       perChapterBudget = Math.min(20000, Math.floor(remainingBudget / textbookCount));
     }
-    const queryKeywords: string[] = diag.name.split(/\s+/);
-    for (const path of textbookPaths) {
-      const page = await this.kbService.getPage(path);
+     const queryKeywords: string[] = diag.name.split(/\s+/);
+     for (const path of textbookPaths) {
+       if (contextText.length >= MAX_CONTEXT_CHARS) { break; }
+       const page = await this.kbService.getPage(path);
       if (page !== null && page.content.trim().length >= 100) {
         let content: string;
         if (perChapterBudget > 0 && page.content.length > perChapterBudget) {
@@ -1465,8 +1613,9 @@ export struct PatientDetailPage {
         contextText += '### [教材] ' + path + '\n---\n' + content + '\n\n';
       }
     }
-    const partialBudget = Math.max(0, remainingBudget - textbookCount * perChapterBudget);
-    for (const path of kbData.partialPaths) {
+     const partialBudget = Math.max(0, MAX_CONTEXT_CHARS - contextText.length);
+     for (const path of kbData.partialPaths) {
+       if (contextText.length >= MAX_CONTEXT_CHARS) { break; }
       const page = await this.kbService.getPage(path);
       if (page !== null && page.content.trim().length >= 100) {
         const excerptBudget = Math.min(15000, partialBudget > 0 ? Math.floor(partialBudget / kbData.partialPaths.length) : 5000);
@@ -1478,16 +1627,24 @@ export struct PatientDetailPage {
     }
 
     if (contextText.length === 0) {
+      extractStep.status = 'error';
+      extractStep.output = '无文献内容';
       kbData.loadingAdvice = false;
       kbData.recommendations = [];
+      kbData.adviceError = '未找到与当前诊断相关的高质量文献，无法提取建议';
       this.diagnosisKbMap = [...this.diagnosisKbMap];
+      this.saveKbData(kbData);
       return;
     }
 
     const config = this.getLlmConfig();
     if (config === null) {
+      extractStep.status = 'error';
+      extractStep.output = 'LLM未配置';
       kbData.loadingAdvice = false;
+      kbData.adviceError = 'AI模型未配置，请在设置页配置LLM后重试';
       this.diagnosisKbMap = [...this.diagnosisKbMap];
+      this.saveKbData(kbData);
       return;
     }
 
@@ -1496,6 +1653,7 @@ export struct PatientDetailPage {
     const isLowRel = kbData.verifiedPaths.length === 0 && kbData.partialPaths.length === 0 && kbData.searchResults.length > 0;
     kbData.isLowRelevance = isLowRel;
 
+    const extractStartTime = Date.now();
     const systemPrompt = '你是ICU临床指南助手。从给定的参考资料中提取与当前诊断直接相关的临床推荐意见和知识要点，同时生成临床要点归纳。' +
       '体裁区分：' +
       '1)对于有明确推荐等级/证据级别的结构化指南内容(如"强烈推荐""条件推荐""GPS"等)，type="推荐意见"，保留原文等级；' +
@@ -1515,9 +1673,10 @@ export struct PatientDetailPage {
       '"治疗建议"：治疗措施、药物方案、剂量建议、复苏目标。' +
       '特别注意"监测评估"类：如果参考资料提到任何需要监测/复查/评估的指标（如乳酸、尿量、生命体征、器官功能等）或评分工具（如SOFA、APACHE、CURB-65等），必须提取到"监测评估"类，不要遗漏。' +
       '\n\n输出格式要求（严格遵守）：' +
-      '第一部分：JSON，只包含recommendations数组，不要在JSON中放summary。格式如下：\n' +
-      '```json\n{"recommendations":[{"text":"内容","evidenceLevel":"级别或-","source":"来源标注","category":"病理生理|诊断要点|监测评估|治疗建议","type":"推荐意见|知识要点|混合"}]}\n```\n' +
+      '第一部分：JSON，包含recommendations和gaps数组，不要在JSON中放summary。格式如下：\n' +
+      '```json\n{"recommendations":[{"text":"内容","evidenceLevel":"级别或-","source":"来源标注","category":"病理生理|诊断要点|监测评估|治疗建议","type":"推荐意见|知识要点|混合"}],"gaps":[{"category":"治疗建议","supplementaryTerms":["补搜词1","补搜词2"]}]}\n```\n' +
       '第二部分：临床要点归纳（纯markdown，不在JSON内）。以"## 临床要点"开头，按"病理生理""诊断要点""监测评估""治疗建议"四方面分节归纳，用分点列表呈现，整合相关条目为逻辑清晰的要点，保留关键数值和药物信息，用**加粗**标记关键词。不是精简而是重组，不要遗漏已有条目。某类别无内容则不输出该节。' +
+      '\n\n缺口检测：如果某类别在参考资料中确实为空，判断该类别是否属于"该诊断在ICU一定有此类内容"的情况：治疗建议/诊断要点/监测评估为空时，在gaps数组中输出该类别及补搜词(如药物名、检查名、操作名)；病理生理为空不输出gaps。如果无缺口，gaps输出空数组[]。' +
       '\n\n关键约束（严格遵守，违反即为严重错误）：' +
       '1. 临床要点归纳(summary)中的每一条内容，必须在recommendations数组中有对应的条目。summary不能包含recommendations中不存在的内容。' +
       '2. 每条recommendation的text必须直接来自参考资料中与当前诊断疾病直接相关的段落，不能把讲其他疾病的内容张冠李戴。例如参考资料来自"脓毒症/机制"文章，其中关于脓毒症心肌抑制的段落不应提取为"代谢性酸中毒的诊断要点"。' +
@@ -1530,24 +1689,191 @@ export struct PatientDetailPage {
       '\n## 参考资料\n' + contextText +
       '\n## 任务\n从以上参考资料提取相关推荐意见和知识要点，并生成临床要点归纳。先输出JSON部分，再输出markdown临床要点部分。';
 
+    let recommendations: GuidelineRecommendation[] = [];
+    let summary = '';
+    let gaps: GapSignal[] = [];
+
     try {
+      hilog.info(0x0001, 'MedCalc', 'ExtractAgent: calling LLM, contextLen=' + contextText.length.toString());
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
+      hilog.info(0x0001, 'MedCalc', 'ExtractAgent: LLM response length=' + response.length.toString());
       const parsed = this.parseRecommendationsAndSummary(response);
-      kbData.recommendations = parsed.recommendations;
-      kbData.summary = parsed.summary;
-      if (this.activeAdviceRuleId === diag.ruleId) {
-        this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
-      }
+      recommendations = parsed.recommendations;
+      summary = parsed.summary;
+      gaps = parsed.gaps;
+      extractStep.status = 'done';
+      extractStep.durationMs = Date.now() - extractStartTime;
+      extractStep.output = recommendations.length.toString() + '条建议' +
+        (gaps.length > 0 ? ' ⚠️缺口:' + gaps.map((g: GapSignal): string => g.category).join(',') : '');
+      hilog.info(0x0001, 'MedCalc', 'ExtractAgent: parsed ' + recommendations.length.toString() + ' recommendations, gaps=' + gaps.length.toString());
     } catch (_e) {
+      hilog.error(0x0001, 'MedCalc', 'ExtractAgent: LLM call failed: ' + String(_e));
+      extractStep.status = 'error';
+      extractStep.output = 'LLM调用失败';
       kbData.recommendations = [];
-      kbData.summary = 'AI暂不可用，请稍后重试';
+      kbData.summary = '';
+      kbData.loadingAdvice = false;
+      kbData.adviceError = 'AI服务调用失败，请检查LLM配置或网络后重试';
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+      this.saveKbData(kbData);
+      return;
+    }
+
+    kbData.agentSteps = [...kbData.agentSteps];
+
+    let auditIssues: AuditIssue[] = [];
+    if (recommendations.length > 0) {
+      const auditResult = await this.runAuditAgent(recommendations, diag.name, config, kbData);
+      auditIssues = auditResult.issues;
+      gaps = auditResult.gaps;
+      if (auditResult.issues.length > 0) {
+        const removedSet = new Set<number>();
+        for (const issue of auditResult.issues) {
+          if (issue.type === '交叉污染') {
+            removedSet.add(issue.index);
+          } else if (issue.type === '证据等级错误') {
+            if (issue.index >= 0 && issue.index < recommendations.length) {
+              recommendations[issue.index].evidenceLevel = '-';
+            }
+          }
+        }
+        if (removedSet.size > 0) {
+          const filtered: GuidelineRecommendation[] = [];
+          for (let i = 0; i < recommendations.length; i++) {
+            if (!removedSet.has(i)) {
+              filtered.push(recommendations[i]);
+            }
+          }
+          recommendations = filtered;
+        }
+      }
+    }
+
+    if (gaps.length > 0 && kbData.feedbackRound < 1 && kbData.matchedDirs.length > 0) {
+      const feedbackStep = new AgentStep();
+      feedbackStep.agent = 'Feedback';
+      feedbackStep.status = 'running';
+      feedbackStep.input = gaps.map((g: GapSignal): string => g.category + ':' + g.supplementaryTerms.slice(0, 3).join(',')).join('; ');
+      kbData.agentSteps = [...kbData.agentSteps, feedbackStep];
+      this.diagnosisKbMap = [...this.diagnosisKbMap];
+
+      const suppTerms: string[] = [];
+      for (const gap of gaps) {
+        for (const term of gap.supplementaryTerms) {
+          if (suppTerms.indexOf(term) < 0) {
+            suppTerms.push(term);
+          }
+        }
+      }
+
+      let suppPaths: string[] = [];
+      try {
+        suppPaths = await this.kbService.directoryLimitedFts(kbData.matchedDirs, suppTerms);
+      } catch (_e) {
+        hilog.warn(0x0001, 'MedCalc', 'Feedback: supplementary search failed');
+      }
+
+      const existingPathSet: Record<string, boolean> = {};
+      for (const p of kbData.verifiedPaths) { existingPathSet[p] = true; }
+      const newPaths: string[] = [];
+      for (const p of suppPaths) {
+        if (existingPathSet[p] === undefined) {
+          newPaths.push(p);
+          existingPathSet[p] = true;
+        }
+      }
+
+      feedbackStep.output = '补搜' + newPaths.length.toString() + '篇';
+      hilog.info(0x0001, 'MedCalc', 'Feedback: supplementary found ' + newPaths.length.toString() + ' new articles');
+
+      if (newPaths.length > 0) {
+        const suppExtractStep = new AgentStep();
+        suppExtractStep.agent = 'ExtractAgent';
+        suppExtractStep.status = 'running';
+        suppExtractStep.input = '补搜' + newPaths.length.toString() + '篇(缺口类别)';
+        kbData.agentSteps = [...kbData.agentSteps, suppExtractStep];
+        this.diagnosisKbMap = [...this.diagnosisKbMap];
+
+        let suppContext = '';
+        for (const path of newPaths) {
+          const page = await this.kbService.getPage(path);
+          if (page !== null && page.content.trim().length >= 100) {
+            const excerpt = this.kbService.excerptContent(page.content, queryKeywords, 6000);
+            suppContext += '### [补搜] ' + path + '\n---\n' + excerpt + '\n\n';
+          }
+        }
+
+        if (suppContext.length > 0) {
+          const gapCategories = gaps.map((g: GapSignal): string => g.category);
+          const suppSystemPrompt = '你是ICU临床指南助手。从给定的补搜资料中只提取以下缺口类别的建议：' +
+            gapCategories.join('、') +
+            '。格式：```json\n{"recommendations":[{"text":"内容","evidenceLevel":"级别或-","source":"来源","category":"类别","type":"推荐意见|知识要点|混合"}]}\n```\n' +
+            '只提取与诊断"' + diag.name + '"直接相关的内容，不要提取其他疾病的建议。';
+          const suppUserText = '诊断：' + diag.name + '\n## 补搜参考资料\n' + suppContext;
+
+          try {
+            const suppStartTime = Date.now();
+            const suppResponse = await sendVisionRequest(config, suppSystemPrompt, suppUserText, '', '');
+            const suppParsed = this.parseRecommendations(suppResponse);
+            for (const rec of suppParsed) {
+              recommendations.push(rec);
+            }
+            suppExtractStep.status = 'done';
+            suppExtractStep.durationMs = Date.now() - suppStartTime;
+            suppExtractStep.output = suppParsed.length.toString() + '条补充建议';
+            hilog.info(0x0001, 'MedCalc', 'Feedback ExtractAgent: got ' + suppParsed.length.toString() + ' supplementary recommendations');
+          } catch (_e) {
+            suppExtractStep.status = 'error';
+            suppExtractStep.output = '补搜提取失败';
+          }
+        } else {
+          suppExtractStep.status = 'done';
+          suppExtractStep.output = '无有效内容';
+        }
+
+        for (const p of newPaths) {
+          kbData.verifiedPaths.push(p);
+          kbData.candidatePaths.push(p);
+          const sr = new SearchResult();
+          sr.path = p;
+          sr.title = p.split('/').pop()?.replace(/\.md$/, '') || '';
+          kbData.searchResults.push(sr);
+        }
+      }
+
+      feedbackStep.status = 'done';
+      kbData.feedbackRound = 1;
+      kbData.agentSteps = [...kbData.agentSteps];
+    }
+
+    const mergeStep = new AgentStep();
+    mergeStep.agent = 'MergeAgent';
+    mergeStep.status = 'done';
+    mergeStep.input = recommendations.length.toString() + '条建议';
+    const catCount: Record<string, number> = {};
+    for (const rec of recommendations) {
+      if (catCount[rec.category] === undefined) {
+        catCount[rec.category] = 0;
+      }
+      catCount[rec.category] = catCount[rec.category] + 1;
+    }
+    mergeStep.output = Object.keys(catCount).map((k: string): string => k + catCount[k] + '条').join(' ');
+    kbData.agentSteps = [...kbData.agentSteps, mergeStep];
+
+    kbData.recommendations = recommendations;
+    kbData.summary = summary;
+    if (recommendations.length === 0) {
+      kbData.adviceError = summary.length > 0 ? summary.substring(0, 120) : 'AI未能从文献中提取出有效建议，可点击重搜后再试';
+    }
+    if (this.activeAdviceRuleId === diag.ruleId) {
+      this.summaryLines = summary.length > 0 ? parseKbMarkdown(summary) : [];
     }
     kbData.loadingAdvice = false;
     this.diagnosisKbMap = [...this.diagnosisKbMap];
     this.activeAdviceRuleId = diag.ruleId;
-    this.summaryLines = kbData.summary.length > 0 ? parseKbMarkdown(kbData.summary) : [];
+    this.summaryLines = summary.length > 0 ? parseKbMarkdown(summary) : [];
     this.saveKbData(kbData);
-    if (kbData.recommendations.length > 0) {
+    if (recommendations.length > 0) {
       this.adviceReadyRuleId = diag.ruleId;
       setTimeout(() => {
         if (this.adviceReadyRuleId === diag.ruleId) {
@@ -1555,6 +1881,156 @@ export struct PatientDetailPage {
         }
       }, 3000);
     }
+  }
+
+  async prioritizePaths(paths: string[], query: string, expanded?: ExpandedQueryResult): Promise<string[]> {
+    const titleMap = await this.kbService.batchGetIndexedTitles(paths);
+    const searchTerms = expanded !== undefined ? expanded.searchTerms : [];
+    const treatmentTerms = expanded !== undefined ? expanded.treatmentTerms : [];
+    const monitoringTerms = expanded !== undefined ? expanded.monitoringTerms : [];
+    const etiologyTerms = expanded !== undefined ? expanded.etiologyTerms : [];
+    const queryLower = query.toLowerCase();
+    const scored: PathScore[] = [];
+    for (const p of paths) {
+      let s = 0;
+      const pLower = p.toLowerCase();
+      if (pLower.includes(queryLower)) { s += 10; }
+      const indexedTitle = titleMap.get(p);
+      const tagText = indexedTitle !== undefined ? indexedTitle.toLowerCase() : pLower;
+      for (const term of searchTerms) {
+        if (tagText.includes(term.toLowerCase())) { s += 6; }
+      }
+      for (const term of treatmentTerms) {
+        if (tagText.includes(term.toLowerCase())) { s += 5; }
+      }
+      for (const term of monitoringTerms) {
+        if (tagText.includes(term.toLowerCase())) { s += 3; }
+      }
+      for (const term of etiologyTerms) {
+        if (tagText.includes(term.toLowerCase())) { s += 1; }
+      }
+      if (p.includes('实用重症医学')) { s += 5; }
+      if (p.match(/20\d{2}\s/) !== null) { s += 3; }
+      const ps = new PathScore();
+      ps.path = p;
+      ps.score = s;
+      scored.push(ps);
+    }
+    scored.sort((a: PathScore, b: PathScore): number => b.score - a.score);
+    const result: string[] = [];
+    for (const item of scored) { result.push(item.path); }
+    return result;
+  }
+
+  async runAuditAgent(recommendations: GuidelineRecommendation[], diagName: string, config: ApiServiceConfig, kbData: DiagnosisKbData): Promise<AuditAgentResult> {
+    const auditStep = new AgentStep();
+    auditStep.agent = 'AuditAgent';
+    auditStep.status = 'running';
+    auditStep.input = recommendations.length.toString() + '条建议';
+    kbData.agentSteps = [...kbData.agentSteps, auditStep];
+    this.diagnosisKbMap = [...this.diagnosisKbMap];
+
+    const auditStartTime = Date.now();
+    const recList: Record<string, string>[] = [];
+    for (let i = 0; i < recommendations.length; i++) {
+      recList.push({
+        'index': i.toString(),
+        'text': recommendations[i].text.substring(0, 200),
+        'evidenceLevel': recommendations[i].evidenceLevel,
+        'category': recommendations[i].category,
+        'type': recommendations[i].type,
+        'source': recommendations[i].source,
+      });
+    }
+
+    const auditPrompt = '你是ICU临床建议质量审核员。审核以下提取结果，检查3类问题：\n\n' +
+      '1. 交叉污染：某条建议描述的疾病/主题与诊断"' + diagName + '"无关\n' +
+      '   判断标准：建议text中提到其他疾病作为主语/主要对象，而非作为鉴别诊断提及\n' +
+      '   例：诊断是"代谢性酸中毒"，某条建议主要讲"脓毒症的心肌抑制"→交叉污染\n' +
+      '   非：诊断是"代谢性酸中毒"，建议提到"脓毒症可导致代谢性酸中毒"→不是交叉污染\n\n' +
+      '2. 证据等级错误：type="知识要点"但evidenceLevel不是"-"\n' +
+      '   知识要点不应有证据等级，应填"-"\n\n' +
+      '3. 类别缺口：某类别为空，但该诊断在ICU临床实践中一定有此类内容\n' +
+      '   高钾血症/脓毒症/ARDS/呼吸衰竭等一定有治疗措施\n' +
+      '   大多数ICU诊断都有监测指标\n\n' +
+      '输出JSON（严格遵守格式）：\n' +
+      '```json\n{"issues":[{"index":0,"type":"交叉污染","description":"问题描述"}],"gaps":[{"category":"治疗建议","supplementaryTerms":["补搜词1","补搜词2"]}]}\n```\n' +
+      '如果没有问题，issues和gaps输出空数组[]。\n\n' +
+      '审核的recommendations列表：\n' +
+      JSON.stringify(recList);
+
+    const auditResult = new AuditAgentResult();
+
+    try {
+      const auditResponse = await sendVisionRequest(config, auditPrompt, '', '', '');
+      hilog.info(0x0001, 'MedCalc', 'AuditAgent: response=' + auditResponse.substring(0, 500));
+
+      let jsonStr = auditResponse;
+      const cbStart = auditResponse.indexOf('```json');
+      if (cbStart >= 0) {
+        const afterStart = auditResponse.indexOf('{', cbStart);
+        const cbEnd = auditResponse.indexOf('```', afterStart >= 0 ? afterStart : cbStart + 7);
+        if (afterStart >= 0 && cbEnd > afterStart) {
+          jsonStr = auditResponse.substring(afterStart, cbEnd);
+        }
+      } else {
+        const jStart = auditResponse.indexOf('{');
+        const jEnd = auditResponse.lastIndexOf('}');
+        if (jStart >= 0 && jEnd > jStart) {
+          jsonStr = auditResponse.substring(jStart, jEnd + 1);
+        }
+      }
+
+      const parsed: Object | null = JSON.parse(jsonStr);
+      if (parsed !== null) {
+        const obj = parsed as Record<string, Object>;
+        const issuesArr = obj['issues'] as Array<Record<string, Object>>;
+        if (issuesArr !== undefined && issuesArr !== null) {
+          for (const item of issuesArr) {
+            const ai = new AuditIssue();
+            ai.index = (item['index'] as number) || 0;
+            ai.type = (item['type'] as string) || '';
+            ai.description = (item['description'] as string) || '';
+            auditResult.issues.push(ai);
+          }
+        }
+        const gapsArr = obj['gaps'] as Array<Record<string, Object>>;
+        if (gapsArr !== undefined && gapsArr !== null) {
+          for (const item of gapsArr) {
+            const gs = new GapSignal();
+            gs.category = (item['category'] as string) || '';
+            const terms = item['supplementaryTerms'] as Array<string>;
+            if (terms !== undefined && terms !== null) {
+              gs.supplementaryTerms = terms;
+            }
+            auditResult.gaps.push(gs);
+          }
+        }
+      }
+
+      auditStep.status = 'done';
+      auditStep.durationMs = Date.now() - auditStartTime;
+      const issueSummary: string[] = [];
+      if (auditResult.issues.length > 0) {
+        const crossCount = auditResult.issues.filter((ii: AuditIssue): boolean => ii.type === '交叉污染').length;
+        const levelCount = auditResult.issues.filter((ii: AuditIssue): boolean => ii.type === '证据等级错误').length;
+        if (crossCount > 0) { issueSummary.push('交叉污染:' + crossCount.toString() + '条'); }
+        if (levelCount > 0) { issueSummary.push('证据等级:' + levelCount.toString() + '条'); }
+      }
+      if (auditResult.gaps.length > 0) {
+        issueSummary.push('缺口:' + auditResult.gaps.map((g: GapSignal): string => g.category).join(','));
+      }
+      auditStep.output = issueSummary.length > 0 ? issueSummary.join(' ') : '通过';
+    } catch (_e) {
+      hilog.warn(0x0001, 'MedCalc', 'AuditAgent: failed: ' + String(_e));
+      auditStep.status = 'error';
+      auditStep.output = '审核失败';
+    }
+
+    kbData.agentSteps = [...kbData.agentSteps];
+    this.diagnosisKbMap = [...this.diagnosisKbMap];
+
+    return auditResult;
   }
 
   getLlmConfig(): ApiServiceConfig | null {
@@ -1668,6 +2144,7 @@ export struct PatientDetailPage {
       summaryPart = responseText.substring(markerIdx);
     }
     result.recommendations = this.parseRecommendations(jsonPart);
+    result.gaps = this.parseGapsFromJson(jsonPart);
     if (summaryPart.length > 0) {
       const headerEnd = summaryPart.indexOf('\n');
       if (headerEnd >= 0 && summaryPart.substring(0, headerEnd).trim() === '## 临床要点') {
@@ -1685,6 +2162,58 @@ export struct PatientDetailPage {
       }
     }
     return result;
+  }
+
+  parseGapsFromJson(responseText: string): GapSignal[] {
+    const gaps: GapSignal[] = [];
+    let jsonStr = responseText;
+    const codeBlockStart = responseText.indexOf('```json');
+    if (codeBlockStart >= 0) {
+      const afterStart = responseText.indexOf('{', codeBlockStart);
+      const codeBlockEnd = responseText.indexOf('```', afterStart >= 0 ? afterStart : codeBlockStart + 7);
+      if (afterStart >= 0 && codeBlockEnd > afterStart) {
+        jsonStr = responseText.substring(afterStart, codeBlockEnd);
+      }
+    } else {
+      const jsonStart = responseText.indexOf('{');
+      if (jsonStart >= 0) {
+        let depth = 0;
+        let endIdx = -1;
+        for (let i = jsonStart; i < responseText.length; i++) {
+          if (responseText.charAt(i) === '{') { depth++; }
+          else if (responseText.charAt(i) === '}') {
+            depth--;
+            if (depth === 0) { endIdx = i; break; }
+          }
+        }
+        if (endIdx > jsonStart) {
+          jsonStr = responseText.substring(jsonStart, endIdx + 1);
+        }
+      }
+    }
+    try {
+      const parsed: Object | null = JSON.parse(jsonStr);
+      if (parsed !== null) {
+        const obj = parsed as Record<string, Object>;
+        const gapsArr = obj['gaps'] as Array<Record<string, Object>>;
+        if (gapsArr !== undefined && gapsArr !== null) {
+          for (const item of gapsArr) {
+            const gs = new GapSignal();
+            gs.category = (item['category'] as string) || '';
+            const terms = item['supplementaryTerms'] as Array<string>;
+            if (terms !== undefined && terms !== null) {
+              gs.supplementaryTerms = terms;
+            }
+            if (gs.category.length > 0) {
+              gaps.push(gs);
+            }
+          }
+        }
+      }
+    } catch (_e) {
+      hilog.warn(0x0001, 'MedCalc', 'parseGapsFromJson: failed to parse gaps');
+    }
+    return gaps;
   }
 
   getKbSearchResultTitle(sr: SearchResult): string {
@@ -1923,14 +2452,35 @@ export struct PatientDetailPage {
         });
 
         if (this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
-          Row() {
-            LoadingProgress().width(16).height(16).color('#7A8074');
-            Text('检索指南中...')
-              .fontSize(11)
-              .fontColor('#7A8074')
-              .margin({ left: 6 });
+          Column() {
+            ForEach(this.getDiagnosisKb(diag.ruleId)!.agentSteps, (step: AgentStep) => {
+              Row() {
+                if (step.status === 'done') {
+                  Text('✓')
+                    .fontSize(10)
+                    .fontColor('#2D6A4F')
+                    .margin({ right: 4 });
+                } else {
+                  LoadingProgress().width(10).height(10).color('#7A8074')
+                    .margin({ right: 4 });
+                }
+                Text(step.agent)
+                  .fontSize(10)
+                  .fontWeight(step.status === 'running' ? FontWeight.Bold : FontWeight.Normal)
+                  .fontColor(step.status === 'running' ? '#1F3D2F' : '#7A8074');
+                if (step.output.length > 0) {
+                  Text(step.output)
+                    .fontSize(9)
+                    .fontColor('#7A8074')
+                    .margin({ left: 4 });
+                }
+              }
+              .width('100%')
+              .padding({ top: 2, bottom: 2 });
+            }, (step: AgentStep, index: number) => step.agent + index.toString());
           }
-          .margin({ top: 4 });
+          .margin({ top: 4, left: 4 })
+          .width('100%');
         } else if (this.expandedRefIds.has(diag.ruleId) && this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
           Column() {
             ForEach(this.getDiagnosisKb(diag.ruleId)!.searchResults, (sr: SearchResult) => {
@@ -1988,14 +2538,40 @@ export struct PatientDetailPage {
           }
           .margin({ top: 6 });
         } else if (this.getDiagnosisKb(diag.ruleId)!.loadingAdvice) {
-          Row() {
-            LoadingProgress().width(14).height(14).color('#7A8074');
-            Text('提取指南建议中...')
-              .fontSize(11)
-              .fontColor('#7A8074')
-              .margin({ left: 6 });
+          Column() {
+            ForEach(this.getDiagnosisKb(diag.ruleId)!.agentSteps, (step: AgentStep) => {
+              Row() {
+                if (step.status === 'done') {
+                  Text('✓')
+                    .fontSize(10)
+                    .fontColor('#2D6A4F')
+                    .margin({ right: 4 });
+                } else if (step.status === 'error') {
+                  Text('✗')
+                    .fontSize(10)
+                    .fontColor('#C8881A')
+                    .margin({ right: 4 });
+                } else {
+                  LoadingProgress().width(10).height(10).color('#7A8074')
+                    .margin({ right: 4 });
+                }
+                Text(step.agent)
+                  .fontSize(10)
+                  .fontWeight(step.status === 'running' ? FontWeight.Bold : FontWeight.Normal)
+                  .fontColor(step.status === 'running' ? '#1F3D2F' : '#7A8074');
+                if (step.output.length > 0) {
+                  Text(step.output)
+                    .fontSize(9)
+                    .fontColor('#7A8074')
+                    .margin({ left: 4 });
+                }
+              }
+              .width('100%')
+              .padding({ top: 2, bottom: 2 });
+            }, (step: AgentStep, index: number) => step.agent + index.toString());
           }
-          .margin({ top: 6 });
+          .margin({ top: 4, left: 4 })
+          .width('100%');
         } else if (this.getDiagnosisKb(diag.ruleId)!.recommendations.length > 0) {
           Row() {
             Text('指南建议 · ' + this.getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
@@ -2024,6 +2600,65 @@ export struct PatientDetailPage {
              this.summaryLines = kbData2 !== null && kbData2.summary.length > 0 ? parseKbMarkdown(kbData2.summary) : [];
              this.showRecommendationsDetail = true;
           });
+        } else if (this.getDiagnosisKb(diag.ruleId)!.adviceError.length > 0) {
+          Column() {
+            Row() {
+              Text(this.getDiagnosisKb(diag.ruleId)!.adviceError)
+                .fontSize(10)
+                .fontColor('#C8881A')
+                .layoutWeight(1)
+                .maxLines(3)
+                .textOverflow({ overflow: TextOverflow.Ellipsis })
+            }
+            Row() {
+              if (this.getDiagnosisKb(diag.ruleId)!.summary.length > 0) {
+                Text('详情 >')
+                  .fontSize(10)
+                  .fontColor('#2B6CB0')
+                  .onClick(() => {
+                    this.activeAdviceRuleId = diag.ruleId;
+                    const kbD = this.getDiagnosisKb(diag.ruleId);
+                    this.summaryLines = kbD !== null && kbD.summary.length > 0 ? parseKbMarkdown(kbD.summary) : [];
+                    this.showRecommendationsDetail = true;
+                  });
+              }
+              if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
+                Text('重试建议')
+                  .fontSize(10)
+                  .fontColor('#2B6CB0')
+                  .margin({ left: 8 })
+                  .onClick(() => {
+                    const kbD2 = this.getDiagnosisKb(diag.ruleId);
+                    if (kbD2 !== null) {
+                      kbD2.loadingAdvice = true;
+                      kbD2.adviceError = '';
+                      kbD2.recommendations = [];
+                      this.diagnosisKbMap = [...this.diagnosisKbMap];
+                      this.loadDiagnosisAdvice(diag);
+                    }
+                  });
+              }
+              Blank();
+              Text('重搜')
+                .fontSize(10)
+                .fontColor('#2B6CB0')
+                .onClick(() => {
+                  this.diagnosisKbMap = this.diagnosisKbMap.filter((d: DiagnosisKbData): boolean => d.ruleId !== diag.ruleId);
+                  this.expandedRefIds.delete(diag.ruleId);
+                  this.expandedRefIds = new Set(this.expandedRefIds);
+                  const prefsService = PreferencesService.getInstance();
+                  prefsService.saveDiagnosisKbData(this.currentPatientId, diag.ruleId, '');
+                  this.loadDiagnosisKb();
+                });
+            }
+            .width('100%')
+            .margin({ top: 2 })
+          }
+          .width('100%')
+          .padding({ left: 8, right: 8, top: 4, bottom: 4 })
+          .backgroundColor('#FFF8E1')
+          .borderRadius(4)
+          .margin({ top: 4 });
         } else if (this.getDiagnosisKb(diag.ruleId)!.verifiedPaths.length > 0) {
           Row() {
             Text('查看指南建议')
