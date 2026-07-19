@@ -1,4 +1,5 @@
 import { BgResult, BgInput, calculateBg } from '../../engine/BloodGasCalculator';
+import { getTierColor as calcTierColor } from '../../engine/CalcEngine';
 import { AppColors } from '../../utils/AppColors';
 
 interface CritLine {
@@ -179,26 +180,17 @@ export struct BloodGasCalculator {
   }
 
   getTierColor(cls: string): string {
-    if (cls === 'tier-danger') {
-      return '#DC3545';
-    }
-    if (cls === 'tier-warn') {
-      return AppColors.warning;
-    }
-    if (cls === 'tier-ok') {
-      return '#28A745';
-    }
-    return '#6C757D';
+    return calcTierColor(cls);
   }
 
   getCritItemColor(level: string): string {
     if (level === 'danger') {
-      return '#DC3545';
+      return calcTierColor('tier-danger');
     }
     if (level === 'warn') {
-      return AppColors.warning;
+      return calcTierColor('tier-warn');
     }
-    return '#28A745';
+    return calcTierColor('tier-ok');
   }
 
   reset() {

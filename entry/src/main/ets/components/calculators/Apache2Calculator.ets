@@ -1,4 +1,4 @@
-import { CalcResult } from '../../engine/CalcEngine';
+import { CalcResult, getTierColor as calcTierColor, getTierBgColor as calcTierBgColor } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 import { AppColors } from '../../utils/AppColors';
 
@@ -817,28 +817,10 @@ export struct Apache2Calculator {
   }
 
   private getTierTextColor(tierClass: string): ResourceColor {
-    switch (tierClass) {
-      case 'tier-ok':
-        return AppColors.tierOk;
-      case 'tier-warn':
-        return AppColors.tierWarn;
-      case 'tier-danger':
-        return AppColors.danger;
-      default:
-        return AppColors.textSecondary;
-    }
+    return calcTierColor(tierClass);
   }
 
   private getTierBgColor(tierClass: string): ResourceColor {
-    switch (tierClass) {
-      case 'tier-ok':
-        return AppColors.tierOk;
-      case 'tier-warn':
-        return AppColors.tierWarn;
-      case 'tier-danger':
-        return AppColors.danger;
-      default:
-        return AppColors.fillNeutral;
-    }
+    return calcTierBgColor(tierClass);
   }
 }

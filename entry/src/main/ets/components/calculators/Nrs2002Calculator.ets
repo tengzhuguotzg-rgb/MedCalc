@@ -1,4 +1,4 @@
-import { CalcResult } from '../../engine/CalcEngine';
+import { CalcResult, getTierColor as calcTierColor, getTierBgColor as calcTierBgColor } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 import { AppColors } from '../../utils/AppColors';
 
@@ -420,28 +420,10 @@ export struct Nrs2002Calculator {
   }
 
   private getTierTextColor(tierClass: string): ResourceColor {
-    switch (tierClass) {
-      case 'tier-ok':
-        return AppColors.tierOk;
-      case 'tier-warn':
-        return AppColors.tierWarn;
-      case 'tier-danger':
-        return AppColors.danger;
-      default:
-        return AppColors.textSecondary;
-    }
+    return calcTierColor(tierClass);
   }
 
   private getTierBgColor(tierClass: string): ResourceColor {
-    switch (tierClass) {
-      case 'tier-ok':
-        return AppColors.tierOk;
-      case 'tier-warn':
-        return AppColors.tierWarn;
-      case 'tier-danger':
-        return AppColors.danger;
-      default:
-        return AppColors.fillNeutral;
-    }
+    return calcTierBgColor(tierClass);
   }
 }
