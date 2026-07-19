@@ -2,7 +2,7 @@ import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngin
 import { calculateCrCl } from '../../engine/CrClCalculator';
 
 @Component
-export struct CrClCalculator {  @State sex: string = 'male';
+export struct CrClCalculator {  @State sex: string = '';
   @State age: number = 0;
   @State weight: number = 0;
   @State creatinine: number = 0;

@@ -2,15 +2,21 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateWells } from '../../engine/WellsCalculator';
 
 @Component
-export struct WellsCalculator {  @State clinical: boolean = false;
-  @State hr: boolean = false;
-  @State surgery: boolean = false;
-  @State hemoptysis: boolean = false;
-  @State cancer: boolean = false;
+export struct WellsCalculator {  @State clinical: number = -1;
+  @State hr: number = -1;
+  @State surgery: number = -1;
+  @State hemoptysis: number = -1;
+  @State cancer: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateWells(this.clinical, this.hr, this.surgery, this.hemoptysis, this.cancer); }
+  calculate() {
+    if (this.clinical < 0 || this.hr < 0 || this.surgery < 0 || this.hemoptysis < 0 || this.cancer < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateWells(this.clinical === 1, this.hr === 1, this.surgery === 1, this.hemoptysis === 1, this.cancer === 1);
+  }
 
   build() {
     Column() {
@@ -20,32 +26,32 @@ export struct WellsCalculator {  @State clinical: boolean = false;
         Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
 
         Row() { Text('深静脉血栓临床表现').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.clinical ? '#FFFFFF' : '#2D5440').backgroundColor(!this.clinical ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.clinical ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.clinical = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical ? '#FFFFFF' : '#2D5440').backgroundColor(this.clinical ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.clinical ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.clinical = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.clinical === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.clinical === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.clinical = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.clinical === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.clinical === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.clinical = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('心率>100次/分').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.hr ? '#FFFFFF' : '#2D5440').backgroundColor(!this.hr ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.hr ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hr = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr ? '#FFFFFF' : '#2D5440').backgroundColor(this.hr ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hr ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hr = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.hr === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hr === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hr = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hr === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.hr === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hr === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hr = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('近期手术或制动').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.surgery ? '#FFFFFF' : '#2D5440').backgroundColor(!this.surgery ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.surgery ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.surgery = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery ? '#FFFFFF' : '#2D5440').backgroundColor(this.surgery ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.surgery ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.surgery = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.surgery === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.surgery === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.surgery = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.surgery === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.surgery === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.surgery === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.surgery = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('咯血').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.hemoptysis ? '#FFFFFF' : '#2D5440').backgroundColor(!this.hemoptysis ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.hemoptysis ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hemoptysis = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis ? '#FFFFFF' : '#2D5440').backgroundColor(this.hemoptysis ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hemoptysis ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hemoptysis = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.hemoptysis === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hemoptysis === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hemoptysis = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.hemoptysis === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.hemoptysis === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.hemoptysis === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.hemoptysis = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('活动性癌症').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.cancer ? '#FFFFFF' : '#2D5440').backgroundColor(!this.cancer ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.cancer ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.cancer = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer ? '#FFFFFF' : '#2D5440').backgroundColor(this.cancer ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cancer ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.cancer = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.cancer === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cancer === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.cancer = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.cancer === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.cancer === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.cancer === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.cancer = 1; this.calculate(); });
           }.width(100);
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });

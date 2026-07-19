@@ -5,9 +5,8 @@ import { calculateNaDeficit } from '../../engine/CommonCalculators';
 export struct NaDeficitCalculator {
   @State weight: number = 0;
   @State na: number = 0;
-  @State targetNa: number = 140;
-  @State isFemale: boolean = false;
-  @State isChild: boolean = false;
+  @State targetNa: number = 0;
+  @State tbwGroup: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() {
@@ -15,7 +14,11 @@ export struct NaDeficitCalculator {
   }
 
   calculate() {
-    this.result = calculateNaDeficit(this.weight, this.na, this.targetNa, this.isFemale, this.isChild);
+    if (this.tbwGroup < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateNaDeficit(this.weight, this.na, this.targetNa, this.tbwGroup === 1, this.tbwGroup === 2);
   }
 
   build() {
@@ -117,26 +120,26 @@ export struct NaDeficitCalculator {
             .fontColor('#1F2421')
             .margin({ bottom: 8 });
           Row() {
-            Toggle({ type: ToggleType.Button, isOn: !this.isFemale && !this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 0 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isFemale = false; this.isChild = false; this.calculate(); }
+                if (isOn) { this.tbwGroup = 0; this.calculate(); }
               })
               .width(48).height(32);
             Text('男0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
-            Toggle({ type: ToggleType.Button, isOn: this.isFemale && !this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 1 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isFemale = true; this.isChild = false; this.calculate(); }
+                if (isOn) { this.tbwGroup = 1; this.calculate(); }
               })
               .width(48).height(32);
             Text('女0.5').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
-            Toggle({ type: ToggleType.Button, isOn: this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 2 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isChild = true; this.calculate(); }
+                if (isOn) { this.tbwGroup = 2; this.calculate(); }
               })
               .width(48).height(32);
             Text('儿童0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4 });

@@ -2,30 +2,30 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 
 @Component
-export struct Apache2Calculator {  @State temp: number = 37;
-  @State sbp: number = 120;
-  @State dbp: number = 80;
-  @State hr: number = 80;
-  @State rr: number = 16;
-  @State fio2: number = 21;
+export struct Apache2Calculator {  @State temp: number = 0;
+  @State sbp: number = 0;
+  @State dbp: number = 0;
+  @State hr: number = 0;
+  @State rr: number = 0;
+  @State fio2: number = 0;
   @State fio2Mode: string = 'pct';
-  @State pao2: number = 80;
-  @State paco2: number = 40;
+  @State pao2: number = 0;
+  @State paco2: number = 0;
   @State paco2Filled: boolean = true;
-  @State ph: number = 7.40;
+  @State ph: number = 0;
   @State phFilled: boolean = true;
-  @State hco3: number = 24;
+  @State hco3: number = 0;
   @State hco3Filled: boolean = false;
-  @State na: number = 140;
-  @State k: number = 4.0;
-  @State cr: number = 80;
+  @State na: number = 0;
+  @State k: number = 0;
+  @State cr: number = 0;
   @State crUnit: string = 'umol';
-  @State arf: boolean = false;
-  @State hct: number = 40;
-  @State wbc: number = 8;
-  @State gcs: number = 15;
+  @State arf: number = -1;
+  @State hct: number = 0;
+  @State wbc: number = 0;
+  @State gcs: number = 0;
   @State age: number = 0;
-  @State chronic: string = 'none';
+  @State chronic: string = '';
   @State result: CalcResult | null = null;
 
   aboutToAppear() {
@@ -33,13 +33,17 @@ export struct Apache2Calculator {  @State temp: number = 37;
   }
 
   calculate() {
+    if (this.arf < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
     this.result = calculateApache2(
       this.temp, this.sbp, this.dbp, this.hr, this.rr,
       this.fio2, this.fio2Mode, this.pao2,
-      this.paco2Filled ? this.paco2 : null,
-      this.phFilled ? this.ph : null,
-      this.hco3Filled ? this.hco3 : null,
-      this.na, this.k, this.cr, this.crUnit, this.arf,
+      this.paco2Filled && this.paco2 > 0 ? this.paco2 : null,
+      this.phFilled && this.ph > 0 ? this.ph : null,
+      this.hco3Filled && this.hco3 > 0 ? this.hco3 : null,
+      this.na, this.k, this.cr, this.crUnit, this.arf === 1,
       this.hct, this.wbc, this.gcs, this.age, this.chronic
     );
   }
@@ -102,7 +106,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.temp = parseFloat(value) || 37;
+              this.temp = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -125,7 +129,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.hr = parseFloat(value) || 80;
+              this.hr = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -154,7 +158,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.sbp = parseFloat(value) || 120;
+              this.sbp = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -177,7 +181,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.dbp = parseFloat(value) || 80;
+              this.dbp = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -205,7 +209,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
           .padding({ left: 12, right: 12 })
           .width('100%')
           .onChange((value: string) => {
-            this.rr = parseFloat(value) || 16;
+            this.rr = parseFloat(value) || 0;
             this.calculate();
           });
       }
@@ -236,7 +240,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
           .padding({ left: 12, right: 12 })
           .width('100%')
           .onChange((value: string) => {
-            this.fio2 = parseFloat(value) || 21;
+            this.fio2 = parseFloat(value) || 0;
             this.calculate();
           });
         Row() {
@@ -293,7 +297,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.pao2 = parseFloat(value) || 80;
+              this.pao2 = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -317,7 +321,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .width('100%')
             .enabled(this.paco2Filled)
             .onChange((value: string) => {
-              this.paco2 = parseFloat(value) || 40;
+              this.paco2 = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -358,7 +362,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .width('100%')
             .enabled(this.phFilled)
             .onChange((value: string) => {
-              this.ph = parseFloat(value) || 7.4;
+              this.ph = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -381,7 +385,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .width('100%')
             .enabled(this.hco3Filled)
             .onChange((value: string) => {
-              this.hco3 = parseFloat(value) || 24;
+              this.hco3 = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -417,7 +421,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.na = parseFloat(value) || 140;
+              this.na = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -439,7 +443,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.k = parseFloat(value) || 4.0;
+              this.k = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -468,7 +472,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.cr = parseFloat(value) || 80;
+              this.cr = parseFloat(value) || 0;
               this.calculate();
             });
           Row() {
@@ -518,28 +522,28 @@ export struct Apache2Calculator {  @State temp: number = 37;
           Button('否')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(!this.arf ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(!this.arf ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: !this.arf ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.arf === 0 ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.arf === 0 ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.arf === 0 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
             .onClick(() => {
-              this.arf = false;
+              this.arf = 0;
               this.calculate();
             });
           Button('是')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.arf ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.arf ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.arf ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.arf === 1 ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.arf === 1 ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.arf === 1 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(() => {
-              this.arf = true;
+              this.arf = 1;
               this.calculate();
             });
         }
@@ -574,7 +578,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.hct = parseFloat(value) || 40;
+              this.hct = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -597,7 +601,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.wbc = parseFloat(value) || 8;
+              this.wbc = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -633,7 +637,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.gcs = parseFloat(value) || 15;
+              this.gcs = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -656,7 +660,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => {
-              this.age = parseFloat(value) || 50;
+              this.age = parseFloat(value) || 0;
               this.calculate();
             });
         }
@@ -780,7 +784,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#2D5440';
+        return '#7A8074';
     }
   }
 
@@ -793,7 +797,7 @@ export struct Apache2Calculator {  @State temp: number = 37;
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#F0F4F2';
+        return '#F5F5F5';
     }
   }
 }

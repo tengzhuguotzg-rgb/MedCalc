@@ -4,16 +4,16 @@ import { calculatePesi } from '../../engine/PesiCalculator';
 @Component
 export struct PesiCalculator {
   @State age: number = 0;
-  @State sex: number = 0;
-  @State cancer: number = 0;
-  @State chf: number = 0;
-  @State cld: number = 0;
+  @State sex: number = -1;
+  @State cancer: number = -1;
+  @State chf: number = -1;
+  @State cld: number = -1;
   @State hr: number = 0;
   @State sbp: number = 0;
   @State rr: number = 0;
   @State temp: number = 0;
-  @State ams: number = 0;
-  @State osp: number = 0;
+  @State ams: number = -1;
+  @State osp: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }

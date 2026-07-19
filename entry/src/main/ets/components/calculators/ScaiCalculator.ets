@@ -5,9 +5,9 @@ import { calculateScai } from '../../engine/ScaiCalculator';
 export struct ScaiCalculator {
   @State sbp: number = 0;
   @State lac: number = 0;
-  @State vaso: string = 'none';
-  @State perf: string = 'ok';
-  @State resus: string = 'no';
+  @State vaso: string = '';
+  @State perf: string = '';
+  @State resus: string = '';
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -62,7 +62,7 @@ export struct ScaiCalculator {
           Row() {
             Column() {
               Text('SCAI 休克').fontSize(10).fontColor('#7A8074').letterSpacing(1.5);
-              Text(`Stage ${this.result!.unit}`).fontSize(28).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
+              Text(this.result!.value !== null ? `Stage ${this.result!.unit}` : '—').fontSize(28).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
               Text(this.result!.tier).fontSize(12).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() {

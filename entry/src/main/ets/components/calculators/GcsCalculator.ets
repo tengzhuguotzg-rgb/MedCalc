@@ -2,9 +2,9 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateGcs } from '../../engine/GcsCalculator';
 
 @Component
-export struct GcsCalculator {  @State eye: number = 4;
-  @State verbal: number = 5;
-  @State motor: number = 6;
+export struct GcsCalculator {  @State eye: number = 0;
+  @State verbal: number = 0;
+  @State motor: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }

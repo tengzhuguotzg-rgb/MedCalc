@@ -3,11 +3,11 @@ import { calculateMnutric } from '../../engine/MnutricCalculator';
 
 @Component
 export struct MnutricCalculator {
-  @State age: number = 0;
+  @State age: number = -1;
   @State apache2: number = 0;
   @State sofa: number = 0;
-  @State comorb: number = 0;
-  @State icuDay: number = 0;
+  @State comorb: number = -1;
+  @State icuDay: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }

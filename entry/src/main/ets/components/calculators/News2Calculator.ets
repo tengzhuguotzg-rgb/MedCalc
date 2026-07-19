@@ -4,11 +4,11 @@ import { calculateNews2 } from '../../engine/News2Calculator';
 @Component
 export struct News2Calculator {  @State resp: number = 0;
   @State spo2: number = 0;
-  @State o2supplement: string = 'no';
+  @State o2supplement: string = '';
   @State temp: number = 0;
   @State sbp: number = 0;
   @State pulse: number = 0;
-  @State consciousness: string = 'alert';
+  @State consciousness: string = '';
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }

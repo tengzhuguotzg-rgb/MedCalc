@@ -34,7 +34,7 @@ const FISHER_LEVELS: GradeInfo[] = [
 
 @Component
 export struct HuntHessCalculator {
-  @State grade: number = 0;
+  @State grade: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -55,11 +55,11 @@ export struct HuntHessCalculator {
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
-      if (this.result && this.result.value !== null) {
+      if (this.result) {
         Column() {
           Row() {
             Column() { Text('Hunt-Hess').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(`${this.result!.value} ${this.result!.unit}`).fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
+              Text(this.result!.value !== null ? `${this.result!.value} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
@@ -99,11 +99,11 @@ export struct WfnsCalculator {
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
-      if (this.result && this.result.value !== null) {
+      if (this.result) {
         Column() {
           Row() {
             Column() { Text('WFNS').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(`${this.result!.value} ${this.result!.unit}`).fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
+              Text(this.result!.value !== null ? `${this.result!.value} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
@@ -143,11 +143,11 @@ export struct FisherCalculator {
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
-      if (this.result && this.result.value !== null) {
+      if (this.result) {
         Column() {
           Row() {
             Column() { Text('Fisher').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(`${this.result!.value} ${this.result!.unit}`).fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
+              Text(this.result!.value !== null ? `${this.result!.value} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);

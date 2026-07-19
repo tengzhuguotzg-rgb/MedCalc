@@ -3,15 +3,21 @@ import { calculateMehran } from '../../engine/MehranCalculator';
 
 @Component
 export struct MehranCalculator {  @State age: number = 0;
-  @State chf: boolean = false;
-  @State dm: boolean = false;
+  @State chf: number = -1;
+  @State dm: number = -1;
   @State gfr: number = 0;
   @State contrastVol: number = 0;
-  @State anemia: boolean = false;
+  @State anemia: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateMehran(this.age, this.chf, this.dm, this.gfr, this.contrastVol, this.anemia); }
+  calculate() {
+    if (this.chf < 0 || this.dm < 0 || this.anemia < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateMehran(this.age, this.chf === 1, this.dm === 1, this.gfr, this.contrastVol, this.anemia === 1);
+  }
 
   build() {
     Column() {
@@ -28,20 +34,20 @@ export struct MehranCalculator {  @State age: number = 0;
         Column() { Text('造影剂用量 (mL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入用量' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.contrastVol = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
 
         Row() { Text('心力衰竭').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.chf ? '#FFFFFF' : '#2D5440').backgroundColor(!this.chf ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.chf ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.chf = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf ? '#FFFFFF' : '#2D5440').backgroundColor(this.chf ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.chf ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.chf = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.chf === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.chf === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.chf = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.chf === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.chf === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.chf = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('糖尿病').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.dm ? '#FFFFFF' : '#2D5440').backgroundColor(!this.dm ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.dm ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.dm = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm ? '#FFFFFF' : '#2D5440').backgroundColor(this.dm ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.dm ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.dm = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.dm === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.dm === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.dm = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.dm === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.dm === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.dm === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.dm = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('贫血').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.anemia ? '#FFFFFF' : '#2D5440').backgroundColor(!this.anemia ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.anemia ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.anemia = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.anemia ? '#FFFFFF' : '#2D5440').backgroundColor(this.anemia ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.anemia ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.anemia = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.anemia === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.anemia === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.anemia === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.anemia = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.anemia === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.anemia === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.anemia === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.anemia = 1; this.calculate(); });
           }.width(100);
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });

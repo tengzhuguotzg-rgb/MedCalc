@@ -6,13 +6,19 @@ export struct AarcCalculator {  @State bilirubin: number = 0;
   @State bilUnit: string = 'umol';
   @State inr: number = 0;
   @State lactate: number = 0;
-  @State hepaticEnceph: number = 0;
+  @State hepaticEnceph: number = -1;
   @State age: number = 0;
-  @State acKf: boolean = false;
+  @State acKf: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateAarc(this.bilirubin, this.bilUnit, this.inr, this.lactate, this.hepaticEnceph, this.age, this.acKf); }
+  calculate() {
+    if (this.acKf < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateAarc(this.bilirubin, this.bilUnit, this.inr, this.lactate, this.hepaticEnceph, this.age, this.acKf === 1);
+  }
 
   build() {
     Column() {
@@ -44,8 +50,8 @@ export struct AarcCalculator {  @State bilirubin: number = 0;
         Column() { Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('急性肾衰竭').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.acKf ? '#FFFFFF' : '#2D5440').backgroundColor(!this.acKf ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.acKf ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.acKf = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.acKf ? '#FFFFFF' : '#2D5440').backgroundColor(this.acKf ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.acKf ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.acKf = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.acKf === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.acKf === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.acKf === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.acKf = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.acKf === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.acKf === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.acKf === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.acKf = 1; this.calculate(); });
           }.width(100);
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });

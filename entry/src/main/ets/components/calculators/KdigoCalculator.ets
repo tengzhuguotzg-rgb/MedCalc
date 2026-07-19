@@ -8,13 +8,17 @@ export struct KdigoCalculator {
   @State cr1Raw: number = 0;
   @State cr1Unit: string = 'mgdl';
   @State urine: number = 0;
-  @State rrt: boolean = false;
+  @State rrt: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() {
+    if (this.rrt < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
     const cr0 = this.cr0Raw > 0 ? this.cr0Raw : null;
-    this.result = calculateKdigo(cr0, this.cr0Unit, this.cr1Raw, this.cr1Unit, this.urine > 0 ? this.urine : null, this.rrt);
+    this.result = calculateKdigo(cr0, this.cr0Unit, this.cr1Raw, this.cr1Unit, this.urine > 0 ? this.urine : null, this.rrt === 1);
   }
 
   build() {
@@ -61,8 +65,8 @@ export struct KdigoCalculator {
         Column() {
           Text('已启动 RRT').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
           Row() {
-            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.rrt ? '#FFFFFF' : '#2D5440').backgroundColor(!this.rrt ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.rrt ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.rrt = false; this.calculate(); });
-            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.rrt ? '#FFFFFF' : '#2D5440').backgroundColor(this.rrt ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rrt ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.rrt = true; this.calculate(); });
+            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.rrt === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rrt === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rrt === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.rrt = 0; this.calculate(); });
+            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.rrt === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rrt === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rrt === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.rrt = 1; this.calculate(); });
           }.width('100%');
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });

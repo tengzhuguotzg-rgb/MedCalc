@@ -2,7 +2,7 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateGfr } from '../../engine/GfrCalculator';
 
 @Component
-export struct GfrCalculator {  @State sex: string = 'male';
+export struct GfrCalculator {  @State sex: string = '';
   @State age: number = 0;
   @State creatinine: number = 0;
   @State crUnit: string = 'umol';

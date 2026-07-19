@@ -6,8 +6,8 @@ export function calculatePesi(
   hr: number, sbp: number, rr: number, temp: number,
   ams: number, osp: number
 ): CalcResult {
-  if (age <= 0 || hr <= 0 || sbp <= 0 || rr <= 0 || temp <= 0) {
-    return { value: null, unit: '', tier: '请填写所有必填项', tierClass: 'tier-info', footnote: '' };
+  if (age <= 0 || sex < 0 || cancer < 0 || chf < 0 || cld < 0 || hr <= 0 || sbp <= 0 || rr <= 0 || temp <= 0 || ams < 0 || osp < 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   const total = age + sex + cancer + chf + cld

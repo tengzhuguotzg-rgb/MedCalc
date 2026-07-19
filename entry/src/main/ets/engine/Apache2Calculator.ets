@@ -23,6 +23,13 @@ export function calculateApache2(
   age: number,
   chronic: string
 ): CalcResult {
+  if (temp <= 0 || sbp <= 0 || dbp <= 0 || hr <= 0 || rr <= 0 || fio2 <= 0 || pao2 <= 0
+    || (ph === null && hco3 === null)
+    || na <= 0 || k <= 0 || cr <= 0 || hct <= 0 || wbc <= 0 || gcs < 3 || age <= 0
+    || chronic === '') {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
   const map = dbp + (sbp - dbp) / 3;
   const fio2dec = fio2Mode === 'dec' ? fio2 : fio2 / 100;
 

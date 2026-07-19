@@ -5,11 +5,10 @@ import { calculateNaCorrectionRate } from '../../engine/CommonCalculators';
 export struct NaCorrectionRateCalculator {
   @State weight: number = 0;
   @State na: number = 0;
-  @State targetNa: number = 140;
-  @State rateMmolPerDay: number = 8;
-  @State isFemale: boolean = false;
-  @State isChild: boolean = false;
-  @State fluidIdx: number = 0;
+  @State targetNa: number = 0;
+  @State rateMmolPerDay: number = 0;
+  @State tbwGroup: number = -1;
+  @State fluidIdx: number = -1;
   @State result: CalcResult | null = null;
 
   private fluidOptions: FluidItem[] = [
@@ -24,8 +23,12 @@ export struct NaCorrectionRateCalculator {
   }
 
   calculate() {
+    if (this.tbwGroup < 0 || this.fluidIdx < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
     const fluidNa = this.fluidOptions[this.fluidIdx].naContent;
-    this.result = calculateNaCorrectionRate(this.weight, this.na, this.targetNa, this.rateMmolPerDay, this.isFemale, this.isChild, fluidNa);
+    this.result = calculateNaCorrectionRate(this.weight, this.na, this.targetNa, this.rateMmolPerDay, this.tbwGroup === 1, this.tbwGroup === 2, fluidNa);
   }
 
   build() {
@@ -177,26 +180,26 @@ export struct NaCorrectionRateCalculator {
             .fontColor('#1F2421')
             .margin({ bottom: 8 });
           Row() {
-            Toggle({ type: ToggleType.Button, isOn: !this.isFemale && !this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 0 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isFemale = false; this.isChild = false; this.calculate(); }
+                if (isOn) { this.tbwGroup = 0; this.calculate(); }
               })
               .width(48).height(32);
             Text('男0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
-            Toggle({ type: ToggleType.Button, isOn: this.isFemale && !this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 1 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isFemale = true; this.isChild = false; this.calculate(); }
+                if (isOn) { this.tbwGroup = 1; this.calculate(); }
               })
               .width(48).height(32);
             Text('女0.5').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
-            Toggle({ type: ToggleType.Button, isOn: this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 2 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isChild = true; this.calculate(); }
+                if (isOn) { this.tbwGroup = 2; this.calculate(); }
               })
               .width(48).height(32);
             Text('儿童0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4 });

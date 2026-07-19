@@ -5,8 +5,8 @@ export function calculateMnutric(
   apache2: number, sofa: number,
   comorb: number, icuDay: number
 ): CalcResult {
-  if (apache2 <= 0 || sofa <= 0) {
-    return { value: null, unit: '', tier: '请填写 APACHE II 和 SOFA', tierClass: 'tier-info', footnote: '' };
+  if (age < 0 || apache2 <= 0 || sofa <= 0 || comorb < 0 || icuDay < 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   let apScore = 0;

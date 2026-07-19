@@ -3,10 +3,10 @@ import { calculateCamicu } from '../../engine/CamicuCalculator';
 
 @Component
 export struct CamicuCalculator {
-  @State f1: number = 0;
-  @State f2: number = 0;
-  @State f3: number = 0;
-  @State f4: number = 0;
+  @State f1: number = -1;
+  @State f2: number = -1;
+  @State f3: number = -1;
+  @State f4: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -60,8 +60,8 @@ export struct CamicuCalculator {
           Row() {
             Column() {
               Text('CAM-ICU').fontSize(10).fontColor('#7A8074').letterSpacing(1.5);
-              Text(this.result!.tier).fontSize(24).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).margin({ top: 4 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
+              Text(this.result!.value !== null ? (this.result!.value === 1 ? '阳性' : '阴性') : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
+              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() {
               Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);

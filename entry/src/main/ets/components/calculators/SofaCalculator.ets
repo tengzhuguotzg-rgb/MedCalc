@@ -9,11 +9,11 @@ export struct SofaCalculator {  @State pao2: number = 0;
   @State bilirubin: number = 0;
   @State bilirubinUnit: string = 'umol';
   @State map: number = 0;
-  @State vaso: string = 'none';
-  @State gcs: number = 15;
+  @State vaso: string = '';
+  @State gcs: number = 0;
   @State creatinine: number = 0;
   @State creatinineUnit: string = 'umol';
-  @State urineOutput: number = 0;
+  @State urineOutput: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -78,7 +78,7 @@ export struct SofaCalculator {  @State pao2: number = 0;
         Text('— 肾脏').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() { Text('血肌酐 (µmol/L)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入肌酐' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
-          Column() { Text('尿量 (mL/d)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入尿量' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.urineOutput = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
+          Column() { Text('尿量 (mL/d)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入尿量' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.urineOutput = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 

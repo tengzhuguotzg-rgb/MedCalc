@@ -3,23 +3,30 @@ import { calculateTimiStemi, calculateTimiNstemi } from '../../engine/TimiCalcul
 
 @Component
 export struct TimiStemiCalculator {
-  @State ageCat: number = 0;
-  @State sbpLt100: boolean = false;
-  @State hrGt100: boolean = false;
-  @State weightLt67: boolean = false;
-  @State dmHtnAngina: boolean = false;
-  @State killip: number = 1;
-  @State anteriorLbbb: boolean = false;
-  @State timeToTreat: boolean = false;
+  @State ageCat: number = -1;
+  @State sbpLt100: number = -1;
+  @State hrGt100: number = -1;
+  @State weightLt67: number = -1;
+  @State dmHtnAngina: number = -1;
+  @State killip: number = 0;
+  @State anteriorLbbb: number = -1;
+  @State timeToTreat: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateTimiStemi(this.ageCat, this.dmHtnAngina, this.sbpLt100, this.hrGt100, this.killip, this.weightLt67, this.anteriorLbbb, this.timeToTreat); }
+  calculate() {
+    if (this.ageCat < 0 || this.dmHtnAngina < 0 || this.sbpLt100 < 0 || this.hrGt100 < 0 || this.killip < 1
+      || this.weightLt67 < 0 || this.anteriorLbbb < 0 || this.timeToTreat < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateTimiStemi(this.ageCat, this.dmHtnAngina === 1, this.sbpLt100 === 1, this.hrGt100 === 1, this.killip, this.weightLt67 === 1, this.anteriorLbbb === 1, this.timeToTreat === 1);
+  }
 
   @Builder
-  YesNoBtn(value: boolean, onSelect: (v: boolean) => void) {
-    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!value ? '#FFFFFF' : '#2D5440').backgroundColor(!value ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !value ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => onSelect(false));
-      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value ? '#FFFFFF' : '#2D5440').backgroundColor(value ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: value ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(true));
+  YesNoBtn(value: number, onSelect: (v: number) => void) {
+    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(value === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: value === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => onSelect(0));
+      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(value === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: value === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(1));
     }.width(100);
   }
 
@@ -75,31 +82,38 @@ export struct TimiStemiCalculator {
 
 @Component
 export struct TimiNstemiCalculator {
-  @State ageGte65: boolean = false;
-  @State rfHtn: boolean = false;
-  @State rfDm: boolean = false;
-  @State rfSmoker: boolean = false;
-  @State rfHyperlipid: boolean = false;
-  @State rfFamily: boolean = false;
-  @State knownCAD: boolean = false;
-  @State priorAspirin: boolean = false;
-  @State severeAngina: boolean = false;
-  @State stDevGte05: boolean = false;
-  @State biomarkerElevated: boolean = false;
+  @State ageGte65: number = -1;
+  @State rfHtn: number = -1;
+  @State rfDm: number = -1;
+  @State rfSmoker: number = -1;
+  @State rfHyperlipid: number = -1;
+  @State rfFamily: number = -1;
+  @State knownCAD: number = -1;
+  @State priorAspirin: number = -1;
+  @State severeAngina: number = -1;
+  @State stDevGte05: number = -1;
+  @State biomarkerElevated: number = -1;
   @State result: CalcResult | null = null;
 
   getRiskFactorCount(): number {
     let n = 0;
-    if (this.rfHtn) n++; if (this.rfDm) n++; if (this.rfSmoker) n++; if (this.rfHyperlipid) n++; if (this.rfFamily) n++;
+    if (this.rfHtn === 1) n++; if (this.rfDm === 1) n++; if (this.rfSmoker === 1) n++; if (this.rfHyperlipid === 1) n++; if (this.rfFamily === 1) n++;
     return n;
   }
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateTimiNstemi(this.ageGte65, this.getRiskFactorCount() >= 3, this.knownCAD, this.priorAspirin, this.severeAngina, this.stDevGte05, this.biomarkerElevated); }
+  calculate() {
+    if (this.ageGte65 < 0 || this.rfHtn < 0 || this.rfDm < 0 || this.rfSmoker < 0 || this.rfHyperlipid < 0 || this.rfFamily < 0
+      || this.knownCAD < 0 || this.priorAspirin < 0 || this.severeAngina < 0 || this.stDevGte05 < 0 || this.biomarkerElevated < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateTimiNstemi(this.ageGte65 === 1, this.getRiskFactorCount() >= 3, this.knownCAD === 1, this.priorAspirin === 1, this.severeAngina === 1, this.stDevGte05 === 1, this.biomarkerElevated === 1);
+  }
 
   @Builder
-  YesNoBtn(value: boolean, onSelect: (v: boolean) => void) {
-    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!value ? '#FFFFFF' : '#2D5440').backgroundColor(!value ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !value ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => onSelect(false));
-      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value ? '#FFFFFF' : '#2D5440').backgroundColor(value ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: value ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(true));
+  YesNoBtn(value: number, onSelect: (v: number) => void) {
+    Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(value === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: value === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => onSelect(0));
+      Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(value === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(value === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: value === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).margin({ left: 4 }).onClick(() => onSelect(1));
     }.width(100);
   }
 
@@ -120,11 +134,11 @@ export struct TimiNstemiCalculator {
 
         Column() { Text('CAD 危险因素（≥ 3 项阳性 = 1分）').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ top: 10, bottom: 6 });
           Flex({ wrap: FlexWrap.Wrap }) {
-            Button(this.rfHtn ? '✓ 高血压' : '高血压').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfHtn ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfHtn ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfHtn ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfHtn = !this.rfHtn; this.calculate(); });
-            Button(this.rfDm ? '✓ 糖尿病' : '糖尿病').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfDm ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfDm ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfDm ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfDm = !this.rfDm; this.calculate(); });
-            Button(this.rfSmoker ? '✓ 吸烟' : '吸烟').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfSmoker ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfSmoker ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfSmoker ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfSmoker = !this.rfSmoker; this.calculate(); });
-            Button(this.rfHyperlipid ? '✓ 高脂血症' : '高脂血症').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfHyperlipid ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfHyperlipid ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfHyperlipid ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfHyperlipid = !this.rfHyperlipid; this.calculate(); });
-            Button(this.rfFamily ? '✓ 家族史' : '家族史').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfFamily ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfFamily ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfFamily ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.rfFamily = !this.rfFamily; this.calculate(); });
+            Button(this.rfHtn === 1 ? '✓ 高血压' : (this.rfHtn === 0 ? '✗ 高血压' : '高血压')).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfHtn === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfHtn === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfHtn === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfHtn = this.rfHtn === 1 ? 0 : 1; this.calculate(); });
+            Button(this.rfDm === 1 ? '✓ 糖尿病' : (this.rfDm === 0 ? '✗ 糖尿病' : '糖尿病')).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfDm === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfDm === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfDm === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfDm = this.rfDm === 1 ? 0 : 1; this.calculate(); });
+            Button(this.rfSmoker === 1 ? '✓ 吸烟' : (this.rfSmoker === 0 ? '✗ 吸烟' : '吸烟')).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfSmoker === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfSmoker === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfSmoker === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfSmoker = this.rfSmoker === 1 ? 0 : 1; this.calculate(); });
+            Button(this.rfHyperlipid === 1 ? '✓ 高脂血症' : (this.rfHyperlipid === 0 ? '✗ 高脂血症' : '高脂血症')).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfHyperlipid === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfHyperlipid === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfHyperlipid === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.rfHyperlipid = this.rfHyperlipid === 1 ? 0 : 1; this.calculate(); });
+            Button(this.rfFamily === 1 ? '✓ 家族史' : (this.rfFamily === 0 ? '✗ 家族史' : '家族史')).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.rfFamily === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.rfFamily === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.rfFamily === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.rfFamily = this.rfFamily === 1 ? 0 : 1; this.calculate(); });
           }.width('100%');
           Text(`已选 ${this.getRiskFactorCount()}/5 · ≥ 3 项阳性`).fontSize(10).fontColor('#7A8074').margin({ top: 2 });
         }.width('100%').margin({ bottom: 14 });

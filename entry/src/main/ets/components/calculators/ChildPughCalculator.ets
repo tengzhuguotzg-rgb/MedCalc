@@ -7,8 +7,8 @@ export struct ChildPughCalculator {  @State bilirubin: number = 0;
   @State albumin: number = 0;
   @State albUnit: string = 'gl';
   @State inr: number = 0;
-  @State ascites: number = 1;
-  @State encephalopathy: number = 1;
+  @State ascites: number = 0;
+  @State encephalopathy: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }

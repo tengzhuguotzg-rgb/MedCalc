@@ -3,13 +3,19 @@ import { calculateIch } from '../../engine/IchCalculator';
 
 @Component
 export struct IchCalculator {  @State vol: number = 0;
-  @State location: number = 0;
-  @State ivh: boolean = false;
+  @State location: number = -1;
+  @State ivh: number = -1;
   @State age: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateIch(this.vol, this.location, this.ivh, this.age); }
+  calculate() {
+    if (this.ivh < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateIch(this.vol, this.location, this.ivh === 1, this.age);
+  }
 
   build() {
     Column() {
@@ -29,8 +35,8 @@ export struct IchCalculator {  @State vol: number = 0;
         }.width('100%').margin({ bottom: 16 });
 
         Row() { Text('脑室出血').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.ivh ? '#FFFFFF' : '#2D5440').backgroundColor(!this.ivh ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: !this.ivh ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.ivh = false; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh ? '#FFFFFF' : '#2D5440').backgroundColor(this.ivh ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ivh ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.ivh = true; this.calculate(); });
+          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.ivh === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ivh === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.ivh = 0; this.calculate(); });
+            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.ivh === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ivh === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.ivh = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 16 });
 

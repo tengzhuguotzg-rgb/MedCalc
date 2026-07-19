@@ -30,9 +30,7 @@ export function calculateHuntHess(grade: number): CalcResult {
     tierClass = 'tier-danger';
     footnote = '深昏迷，去脑强直';
   } else {
-    tier = '请选择分级';
-    tierClass = 'tier-info';
-    footnote = '';
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   return { value: grade, unit: '级', tier, tierClass, footnote };
@@ -64,12 +62,10 @@ export function calculateWfns(grade: number): CalcResult {
     tierClass = 'tier-danger';
     footnote = 'GCS 3-6';
   } else {
-    tier = '请选择分级';
-    tierClass = 'tier-info';
-    footnote = '';
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
-  return { value: grade >= 1 && grade <= 5 ? grade : null, unit: '级', tier, tierClass, footnote };
+  return { value: grade, unit: '级', tier, tierClass, footnote };
 }
 
 export function calculateFisher(grade: number): CalcResult {
@@ -94,10 +90,8 @@ export function calculateFisher(grade: number): CalcResult {
     tierClass = 'tier-danger';
     footnote = '脑内血肿或脑室出血';
   } else {
-    tier = '请选择分级';
-    tierClass = 'tier-info';
-    footnote = '';
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
-  return { value: grade >= 1 && grade <= 4 ? grade : null, unit: '级', tier, tierClass, footnote };
+  return { value: grade, unit: '级', tier, tierClass, footnote };
 }

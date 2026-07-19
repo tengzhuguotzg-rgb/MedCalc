@@ -1,7 +1,7 @@
 import { CalcResult, getTierClass } from './CalcEngine';
 
 export function calculateGfr(sex: string, age: number, creatinine: number, crUnit: string): CalcResult {
-  if (age <= 0 || creatinine <= 0) {
+  if (sex === '' || age <= 0 || creatinine <= 0) {
     return {
       value: null,
       unit: 'mL/min/1.73m²',

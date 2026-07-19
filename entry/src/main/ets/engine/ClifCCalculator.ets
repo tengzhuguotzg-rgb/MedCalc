@@ -8,8 +8,8 @@ export function calculateClifC(
   pao2: number, fio2: number, fio2Mode: string,
   age: number, wbc: number
 ): CalcResult {
-  if (bilirubin <= 0 || creatinine <= 0 || inr <= 0 || map <= 0 || pao2 <= 0 || fio2 <= 0 || age <= 0 || wbc <= 0) {
-    return { value: null, unit: '', tier: '请填写所有项目', tierClass: 'tier-info', footnote: '' };
+  if (bilirubin <= 0 || creatinine <= 0 || inr <= 0 || hepaticEnceph < 0 || map <= 0 || vaso === '' || pao2 <= 0 || fio2 <= 0 || age <= 0 || wbc <= 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   const bilMg = bilUnit === 'umol' ? bilirubin / 17.1 : bilirubin;

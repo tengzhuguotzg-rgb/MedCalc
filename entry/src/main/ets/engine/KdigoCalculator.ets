@@ -7,7 +7,7 @@ export function calculateKdigo(
   rrt: boolean
 ): CalcResult {
   if (cr1Raw <= 0) {
-    return { value: null, unit: '', tier: '请填写当前 Cr', tierClass: 'tier-info', footnote: '' };
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   const cr0 = cr0Raw !== null && cr0Raw > 0 ? (cr0Unit === 'umol' ? cr0Raw / 88.4 : cr0Raw) : null;

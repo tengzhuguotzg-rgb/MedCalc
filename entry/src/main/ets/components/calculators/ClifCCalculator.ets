@@ -6,9 +6,9 @@ export struct ClifCCalculator {
   @State bilirubin: number = 0;
   @State bilUnit: string = 'umol';
   @State inr: number = 0;
-  @State hepaticEnceph: number = 0;
+  @State hepaticEnceph: number = -1;
   @State map: number = 0;
-  @State vaso: string = 'none';
+  @State vaso: string = '';
   @State creatinine: number = 0;
   @State crUnit: string = 'umol';
   @State pao2: number = 0;

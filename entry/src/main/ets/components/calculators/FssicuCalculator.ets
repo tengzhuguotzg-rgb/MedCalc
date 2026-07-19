@@ -3,11 +3,11 @@ import { calculateFssicu } from '../../engine/FssicuCalculator';
 
 @Component
 export struct FssicuCalculator {
-  @State roll: number = 1;
-  @State situp: number = 1;
-  @State sit: number = 1;
-  @State standup: number = 1;
-  @State stand: number = 1;
+  @State roll: number = -1;
+  @State situp: number = -1;
+  @State sit: number = -1;
+  @State standup: number = -1;
+  @State stand: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -47,7 +47,7 @@ export struct FssicuCalculator {
 
 @Component
 struct FssRowComponent {
-  @Prop value: number = 1;
+  @Prop value: number = -1;
   @Prop label: string = '';
   private onChange?: (v: number) => void;
 

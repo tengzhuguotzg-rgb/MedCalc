@@ -2,7 +2,7 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateCurb65 } from '../../engine/CommonCalculators';
 
 @Component
-export struct Curb65Calculator {  @State confusion: boolean = false;
+export struct Curb65Calculator {  @State confusion: number = -1;
   @State urea: number = 0;
   @State ureaUnit: string = 'mmol';
   @State rr: number = 0;
@@ -12,7 +12,13 @@ export struct Curb65Calculator {  @State confusion: boolean = false;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateCurb65(this.confusion, this.urea, this.ureaUnit, this.rr, this.sbp, this.dbp, this.age); }
+  calculate() {
+    if (this.confusion < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateCurb65(this.confusion === 1, this.urea, this.ureaUnit, this.rr, this.sbp, this.dbp, this.age);
+  }
 
   build() {
     Column() {
@@ -24,12 +30,12 @@ export struct Curb65Calculator {  @State confusion: boolean = false;
         Row() {
           Text('C 意识混乱').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
           Row() {
-            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(!this.confusion ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(!this.confusion ? '#1F3D2F' : '#F5F5F5').borderRadius(8).border({ width: 1, color: !this.confusion ? '#1F3D2F' : '#E0E0E0' }).layoutWeight(1)
-              .onClick(() => { this.confusion = false; this.calculate(); });
-            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion ? '#FFFFFF' : '#2D5440')
-              .backgroundColor(this.confusion ? '#1F3D2F' : '#F5F5F5').borderRadius(8).border({ width: 1, color: this.confusion ? '#1F3D2F' : '#E0E0E0' }).layoutWeight(1)
-              .onClick(() => { this.confusion = true; this.calculate(); });
+            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion === 0 ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.confusion === 0 ? '#1F3D2F' : '#F5F5F5').borderRadius(8).border({ width: 1, color: this.confusion === 0 ? '#1F3D2F' : '#E0E0E0' }).layoutWeight(1)
+              .onClick(() => { this.confusion = 0; this.calculate(); });
+            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.confusion === 1 ? '#FFFFFF' : '#2D5440')
+              .backgroundColor(this.confusion === 1 ? '#1F3D2F' : '#F5F5F5').borderRadius(8).border({ width: 1, color: this.confusion === 1 ? '#1F3D2F' : '#E0E0E0' }).layoutWeight(1)
+              .onClick(() => { this.confusion = 1; this.calculate(); });
           }.width(100);
         }.width('100%').margin({ bottom: 8 });
 

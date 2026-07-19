@@ -4,10 +4,10 @@ import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 @Component
 export struct Nrs2002Calculator {  @State patientHeight: number = 0;
   @State patientWeight: number = 0;
-  @State weightLoss: string = 'none';
-  @State intake: string = 'none';
-  @State disease: string = 'none';
-  @State ageAdj: boolean = false;
+  @State weightLoss: string = '';
+  @State intake: string = '';
+  @State disease: string = '';
+  @State ageAdj: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() {
@@ -15,7 +15,11 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
   }
 
   calculate() {
-    this.result = calculateNrs2002(this.patientHeight, this.patientWeight, this.weightLoss, this.intake, this.disease, this.ageAdj);
+    if (this.ageAdj < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateNrs2002(this.patientHeight, this.patientWeight, this.weightLoss, this.intake, this.disease, this.ageAdj === 1);
   }
 
   build() {
@@ -310,28 +314,28 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
           Button('否')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(!this.ageAdj ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(!this.ageAdj ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: !this.ageAdj ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.ageAdj === 0 ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.ageAdj === 0 ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.ageAdj === 0 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
             .onClick(() => {
-              this.ageAdj = false;
+              this.ageAdj = 0;
               this.calculate();
             });
           Button('是')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.ageAdj ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.ageAdj ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.ageAdj ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.ageAdj === 1 ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.ageAdj === 1 ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.ageAdj === 1 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(() => {
-              this.ageAdj = true;
+              this.ageAdj = 1;
               this.calculate();
             });
         }
@@ -401,7 +405,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#2D5440';
+        return '#7A8074';
     }
   }
 
@@ -414,7 +418,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#F0F4F2';
+        return '#F5F5F5';
     }
   }
 }
