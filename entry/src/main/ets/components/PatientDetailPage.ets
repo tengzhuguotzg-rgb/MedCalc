@@ -24,6 +24,7 @@ import { AppDimens } from '../utils/AppDimens';
 import { DomainEntry, ParsedRecommendations, GuidelineRecommendation, PathScore, AgentStep, AuditIssue, GapSignal, AuditAgentResult, DiagnosisKbData } from './patient/PatientDetailTypes';
 import { KbReaderOverlay } from './patient/KbReaderOverlay';
 import { KbMarkdownRenderer } from './patient/KbMarkdownRenderer';
+import { criterionOpSymbol, parseAlertResult, formatTime, formatDateTime, getRecordIcon, getRecordLabel, formatResultValue, getUrgencyColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, parseRecommendations, parseRecommendationsAndSummary, parseGapsFromJson, getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getCategoryCount, getCategoryBorderColor, getCategoryLabel, getEvidenceColor, getEvidenceBgColor, getDiagnosisNameByRuleId, getLabAlertUrgencyColor, getLabAlertUrgencyLabel } from './patient/PatientDetailUtils';
 
 @Component
 export struct PatientDetailPage {
@@ -284,28 +285,6 @@ export struct PatientDetailPage {
     return !this.isDerivedFlagField(key);
   }
 
-  criterionOpSymbol(op: string): string {
-    if (op === 'lt') {
-      return '<';
-    }
-    if (op === 'gt') {
-      return '>';
-    }
-    if (op === 'le' || op === 'lte') {
-      return '<=';
-    }
-    if (op === 'ge' || op === 'gte') {
-      return '>=';
-    }
-    if (op === 'eq') {
-      return '=';
-    }
-    if (op === 'ne' || op === 'neq') {
-      return '≠';
-    }
-    return '';
-  }
-
   formatCriterion(criterion: string): string {
     const tokens = criterion.split(' ');
     if (tokens.length !== 3) {
@@ -324,13 +303,13 @@ export struct PatientDetailPage {
       if (op === 'has_tier_containing') {
         return calcName + ' 分级含"' + value + '"';
       }
-      const opSym = this.criterionOpSymbol(op);
+      const opSym = criterionOpSymbol(op);
       if (opSym.length === 0) {
         return criterion;
       }
       return calcName + ' ' + opSym + ' ' + value;
     }
-    const opSym = this.criterionOpSymbol(op);
+    const opSym = criterionOpSymbol(op);
     if (opSym.length === 0) {
       return criterion;
     }
@@ -367,64 +346,6 @@ export struct PatientDetailPage {
       }
     }
     return count;
-  }
-
-  parseAlertResult(alert: PatientAlert): CalcResult {
-    const parsed: Object = JSON.parse(alert.resultJson);
-    const obj = parsed as Record<string, Object>;
-    return {
-      value: obj['value'] as number | null,
-      unit: obj['unit'] as string,
-      tier: obj['tier'] as string,
-      tierClass: obj['tierClass'] as string,
-      footnote: obj['footnote'] as string
-    };
-  }
-
-  formatTime(ts: number): string {
-    const d = new Date(ts);
-    const h = d.getHours().toString().padStart(2, '0');
-    const m = d.getMinutes().toString().padStart(2, '0');
-    return h + ':' + m;
-  }
-
-  formatDateTime(ts: number): string {
-    const d = new Date(ts);
-    const mo = (d.getMonth() + 1).toString().padStart(2, '0');
-    const da = d.getDate().toString().padStart(2, '0');
-    const h = d.getHours().toString().padStart(2, '0');
-    const m = d.getMinutes().toString().padStart(2, '0');
-    return mo + '/' + da + ' ' + h + ':' + m;
-  }
-
-  getRecordIcon(type: string): string {
-    if (type === 'image') {
-      return '📷';
-    }
-    if (type === 'text') {
-      return '📝';
-    }
-    return '✏️';
-  }
-
-  getRecordLabel(record: PatientRecord): string {
-    if (record.label.length > 0) {
-      return record.label;
-    }
-    if (record.type === 'image') {
-      return '图片上传';
-    }
-    if (record.type === 'text') {
-      return '文本输入';
-    }
-    return '手动录入';
-  }
-
-  formatResultValue(value: number | null): string {
-    if (value === null) {
-      return '—';
-    }
-    return value.toFixed(1).replace(/\.0$/, '');
   }
 
   async pickImage() {
@@ -819,16 +740,16 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(12)
-                .backgroundColor(getTierColor(this.parseAlertResult(alert).tierClass))
+                .backgroundColor(getTierColor(parseAlertResult(alert).tierClass))
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(alert.calcName)
                 .fontSize(13)
                 .fontColor(AppColors.primary)
                 .layoutWeight(1)
-              Text(this.parseAlertResult(alert).tier)
+              Text(parseAlertResult(alert).tier)
                 .fontSize(11)
-                .fontColor(getTierColor(this.parseAlertResult(alert).tierClass))
+                .fontColor(getTierColor(parseAlertResult(alert).tierClass))
                 .maxLines(1)
             }
             .width('100%')
@@ -857,7 +778,7 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(12)
-                .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
+                .backgroundColor(getLabAlertUrgencyColor(la.urgency))
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(la.fieldLabel + ' ' + la.value)
@@ -868,7 +789,7 @@ export struct PatientDetailPage {
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
               Text(la.threshold)
                 .fontSize(10)
-                .fontColor(this.getLabAlertUrgencyColor(la.urgency))
+                .fontColor(getLabAlertUrgencyColor(la.urgency))
                 .maxLines(1)
             }
             .width('100%')
@@ -939,7 +860,7 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(14)
-                .backgroundColor(this.getUrgencyColor(diag.urgency))
+                .backgroundColor(getUrgencyColor(diag.urgency))
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(diag.name)
@@ -948,9 +869,9 @@ export struct PatientDetailPage {
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text(this.getUrgencyLabel(diag.urgency))
+              Text(getUrgencyLabel(diag.urgency))
                 .fontSize(9)
-                .fontColor(this.getUrgencyColor(diag.urgency))
+                .fontColor(getUrgencyColor(diag.urgency))
                 .margin({ left: 4 })
             }
             .width('100%')
@@ -1067,7 +988,7 @@ export struct PatientDetailPage {
   getWarningAlerts(): PatientAlert[] {
     const result: PatientAlert[] = [];
     for (let i = 0; i < this.dashboard.alerts.length; i++) {
-      const tierClass = this.parseAlertResult(this.dashboard.alerts[i]).tierClass;
+      const tierClass = parseAlertResult(this.dashboard.alerts[i]).tierClass;
       if (tierClass !== 'tier-ok' && tierClass !== 'tier-info') {
         result.push(this.dashboard.alerts[i]);
       }
@@ -1201,52 +1122,6 @@ export struct PatientDetailPage {
       tagSet.add(this.dashboard.diagnoses[i].category);
     }
     return Array.from(tagSet);
-  }
-
-  getUrgencyColor(urgency: string): ResourceStr {
-    if (urgency === 'critical') {
-      return AppColors.danger;
-    }
-    if (urgency === 'warning') {
-      return AppColors.tierWarn;
-    }
-    return AppColors.tierOk;
-  }
-
-  getUrgencyLabel(urgency: string): string {
-    if (urgency === 'critical') {
-      return '危重';
-    }
-    if (urgency === 'warning') {
-      return '警示';
-    }
-    return '关注';
-  }
-
-  getLlmConfirmLabel(confirmed: number): string {
-    if (confirmed === 1) {
-      return '已确认';
-    }
-    if (confirmed === -1) {
-      return '已排除';
-    }
-    if (confirmed === 2) {
-      return '待定';
-    }
-    return '待确认';
-  }
-
-  getLlmConfirmColor(confirmed: number): ResourceStr {
-    if (confirmed === 1) {
-      return AppColors.tierOk;
-    }
-    if (confirmed === -1) {
-      return AppColors.textSecondary;
-    }
-    if (confirmed === 2) {
-      return AppColors.tierWarn;
-    }
-    return AppColors.textSecondary;
   }
 
   async loadDiagnosisKb() {
@@ -1492,7 +1367,7 @@ export struct PatientDetailPage {
       hilog.info(0x0001, 'MedCalc', 'ExtractAgent: calling LLM, contextLen=' + contextText.length.toString());
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
       hilog.info(0x0001, 'MedCalc', 'ExtractAgent: LLM response length=' + response.length.toString());
-      const parsed = this.parseRecommendationsAndSummary(response);
+      const parsed = parseRecommendationsAndSummary(response);
       recommendations = parsed.recommendations;
       summary = parsed.summary;
       gaps = parsed.gaps;
@@ -1609,7 +1484,7 @@ export struct PatientDetailPage {
           try {
             const suppStartTime = Date.now();
             const suppResponse = await sendVisionRequest(config, suppSystemPrompt, suppUserText, '', '');
-            const suppParsed = this.parseRecommendations(suppResponse);
+            const suppParsed = parseRecommendations(suppResponse);
             for (const rec of suppParsed) {
               recommendations.push(rec);
             }
@@ -1849,7 +1724,7 @@ export struct PatientDetailPage {
     }
     const alertTiers: string[] = [];
     for (const alert of this.dashboard.alerts) {
-      const tier = this.parseAlertResult(alert).tier;
+      const tier = parseAlertResult(alert).tier;
       if (tier.length > 0) {
         alertTiers.push(alert.calcName + ':' + tier);
       }
@@ -1858,238 +1733,6 @@ export struct PatientDetailPage {
       parts.push('评分: ' + alertTiers.slice(0, 5).join(', '));
     }
     return '- 关键数据：' + parts.join(', ');
-  }
-
-  parseRecommendations(responseText: string): GuidelineRecommendation[] {
-    const result: GuidelineRecommendation[] = [];
-    let jsonStr = responseText;
-    const codeBlockStart = responseText.indexOf('```json');
-    if (codeBlockStart >= 0) {
-      const afterStart = responseText.indexOf('{', codeBlockStart);
-      const codeBlockEnd = responseText.indexOf('```', afterStart >= 0 ? afterStart : codeBlockStart + 7);
-      if (afterStart >= 0 && codeBlockEnd > afterStart) {
-        jsonStr = responseText.substring(afterStart, codeBlockEnd);
-      }
-    } else {
-      const jsonStart = responseText.indexOf('{');
-      const jsonEnd = responseText.indexOf('}', jsonStart >= 0 ? jsonStart : 0);
-      if (jsonStart >= 0 && jsonEnd > jsonStart) {
-        let depth = 0;
-        let endIdx = -1;
-        for (let i = jsonStart; i < responseText.length; i++) {
-          if (responseText.charAt(i) === '{') {
-            depth++;
-          } else if (responseText.charAt(i) === '}') {
-            depth--;
-            if (depth === 0) {
-              endIdx = i;
-              break;
-            }
-          }
-        }
-        if (endIdx > jsonStart) {
-          jsonStr = responseText.substring(jsonStart, endIdx + 1);
-        }
-      }
-    }
-    const parsed: Object | null = JSON.parse(jsonStr);
-    if (parsed === null) {
-      return result;
-    }
-    const obj = parsed as Record<string, Object>;
-    const arr = obj['recommendations'];
-    if (arr === undefined || arr === null) {
-      return result;
-    }
-    const recArr = arr as Array<Record<string, string>>;
-    const validCategories: string[] = ['病理生理', '诊断要点', '监测评估', '治疗建议'];
-    const categoryMap: Record<string, string> = { '病理生理': '病理生理', '诊断': '诊断要点', '诊断要点': '诊断要点', '监测': '监测评估', '监测评估': '监测评估', '治疗': '治疗建议', '治疗建议': '治疗建议' };
-    for (const rec of recArr) {
-      const gr = new GuidelineRecommendation();
-      gr.text = rec['text'] || '';
-      gr.evidenceLevel = rec['evidenceLevel'] || '未标注';
-      gr.source = rec['source'] || '';
-      gr.category = rec['category'] || '';
-      gr.type = rec['type'] || '';
-      const validTypes: string[] = ['推荐意见', '知识要点', '混合'];
-      if (validTypes.indexOf(gr.type) < 0) {
-        gr.type = '';
-      }
-      const mapped = categoryMap[gr.category];
-      if (mapped !== undefined) {
-        gr.category = mapped;
-      } else {
-        gr.category = '治疗建议';
-      }
-      if (gr.text.length > 0) {
-        result.push(gr);
-      }
-    }
-    return result;
-  }
-
-  parseRecommendationsAndSummary(responseText: string): ParsedRecommendations {
-    const result = new ParsedRecommendations();
-    const summaryMarker = '## 临床要点';
-    const markerIdx = responseText.indexOf(summaryMarker);
-    let jsonPart = responseText;
-    let summaryPart = '';
-    if (markerIdx >= 0) {
-      jsonPart = responseText.substring(0, markerIdx);
-      summaryPart = responseText.substring(markerIdx);
-    }
-    result.recommendations = this.parseRecommendations(jsonPart);
-    result.gaps = this.parseGapsFromJson(jsonPart);
-    if (summaryPart.length > 0) {
-      const headerEnd = summaryPart.indexOf('\n');
-      if (headerEnd >= 0 && summaryPart.substring(0, headerEnd).trim() === '## 临床要点') {
-        result.summary = summaryPart.substring(headerEnd + 1).trim();
-      } else {
-        result.summary = summaryPart.trim();
-      }
-    } else {
-      const afterJson = responseText.lastIndexOf('```');
-      if (afterJson >= 0 && afterJson < responseText.length - 3) {
-        const remaining = responseText.substring(afterJson + 3).trim();
-        if (remaining.length > 20) {
-          result.summary = remaining;
-        }
-      }
-    }
-    return result;
-  }
-
-  parseGapsFromJson(responseText: string): GapSignal[] {
-    const gaps: GapSignal[] = [];
-    let jsonStr = responseText;
-    const codeBlockStart = responseText.indexOf('```json');
-    if (codeBlockStart >= 0) {
-      const afterStart = responseText.indexOf('{', codeBlockStart);
-      const codeBlockEnd = responseText.indexOf('```', afterStart >= 0 ? afterStart : codeBlockStart + 7);
-      if (afterStart >= 0 && codeBlockEnd > afterStart) {
-        jsonStr = responseText.substring(afterStart, codeBlockEnd);
-      }
-    } else {
-      const jsonStart = responseText.indexOf('{');
-      if (jsonStart >= 0) {
-        let depth = 0;
-        let endIdx = -1;
-        for (let i = jsonStart; i < responseText.length; i++) {
-          if (responseText.charAt(i) === '{') { depth++; }
-          else if (responseText.charAt(i) === '}') {
-            depth--;
-            if (depth === 0) { endIdx = i; break; }
-          }
-        }
-        if (endIdx > jsonStart) {
-          jsonStr = responseText.substring(jsonStart, endIdx + 1);
-        }
-      }
-    }
-    try {
-      const parsed: Object | null = JSON.parse(jsonStr);
-      if (parsed !== null) {
-        const obj = parsed as Record<string, Object>;
-        const gapsArr = obj['gaps'] as Array<Record<string, Object>>;
-        if (gapsArr !== undefined && gapsArr !== null) {
-          for (const item of gapsArr) {
-            const gs = new GapSignal();
-            gs.category = (item['category'] as string) || '';
-            const terms = item['supplementaryTerms'] as Array<string>;
-            if (terms !== undefined && terms !== null) {
-              gs.supplementaryTerms = terms;
-            }
-            if (gs.category.length > 0) {
-              gaps.push(gs);
-            }
-          }
-        }
-      }
-    } catch (_e) {
-      hilog.warn(0x0001, 'MedCalc', 'parseGapsFromJson: failed to parse gaps');
-    }
-    return gaps;
-  }
-
-  getKbSearchResultTitle(sr: SearchResult): string {
-    if (sr.title.length > 0) {
-      return sr.title;
-    }
-    return sr.path.split('/').pop() || sr.path;
-  }
-
-  getKbGuidelineName(sr: SearchResult): string {
-    const parts = sr.path.split('/');
-    if (parts.length >= 3) {
-      return parts.slice(0, parts.length - 1).join('/');
-    } else if (parts.length === 2) {
-      return parts[0];
-    }
-    return '';
-  }
-
-  getRecommendationSummary(recs: GuidelineRecommendation[]): string {
-    let count = 0;
-    const catCount: string[] = [];
-    const categories: string[] = ['病理生理', '诊断要点', '监测评估', '治疗建议'];
-    for (const cat of categories) {
-      let c = 0;
-      for (const rec of recs) {
-        if (rec.category === cat) {
-          c++;
-        }
-      }
-      if (c > 0) {
-        catCount.push(c.toString());
-        count += c;
-      }
-    }
-    if (count === 0) {
-      return '0条';
-    }
-    return count.toString() + '条';
-  }
-
-  getCategoryCount(recs: GuidelineRecommendation[], cat: string): number {
-    let c = 0;
-    for (const rec of recs) {
-      if (rec.category === cat) {
-        c++;
-      }
-    }
-    return c;
-  }
-
-  getCategoryBorderColor(cat: string): ResourceStr {
-    if (cat === '病理生理') {
-      return AppColors.aiAccent;
-    }
-    if (cat === '诊断要点') {
-      return AppColors.infoAccent;
-    }
-    if (cat === '监测评估') {
-      return AppColors.tierWarn;
-    }
-    if (cat === '治疗建议') {
-      return AppColors.tierOk;
-    }
-    return AppColors.textSecondary;
-  }
-
-  getCategoryLabel(cat: string): string {
-    if (cat === '病理生理') {
-      return '病理';
-    }
-    if (cat === '诊断要点') {
-      return '诊断';
-    }
-    if (cat === '监测评估') {
-      return '监测';
-    }
-    if (cat === '治疗建议') {
-      return '治疗';
-    }
-    return '其他';
   }
 
   @Builder
@@ -2106,18 +1749,18 @@ export struct PatientDetailPage {
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .layoutWeight(1)
-        Text(this.getUrgencyLabel(diag.urgency))
+        Text(getUrgencyLabel(diag.urgency))
           .fontSize(10)
-          .fontColor(this.getUrgencyColor(diag.urgency))
-          .backgroundColor(this.getUrgencyColor(diag.urgency) + '20')
+          .fontColor(getUrgencyColor(diag.urgency))
+          .backgroundColor(getUrgencyColor(diag.urgency) + '20')
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
           .margin({ left: 4 })
         if (diag.source === 'rule' && diag.llmConfirmed !== 1) {
-          Text(this.getLlmConfirmLabel(diag.llmConfirmed))
+          Text(getLlmConfirmLabel(diag.llmConfirmed))
             .fontSize(10)
-            .fontColor(this.getLlmConfirmColor(diag.llmConfirmed))
-            .backgroundColor(this.getLlmConfirmColor(diag.llmConfirmed) + '20')
+            .fontColor(getLlmConfirmColor(diag.llmConfirmed))
+            .backgroundColor(getLlmConfirmColor(diag.llmConfirmed) + '20')
             .borderRadius(4)
             .padding({ left: 4, right: 4, top: 1, bottom: 1 })
             .margin({ left: 4 })
@@ -2163,7 +1806,7 @@ export struct PatientDetailPage {
           .backgroundColor(AppColors.surfaceMuted)
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-        Text(this.formatDateTime(diag.triggeredAt))
+        Text(formatDateTime(diag.triggeredAt))
           .fontSize(10)
           .fontColor(AppColors.textSecondary)
           .margin({ left: 8 })
@@ -2177,7 +1820,7 @@ export struct PatientDetailPage {
     .padding(10)
     .backgroundColor(diag.source === 'rule' ? AppColors.card : (diag.source === 'partial' ? AppColors.tierWarnBg : (diag.source === 'llm_hint' ? AppColors.aiAccentBg : AppColors.tierOkBg)))
     .borderRadius(8)
-    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getUrgencyColor(diag.urgency) })
+    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: getUrgencyColor(diag.urgency) })
     .margin({ bottom: 6 })
   }
 
@@ -2275,7 +1918,7 @@ export struct PatientDetailPage {
             ForEach(this.getDiagnosisKb(diag.ruleId)!.searchResults, (sr: SearchResult) => {
               Column() {
                 Row() {
-                  Text(this.getKbSearchResultTitle(sr))
+                  Text(getKbSearchResultTitle(sr))
                     .fontSize(10)
                     .fontColor(AppColors.primary)
                     .maxLines(1)
@@ -2292,7 +1935,7 @@ export struct PatientDetailPage {
                   }
                 }
                 .width('100%');
-                Text(this.getKbGuidelineName(sr))
+                Text(getKbGuidelineName(sr))
                   .fontSize(9)
                   .fontColor(AppColors.textSecondary)
                   .maxLines(1)
@@ -2303,7 +1946,7 @@ export struct PatientDetailPage {
               .padding({ top: 4, bottom: 4 })
               .onClick(() => {
                 this.kbReaderPath = sr.path;
-                this.kbReaderTitle = this.getKbSearchResultTitle(sr);
+                this.kbReaderTitle = getKbSearchResultTitle(sr);
                 this.showKbReader = true;
               });
             }, (sr: SearchResult) => sr.path);
@@ -2363,7 +2006,7 @@ export struct PatientDetailPage {
           .width('100%');
         } else if (this.getDiagnosisKb(diag.ruleId)!.recommendations.length > 0) {
           Row() {
-            Text('指南建议 · ' + this.getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
+            Text('指南建议 · ' + getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
               .fontSize(12)
               .fontColor(AppColors.primary)
               .fontWeight(FontWeight.Medium);
@@ -2472,41 +2115,6 @@ export struct PatientDetailPage {
     }
   }
 
-  getEvidenceColor(level: string): ResourceStr {
-    if (level.indexOf('强') >= 0) {
-      return AppColors.tierOk;
-    }
-    if (level.indexOf('条件') >= 0) {
-      return AppColors.warningText;
-    }
-    if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
-      return AppColors.infoAccent;
-    }
-    return AppColors.textSecondary;
-  }
-
-  getEvidenceBgColor(level: string): ResourceStr {
-    if (level.indexOf('强') >= 0) {
-      return AppColors.tierOkBg;
-    }
-    if (level.indexOf('条件') >= 0) {
-      return AppColors.tierWarnBg;
-    }
-    if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
-      return AppColors.infoAccentBg;
-    }
-    return AppColors.surfaceMuted;
-  }
-
-  getDiagnosisNameByRuleId(ruleId: string): string {
-    for (const diag of this.dashboard.diagnoses) {
-      if (diag.ruleId === ruleId) {
-        return diag.name;
-      }
-    }
-    return '';
-  }
-
   @Builder
   RecommendationsDetailPage() {
     Column() {
@@ -2519,7 +2127,7 @@ export struct PatientDetailPage {
             this.showRecommendationsDetail = false;
             this.activeAdviceRuleId = '';
           })
-        Text(this.getDiagnosisNameByRuleId(this.activeAdviceRuleId) + ' · 指南建议')
+        Text(getDiagnosisNameByRuleId(this.dashboard.diagnoses, this.activeAdviceRuleId) + ' · 指南建议')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -2596,20 +2204,20 @@ export struct PatientDetailPage {
   @Builder
   RecommendationCategorySection(ruleId: string, category: string, title: string) {
     if (this.getDiagnosisKb(ruleId) !== null) {
-      if (this.getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category) > 0) {
+      if (getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category) > 0) {
         Column() {
           Row() {
             Row()
               .width(3)
               .height(14)
-              .backgroundColor(this.getCategoryBorderColor(category))
+              .backgroundColor(getCategoryBorderColor(category))
               .borderRadius(2)
               .margin({ right: 6 });
             Text(title)
               .fontSize(14)
               .fontWeight(FontWeight.Bold)
               .fontColor(AppColors.primary);
-            Text(this.getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category).toString() + '条')
+            Text(getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category).toString() + '条')
               .fontSize(11)
               .fontColor(AppColors.textSecondary)
               .margin({ left: 6 });
@@ -2649,8 +2257,8 @@ export struct PatientDetailPage {
                     if (rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注' && rec.evidenceLevel !== '-') {
                       Text(rec.evidenceLevel)
                         .fontSize(10)
-                        .fontColor(this.getEvidenceColor(rec.evidenceLevel))
-                        .backgroundColor(this.getEvidenceBgColor(rec.evidenceLevel))
+                        .fontColor(getEvidenceColor(rec.evidenceLevel))
+                        .backgroundColor(getEvidenceBgColor(rec.evidenceLevel))
                         .borderRadius(3)
                         .padding({ left: 4, right: 4, top: 1, bottom: 1 })
                         .margin({ left: 4 });
@@ -2672,7 +2280,7 @@ export struct PatientDetailPage {
                 .width('100%')
                 .alignItems(HorizontalAlign.Start)
                 .padding({ top: 4, bottom: 4, left: 8 })
-                .border({ width: { left: 2, right: 0, top: 0, bottom: 0 }, color: this.getCategoryBorderColor(category) })
+                .border({ width: { left: 2, right: 0, top: 0, bottom: 0 }, color: getCategoryBorderColor(category) })
                 .margin({ bottom: 4 });
               }
             }, (rec: GuidelineRecommendation, index: number) => category + index.toString())
@@ -2690,7 +2298,7 @@ export struct PatientDetailPage {
         Column()
           .width(4)
           .height(16)
-          .backgroundColor(getTierColor(this.parseAlertResult(alert).tierClass))
+          .backgroundColor(getTierColor(parseAlertResult(alert).tierClass))
           .borderRadius(2)
           .margin({ right: 8 })
         Text(alert.calcName)
@@ -2698,9 +2306,9 @@ export struct PatientDetailPage {
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .layoutWeight(1)
-        Text(this.parseAlertResult(alert).tier)
+        Text(parseAlertResult(alert).tier)
           .fontSize(11)
-          .fontColor(getTierColor(this.parseAlertResult(alert).tierClass))
+          .fontColor(getTierColor(parseAlertResult(alert).tierClass))
           .maxLines(1)
           .margin({ right: 6 })
         Text(alert.completeness + '%')
@@ -2728,34 +2336,34 @@ export struct PatientDetailPage {
   @Builder
   AlertDetail(alert: PatientAlert) {
     Column() {
-      if (this.parseAlertResult(alert).value !== null) {
+      if (parseAlertResult(alert).value !== null) {
         Row() {
-          Text(this.formatResultValue(this.parseAlertResult(alert).value))
+          Text(formatResultValue(parseAlertResult(alert).value))
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary)
-          Text(this.parseAlertResult(alert).unit)
+          Text(parseAlertResult(alert).unit)
             .fontSize(12)
             .fontColor(AppColors.textSecondary)
             .margin({ left: 4, top: 10 })
         }
         .margin({ top: 6, bottom: 4 })
       }
-      Text(this.parseAlertResult(alert).tier)
+      Text(parseAlertResult(alert).tier)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
-        .fontColor(getTierColor(this.parseAlertResult(alert).tierClass))
-        .backgroundColor(getTierBgColor(this.parseAlertResult(alert).tierClass))
+        .fontColor(getTierColor(parseAlertResult(alert).tierClass))
+        .backgroundColor(getTierBgColor(parseAlertResult(alert).tierClass))
         .borderRadius(20)
         .padding({ left: 8, right: 8, top: 2, bottom: 2 })
         .margin({ bottom: 6 })
-      if (this.parseAlertResult(alert).footnote.length > 0) {
-        Text(this.parseAlertResult(alert).footnote)
+      if (parseAlertResult(alert).footnote.length > 0) {
+        Text(parseAlertResult(alert).footnote)
           .fontSize(12)
           .fontColor(AppColors.textBody)
           .lineHeight(18)
       }
-      Text(this.formatDateTime(alert.triggeredAt))
+      Text(formatDateTime(alert.triggeredAt))
         .fontSize(11)
         .fontColor(AppColors.textSecondary)
         .margin({ top: 4 })
@@ -2772,7 +2380,7 @@ export struct PatientDetailPage {
         Column()
           .width(4)
           .height(16)
-          .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
+          .backgroundColor(getLabAlertUrgencyColor(la.urgency))
           .borderRadius(2)
           .margin({ right: 8 })
         Column() {
@@ -2788,7 +2396,7 @@ export struct PatientDetailPage {
               .layoutWeight(1)
             Text(la.threshold)
               .fontSize(11)
-              .fontColor(this.getLabAlertUrgencyColor(la.urgency))
+              .fontColor(getLabAlertUrgencyColor(la.urgency))
               .fontWeight(FontWeight.Medium)
           }
           .width('100%')
@@ -2803,10 +2411,10 @@ export struct PatientDetailPage {
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start)
-        Text(this.getLabAlertUrgencyLabel(la.urgency))
+        Text(getLabAlertUrgencyLabel(la.urgency))
           .fontSize(10)
           .fontColor(AppColors.card)
-          .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
+          .backgroundColor(getLabAlertUrgencyColor(la.urgency))
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
           .margin({ left: 4 })
@@ -2819,26 +2427,6 @@ export struct PatientDetailPage {
     .backgroundColor(AppColors.card)
     .borderRadius(8)
     .margin({ bottom: 6 })
-  }
-
-  getLabAlertUrgencyColor(urgency: string): ResourceStr {
-    if (urgency === 'critical') {
-      return AppColors.danger;
-    }
-    if (urgency === 'warning') {
-      return AppColors.tierWarn;
-    }
-    return AppColors.tierOk;
-  }
-
-  getLabAlertUrgencyLabel(urgency: string): string {
-    if (urgency === 'critical') {
-      return '危急';
-    }
-    if (urgency === 'warning') {
-      return '警示';
-    }
-    return '关注';
   }
 
   getDataFieldCount(): number {
@@ -3074,7 +2662,7 @@ export struct PatientDetailPage {
     const items: string[] = [];
     for (let i = 0; i < this.dashboard.records.length && items.length < 3; i++) {
       const record = this.dashboard.records[i];
-      items.push(this.getRecordIcon(record.type) + ' ' + this.getRecordLabel(record) + ' ' + this.formatTime(record.timestamp));
+      items.push(getRecordIcon(record.type) + ' ' + getRecordLabel(record) + ' ' + formatTime(record.timestamp));
     }
     return items;
   }
@@ -3185,10 +2773,10 @@ export struct PatientDetailPage {
             ForEach(this.dashboard.records, (record: PatientRecord) => {
               Column() {
                 Row() {
-                  Text(this.getRecordIcon(record.type))
+                  Text(getRecordIcon(record.type))
                     .fontSize(14)
                     .margin({ right: 8 })
-                  Text(this.getRecordLabel(record))
+                  Text(getRecordLabel(record))
                     .fontSize(13)
                     .fontColor(AppColors.primary)
                     .layoutWeight(1)
@@ -3200,7 +2788,7 @@ export struct PatientDetailPage {
                       this.deleteRecordId = record.id;
                       this.showDeleteConfirm = true;
                     })
-                  Text(this.formatTime(record.timestamp))
+                  Text(formatTime(record.timestamp))
                     .fontSize(12)
                     .fontColor(AppColors.textSecondary)
                     .margin({ right: 4 })
@@ -3279,7 +2867,7 @@ export struct PatientDetailPage {
                   .padding({ left: 3, right: 3, top: 1, bottom: 1 })
                   .margin({ right: 4 })
                 if (dp.examTime > 0) {
-                  Text(this.formatDateTime(dp.examTime))
+                  Text(formatDateTime(dp.examTime))
                     .fontSize(12)
                     .fontColor(AppColors.primary)
                     .layoutWeight(1)
@@ -3314,7 +2902,7 @@ export struct PatientDetailPage {
                   .fontSize(10)
                   .fontColor(AppColors.textSecondary)
                   .margin({ right: 4 })
-                Text(this.formatDateTime(dp.timestamp))
+                Text(formatDateTime(dp.timestamp))
                   .fontSize(11)
                   .fontColor(AppColors.textSecondary)
               }
