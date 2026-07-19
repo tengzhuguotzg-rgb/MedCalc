@@ -8,6 +8,27 @@ export class MarkdownLine {
   codeContent: string = '';
   codeLang: string = '';
   cells: string[] = [];
+  tableRowIndex: number = -1;
+}
+
+function isTableSepLine(text: string): boolean {
+  const trimmed = text.trim();
+  return trimmed.length > 0 && trimmed.match(/^\|[\s\-:|]+\|?$/) !== null;
+}
+
+function classifyTableLine(afterGt: string, ml: MarkdownLine): boolean {
+  const trimmed = afterGt.trim();
+  if (!trimmed.startsWith('|')) {
+    return false;
+  }
+  if (isTableSepLine(trimmed)) {
+    ml.type = 'tableSep';
+  } else {
+    ml.type = 'table';
+    ml.cells = parseTableCells(trimmed);
+  }
+  ml.text = trimmed;
+  return true;
 }
 
 export class TocEntry {
@@ -153,6 +174,8 @@ export function parseKbMarkdown(content: string): MarkdownLine[] {
         ml.calloutType = calloutMatch[1].toLowerCase();
         ml.calloutTitle = calloutMatch[3];
         inCallout = true;
+      } else if (!inCallout && classifyTableLine(afterGt, ml)) {
+        inCallout = false;
       } else if (inCallout) {
         ml.type = 'callout-body';
         ml.text = afterGt;
@@ -214,13 +237,7 @@ export function parseKbMarkdown(content: string): MarkdownLine[] {
       ml.text = scanLine;
       inCallout = false;
     } else if (scanLine.startsWith('|')) {
-      if (scanLine.match(/^\|[\s\-:|]+\|$/)) {
-        ml.type = 'tableSep';
-      } else {
-        ml.type = 'table';
-        ml.cells = parseTableCells(scanLine);
-      }
-      ml.text = scanLine;
+      classifyTableLine(scanLine, ml);
       inCallout = false;
     } else {
       ml.type = 'text';
@@ -287,11 +304,14 @@ export function parseKbMarkdown(content: string): MarkdownLine[] {
         header.cells = current.cells;
         result.push(header);
         i += 2;
+        let rowIdx = 0;
         while (i < firstPass.length && firstPass[i].type === 'table') {
           const row = new MarkdownLine();
           row.type = 'table';
           row.text = firstPass[i].text;
           row.cells = firstPass[i].cells;
+          row.tableRowIndex = rowIdx;
+          rowIdx++;
           result.push(row);
           i++;
         }

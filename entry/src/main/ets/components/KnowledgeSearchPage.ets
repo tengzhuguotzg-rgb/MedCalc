@@ -4,6 +4,12 @@ import {
   parseKbMarkdown, extractToc, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
 
+interface CrumbItem {
+  label: string;
+  targetPath: string;
+  clickable: boolean;
+}
+
 @Component
 export struct KnowledgeSearchPage {
   @State searchKeyword: string = '';
@@ -123,6 +129,20 @@ export struct KnowledgeSearchPage {
     this.browseMode = 'root';
   }
 
+  searchByTag(tag: string) {
+    this.readingPage = null;
+    this.readingPath = '';
+    this.pageNavStack = [];
+    this.markdownLines = [];
+    this.wikilinks = [];
+    this.tocEntries = [];
+    this.relatedPages = [];
+    this.showToc = false;
+    this.searchKeyword = tag;
+    this.syncNavDepth();
+    this.doSearch();
+  }
+
   async openPage(path: string) {
     this.isPageLoading = true;
     const page = await this.kbService.getPage(path);
@@ -185,17 +205,36 @@ export struct KnowledgeSearchPage {
   }
 
   getCategoryColor(name: string): string {
-    const colors: string[] = [
-      '#4A7C6F', '#C8881A', '#8B5E3C', '#5B7FA5', '#7A6B9D',
-      '#B85C5C', '#5A8F6B', '#9B7B4A', '#6B8CAD', '#8E6B8E',
-      '#6A9B7A', '#A58555', '#7B8DB5', '#9A7DA0', '#C47A6A',
-      '#6B9E85', '#B8956A', '#7B9EC0', '#A07BA5', '#D08A7A',
-    ];
+    // 品牌大地色系：深绿 / 墨绿 / 灰绿 / 暖棕
+    const colors: string[] = ['#1F3D2F', '#3A5F4F', '#7A8074', '#8B6B4A'];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = (hash * 31 + name.charCodeAt(i)) % colors.length;
     }
     return colors[hash % colors.length];
+  }
+
+  getEntryLabel(entry: KnowledgeDirEntry): string {
+    let base = entry.name.replace(/\.md$/, '');
+    if (base.toLowerCase() === 'index') {
+      base = entry.parentPath.split('/').pop() || '索';
+    }
+    if (base.length === 0) {
+      return '?';
+    }
+    const first = base.charAt(0);
+    let sameFirst = 0;
+    for (const other of this.dirEntries) {
+      let otherBase = other.name.replace(/\.md$/, '');
+      if (otherBase.toLowerCase() === 'index') {
+        otherBase = other.parentPath.split('/').pop() || '索';
+      }
+      if (otherBase.length > 0 && otherBase.charAt(0) === first) {
+        sameFirst++;
+      }
+    }
+    // 首字重名时用前两字提高辨识度
+    return sameFirst > 1 && base.length > 1 ? base.substring(0, 2) : first;
   }
 
   getSearchResultTitle(sr: SearchResult): string {
@@ -209,7 +248,12 @@ export struct KnowledgeSearchPage {
     if (this.readingPage !== null && this.readingPage.title.length > 0) {
       return this.readingPage.title;
     }
-    return this.readingPath.split('/').pop()?.replace(/\.md$/, '') || '';
+    const parts = this.readingPath.split('/');
+    let name = parts[parts.length - 1].replace(/\.md$/, '');
+    if (name.toLowerCase() === 'index' && parts.length > 1) {
+      name = parts[parts.length - 2];
+    }
+    return name;
   }
 
   getBreadcrumb(): string[] {
@@ -217,6 +261,31 @@ export struct KnowledgeSearchPage {
       return [];
     }
     return this.readingPath.split('/');
+  }
+
+  getBreadcrumbItems(): CrumbItem[] {
+    const parts = this.getBreadcrumb();
+    const items: CrumbItem[] = [];
+    for (let i = 0; i < parts.length; i++) {
+      let label = parts[i].replace(/\.md$/, '');
+      if (label.toLowerCase() === 'index' && i > 0) {
+        label = parts[i - 1].replace(/\.md$/, '');
+      }
+      items.push({
+        label: label,
+        targetPath: parts.slice(0, i + 1).join('/'),
+        clickable: i < parts.length - 1
+      });
+    }
+    // 父子同名时折叠为一个（保留靠后的当前级）
+    const deduped: CrumbItem[] = [];
+    for (const item of items) {
+      if (deduped.length > 0 && deduped[deduped.length - 1].label === item.label) {
+        deduped.pop();
+      }
+      deduped.push(item);
+    }
+    return deduped;
   }
 
   getWikilinkDisplayName(link: string): string {
@@ -267,7 +336,7 @@ export struct KnowledgeSearchPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF');
+    .backgroundColor('#F4F1EA');
   }
 
   @Builder
@@ -459,9 +528,9 @@ export struct KnowledgeSearchPage {
   @Builder
   CategoryCard(entry: KnowledgeDirEntry) {
     Column() {
-      Text(entry.name.charAt(0))
-        .fontSize(22)
-        .fontColor('#FFFFFF')
+      Text(this.getEntryLabel(entry))
+        .fontSize(this.getEntryLabel(entry).length > 1 ? 16 : 22)
+        .fontColor('#F4F1EA')
         .fontWeight(FontWeight.Bold)
         .width(44)
         .height(44)
@@ -645,22 +714,21 @@ export struct KnowledgeSearchPage {
             .textOverflow({ overflow: TextOverflow.Ellipsis });
           Scroll() {
             Row() {
-              ForEach(this.getBreadcrumb(), (part: string, index: number) => {
+              ForEach(this.getBreadcrumbItems(), (item: CrumbItem, index: number) => {
                 if (index > 0) {
                   Text(' \u203A ')
                     .fontSize(10)
                     .fontColor('#B0B0A8');
                 }
-                Text(part.replace(/\.md$/, ''))
+                Text(item.label)
                   .fontSize(10)
-                  .fontColor(index === this.getBreadcrumb().length - 1 ? '#7A8074' : '#2B6CB0')
+                  .fontColor(item.clickable ? '#2B6CB0' : '#7A8074')
                   .onClick(() => {
-                    if (index < this.getBreadcrumb().length - 1) {
-                      const targetPath = this.getBreadcrumb().slice(0, index + 1).join('/');
-                      this.openPage(targetPath.endsWith('.md') ? targetPath : targetPath + '/index.md');
+                    if (item.clickable) {
+                      this.openPage(item.targetPath.endsWith('.md') ? item.targetPath : item.targetPath + '/index.md');
                     }
                   });
-              }, (part: string, index: number) => index.toString());
+              }, (item: CrumbItem, index: number) => index.toString() + item.label);
             }
           }
           .scrollable(ScrollDirection.Horizontal)
@@ -886,7 +954,7 @@ export struct KnowledgeSearchPage {
           }, (cell: string, idx: number) => idx.toString());
         }
         .width('100%')
-        .backgroundColor('#FAFAF5')
+        .backgroundColor(ml.tableRowIndex % 2 === 1 ? '#F1EEE2' : '#FAFAF5')
         .borderRadius(2);
       } else {
         Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
@@ -899,15 +967,17 @@ export struct KnowledgeSearchPage {
           .borderRadius(2);
       }
     } else if (ml.type === 'tagLine') {
-      Row() {
+      Flex({ wrap: FlexWrap.Wrap }) {
         ForEach(ml.text.split(/\s+/).filter((t: string): boolean => t.startsWith('#') && t.length > 1), (tag: string) => {
           Text(tag.substring(1))
             .fontSize(11)
-            .fontColor('#2B6CB0')
-            .backgroundColor('#EBF2FA')
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-            .margin({ right: 4, bottom: 4 });
+            .fontColor('#1F3D2F')
+            .backgroundColor('#F4F1EA')
+            .borderRadius(12)
+            .border({ width: 1, color: '#E0DCC8' })
+            .padding({ left: 8, right: 8, top: 3, bottom: 3 })
+            .margin({ right: 6, bottom: 6 })
+            .onClick(() => { this.searchByTag(tag.substring(1)); });
         }, (tag: string) => tag);
       }
       .width('100%')
