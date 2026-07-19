@@ -2,6 +2,7 @@ import { image } from '@kit.ImageKit';
 import { fileIo } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { AppColors } from '../utils/AppColors';
 
 class MosaicRect {
   x: number = 0;
@@ -422,7 +423,7 @@ export struct ImageEditor {
         Row() {
           Text('取消')
             .fontSize(16)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .padding({ left: 16, top: 12, bottom: 12 })
             .onClick(() => {
               this.showEditor = false;
@@ -430,12 +431,12 @@ export struct ImageEditor {
           Text('图片脱敏')
             .fontSize(16)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
           Text('确认')
             .fontSize(16)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .fontWeight(FontWeight.Medium)
             .padding({ right: 16, top: 12, bottom: 12 })
             .onClick(async () => {
@@ -446,14 +447,14 @@ export struct ImageEditor {
             })
         }
         .width('100%')
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
 
         Divider().color('#E0DCC8')
 
         if (this.errorMsg.length > 0) {
           Text(this.errorMsg)
             .fontSize(13)
-            .fontColor('#E76F2C')
+            .fontColor(AppColors.warning)
             .width('100%')
             .padding(12)
             .backgroundColor('#FFF3E0')
@@ -513,7 +514,7 @@ export struct ImageEditor {
         Row() {
           Text('笔刷:')
             .fontSize(13)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
           Slider({
             value: this.brushSize,
             min: 10,
@@ -527,12 +528,12 @@ export struct ImageEditor {
             })
           Text(this.brushSize.toString())
             .fontSize(13)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .width(30)
           Blank().width(12)
           Button('撤销')
             .fontSize(12)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .backgroundColor('#E8E5D8')
             .borderRadius(6)
             .height(32)
@@ -543,7 +544,7 @@ export struct ImageEditor {
             })
           Button('清空')
             .fontSize(12)
-            .fontColor('#E76F2C')
+            .fontColor(AppColors.warning)
             .backgroundColor('#FFF3E0')
             .borderRadius(6)
             .height(32)
@@ -556,7 +557,7 @@ export struct ImageEditor {
         }
         .width('100%')
         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
       }
       .width('100%')
       .height('100%')

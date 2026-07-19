@@ -1,5 +1,6 @@
 import { LlmModelConfig, LlmFormat, ApiServiceConfig, sendVisionRequest } from '../services/LlmService';
 import { PreferencesService } from '../services/PreferencesService';
+import { AppColors } from '../utils/AppColors';
 
 let settingsLlmIdCounter: number = 0;
 
@@ -208,12 +209,12 @@ export struct SettingsPage {
         Text('设置')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
       }
       .width('100%')
       .height(44)
       .padding({ left: 16, right: 16 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .border({ width: { bottom: 1 }, color: '#E0DCC8' })
 
       Scroll() {
@@ -221,12 +222,12 @@ export struct SettingsPage {
           Text('LLM 服务配置')
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .width('100%')
 
           Text('配置 AI 服务的 API 地址和密钥，计算器和智能助手共用')
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .width('100%')
 
           Column({ space: 8 }) {
@@ -234,13 +235,13 @@ export struct SettingsPage {
               Column() {
                 Text('暂无 LLM 服务')
                   .fontSize(14)
-                  .fontColor('#5F6654')
+                  .fontColor(AppColors.textSecondary)
                   .width('100%')
                   .textAlign(TextAlign.Center)
                   .margin({ top: 12, bottom: 12 })
                 Text('请点击下方按钮添加')
                   .fontSize(12)
-                  .fontColor('#5F6654')
+                  .fontColor(AppColors.textSecondary)
                   .width('100%')
                   .textAlign(TextAlign.Center)
               }
@@ -255,12 +256,12 @@ export struct SettingsPage {
                 Row() {
                   Text(provider)
                     .fontSize(13)
-                    .fontColor('#1F3D2F')
+                    .fontColor(AppColors.primary)
                     .fontWeight(FontWeight.Medium)
                   Row().width(8).height(1).backgroundColor('#E8E5D8').layoutWeight(1)
                   Button('+')
                     .fontSize(14)
-                    .fontColor('#1F3D2F')
+                    .fontColor(AppColors.primary)
                     .backgroundColor('#E8E5D8')
                     .width(28)
                     .height(28)
@@ -286,16 +287,16 @@ export struct SettingsPage {
                     Column({ space: 2 }) {
                       Text(llm.name)
                         .fontSize(14)
-                        .fontColor(this.selectedLlmId === llm.id ? '#1F3D2F' : '#4A5247')
+                        .fontColor(this.selectedLlmId === llm.id ? AppColors.primary : '#4A5247')
                       Text(llm.baseUrl.replace(/^https?:\/\//, '') + (llm.modelName.length > 0 ? ' · ' + llm.modelName : ''))
                         .fontSize(10)
-                        .fontColor('#5F6654')
+                        .fontColor(AppColors.textSecondary)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
                       if (this.testResultId === llm.id) {
                         Text(this.testResultOk ? '连接成功: ' + this.testResultMsg : '连接失败: ' + this.testResultMsg)
                           .fontSize(10)
-                          .fontColor(this.testResultOk ? '#3D6B4F' : '#B1452A')
+                          .fontColor(this.testResultOk ? AppColors.tierOk : AppColors.danger)
                           .maxLines(1)
                           .textOverflow({ overflow: TextOverflow.Ellipsis })
                       }
@@ -308,7 +309,7 @@ export struct SettingsPage {
                       Button(this.testingLlmId === llm.id ? '...' : '测试')
                         .fontSize(10)
                         .backgroundColor(this.testingLlmId === llm.id ? '#E8E5D8' : '#F0EDE3')
-                        .fontColor('#1F3D2F')
+                        .fontColor(AppColors.primary)
                         .height(22)
                         .borderRadius(3)
                         .enabled(this.testingLlmId.length === 0)
@@ -318,7 +319,7 @@ export struct SettingsPage {
                       Button('编辑')
                         .fontSize(10)
                         .backgroundColor('#F0EDE3')
-                        .fontColor('#1F3D2F')
+                        .fontColor(AppColors.primary)
                         .height(22)
                         .borderRadius(3)
                         .margin({ left: 4 })
@@ -328,7 +329,7 @@ export struct SettingsPage {
                       Button('删除')
                         .fontSize(10)
                         .backgroundColor('#FFF0F0')
-                        .fontColor('#B1452A')
+                        .fontColor(AppColors.danger)
                         .height(22)
                         .borderRadius(3)
                         .margin({ left: 4 })
@@ -347,7 +348,7 @@ export struct SettingsPage {
 
             Button('+ 添加服务商')
               .fontSize(14)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
               .backgroundColor('#E8E5D8')
               .borderRadius(8)
               .height(40)
@@ -359,26 +360,26 @@ export struct SettingsPage {
           }
           .width('100%')
           .padding(16)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(AppColors.card)
           .borderRadius(12)
 
           Text('关于')
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .width('100%')
 
           Column({ space: 4 }) {
             Text('重症智算 v1.0')
               .fontSize(14)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
             Text('智能医学评分计算器')
               .fontSize(12)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
           }
           .width('100%')
           .padding(16)
-          .backgroundColor('#FFFFFF')
+          .backgroundColor(AppColors.card)
           .borderRadius(12)
         }
         .padding(16)
@@ -388,7 +389,7 @@ export struct SettingsPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F4F1EA')
+    .backgroundColor(AppColors.background)
     .bindSheet($$this.showLlmDialog, this.LlmDialogBuilder(), {
       height: SheetSize.FIT_CONTENT,
       dragBar: true,
@@ -404,18 +405,18 @@ export struct SettingsPage {
         Text('添加模型到「' + this.addToProviderName + '」')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .width('100%')
 
         Column({ space: 4 }) {
           Text('模型名称')
             .fontSize(13)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .width('100%')
           TextInput({ placeholder: '如 deepseek-chat', text: this.addToProviderModelName })
             .fontSize(14)
-            .fontColor('#1F3D2F')
-            .backgroundColor('#F4F1EA')
+            .fontColor(AppColors.primary)
+            .backgroundColor(AppColors.background)
             .borderRadius(8)
             .onChange((v: string) => { this.addToProviderModelName = v; })
         }
@@ -423,21 +424,21 @@ export struct SettingsPage {
 
         Text('将复用该服务商下已有模型的 API 格式、URL 和 Key')
           .fontSize(11)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .width('100%')
 
         Row({ space: 12 }) {
           Button('取消')
             .fontSize(14)
             .backgroundColor('#E8E5D8')
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .height(40)
             .borderRadius(8)
             .layoutWeight(1)
             .onClick(() => { this.showLlmDialog = false; })
           Button('确认')
             .fontSize(14)
-            .backgroundColor('#1F3D2F')
+            .backgroundColor(AppColors.primary)
             .fontColor(Color.White)
             .height(40)
             .borderRadius(8)
@@ -453,19 +454,19 @@ export struct SettingsPage {
         Text(this.llmDialogMode === 'edit' ? '编辑 LLM' : '添加 LLM')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .width('100%')
 
         Column({ space: 12 }) {
           Column({ space: 4 }) {
             Text('服务商')
               .fontSize(13)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
             TextInput({ placeholder: '如 DeepSeek、OpenAI、MiniMax', text: this.editLlmProvider })
               .fontSize(14)
-              .fontColor('#1F3D2F')
-              .backgroundColor('#F4F1EA')
+              .fontColor(AppColors.primary)
+              .backgroundColor(AppColors.background)
               .borderRadius(8)
               .onChange((v: string) => { this.editLlmProvider = v; })
           }
@@ -474,20 +475,20 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text(this.llmDialogMode === 'edit' ? '模型名称' : '模型名称（每行一个，可同时添加多个）')
               .fontSize(13)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
             if (this.llmDialogMode === 'edit') {
               TextInput({ placeholder: '如 deepseek-chat', text: this.editLlmName })
                 .fontSize(14)
-                .fontColor('#1F3D2F')
-                .backgroundColor('#F4F1EA')
+                .fontColor(AppColors.primary)
+                .backgroundColor(AppColors.background)
                 .borderRadius(8)
                 .onChange((v: string) => { this.editLlmName = v; })
             } else {
               TextArea({ placeholder: 'deepseek-chat\ngpt-4o-mini', text: this.editLlmModelNames })
                 .fontSize(14)
-                .fontColor('#1F3D2F')
-                .backgroundColor('#F4F1EA')
+                .fontColor(AppColors.primary)
+                .backgroundColor(AppColors.background)
                 .borderRadius(8)
                 .height(80)
                 .onChange((v: string) => { this.editLlmModelNames = v; })
@@ -498,7 +499,7 @@ export struct SettingsPage {
           Row() {
             Text('API 格式')
               .fontSize(14)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
               .layoutWeight(1)
             Row({ space: 16 }) {
               Row() {
@@ -511,7 +512,7 @@ export struct SettingsPage {
                   .height(20)
                 Text('OpenAI')
                   .fontSize(14)
-                  .fontColor('#1F3D2F')
+                  .fontColor(AppColors.primary)
                   .margin({ left: 4 })
               }
               Row() {
@@ -524,7 +525,7 @@ export struct SettingsPage {
                   .height(20)
                 Text('Anthropic')
                   .fontSize(14)
-                  .fontColor('#1F3D2F')
+                  .fontColor(AppColors.primary)
                   .margin({ left: 4 })
               }
             }
@@ -534,12 +535,12 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text('API Base URL')
               .fontSize(13)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
             TextInput({ placeholder: 'https://api.deepseek.com', text: this.editLlmBaseUrl })
               .fontSize(14)
-              .fontColor('#1F3D2F')
-              .backgroundColor('#F4F1EA')
+              .fontColor(AppColors.primary)
+              .backgroundColor(AppColors.background)
               .borderRadius(8)
               .onChange((v: string) => { this.editLlmBaseUrl = v; })
           }
@@ -548,12 +549,12 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text('API Key')
               .fontSize(13)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
             TextInput({ placeholder: '请输入 API Key', text: this.editLlmApiKey })
               .fontSize(14)
-              .fontColor('#1F3D2F')
-              .backgroundColor('#F4F1EA')
+              .fontColor(AppColors.primary)
+              .backgroundColor(AppColors.background)
               .borderRadius(8)
               .type(InputType.Password)
               .onChange((v: string) => { this.editLlmApiKey = v; })
@@ -566,14 +567,14 @@ export struct SettingsPage {
           Button('取消')
             .fontSize(14)
             .backgroundColor('#E8E5D8')
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .height(40)
             .borderRadius(8)
             .layoutWeight(1)
             .onClick(() => { this.showLlmDialog = false; })
           Button('确认')
             .fontSize(14)
-            .backgroundColor('#1F3D2F')
+            .backgroundColor(AppColors.primary)
             .fontColor(Color.White)
             .height(40)
             .borderRadius(8)

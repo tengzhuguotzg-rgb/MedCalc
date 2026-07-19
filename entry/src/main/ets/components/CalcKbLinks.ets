@@ -1,5 +1,6 @@
 import { KnowledgeService, SearchResult } from '../services/KnowledgeService';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
+import { AppColors } from '../utils/AppColors';
 
 @Component
 export struct CalcKbLinks {
@@ -65,7 +66,7 @@ export struct CalcKbLinks {
           Text('指南参考')
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F');
+            .fontColor(AppColors.primary);
           Blank();
           Text(this.expanded ? '收起' : '查看')
             .fontSize(12)
@@ -87,7 +88,7 @@ export struct CalcKbLinks {
                     .layoutWeight(1);
                   Text(this.getResultCategory(sr) + (sr.sourceInfo.length > 0 ? ' \u00B7 ' + sr.sourceInfo : ''))
                     .fontSize(12)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                     .maxLines(1)
                     .margin({ top: 1 });
                 }
@@ -115,7 +116,7 @@ export struct CalcKbLinks {
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(8)
       .margin({ top: 8 });
     }

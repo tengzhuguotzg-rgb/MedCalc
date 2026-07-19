@@ -1,5 +1,6 @@
 import { Patient } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
+import { AppColors } from '../utils/AppColors';
 
 @Component
 export struct PatientListPage {
@@ -51,12 +52,12 @@ export struct PatientListPage {
         Text('病历管理')
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
         Button('+ 新建')
           .fontSize(12)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#1F3D2F')
+          .fontColor(AppColors.card)
+          .backgroundColor(AppColors.primary)
           .borderRadius(8)
           .height(32)
           .padding({ left: 12, right: 12 })
@@ -70,7 +71,7 @@ export struct PatientListPage {
       TextInput({ placeholder: '搜索姓名/床号...' })
         .height(48)
         .fontSize(14)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
         .borderRadius(8)
         .margin({ left: 16, right: 16, bottom: 12 })
         .onChange((value: string) => {
@@ -82,11 +83,11 @@ export struct PatientListPage {
         Column() {
           Text('还没有患者记录')
             .fontSize(16)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ bottom: 8 })
           Text('点击右上角新建患者开始')
             .fontSize(13)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
         }
         .width('100%')
         .layoutWeight(1)
@@ -102,12 +103,12 @@ export struct PatientListPage {
                     Text(patient.name)
                       .fontSize(16)
                       .fontWeight(FontWeight.Bold)
-                      .fontColor('#1F3D2F')
+                      .fontColor(AppColors.primary)
                       .margin({ right: 8 })
                     if (patient.bedNo.length > 0) {
                       Text(patient.bedNo + '床')
                         .fontSize(12)
-                        .fontColor('#5F6654')
+                        .fontColor(AppColors.textSecondary)
                         .backgroundColor('#E8E5D8')
                         .borderRadius(4)
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
@@ -116,7 +117,7 @@ export struct PatientListPage {
                   .margin({ bottom: 4 })
                   Text(this.formatTime(patient.updatedAt))
                     .fontSize(12)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                 }
                 .alignItems(HorizontalAlign.Start)
                 .layoutWeight(1)
@@ -125,16 +126,16 @@ export struct PatientListPage {
                   if (this.getAlertCount(patient.id) > 0) {
                     Text(this.getAlertCount(patient.id) + '条预警')
                       .fontSize(12)
-                      .fontColor('#E76F2C')
+                      .fontColor(AppColors.warning)
                       .fontWeight(FontWeight.Bold)
                   } else {
                     Text('暂无预警')
                       .fontSize(12)
-                      .fontColor('#3D6B4F')
+                      .fontColor(AppColors.tierOk)
                   }
                   Text('删除')
                     .fontSize(12)
-                    .fontColor('#B1452A')
+                    .fontColor(AppColors.danger)
                     .padding({ left: 14, right: 14, top: 14, bottom: 14 })
                     .margin({ top: 4 })
                     .onClick(() => {
@@ -146,7 +147,7 @@ export struct PatientListPage {
               }
               .width('100%')
               .padding(12)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(10)
               .onClick(() => {
                 this.currentPatientId = patient.id;
@@ -177,7 +178,7 @@ export struct PatientListPage {
         Text('新建患者')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 16 })
 
         TextInput({ placeholder: '姓名*' })
@@ -207,9 +208,9 @@ export struct PatientListPage {
           Button('男')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.newSex === 'male' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.newSex === 'male' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.newSex === 'male' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.newSex === 'male' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.newSex === 'male' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.newSex === 'male' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -217,9 +218,9 @@ export struct PatientListPage {
           Button('女')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.newSex === 'female' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.newSex === 'female' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.newSex === 'female' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.newSex === 'female' ? AppColors.card : '#2D5440')
+            .backgroundColor(this.newSex === 'female' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.newSex === 'female' ? AppColors.primary : '#E0E0E0' })
             .borderRadius(8)
             .height(44)
             .layoutWeight(1)
@@ -232,8 +233,8 @@ export struct PatientListPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
             .height(48)
             .layoutWeight(1)
@@ -246,8 +247,8 @@ export struct PatientListPage {
             })
           Button('创建')
             .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1F3D2F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.primary)
             .borderRadius(8)
             .height(48)
             .layoutWeight(1)
@@ -272,7 +273,7 @@ export struct PatientListPage {
         .width('100%')
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }
@@ -289,7 +290,7 @@ export struct PatientListPage {
         Text('确认删除患者')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 8 })
         Text('删除后该患者的所有数据、上传记录和预警将被永久清除，无法恢复。')
           .fontSize(13)
@@ -299,8 +300,8 @@ export struct PatientListPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -310,8 +311,8 @@ export struct PatientListPage {
             })
           Button('删除')
             .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#E76F2C')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.warning)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -328,7 +329,7 @@ export struct PatientListPage {
         .width('100%')
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }

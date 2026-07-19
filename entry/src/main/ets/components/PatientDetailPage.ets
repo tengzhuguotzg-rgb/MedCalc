@@ -19,6 +19,7 @@ import { util } from '@kit.ArkTS';
 import { image } from '@kit.ImageKit';
 import { pdfService } from '@kit.PDFKit';
 import { ImageEditor } from './ImageEditor';
+import { AppColors } from '../utils/AppColors';
 
 class DomainEntry {
   name: string = '';
@@ -556,7 +557,7 @@ export struct PatientDetailPage {
     if (color !== undefined && color !== null) {
       return color;
     }
-    return '#5F6654';
+    return AppColors.textSecondary;
   }
 
   getDomainDataCount(domainKeys: string[]): number {
@@ -844,7 +845,7 @@ export struct PatientDetailPage {
         Row() {
           Button('< 返回')
             .fontSize(14)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .backgroundColor(Color.Transparent)
             .onClick(() => {
               this.navigateBack();
@@ -852,13 +853,13 @@ export struct PatientDetailPage {
           Text(this.dashboard.patient.name)
             .fontSize(18)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .layoutWeight(1)
             .margin({ left: 8 })
           if (this.dashboard.patient.bedNo.length > 0) {
             Text(this.dashboard.patient.bedNo + '床')
               .fontSize(13)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .backgroundColor('#E8E5D8')
               .borderRadius(4)
               .padding({ left: 6, right: 6, top: 2, bottom: 2 })
@@ -872,7 +873,7 @@ export struct PatientDetailPage {
             LoadingProgress()
               .width(40)
               .height(40)
-              .color('#1F3D2F')
+              .color(AppColors.primary)
           }
           .width('100%')
           .layoutWeight(1)
@@ -893,15 +894,15 @@ export struct PatientDetailPage {
         Row() {
           Button('上传图片')
             .fontSize(12)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1F3D2F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.primary)
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
             .onClick(() => { this.pickImage(); })
           Button('上传PDF')
             .fontSize(12)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .backgroundColor('#E8E5D8')
             .borderRadius(8)
             .height(40)
@@ -910,7 +911,7 @@ export struct PatientDetailPage {
             .onClick(() => { this.pickPdf(); })
           Button('输入文本')
             .fontSize(12)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .backgroundColor('#E8E5D8')
             .borderRadius(8)
             .height(40)
@@ -918,7 +919,7 @@ export struct PatientDetailPage {
             .margin({ left: 8 })
           Button('手动录入')
             .fontSize(12)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .backgroundColor('#E8E5D8')
             .borderRadius(8)
             .height(40)
@@ -928,26 +929,26 @@ export struct PatientDetailPage {
         }
         .width('100%')
         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
 
         if (this.uploading) {
           Row() {
             LoadingProgress()
               .width(20)
               .height(20)
-              .color('#1F3D2F')
+              .color(AppColors.primary)
               .margin({ right: 8 })
             Text(this.uploadMsg)
               .fontSize(13)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
           }
           .width('100%')
           .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-          .backgroundColor('#FFF8E1')
+          .backgroundColor(AppColors.tierWarnBg)
         } else if (this.uploadMsg.length > 0) {
           Text(this.uploadMsg)
             .fontSize(13)
-            .fontColor('#E76F2C')
+            .fontColor(AppColors.warning)
             .width('100%')
             .padding({ left: 16, right: 16, top: 6, bottom: 6 })
             .backgroundColor('#FFF3E0')
@@ -996,12 +997,12 @@ export struct PatientDetailPage {
         Text('预警')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
         if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
           Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
             .fontSize(12)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#B1452A')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.danger)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
             .margin({ left: 6 })
@@ -1022,7 +1023,7 @@ export struct PatientDetailPage {
                 .margin({ right: 6 })
               Text(alert.calcName)
                 .fontSize(13)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .layoutWeight(1)
               Text(this.parseAlertResult(alert).tier)
                 .fontSize(11)
@@ -1035,7 +1036,7 @@ export struct PatientDetailPage {
           if (this.getWarningAlerts().length > 3) {
             Text('还有' + (this.getWarningAlerts().length - 3) + '项评分预警...')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ top: 2 })
           }
         }
@@ -1060,7 +1061,7 @@ export struct PatientDetailPage {
                 .margin({ right: 6 })
               Text(la.fieldLabel + ' ' + la.value)
                 .fontSize(12)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -1075,7 +1076,7 @@ export struct PatientDetailPage {
           if (this.dashboard.labAlerts.length > 3) {
             Text('还有' + (this.dashboard.labAlerts.length - 3) + '项检验预警...')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ top: 2 })
           }
         }
@@ -1086,13 +1087,13 @@ export struct PatientDetailPage {
       if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
         Text('暂无异常预警')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
       }
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(10)
     .margin({ bottom: 8 })
     .onClick(() => { this.showAlertDetail = true; })
@@ -1105,12 +1106,12 @@ export struct PatientDetailPage {
         Text('诊断')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
         if (this.dashboard.diagnosisCount > 0) {
           Text(this.dashboard.diagnosisCount.toString())
             .fontSize(12)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1F3D2F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.primary)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
             .margin({ left: 6 })
@@ -1120,7 +1121,7 @@ export struct PatientDetailPage {
           ForEach(this.getDiagnosisCategoryTags().slice(0, 4), (tag: string) => {
             Text(tag)
               .fontSize(10)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
               .backgroundColor('#E8E5D8')
               .borderRadius(4)
               .padding({ left: 4, right: 4, top: 1, bottom: 1 })
@@ -1142,7 +1143,7 @@ export struct PatientDetailPage {
                 .margin({ right: 6 })
               Text(diag.name)
                 .fontSize(13)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -1157,7 +1158,7 @@ export struct PatientDetailPage {
           if (this.dashboard.diagnoses.length > 3) {
             Text('还有' + (this.dashboard.diagnoses.length - 3) + '项...')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ top: 2 })
           }
         }
@@ -1166,13 +1167,13 @@ export struct PatientDetailPage {
       } else {
         Text('暂无诊断')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
       }
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(10)
     .margin({ bottom: 12 })
     .onClick(() => { this.showDiagnosisDetail = true; })
@@ -1184,34 +1185,34 @@ export struct PatientDetailPage {
       Row() {
         Button('< 返回')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.showAlertDetail = false; })
         Text('预警详情')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
         if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
           Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
             .fontSize(12)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#B1452A')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.danger)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
         }
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
 
       Scroll() {
         Column() {
           if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
             Text('当前无异常预警')
               .fontSize(14)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding(40)
@@ -1222,7 +1223,7 @@ export struct PatientDetailPage {
                   Text('评分预警')
                     .fontSize(13)
                     .fontWeight(FontWeight.Bold)
-                    .fontColor('#1F3D2F')
+                    .fontColor(AppColors.primary)
                 }
                 .width('100%')
                 .margin({ bottom: 4 })
@@ -1239,7 +1240,7 @@ export struct PatientDetailPage {
                   Text('检验预警')
                     .fontSize(13)
                     .fontWeight(FontWeight.Bold)
-                    .fontColor('#1F3D2F')
+                    .fontColor(AppColors.primary)
                 }
                 .width('100%')
                 .margin({ bottom: 4 })
@@ -1279,13 +1280,13 @@ export struct PatientDetailPage {
       Row() {
         Button('< 返回')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.showDiagnosisDetail = false; })
         Text('诊断详情')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
         Row() {
@@ -1300,7 +1301,7 @@ export struct PatientDetailPage {
             })
           Text('⟳')
             .fontSize(16)
-            .fontColor('#3D6B4F')
+            .fontColor(AppColors.tierOk)
             .margin({ left: 8 })
             .onClick(async () => {
               this.loading = true;
@@ -1312,21 +1313,21 @@ export struct PatientDetailPage {
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
 
       Scroll() {
         Column() {
           if (this.dashboard.diagnoses.length === 0) {
             Text('暂无诊断')
               .fontSize(14)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding(40)
           } else {
-            this.DiagnosisGroup('rule', '确定性', '#1F3D2F', false);
-            this.DiagnosisGroup('user', '自添加', '#3D6B4F', false);
-            this.DiagnosisGroup('partial', '可能性', '#C8881A', false);
+            this.DiagnosisGroup('rule', '确定性', AppColors.primary, false);
+            this.DiagnosisGroup('user', '自添加', AppColors.tierOk, false);
+            this.DiagnosisGroup('partial', '可能性', AppColors.tierWarn, false);
             this.DiagnosisGroup('llm_hint', 'LLM提示', '#7A6B9D', true);
           }
           Row() {
@@ -1375,7 +1376,7 @@ export struct PatientDetailPage {
             .fontColor(color)
           Text(this.getDiagnosesBySource(source).length.toString())
             .fontSize(11)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ left: 4 })
         }
         .width('100%')
@@ -1423,12 +1424,12 @@ export struct PatientDetailPage {
 
   getUrgencyColor(urgency: string): string {
     if (urgency === 'critical') {
-      return '#B1452A';
+      return AppColors.danger;
     }
     if (urgency === 'warning') {
-      return '#C8881A';
+      return AppColors.tierWarn;
     }
-    return '#3D6B4F';
+    return AppColors.tierOk;
   }
 
   getUrgencyLabel(urgency: string): string {
@@ -1456,15 +1457,15 @@ export struct PatientDetailPage {
 
   getLlmConfirmColor(confirmed: number): string {
     if (confirmed === 1) {
-      return '#3D6B4F';
+      return AppColors.tierOk;
     }
     if (confirmed === -1) {
-      return '#5F6654';
+      return AppColors.textSecondary;
     }
     if (confirmed === 2) {
-      return '#C8881A';
+      return AppColors.tierWarn;
     }
-    return '#5F6654';
+    return AppColors.textSecondary;
   }
 
   getSourceLabel(source: string): string {
@@ -1482,15 +1483,15 @@ export struct PatientDetailPage {
 
   getSourceColor(source: string): string {
     if (source === 'partial') {
-      return '#C8881A';
+      return AppColors.tierWarn;
     }
     if (source === 'llm_hint') {
       return '#7A6B9D';
     }
     if (source === 'user') {
-      return '#3D6B4F';
+      return AppColors.tierOk;
     }
-    return '#1F3D2F';
+    return AppColors.primary;
   }
 
   async loadDiagnosisKb() {
@@ -2312,12 +2313,12 @@ export struct PatientDetailPage {
       return '#5B7FA5';
     }
     if (cat === '监测评估') {
-      return '#C8881A';
+      return AppColors.tierWarn;
     }
     if (cat === '治疗建议') {
-      return '#3D6B4F';
+      return AppColors.tierOk;
     }
-    return '#5F6654';
+    return AppColors.textSecondary;
   }
 
   getCategoryLabel(cat: string): string {
@@ -2348,7 +2349,7 @@ export struct PatientDetailPage {
         Text(diag.name)
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
         Text(this.getUrgencyLabel(diag.urgency))
           .fontSize(10)
@@ -2369,7 +2370,7 @@ export struct PatientDetailPage {
         if (diag.source === 'user') {
           Text('×')
             .fontSize(14)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ left: 4 })
             .onClick(() => {
               this.patientService.deleteUserDiagnosis(diag.id).then(() => {
@@ -2384,7 +2385,7 @@ export struct PatientDetailPage {
         Column() {
           Text('缺：' + this.formatMissingCriteria(diag.missingCriteria))
             .fontSize(11)
-            .fontColor('#C8881A')
+            .fontColor(AppColors.tierWarn)
             .width('100%')
         }
         .width('100%')
@@ -2403,13 +2404,13 @@ export struct PatientDetailPage {
       Row() {
         Text(diag.category)
           .fontSize(10)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .backgroundColor('#F5F4EF')
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
         Text(this.formatDateTime(diag.triggeredAt))
           .fontSize(10)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ left: 8 })
       }
       .margin({ top: 4 })
@@ -2419,7 +2420,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor(diag.source === 'rule' ? '#FFFFFF' : (diag.source === 'partial' ? '#FFFCF5' : (diag.source === 'llm_hint' ? '#F8F5FF' : '#F5FFF5')))
+    .backgroundColor(diag.source === 'rule' ? AppColors.card : (diag.source === 'partial' ? '#FFFCF5' : (diag.source === 'llm_hint' ? '#F8F5FF' : '#F5FFF5')))
     .borderRadius(8)
     .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getUrgencyColor(diag.urgency) })
     .margin({ bottom: 6 })
@@ -2439,15 +2440,15 @@ export struct PatientDetailPage {
           Text('指南参考')
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F');
+            .fontColor(AppColors.primary);
           if (this.getDiagnosisKb(diag.ruleId)!.searchResults.length > 0) {
             Text(this.expandedRefIds.has(diag.ruleId) ? ' ▲' : ' ▼')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ left: 4 });
             Text(this.getDiagnosisKb(diag.ruleId)!.searchResults.length.toString() + '篇')
               .fontSize(10)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ left: 4 });
           }
           Blank();
@@ -2494,17 +2495,17 @@ export struct PatientDetailPage {
                     .fontColor('#2D6A4F')
                     .margin({ right: 4 });
                 } else {
-                  LoadingProgress().width(10).height(10).color('#5F6654')
+                  LoadingProgress().width(10).height(10).color(AppColors.textSecondary)
                     .margin({ right: 4 });
                 }
                 Text(step.agent)
                   .fontSize(10)
                   .fontWeight(step.status === 'running' ? FontWeight.Bold : FontWeight.Normal)
-                  .fontColor(step.status === 'running' ? '#1F3D2F' : '#5F6654');
+                  .fontColor(step.status === 'running' ? AppColors.primary : AppColors.textSecondary);
                 if (step.output.length > 0) {
                   Text(step.output)
                     .fontSize(9)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                     .margin({ left: 4 });
                 }
               }
@@ -2538,7 +2539,7 @@ export struct PatientDetailPage {
                 .width('100%');
                 Text(this.getKbGuidelineName(sr))
                   .fontSize(9)
-                  .fontColor('#5F6654')
+                  .fontColor(AppColors.textSecondary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis })
                   .width('100%');
@@ -2563,10 +2564,10 @@ export struct PatientDetailPage {
 
         if (this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
           Row() {
-            LoadingProgress().width(14).height(14).color('#5F6654');
+            LoadingProgress().width(14).height(14).color(AppColors.textSecondary);
             Text('搜索指南中...')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ left: 6 });
           }
           .margin({ top: 6 });
@@ -2582,20 +2583,20 @@ export struct PatientDetailPage {
                 } else if (step.status === 'error') {
                   Text('✗')
                     .fontSize(10)
-                    .fontColor('#C8881A')
+                    .fontColor(AppColors.tierWarn)
                     .margin({ right: 4 });
                 } else {
-                  LoadingProgress().width(10).height(10).color('#5F6654')
+                  LoadingProgress().width(10).height(10).color(AppColors.textSecondary)
                     .margin({ right: 4 });
                 }
                 Text(step.agent)
                   .fontSize(10)
                   .fontWeight(step.status === 'running' ? FontWeight.Bold : FontWeight.Normal)
-                  .fontColor(step.status === 'running' ? '#1F3D2F' : '#5F6654');
+                  .fontColor(step.status === 'running' ? AppColors.primary : AppColors.textSecondary);
                 if (step.output.length > 0) {
                   Text(step.output)
                     .fontSize(9)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                     .margin({ left: 4 });
                 }
               }
@@ -2609,14 +2610,14 @@ export struct PatientDetailPage {
           Row() {
             Text('指南建议 · ' + this.getRecommendationSummary(this.getDiagnosisKb(diag.ruleId)!.recommendations))
               .fontSize(12)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
               .fontWeight(FontWeight.Medium);
             Blank();
             if (this.adviceReadyRuleId === diag.ruleId) {
               Text('已就绪')
                 .fontSize(10)
                 .fontColor('#2D6A4F')
-                .backgroundColor('#E8F5E9')
+                .backgroundColor(AppColors.tierOkBg)
                 .borderRadius(3)
                 .padding({ left: 4, right: 4, top: 1, bottom: 1 })
                 .margin({ right: 4 });
@@ -2638,7 +2639,7 @@ export struct PatientDetailPage {
             Row() {
               Text(this.getDiagnosisKb(diag.ruleId)!.adviceError)
                 .fontSize(10)
-                .fontColor('#C8881A')
+                .fontColor(AppColors.tierWarn)
                 .layoutWeight(1)
                 .maxLines(3)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -2689,7 +2690,7 @@ export struct PatientDetailPage {
           }
           .width('100%')
           .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-          .backgroundColor('#FFF8E1')
+          .backgroundColor(AppColors.tierWarnBg)
           .borderRadius(4)
           .margin({ top: 4 });
         } else if (this.getDiagnosisKb(diag.ruleId)!.verifiedPaths.length > 0) {
@@ -2708,7 +2709,7 @@ export struct PatientDetailPage {
         } else {
           Text('暂无指南建议')
             .fontSize(11)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ top: 4 });
         }
       }
@@ -2726,7 +2727,7 @@ export struct PatientDetailPage {
     if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
       return '#2B5C8A';
     }
-    return '#5F6654';
+    return AppColors.textSecondary;
   }
 
   getEvidenceBgColor(level: string): string {
@@ -2757,7 +2758,7 @@ export struct PatientDetailPage {
       Row() {
         Button('< 返回')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => {
             this.showRecommendationsDetail = false;
@@ -2766,7 +2767,7 @@ export struct PatientDetailPage {
         Text(this.getDiagnosisNameByRuleId(this.activeAdviceRuleId) + ' · 指南建议')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
           .maxLines(1)
@@ -2774,7 +2775,7 @@ export struct PatientDetailPage {
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF');
+      .backgroundColor(AppColors.card);
 
       Scroll() {
         Column() {
@@ -2792,7 +2793,7 @@ export struct PatientDetailPage {
               }
               .width('100%')
               .padding({ left: 10, right: 10, top: 6, bottom: 6 })
-              .backgroundColor('#FFF8E1')
+              .backgroundColor(AppColors.tierWarnBg)
               .borderRadius(6)
               .margin({ bottom: 8 });
             }
@@ -2802,7 +2803,7 @@ export struct PatientDetailPage {
                   Text('临床要点')
                     .fontSize(14)
                     .fontWeight(FontWeight.Bold)
-                    .fontColor('#1F3D2F');
+                    .fontColor(AppColors.primary);
                 }
                 .width('100%')
                 .margin({ bottom: 4 });
@@ -2854,10 +2855,10 @@ export struct PatientDetailPage {
             Text(title)
               .fontSize(14)
               .fontWeight(FontWeight.Bold)
-              .fontColor('#1F3D2F');
+              .fontColor(AppColors.primary);
             Text(this.getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category).toString() + '条')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ left: 6 });
             Blank();
             Text(this.expandedCategories.has(category) ? '▲ 收起' : '▼ 展开')
@@ -2888,7 +2889,7 @@ export struct PatientDetailPage {
                       Text(rec.type)
                         .fontSize(9)
                         .fontColor(rec.type === '推荐意见' ? '#2D6A4F' : (rec.type === '知识要点' ? '#2B5C8A' : '#7A6B9D'))
-                        .backgroundColor(rec.type === '推荐意见' ? '#E8F5E9' : (rec.type === '知识要点' ? '#E3F2FD' : '#F0EBF5'))
+                        .backgroundColor(rec.type === '推荐意见' ? AppColors.tierOkBg : (rec.type === '知识要点' ? '#E3F2FD' : '#F0EBF5'))
                         .borderRadius(3)
                         .padding({ left: 4, right: 4, top: 1, bottom: 1 });
                     }
@@ -2942,7 +2943,7 @@ export struct PatientDetailPage {
         Text(alert.calcName)
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
         Text(this.parseAlertResult(alert).tier)
           .fontSize(11)
@@ -2951,10 +2952,10 @@ export struct PatientDetailPage {
           .margin({ right: 6 })
         Text(alert.completeness + '%')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
         Text(this.isAlertExpanded(alert.id) ? ' ▲' : ' ▼')
           .fontSize(10)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ left: 4 })
       }
       .width('100%')
@@ -2966,7 +2967,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(8)
     .margin({ bottom: 6 })
   }
@@ -2979,10 +2980,10 @@ export struct PatientDetailPage {
           Text(this.formatResultValue(this.parseAlertResult(alert).value))
             .fontSize(24)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
           Text(this.parseAlertResult(alert).unit)
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ left: 4, top: 10 })
         }
         .margin({ top: 6, bottom: 4 })
@@ -3003,7 +3004,7 @@ export struct PatientDetailPage {
       }
       Text(this.formatDateTime(alert.triggeredAt))
         .fontSize(11)
-        .fontColor('#5F6654')
+        .fontColor(AppColors.textSecondary)
         .margin({ top: 4 })
     }
     .width('100%')
@@ -3025,7 +3026,7 @@ export struct PatientDetailPage {
           Text(la.name)
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .width('100%')
           Row() {
             Text(la.fieldLabel + ' ' + la.value + ' ' + la.unit)
@@ -3042,7 +3043,7 @@ export struct PatientDetailPage {
           if (la.description.length > 0) {
             Text(la.description)
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
               .margin({ top: 2 })
           }
@@ -3051,7 +3052,7 @@ export struct PatientDetailPage {
         .alignItems(HorizontalAlign.Start)
         Text(this.getLabAlertUrgencyLabel(la.urgency))
           .fontSize(10)
-          .fontColor('#FFFFFF')
+          .fontColor(AppColors.card)
           .backgroundColor(this.getLabAlertUrgencyColor(la.urgency))
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
@@ -3062,19 +3063,19 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(8)
     .margin({ bottom: 6 })
   }
 
   getLabAlertUrgencyColor(urgency: string): string {
     if (urgency === 'critical') {
-      return '#B1452A';
+      return AppColors.danger;
     }
     if (urgency === 'warning') {
-      return '#C8881A';
+      return AppColors.tierWarn;
     }
-    return '#3D6B4F';
+    return AppColors.tierOk;
   }
 
   getLabAlertUrgencyLabel(urgency: string): string {
@@ -3123,12 +3124,12 @@ export struct PatientDetailPage {
         Text('结构化数据')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
         if (this.getDataFieldCount() > 0) {
           Text(this.getDataFieldCount().toString())
             .fontSize(12)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#3D6B4F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.tierOk)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
             .margin({ left: 6 })
@@ -3138,7 +3139,7 @@ export struct PatientDetailPage {
           ForEach(this.domainEntries.slice(0, 4), (entry: DomainEntry) => {
             Text(entry.name)
               .fontSize(10)
-              .fontColor('#3D6B4F')
+              .fontColor(AppColors.tierOk)
               .backgroundColor('#E8E5D8')
               .borderRadius(4)
               .padding({ left: 4, right: 4, top: 1, bottom: 1 })
@@ -3155,12 +3156,12 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(14)
-                .backgroundColor('#3D6B4F')
+                .backgroundColor(AppColors.tierOk)
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(item)
                 .fontSize(13)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -3171,7 +3172,7 @@ export struct PatientDetailPage {
           if (this.getDataFieldCount() > 5) {
             Text('还有' + (this.getDataFieldCount() - 5) + '项...')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ top: 2 })
           }
         }
@@ -3180,13 +3181,13 @@ export struct PatientDetailPage {
       } else {
         Text('暂无数据，上传报告或手动录入')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
       }
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(10)
     .margin({ bottom: 8 })
     .onClick(() => { this.showDataDetail = true; })
@@ -3198,29 +3199,29 @@ export struct PatientDetailPage {
       Row() {
         Button('< 返回')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.showDataDetail = false; })
         Text('结构化数据')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
         Text(this.getDataFieldCount() + '项')
           .fontSize(13)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
 
       Scroll() {
         Column() {
           if (this.getDataFieldCount() === 0) {
             Text('暂无数据，上传报告或手动录入')
               .fontSize(14)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding(40)
@@ -3237,18 +3238,18 @@ export struct PatientDetailPage {
                    Text(entry.name)
                      .fontSize(13)
                      .fontWeight(FontWeight.Bold)
-                     .fontColor('#1F3D2F')
+                     .fontColor(AppColors.primary)
                      .layoutWeight(1)
                    Text(this.getDomainDataCount(entry.keys) + '项')
                      .fontSize(10)
-                     .fontColor('#FFFFFF')
+                     .fontColor(AppColors.card)
                      .backgroundColor(this.getDomainColor(entry.name))
                      .borderRadius(8)
                      .padding({ left: 5, right: 5, top: 1, bottom: 1 })
                      .margin({ right: 6 })
                    Text(this.isDomainExpanded(entry.name) ? ' ▲' : ' ▼')
                      .fontSize(10)
-                     .fontColor('#5F6654')
+                     .fontColor(AppColors.textSecondary)
                  }
                  .width('100%')
                  .onClick(() => { this.toggleDomain(entry.name); })
@@ -3260,18 +3261,18 @@ export struct PatientDetailPage {
                         Column() {
                           Text(this.getFieldValueLabel(key))
                             .fontSize(10)
-                            .fontColor('#5F6654')
+                            .fontColor(AppColors.textSecondary)
                             .maxLines(1)
                             .textOverflow({ overflow: TextOverflow.Ellipsis })
                           Row() {
                             Text(this.dashboard.latestData.get(key))
                               .fontSize(14)
-                              .fontColor('#1F3D2F')
+                              .fontColor(AppColors.primary)
                               .fontWeight(FontWeight.Bold)
                             if (this.getFieldUnit(key).length > 0) {
                               Text(this.getFieldUnit(key))
                                 .fontSize(10)
-                                .fontColor('#5F6654')
+                                .fontColor(AppColors.textSecondary)
                                 .margin({ left: 2 })
                             }
                           }
@@ -3299,7 +3300,7 @@ export struct PatientDetailPage {
               }
               .width('100%')
               .padding(10)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .margin({ bottom: 6 })
             }, (entry: DomainEntry) => entry.name)
@@ -3332,12 +3333,12 @@ export struct PatientDetailPage {
         Text('上传记录')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
         if (this.dashboard.records.length > 0) {
           Text(this.dashboard.records.length.toString())
             .fontSize(12)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#5F6654')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.textSecondary)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
             .margin({ left: 6 })
@@ -3346,7 +3347,7 @@ export struct PatientDetailPage {
         if (this.dashboard.records.length > 3) {
           Text('查看全部')
             .fontSize(12)
-            .fontColor('#3D6B4F')
+            .fontColor(AppColors.tierOk)
         }
       }
       .width('100%')
@@ -3358,12 +3359,12 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(14)
-                .backgroundColor('#5F6654')
+                .backgroundColor(AppColors.textSecondary)
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(item)
                 .fontSize(13)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .layoutWeight(1)
                 .maxLines(1)
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -3374,7 +3375,7 @@ export struct PatientDetailPage {
           if (this.dashboard.records.length > 3) {
             Text('还有' + (this.dashboard.records.length - 3) + '条...')
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ top: 2 })
           }
         }
@@ -3383,13 +3384,13 @@ export struct PatientDetailPage {
       } else {
         Text('暂无上传记录')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
       }
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(10)
     .margin({ bottom: 12 })
     .onClick(() => { this.showRecordsDetail = true; })
@@ -3401,29 +3402,29 @@ export struct PatientDetailPage {
       Row() {
         Button('< 返回')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.showRecordsDetail = false; })
         Text('上传记录')
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
         Text(this.dashboard.records.length + '条')
           .fontSize(13)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
 
       Scroll() {
         Column() {
           if (this.dashboard.records.length === 0) {
             Text('暂无上传记录')
               .fontSize(14)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding(40)
@@ -3436,11 +3437,11 @@ export struct PatientDetailPage {
                     .margin({ right: 8 })
                   Text(this.getRecordLabel(record))
                     .fontSize(13)
-                    .fontColor('#1F3D2F')
+                    .fontColor(AppColors.primary)
                     .layoutWeight(1)
                   Text('删除')
                     .fontSize(12)
-                    .fontColor('#E76F2C')
+                    .fontColor(AppColors.warning)
                     .margin({ right: 8 })
                     .onClick(() => {
                       this.deleteRecordId = record.id;
@@ -3448,11 +3449,11 @@ export struct PatientDetailPage {
                     })
                   Text(this.formatTime(record.timestamp))
                     .fontSize(12)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                     .margin({ right: 4 })
                   Text(this.expandedRecordIds.has(record.id) ? ' ▲' : ' ▼')
                     .fontSize(10)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                 }
                 .width('100%')
                 .onClick(() => {
@@ -3474,7 +3475,7 @@ export struct PatientDetailPage {
               }
               .width('100%')
               .padding(10)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
               .margin({ bottom: 4 })
             }, (record: PatientRecord) => record.id)
@@ -3498,20 +3499,20 @@ export struct PatientDetailPage {
         Text(this.getFieldValueLabel(this.timelineField) + ' 时间线')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 12 })
 
         if (this.timelineData.length === 0) {
           Text('无历史记录')
             .fontSize(13)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
         } else {
           ForEach(this.timelineData, (dp: PatientDataPoint) => {
             Column() {
               Row() {
                 Text(dp.value + ' ' + this.getFieldUnit(this.timelineField))
                   .fontSize(14)
-                  .fontColor('#1F3D2F')
+                  .fontColor(AppColors.primary)
                   .fontWeight(FontWeight.Bold)
                   .layoutWeight(1)
               }
@@ -3519,19 +3520,19 @@ export struct PatientDetailPage {
               Row() {
                 Text('报告')
                   .fontSize(10)
-                  .fontColor('#FFFFFF')
-                  .backgroundColor(dp.examTime > 0 ? '#3D6B4F' : '#B1452A')
+                  .fontColor(AppColors.card)
+                  .backgroundColor(dp.examTime > 0 ? AppColors.tierOk : AppColors.danger)
                   .borderRadius(3)
                   .padding({ left: 3, right: 3, top: 1, bottom: 1 })
                   .margin({ right: 4 })
                 if (dp.examTime > 0) {
                   Text(this.formatDateTime(dp.examTime))
                     .fontSize(12)
-                    .fontColor('#1F3D2F')
+                    .fontColor(AppColors.primary)
                     .layoutWeight(1)
                   Text('修改')
                     .fontSize(10)
-                    .fontColor('#3D6B4F')
+                    .fontColor(AppColors.tierOk)
                     .margin({ left: 4 })
                     .onClick(() => {
                       this.openExamTimeEditor(dp);
@@ -3539,12 +3540,12 @@ export struct PatientDetailPage {
                 } else {
                   Text('未设置')
                     .fontSize(12)
-                    .fontColor('#B1452A')
+                    .fontColor(AppColors.danger)
                     .layoutWeight(1)
                   Text('录入')
                     .fontSize(10)
-                    .fontColor('#FFFFFF')
-                    .backgroundColor('#3D6B4F')
+                    .fontColor(AppColors.card)
+                    .backgroundColor(AppColors.tierOk)
                     .borderRadius(3)
                     .padding({ left: 3, right: 3, top: 1, bottom: 1 })
                     .margin({ left: 4 })
@@ -3558,11 +3559,11 @@ export struct PatientDetailPage {
               Row() {
                 Text('上传')
                   .fontSize(10)
-                  .fontColor('#5F6654')
+                  .fontColor(AppColors.textSecondary)
                   .margin({ right: 4 })
                 Text(this.formatDateTime(dp.timestamp))
                   .fontSize(11)
-                  .fontColor('#5F6654')
+                  .fontColor(AppColors.textSecondary)
               }
               .width('100%')
               .margin({ top: 1 })
@@ -3578,8 +3579,8 @@ export struct PatientDetailPage {
 
         Button('关闭')
           .fontSize(14)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#1F3D2F')
+          .fontColor(AppColors.card)
+          .backgroundColor(AppColors.primary)
           .borderRadius(8)
           .height(36)
           .width('100%')
@@ -3587,7 +3588,7 @@ export struct PatientDetailPage {
           .onClick(() => { this.showTimelineDialog = false; })
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }
@@ -3634,7 +3635,7 @@ export struct PatientDetailPage {
         Text('设置报告时间')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 12 })
 
         DatePicker({
@@ -3658,8 +3659,8 @@ export struct PatientDetailPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -3668,8 +3669,8 @@ export struct PatientDetailPage {
             })
           Button('保存')
             .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#3D6B4F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.tierOk)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -3682,7 +3683,7 @@ export struct PatientDetailPage {
         .margin({ top: 12 })
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }
@@ -3699,7 +3700,7 @@ export struct PatientDetailPage {
         Text('手动录入')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 12 })
 
         TextInput({ placeholder: '搜索字段名...' })
@@ -3716,11 +3717,11 @@ export struct PatientDetailPage {
                   Row() {
                     Text(spec.label)
                       .fontSize(13)
-                      .fontColor('#1F3D2F')
+                      .fontColor(AppColors.primary)
                       .layoutWeight(1)
                     Text(spec.key)
                       .fontSize(11)
-                      .fontColor('#5F6654')
+                      .fontColor(AppColors.textSecondary)
                   }
                   .width('100%')
                   .padding(8)
@@ -3745,8 +3746,8 @@ export struct PatientDetailPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -3757,8 +3758,8 @@ export struct PatientDetailPage {
             })
           Button('录入')
             .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1F3D2F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.primary)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -3777,7 +3778,7 @@ export struct PatientDetailPage {
         .width('100%')
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }
@@ -3794,7 +3795,7 @@ export struct PatientDetailPage {
         Text('确认删除')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 8 })
         Text('删除此记录后，由它提供的数据将被一并删除，预警也将重新计算。')
           .fontSize(13)
@@ -3804,8 +3805,8 @@ export struct PatientDetailPage {
         Row() {
           Button('取消')
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -3815,8 +3816,8 @@ export struct PatientDetailPage {
             })
           Button('删除')
             .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#E76F2C')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.warning)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -3833,7 +3834,7 @@ export struct PatientDetailPage {
         .width('100%')
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }
@@ -3849,7 +3850,7 @@ export struct PatientDetailPage {
       Row() {
         Button('< 返回')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => {
             this.showKbReader = false;
@@ -3858,7 +3859,7 @@ export struct PatientDetailPage {
         Text(this.kbReaderTitle)
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
           .maxLines(1)
@@ -3866,18 +3867,18 @@ export struct PatientDetailPage {
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF');
+      .backgroundColor(AppColors.card);
 
       Scroll() {
         Column() {
           Text(this.kbReaderTitle)
             .fontSize(17)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .width('100%');
           Text(this.kbReaderPath)
             .fontSize(11)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .width('100%')
             .margin({ top: 4, bottom: 8 });
           this.KbReaderContent();
@@ -3888,7 +3889,7 @@ export struct PatientDetailPage {
     }
     .width('95%')
     .height('85%')
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(12);
   }
 
@@ -3915,21 +3916,21 @@ export struct PatientDetailPage {
       Text(stripMarkdownInline(ml.text))
         .fontSize(18)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .width('100%')
         .margin({ top: 12, bottom: 6 });
     } else if (ml.type === 'h2') {
       Text(stripMarkdownInline(ml.text))
         .fontSize(15)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .width('100%')
         .margin({ top: 8, bottom: 4 });
     } else if (ml.type === 'h3') {
       Text(stripMarkdownInline(ml.text))
         .fontSize(14)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .width('100%')
         .margin({ top: 6, bottom: 3 });
     } else if (ml.type === 'callout') {
@@ -3940,14 +3941,14 @@ export struct PatientDetailPage {
       Row() {
         Text(getAnnotationBadgeInfo(ml.text).keyword)
           .fontSize(11)
-          .fontColor('#FFFFFF')
+          .fontColor(AppColors.card)
           .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
           .borderRadius(3)
           .padding({ left: 6, right: 6, top: 1, bottom: 1 });
         if (getAnnotationBadgeInfo(ml.text).detail.length > 0) {
           Text(getAnnotationBadgeInfo(ml.text).detail)
             .fontSize(11)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ left: 6 });
         }
       }
@@ -3973,7 +3974,7 @@ export struct PatientDetailPage {
       Row() {
         Text('\u2022')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ right: 6 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(12)
@@ -3988,7 +3989,7 @@ export struct PatientDetailPage {
         Row()
           .width(3)
           .height(14)
-          .backgroundColor('#C8881A')
+          .backgroundColor(AppColors.tierWarn)
           .borderRadius(2)
           .margin({ top: 4, bottom: 4 });
         Text(stripMarkdownInline(ml.text))
@@ -4015,7 +4016,7 @@ export struct PatientDetailPage {
           ForEach(ml.cells, (cell: string, idx: number) => {
             Text(cell)
               .fontSize(11)
-              .fontColor('#1F3D2F')
+              .fontColor(AppColors.primary)
               .fontWeight(FontWeight.Bold)
               .layoutWeight(1)
               .padding({ left: 4, right: 4, top: 3, bottom: 3 });
@@ -4027,7 +4028,7 @@ export struct PatientDetailPage {
       } else {
         Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
           .fontSize(11)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Bold)
           .fontFamily('monospace')
           .width('100%')
@@ -4138,7 +4139,7 @@ export struct PatientDetailPage {
         Text('添加诊断')
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 16 })
 
         TextInput({ placeholder: '诊断名称', text: this.addDiagName })
@@ -4157,8 +4158,8 @@ export struct PatientDetailPage {
           ForEach(DIAGNOSIS_CATEGORIES, (cat: string) => {
             Text(cat)
               .fontSize(12)
-              .fontColor(this.addDiagCategory === cat ? '#FFFFFF' : '#1F3D2F')
-              .backgroundColor(this.addDiagCategory === cat ? '#1F3D2F' : '#E8E5D8')
+              .fontColor(this.addDiagCategory === cat ? AppColors.card : AppColors.primary)
+              .backgroundColor(this.addDiagCategory === cat ? AppColors.primary : '#E8E5D8')
               .borderRadius(4)
               .padding({ left: 8, right: 8, top: 4, bottom: 4 })
               .margin({ right: 4, bottom: 4 })
@@ -4171,7 +4172,7 @@ export struct PatientDetailPage {
         Row() {
           Text('取消')
             .fontSize(14)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
             .padding(10)
@@ -4180,8 +4181,8 @@ export struct PatientDetailPage {
             })
           Text('添加')
             .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1F3D2F')
+            .fontColor(AppColors.card)
+            .backgroundColor(AppColors.primary)
             .layoutWeight(1)
             .textAlign(TextAlign.Center)
             .padding(10)
@@ -4201,7 +4202,7 @@ export struct PatientDetailPage {
         .margin({ top: 20 })
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(12)
       .width('85%')
     }

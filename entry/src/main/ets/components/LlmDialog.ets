@@ -1,6 +1,7 @@
 import { CALCULATORS } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 import { ApiServiceConfig, LlmRecommendation, sendLlmRequest } from '../services/LlmService';
+import { AppColors } from '../utils/AppColors';
 
 @Component
 export struct LlmDialog {
@@ -98,7 +99,7 @@ export struct LlmDialog {
         }
         .width('88%')
         .constraintSize({ maxHeight: '80%' })
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
         .borderRadius(16)
         .shadow({ radius: 16, color: 'rgba(0,0,0,0.15)', offsetY: 8 })
       }
@@ -111,7 +112,7 @@ export struct LlmDialog {
       .width(52)
       .height(52)
       .borderRadius(26)
-      .backgroundColor('#1F3D2F')
+      .backgroundColor(AppColors.primary)
       .shadow({ radius: 8, color: 'rgba(0,0,0,0.25)', offsetY: 4 })
       .position({ bottom: this.fabBottom, right: this.fabRight })
       .onTouch((event: TouchEvent) => {
@@ -146,12 +147,12 @@ export struct LlmDialog {
       Text('AI 推荐计算器')
         .fontSize(17)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
       Blank()
       Button() {
         Text('✕')
           .fontSize(16)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
       }
       .width(32)
       .height(32)
@@ -169,7 +170,7 @@ export struct LlmDialog {
     Row() {
       Text(this.getActiveServiceName())
         .fontSize(11)
-        .fontColor('#5F6654')
+        .fontColor(AppColors.textSecondary)
     }
     .width('100%')
     .padding({ bottom: 8 })
@@ -180,7 +181,7 @@ export struct LlmDialog {
     Column() {
       TextArea({ text: this.userInput, placeholder: '描述病情，如：评估脑出血病人的预后' })
         .height(80)
-        .backgroundColor('#F4F1EA')
+        .backgroundColor(AppColors.background)
         .borderRadius(8)
         .fontSize(13)
         .onChange((value: string) => {
@@ -192,14 +193,14 @@ export struct LlmDialog {
           LoadingProgress()
             .width(18)
             .height(18)
-            .color('#FFFFFF')
+            .color(AppColors.card)
         } else {
-          Text('发送').fontSize(14).fontColor('#FFFFFF')
+          Text('发送').fontSize(14).fontColor(AppColors.card)
         }
       }
       .width('100%')
       .height(40)
-      .backgroundColor(this.loading ? '#5F6654' : '#1F3D2F')
+      .backgroundColor(this.loading ? AppColors.textSecondary : AppColors.primary)
       .borderRadius(8)
       .margin({ top: 8 })
       .enabled(!this.loading && this.userInput.trim().length > 0)
@@ -217,10 +218,10 @@ export struct LlmDialog {
       Row() {
         Text('⚠ ')
           .fontSize(12)
-          .fontColor('#E76F2C')
+          .fontColor(AppColors.warning)
         Text(this.errorMsg)
           .fontSize(12)
-          .fontColor('#E76F2C')
+          .fontColor(AppColors.warning)
       }
       .width('100%')
       .padding(8)
@@ -236,7 +237,7 @@ export struct LlmDialog {
       Column() {
         Text('✅ 推荐结果')
           .fontSize(11)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .letterSpacing(1)
           .width('100%')
           .margin({ bottom: 8 })
@@ -256,11 +257,11 @@ export struct LlmDialog {
         Text(`${rank}`)
           .fontSize(12)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#FFFFFF')
+          .fontColor(AppColors.card)
           .width(20)
           .height(20)
           .borderRadius(10)
-          .backgroundColor('#1F3D2F')
+          .backgroundColor(AppColors.primary)
           .textAlign(TextAlign.Center)
           .margin({ right: 8 })
 
@@ -268,7 +269,7 @@ export struct LlmDialog {
           Text(rec.name)
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .width('100%')
 
           Text(this.getCalcDescription(rec.id))
@@ -284,7 +285,7 @@ export struct LlmDialog {
 
       Button('跳转 →')
         .fontSize(12)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .backgroundColor('#E8E5D8')
         .borderRadius(6)
         .height(30)
