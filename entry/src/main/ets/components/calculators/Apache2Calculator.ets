@@ -156,57 +156,13 @@ export struct Apache2Calculator {
         .letterSpacing(1.5)
         .margin({ bottom: 12 });
 
-      Column() {
-        Text('FiO₂')
-          .fontSize(14)
-          .fontColor(AppColors.textPrimary)
-          .fontWeight(FontWeight.Medium)
-          .margin({ bottom: 6 });
-        TextInput({ placeholder: '21' }).type(InputType.NUMBER_DECIMAL)
-          .height(AppDimens.inputHeight)
-          .fontSize(16)
-          .fontColor(AppColors.textPrimary)
-          .placeholderColor(AppColors.placeholder)
-          .backgroundColor(AppColors.card)
-          .borderRadius(8)
-          .border({ width: 1, color: AppColors.border })
-          .padding({ left: 12, right: 12 })
-          .width('100%')
-          .onChange((value: string) => {
-            this.fio2 = parseFloat(value) || 0;
-            this.calculate();
-          });
-        Row() {
-          Button('%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.fio2Mode === 'pct' ? AppColors.card : AppColors.textOption)
-            .backgroundColor(this.fio2Mode === 'pct' ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.fio2Mode === 'pct' ? AppColors.primary : AppColors.border })
-            .borderRadius(6)
-            .height(28)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.fio2Mode = 'pct';
-              this.calculate();
-            });
-          Button('小数')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.fio2Mode === 'dec' ? AppColors.card : AppColors.textOption)
-            .backgroundColor(this.fio2Mode === 'dec' ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.fio2Mode === 'dec' ? AppColors.primary : AppColors.border })
-            .borderRadius(6)
-            .height(28)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.fio2Mode = 'dec';
-              this.calculate();
-            });
-        }
+      InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } })
         .width('100%')
-        .margin({ top: 6 });
+        .margin({ bottom: 16 });
+
+      Row() {
+        OptionChip({ label: '小数', selected: this.fio2Mode === 'dec', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'dec'; this.calculate(); } }).layoutWeight(1);
+        OptionChip({ label: '百分比', selected: this.fio2Mode === 'pct', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'pct'; this.calculate(); } }).layoutWeight(1);
       }
       .width('100%')
       .margin({ bottom: 16 });
