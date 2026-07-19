@@ -68,7 +68,7 @@ export struct CalcKbLinks {
             .fontColor('#1F3D2F');
           Blank();
           Text(this.expanded ? '收起' : '查看')
-            .fontSize(11)
+            .fontSize(12)
             .fontColor('#2B6CB0')
             .onClick(() => { this.expanded = !this.expanded; });
         }
@@ -86,8 +86,8 @@ export struct CalcKbLinks {
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1);
                   Text(this.getResultCategory(sr) + (sr.sourceInfo.length > 0 ? ' \u00B7 ' + sr.sourceInfo : ''))
-                    .fontSize(10)
-                    .fontColor('#7A8074')
+                    .fontSize(12)
+                    .fontColor('#5F6654')
                     .maxLines(1)
                     .margin({ top: 1 });
                 }

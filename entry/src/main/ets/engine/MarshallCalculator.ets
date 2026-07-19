@@ -1,7 +1,7 @@
 import { CalcResult } from './CalcEngine';
 
 export function calculateMarshall(pao2: number, fio2: number, peep: number): CalcResult {
-  if (pao2 <= 0 || fio2 <= 0) {
+  if (pao2 <= 0 || fio2 <= 0 || peep <= 0) {
     return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 

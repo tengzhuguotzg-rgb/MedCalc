@@ -46,9 +46,7 @@ export function calculateRass(score: number): CalcResult {
     tierClass = 'tier-danger';
     footnote = '暴力行为，对工作人员有直接危险';
   } else {
-    tier = '请选择评分';
-    tierClass = 'tier-info';
-    footnote = '';
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   return {

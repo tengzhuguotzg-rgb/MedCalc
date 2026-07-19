@@ -81,6 +81,9 @@ export function calculateAbcd2(age: boolean, bp: boolean, clin: number, dur: num
 }
 
 export function calculateNihss(ia: number, ib: number, ic: number, gaze: number, vis: number, face: number, armA: number, armB: number, ata: number, sens: number, lang: number, dys: number, neg: number): CalcResult {
+  if (ia < 0 || ib < 0 || ic < 0 || gaze < 0 || vis < 0 || face < 0 || armA < 0 || armB < 0 || ata < 0 || sens < 0 || lang < 0 || dys < 0 || neg < 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
   const total = ia + ib + ic + gaze + vis + face + armA + armB + ata + sens + lang + dys + neg;
   let tier: string, footnote: string;
   if (total === 0) { tier = '正常'; footnote = '0分 无神经功能缺损。'; }

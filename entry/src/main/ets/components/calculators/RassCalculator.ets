@@ -23,36 +23,60 @@ const RASS_LEVELS: RassLevel[] = [
 
 @Component
 export struct RassCalculator {
-  @State score: number = 0;
+  @State resetKey: number = 0;
+  @State score: number = -99;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateRass(this.score); }
 
+  reset() {
+    this.score = -99;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
-      Column() { Text('用于评估ICU患者镇静深度及躁动状态').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('+4(攻击)至-5(昏迷)，目标-2至0').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估ICU患者镇静深度及躁动状态').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('+4(攻击)至-5(昏迷)，目标-2至0').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 选择评分').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 选择评分').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([4, 3, 2, 1, 0, -1, -2, -3, -4, -5], (item: number) => {
             Button(`${item >= 0 ? '+' : ''}${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.score === item ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.score === item ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.score === item ? '#1F3D2F' : '#E0E0E0' })
-              .borderRadius(8).height(40).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.score = item; this.calculate(); });
+              .borderRadius(8).height(48).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.score = item; this.calculate(); });
           }, (item: number) => item.toString() + '-' + this.score.toString());
         }.width('100%');
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
 
-      if (this.result && this.result.value !== null) {
+      if (this.result) {
         Column() {
-          Text(this.result!.tier).fontSize(18).fontWeight(FontWeight.Bold).fontColor('#1F3D2F');
-          Text(this.result!.footnote).fontSize(13).fontColor('#4A5247').margin({ top: 4 });
-        }.alignItems(HorizontalAlign.Start).width('100%').padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
+          Row() {
+            Column() {
+              Text('RASS').fontSize(12).fontColor('#5F6654').letterSpacing(1.5).fontWeight(FontWeight.Medium);
+              Text(this.result!.value !== null ? `${this.result!.value! > 0 ? '+' : ''}${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
+              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
+                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
+            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
+            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
+          }.width('100%');
+        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
       }
 
       Column() {
-        Text('完整评分参考').fontSize(12).fontColor('#7A8074').letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
+        Text('完整评分参考').fontSize(12).fontColor('#5F6654').letterSpacing(1.5).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         RassTable({ levels: RASS_LEVELS, current: this.score });
       }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
@@ -69,10 +93,10 @@ struct RassTable {
       Row() {
         Column() {
           Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor('#1F2421');
-          Text(level.desc).fontSize(11).fontColor('#7A8074').margin({ top: 2 });
+          Text(level.desc).fontSize(12).fontColor('#5F6654').margin({ top: 2 });
         }.layoutWeight(1).alignItems(HorizontalAlign.Start);
         Column() {
-          Text(level.score === this.current ? '✓ 当前' : '').fontSize(11).fontWeight(FontWeight.Bold).fontColor('#1F3D2F');
+          Text(level.score === this.current ? '✓ 当前' : '').fontSize(12).fontWeight(FontWeight.Bold).fontColor('#1F3D2F');
         }.width(60).alignItems(HorizontalAlign.End);
       }.padding({ top: 6, bottom: 6, left: 8, right: 8 }).borderRadius(6).margin({ bottom: 2 });
     }, (level: RassLevel) => level.score.toString() + '-' + this.current.toString());

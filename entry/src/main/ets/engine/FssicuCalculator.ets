@@ -1,6 +1,10 @@
 import { CalcResult } from './CalcEngine';
 
 export function calculateFssicu(roll: number, situp: number, sit: number, standup: number, stand: number): CalcResult {
+  if (roll < 0 || situp < 0 || sit < 0 || standup < 0 || stand < 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
   const total = roll + situp + sit + standup + stand;
 
   let tier: string;

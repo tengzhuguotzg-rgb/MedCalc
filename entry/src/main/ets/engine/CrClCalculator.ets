@@ -1,7 +1,7 @@
 import { CalcResult, formatValue, getTierClass } from './CalcEngine';
 
 export function calculateCrCl(sex: string, age: number, weight: number, creatinine: number, crUnit: string): CalcResult {
-  if (age <= 0 || weight <= 0 || creatinine <= 0) {
+  if (sex === '' || age <= 0 || weight <= 0 || creatinine <= 0) {
     return {
       value: null,
       unit: 'mL/min',

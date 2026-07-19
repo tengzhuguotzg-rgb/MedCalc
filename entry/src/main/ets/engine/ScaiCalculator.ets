@@ -4,8 +4,8 @@ export function calculateScai(
   sbp: number, lac: number,
   vaso: string, perf: string, resus: string
 ): CalcResult {
-  if (sbp <= 0 || lac <= 0) {
-    return { value: null, unit: '', tier: '请填写 SBP 和乳酸', tierClass: 'tier-info', footnote: '' };
+  if (sbp <= 0 || lac <= 0 || vaso === '' || perf === '' || resus === '') {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 
   let stageNum: number;

@@ -6,7 +6,8 @@ interface CritLine {
 }
 
 @Component
-export struct BloodGasCalculator {  @State ph: string = '';
+export struct BloodGasCalculator {
+  @State resetKey: number = 0;  @State ph: string = '';
   @State paco2: string = '';
   @State paco2Unit: string = 'mmhg';
   @State pao2: string = '';
@@ -199,7 +200,59 @@ export struct BloodGasCalculator {  @State ph: string = '';
     return '#28A745';
   }
 
+  reset() {
+    this.ph = '';
+    this.paco2 = '';
+    this.paco2Unit = 'mmhg';
+    this.pao2 = '';
+    this.pao2Unit = 'mmhg';
+    this.hco3 = '';
+    this.be = '';
+    this.sao2 = '';
+    this.lac = '';
+    this.hgb = '';
+    this.hgbUnit = 'gl';
+    this.k = '';
+    this.na = '';
+    this.cl = '';
+    this.glu = '';
+    this.fio2 = '';
+    this.fio2Mode = 'dec';
+    this.acute = 'chronic';
+    this.pvco2 = '';
+    this.pvco2Unit = 'mmhg';
+    this.svo2 = '';
+    this.pvo2 = '';
+    this.pvo2Unit = 'mmhg';
+    this.showVenous = false;
+    this.result = null;
+    this.hypoxiaType = '';
+    this.hypoxiaDetail = '';
+    this.hypoxiaCalc = '';
+    this.hypoxiaCls = '';
+    this.hypoxiaTierText = '';
+    this.hypoxiaHtml = '';
+    this.rConclusion = '';
+    this.rDetail = '';
+    this.rCls = '';
+    this.rTierText = '';
+    this.rHtml = '';
+    this.critLines = [];
+    this.critHtml = '';
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       this.Header();
       this.InputForm();
@@ -221,7 +274,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
         .fontWeight(FontWeight.Medium);
       Text('6步法判断酸碱失衡 + 氧合评估 + 缺氧分型(需静脉) + 呼吸商 + 危急值')
         .fontSize(12)
-        .fontColor('#7A8074')
+        .fontColor('#5F6654')
         .margin({ top: 2 });
     }
     .alignItems(HorizontalAlign.Start)
@@ -232,12 +285,12 @@ export struct BloodGasCalculator {  @State ph: string = '';
   @Builder
   InputForm() {
     Column() {
-      Text('— 动脉血气 (必填)')
+      Row() { Text('— 动脉血气 (必填)')
         .fontSize(12)
         .fontColor('#E76F2C')
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Button('急性')
@@ -269,8 +322,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '7.35-7.45' })
-            .height(40)
+          TextInput({ placeholder: '7.35-7.45' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -288,8 +341,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '22-27' })
-            .height(40)
+          TextInput({ placeholder: '22-27' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -313,8 +366,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '35-45' })
-            .height(40)
+          TextInput({ placeholder: '35-45' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -327,14 +380,14 @@ export struct BloodGasCalculator {  @State ph: string = '';
           Row() {
             Button('mmHg')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.paco2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.paco2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
               .onClick(() => { this.paco2Unit = 'mmhg'; this.calculate(); });
             Button('kPa')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.paco2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.paco2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
@@ -355,8 +408,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '80-100' })
-            .height(40)
+          TextInput({ placeholder: '80-100' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -369,14 +422,14 @@ export struct BloodGasCalculator {  @State ph: string = '';
           Row() {
             Button('mmHg')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.pao2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.pao2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
               .onClick(() => { this.pao2Unit = 'mmhg'; this.calculate(); });
             Button('kPa')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.pao2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.pao2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
@@ -397,8 +450,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '-3~+3' })
-            .height(40)
+          TextInput({ placeholder: '-3~+3' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -416,8 +469,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '95-100' })
-            .height(40)
+          TextInput({ placeholder: '95-100' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -441,8 +494,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '0-2' })
-            .height(40)
+          TextInput({ placeholder: '0-2' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -460,8 +513,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '3.5-5.5' })
-            .height(40)
+          TextInput({ placeholder: '3.5-5.5' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -485,8 +538,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '120-160' })
-            .height(40)
+          TextInput({ placeholder: '120-160' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -499,14 +552,14 @@ export struct BloodGasCalculator {  @State ph: string = '';
           Row() {
             Button('g/L')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.hgbUnit === 'gl' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.hgbUnit === 'gl' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
               .onClick(() => { this.hgbUnit = 'gl'; this.calculate(); });
             Button('g/dL')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.hgbUnit === 'gdl' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.hgbUnit === 'gdl' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
@@ -527,8 +580,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '135-145' })
-            .height(40)
+          TextInput({ placeholder: '135-145' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -546,8 +599,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '98-106' })
-            .height(40)
+          TextInput({ placeholder: '98-106' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -571,8 +624,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             .fontColor('#1F2421')
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
-          TextInput({ placeholder: '3.9-7.8' })
-            .height(40)
+          TextInput({ placeholder: '3.9-7.8' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -595,8 +648,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          TextInput({ placeholder: '0.21-1.0' })
-            .height(40)
+          TextInput({ placeholder: '0.21-1.0' }).type(InputType.NUMBER_DECIMAL)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -609,14 +662,14 @@ export struct BloodGasCalculator {  @State ph: string = '';
           Row() {
             Button('小数')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.fio2Mode === 'dec' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.fio2Mode === 'dec' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
               .onClick(() => { this.fio2Mode = 'dec'; this.calculate(); });
             Button('%')
               .height(28)
-              .fontSize(11)
+              .fontSize(12)
               .fontColor(this.fio2Mode === 'pct' ? '#FFFFFF' : '#2D5440')
               .backgroundColor(this.fio2Mode === 'pct' ? '#1F3D2F' : '#F5F5F5')
               .borderRadius(4)
@@ -627,8 +680,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
         }
         .width('100%');
         Text('吸氧浓度; 鼻导管 \u2248 21 + 4\u00D7流量(L/min)')
-          .fontSize(11)
-          .fontColor('#7A8074')
+          .fontSize(12)
+          .fontColor('#5F6654')
           .margin({ top: 4 });
       }
       .width('100%')
@@ -636,7 +689,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
       .margin({ bottom: 12 });
 
       Button(this.showVenous ? '\u25BE 隐藏静脉血气' : '+ 补充静脉血气分析 (缺氧分型 + 呼吸商 R)')
-        .height(36)
+        .height(44)
         .fontSize(13)
         .fontColor('#1F3D2F')
         .backgroundColor('#F5F5F5')
@@ -647,8 +700,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
       if (this.showVenous) {
         Column() {
           Text('填入同一病人同一时间的静脉血气, 解锁缺氧分型(8种)与呼吸商计算。SaO\u2082 高的为动脉、低的为静脉。')
-            .fontSize(11)
-            .fontColor('#7A8074')
+            .fontSize(12)
+            .fontColor('#5F6654')
             .margin({ top: 8, bottom: 12 });
 
           Column() {
@@ -658,8 +711,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             Row() {
-              TextInput({ placeholder: '40-50' })
-                .height(40)
+              TextInput({ placeholder: '40-50' }).type(InputType.NUMBER_DECIMAL)
+                .height(48)
                 .fontSize(16)
                 .fontColor('#1F2421')
                 .placeholderColor('#999999')
@@ -672,14 +725,14 @@ export struct BloodGasCalculator {  @State ph: string = '';
               Row() {
                 Button('mmHg')
                   .height(28)
-                  .fontSize(11)
+                  .fontSize(12)
                   .fontColor(this.pvco2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
                   .backgroundColor(this.pvco2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
                   .borderRadius(4)
                   .onClick(() => { this.pvco2Unit = 'mmhg'; this.calculate(); });
                 Button('kPa')
                   .height(28)
-                  .fontSize(11)
+                  .fontSize(12)
                   .fontColor(this.pvco2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
                   .backgroundColor(this.pvco2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
                   .borderRadius(4)
@@ -699,8 +752,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .fontColor('#1F2421')
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
-            TextInput({ placeholder: '60-80' })
-              .height(40)
+            TextInput({ placeholder: '60-80' }).type(InputType.NUMBER_DECIMAL)
+              .height(48)
               .fontSize(16)
               .fontColor('#1F2421')
               .placeholderColor('#999999')
@@ -721,8 +774,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             Row() {
-              TextInput({ placeholder: '35-45' })
-                .height(40)
+              TextInput({ placeholder: '35-45' }).type(InputType.NUMBER_DECIMAL)
+                .height(48)
                 .fontSize(16)
                 .fontColor('#1F2421')
                 .placeholderColor('#999999')
@@ -735,14 +788,14 @@ export struct BloodGasCalculator {  @State ph: string = '';
               Row() {
                 Button('mmHg')
                   .height(28)
-                  .fontSize(11)
+                  .fontSize(12)
                   .fontColor(this.pvo2Unit === 'mmhg' ? '#FFFFFF' : '#2D5440')
                   .backgroundColor(this.pvo2Unit === 'mmhg' ? '#1F3D2F' : '#F5F5F5')
                   .borderRadius(4)
                   .onClick(() => { this.pvo2Unit = 'mmhg'; this.calculate(); });
                 Button('kPa')
                   .height(28)
-                  .fontSize(11)
+                  .fontSize(12)
                   .fontColor(this.pvo2Unit === 'kpa' ? '#FFFFFF' : '#2D5440')
                   .backgroundColor(this.pvo2Unit === 'kpa' ? '#1F3D2F' : '#F5F5F5')
                   .borderRadius(4)
@@ -850,8 +903,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
             }
             if (this.hypoxiaCalc.length > 0) {
               Text(this.hypoxiaCalc)
-                .fontSize(11)
-                .fontColor('#7A8074')
+                .fontSize(12)
+                .fontColor('#5F6654')
                 .width('100%')
                 .margin({ top: 2 });
             }
@@ -867,7 +920,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           } else {
             Text(this.hypoxiaHtml)
               .fontSize(12)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%');
           }
         }
@@ -908,7 +961,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           } else {
             Text(this.rHtml)
               .fontSize(12)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%');
           }
         }
@@ -938,7 +991,7 @@ export struct BloodGasCalculator {  @State ph: string = '';
           } else {
             Text(this.critHtml)
               .fontSize(12)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%');
           }
         }
@@ -967,8 +1020,8 @@ export struct BloodGasCalculator {  @State ph: string = '';
               .margin({ top: 6 });
           }
           Text('\u672C\u680F\u4EC5\u6C47\u603B\u524D 5 \u9879\u4E2D\u8D85\u51FA\u9608\u503C\u7684\u5BA2\u89C2\u6570\u636E, \u4E0D\u542B\u6CBB\u7597\u5EFA\u8BAE\u3002')
-            .fontSize(11)
-            .fontColor('#7A8074')
+            .fontSize(12)
+            .fontColor('#5F6654')
             .margin({ top: 8 });
         }
         .width('100%')

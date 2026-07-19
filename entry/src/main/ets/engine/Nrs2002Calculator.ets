@@ -8,6 +8,10 @@ export function calculateNrs2002(
   disease: string,
   ageAdj: boolean
 ): CalcResult {
+  if (weightLoss === '' || intake === '' || disease === '') {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
   const bmi = height > 0 && weight > 0 ? weight / Math.pow(height / 100, 2) : null;
 
   let nutrScore = 0;

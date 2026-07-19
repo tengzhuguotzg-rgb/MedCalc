@@ -1,6 +1,10 @@
 import { CalcResult, getTierClass } from './CalcEngine';
 
 export function calculateAarc(bilirubin: number, bilUnit: string, inr: number, lactate: number, hepaticEnceph: number, age: number, acKf: boolean): CalcResult {
+  if (bilirubin <= 0 || inr <= 0 || lactate <= 0 || age <= 0 || hepaticEnceph < 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
   const bilUmol = bilUnit === 'mgdl' ? bilirubin * 17.1 : bilirubin;
 
   let score = 0;

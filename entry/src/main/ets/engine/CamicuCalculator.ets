@@ -1,6 +1,10 @@
 import { CalcResult } from './CalcEngine';
 
 export function calculateCamicu(f1: number, f2: number, f3: number, f4: number): CalcResult {
+  if (f1 < 0 || f2 < 0 || f3 < 0 || f4 < 0) {
+    return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+  }
+
   const positive = f1 === 1 && f2 === 1 && (f3 === 1 || f4 === 1);
 
   let tier: string;

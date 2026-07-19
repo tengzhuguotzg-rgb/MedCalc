@@ -104,12 +104,12 @@ struct Index {
       TabContent() {
         this.CalcModeView();
       }
-      .tabBar('计算器')
+      .tabBar(this.TabBarBuilder('计算器', 0))
 
       TabContent() {
         AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab });
       }
-      .tabBar('助手')
+      .tabBar(this.TabBarBuilder('助手', 1))
 
       TabContent() {
         if (this.currentPatientId.length > 0) {
@@ -118,17 +118,17 @@ struct Index {
           PatientListPage({ currentPatientId: $currentPatientId });
         }
       }
-      .tabBar('病历')
+      .tabBar(this.TabBarBuilder('病历', 2))
 
       TabContent() {
         KnowledgeSearchPage();
       }
-      .tabBar('知识库')
+      .tabBar(this.TabBarBuilder('知识库', 3))
 
       TabContent() {
         SettingsPage();
       }
-      .tabBar('设置')
+      .tabBar(this.TabBarBuilder('设置', 4))
     }
     .barBackgroundColor('#FFFFFF')
     .barMode(BarMode.Fixed)
@@ -136,6 +136,25 @@ struct Index {
     .onChange((index: number) => { this.currentTab = index; })
     .width('100%')
     .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  TabBarBuilder(title: string, index: number) {
+    Column({ space: 4 }) {
+      Text(title)
+        .fontSize(14)
+        .fontWeight(this.currentTab === index ? FontWeight.Medium : FontWeight.Normal)
+        .fontColor(this.currentTab === index ? '#1F3D2F' : '#5F6654')
+      Row()
+        .width(24)
+        .height(2)
+        .borderRadius(1)
+        .backgroundColor(this.currentTab === index ? '#1F3D2F' : 'transparent')
+    }
+    .width('100%')
+    .height('100%')
+    .justifyContent(FlexAlign.Center)
   }
 
   @Builder
@@ -272,8 +291,8 @@ struct Index {
       Button() {
         this.MenuIcon()
       }
-      .width(36)
-      .height(36)
+      .width(44)
+      .height(44)
       .backgroundColor('transparent')
       .onClick(() => {
         this.sidebarCollapsed = false;
@@ -292,10 +311,10 @@ struct Index {
       Button() {
         Text(this.isFavorite() ? '★' : '☆')
           .fontSize(18)
-          .fontColor(this.isFavorite() ? '#E76F2C' : '#7A8074')
+          .fontColor(this.isFavorite() ? '#E76F2C' : '#5F6654')
       }
-      .width(36)
-      .height(36)
+      .width(44)
+      .height(44)
       .backgroundColor('transparent')
       .onClick(() => {
         this.toggleFavorite();

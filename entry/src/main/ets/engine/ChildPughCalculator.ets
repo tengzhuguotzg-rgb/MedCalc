@@ -1,7 +1,7 @@
 import { CalcResult } from './CalcEngine';
 
 export function calculateChildPugh(bilirubin: number, bilirubinUnit: string, albumin: number, albUnit: string, inr: number, ascites: number, encephalopathy: number): CalcResult {
-  if (bilirubin <= 0 || albumin <= 0 || inr <= 0) {
+  if (bilirubin <= 0 || albumin <= 0 || inr <= 0 || ascites < 1 || encephalopathy < 1) {
     return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
 

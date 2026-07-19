@@ -38,7 +38,7 @@ export function getTierColor(tierClass: string): string {
   if (tierClass === 'tier-danger') {
     return '#B1452A';
   }
-  return '#7A8074';
+  return '#5F6654';
 }
 
 export function getTierBgColor(tierClass: string): string {

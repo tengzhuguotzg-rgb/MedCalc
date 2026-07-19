@@ -51,7 +51,7 @@ export function calculateNews2(
   rr: number, spo2: number, o2supplement: string,
   temp: number, sbp: number, hr: number, consciousness: string
 ): CalcResult {
-  if (rr <= 0 || spo2 <= 0 || temp <= 0 || sbp <= 0 || hr <= 0) {
+  if (rr <= 0 || spo2 <= 0 || o2supplement === '' || temp <= 0 || sbp <= 0 || hr <= 0 || consciousness === '') {
     return {
       value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: ''
     };

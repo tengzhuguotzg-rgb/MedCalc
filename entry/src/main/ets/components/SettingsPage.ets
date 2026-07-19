@@ -226,7 +226,7 @@ export struct SettingsPage {
 
           Text('配置 AI 服务的 API 地址和密钥，计算器和智能助手共用')
             .fontSize(12)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .width('100%')
 
           Column({ space: 8 }) {
@@ -234,13 +234,13 @@ export struct SettingsPage {
               Column() {
                 Text('暂无 LLM 服务')
                   .fontSize(14)
-                  .fontColor('#7A8074')
+                  .fontColor('#5F6654')
                   .width('100%')
                   .textAlign(TextAlign.Center)
                   .margin({ top: 12, bottom: 12 })
                 Text('请点击下方按钮添加')
                   .fontSize(12)
-                  .fontColor('#7A8074')
+                  .fontColor('#5F6654')
                   .width('100%')
                   .textAlign(TextAlign.Center)
               }
@@ -289,7 +289,7 @@ export struct SettingsPage {
                         .fontColor(this.selectedLlmId === llm.id ? '#1F3D2F' : '#4A5247')
                       Text(llm.baseUrl.replace(/^https?:\/\//, '') + (llm.modelName.length > 0 ? ' · ' + llm.modelName : ''))
                         .fontSize(10)
-                        .fontColor('#7A8074')
+                        .fontColor('#5F6654')
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
                       if (this.testResultId === llm.id) {
@@ -374,7 +374,7 @@ export struct SettingsPage {
               .fontColor('#1F3D2F')
             Text('智能医学评分计算器')
               .fontSize(12)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
           }
           .width('100%')
           .padding(16)
@@ -410,7 +410,7 @@ export struct SettingsPage {
         Column({ space: 4 }) {
           Text('模型名称')
             .fontSize(13)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .width('100%')
           TextInput({ placeholder: '如 deepseek-chat', text: this.addToProviderModelName })
             .fontSize(14)
@@ -423,14 +423,14 @@ export struct SettingsPage {
 
         Text('将复用该服务商下已有模型的 API 格式、URL 和 Key')
           .fontSize(11)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .width('100%')
 
         Row({ space: 12 }) {
           Button('取消')
             .fontSize(14)
             .backgroundColor('#E8E5D8')
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .height(40)
             .borderRadius(8)
             .layoutWeight(1)
@@ -460,7 +460,7 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text('服务商')
               .fontSize(13)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%')
             TextInput({ placeholder: '如 DeepSeek、OpenAI、MiniMax', text: this.editLlmProvider })
               .fontSize(14)
@@ -474,7 +474,7 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text(this.llmDialogMode === 'edit' ? '模型名称' : '模型名称（每行一个，可同时添加多个）')
               .fontSize(13)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%')
             if (this.llmDialogMode === 'edit') {
               TextInput({ placeholder: '如 deepseek-chat', text: this.editLlmName })
@@ -534,7 +534,7 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text('API Base URL')
               .fontSize(13)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%')
             TextInput({ placeholder: 'https://api.deepseek.com', text: this.editLlmBaseUrl })
               .fontSize(14)
@@ -548,7 +548,7 @@ export struct SettingsPage {
           Column({ space: 4 }) {
             Text('API Key')
               .fontSize(13)
-              .fontColor('#7A8074')
+              .fontColor('#5F6654')
               .width('100%')
             TextInput({ placeholder: '请输入 API Key', text: this.editLlmApiKey })
               .fontSize(14)
@@ -566,7 +566,7 @@ export struct SettingsPage {
           Button('取消')
             .fontSize(14)
             .backgroundColor('#E8E5D8')
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .height(40)
             .borderRadius(8)
             .layoutWeight(1)

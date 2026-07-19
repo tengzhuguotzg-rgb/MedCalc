@@ -2,12 +2,13 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 
 @Component
-export struct Nrs2002Calculator {  @State patientHeight: number = 0;
+export struct Nrs2002Calculator {
+  @State resetKey: number = 0;  @State patientHeight: number = 0;
   @State patientWeight: number = 0;
-  @State weightLoss: string = 'none';
-  @State intake: string = 'none';
-  @State disease: string = 'none';
-  @State ageAdj: boolean = false;
+  @State weightLoss: string = '';
+  @State intake: string = '';
+  @State disease: string = '';
+  @State ageAdj: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() {
@@ -15,10 +16,35 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
   }
 
   calculate() {
-    this.result = calculateNrs2002(this.patientHeight, this.patientWeight, this.weightLoss, this.intake, this.disease, this.ageAdj);
+    if (this.ageAdj < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateNrs2002(this.patientHeight, this.patientWeight, this.weightLoss, this.intake, this.disease, this.ageAdj === 1);
+  }
+
+  reset() {
+    this.patientHeight = 0;
+    this.patientWeight = 0;
+    this.weightLoss = '';
+    this.intake = '';
+    this.disease = '';
+    this.ageAdj = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
   }
 
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       this.Header();
       this.InputForm();
@@ -40,7 +66,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
           .fontWeight(FontWeight.Medium);
         Text('4项：BMI+体重下降+摄食减少+疾病严重度，≥3有营养风险')
           .fontSize(12)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 2 });
       }
     .alignItems(HorizontalAlign.Start)
@@ -51,12 +77,12 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
   @Builder
   InputForm() {
     Column() {
-      Text('— 输入参数')
+      Row() { Text('— 输入参数')
         .fontSize(12)
         .fontColor('#E76F2C')
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Column() {
@@ -67,7 +93,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
             .margin({ bottom: 6 });
           TextInput({ placeholder: '请输入身高' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -90,7 +116,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
             .margin({ bottom: 6 });
           TextInput({ placeholder: '请输入体重' })
             .type(InputType.Number)
-            .height(40)
+            .height(48)
             .fontSize(16)
             .fontColor('#1F2421')
             .placeholderColor('#999999')
@@ -118,26 +144,26 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
           .margin({ bottom: 6 });
         Row() {
           Button('无')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.weightLoss === 'none' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.weightLoss === 'none' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.weightLoss === 'none' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .onClick(() => {
               this.weightLoss = 'none';
               this.calculate();
             });
           Button('>5%')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.weightLoss === 'mild' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.weightLoss === 'mild' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.weightLoss === 'mild' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -145,13 +171,13 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
               this.calculate();
             });
           Button('>10%')
-            .fontSize(10)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.weightLoss === 'mod' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.weightLoss === 'mod' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.weightLoss === 'mod' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -159,13 +185,13 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
               this.calculate();
             });
           Button('>15%')
-            .fontSize(10)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.weightLoss === 'severe' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.weightLoss === 'severe' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.weightLoss === 'severe' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -186,26 +212,26 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
           .margin({ bottom: 6 });
         Row() {
           Button('正常')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.intake === 'none' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.intake === 'none' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.intake === 'none' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .onClick(() => {
               this.intake = 'none';
               this.calculate();
             });
           Button('>50%')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.intake === 'mild' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.intake === 'mild' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.intake === 'mild' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -213,13 +239,13 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
               this.calculate();
             });
           Button('25-50%')
-            .fontSize(9)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.intake === 'mod' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.intake === 'mod' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.intake === 'mod' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -227,13 +253,13 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
               this.calculate();
             });
           Button('<25%')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.intake === 'severe' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.intake === 'severe' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.intake === 'severe' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 4 })
             .onClick(() => {
@@ -254,13 +280,13 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
           .margin({ bottom: 6 });
         Row() {
           Button('无/轻')
-            .fontSize(11)
+            .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.disease === 'none' ? '#FFFFFF' : '#2D5440')
             .backgroundColor(this.disease === 'none' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.disease === 'none' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .onClick(() => {
               this.disease = 'none';
@@ -273,7 +299,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
             .backgroundColor(this.disease === 'moderate' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.disease === 'moderate' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => {
@@ -287,7 +313,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
             .backgroundColor(this.disease === 'severe' ? '#1F3D2F' : '#F5F5F5')
             .border({ width: 1, color: this.disease === 'severe' ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(36)
+            .height(44)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => {
@@ -310,28 +336,28 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
           Button('否')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(!this.ageAdj ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(!this.ageAdj ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: !this.ageAdj ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.ageAdj === 0 ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.ageAdj === 0 ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.ageAdj === 0 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(40)
+            .height(48)
             .layoutWeight(1)
             .onClick(() => {
-              this.ageAdj = false;
+              this.ageAdj = 0;
               this.calculate();
             });
           Button('是')
             .fontSize(15)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.ageAdj ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.ageAdj ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.ageAdj ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.ageAdj === 1 ? '#FFFFFF' : '#2D5440')
+            .backgroundColor(this.ageAdj === 1 ? '#1F3D2F' : '#F5F5F5')
+            .border({ width: 1, color: this.ageAdj === 1 ? '#1F3D2F' : '#E0E0E0' })
             .borderRadius(8)
-            .height(40)
+            .height(48)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(() => {
-              this.ageAdj = true;
+              this.ageAdj = 1;
               this.calculate();
             });
         }
@@ -354,7 +380,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
         Column() {
           Text('NRS-2002')
             .fontSize(12)
-            .fontColor('#7A8074')
+            .fontColor('#5F6654')
             .letterSpacing(1.5)
             .fontWeight(FontWeight.Medium);
           Text(this.result!.value !== null ? 
@@ -401,7 +427,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#2D5440';
+        return '#5F6654';
     }
   }
 
@@ -414,7 +440,7 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
       case 'tier-danger':
         return '#B1452A';
       default:
-        return '#F0F4F2';
+        return '#F5F5F5';
     }
   }
 }

@@ -280,7 +280,7 @@ export function calculateNaCorrectionRate(weight: number, na: number, targetNa: 
 }
 
 export function calculateCurb65(confusion: boolean, urea: number, ureaUnit: string, rr: number, sbp: number, dbp: number, age: number): CalcResult {
-  if (rr <= 0 || sbp <= 0 || age <= 0) {
+  if (urea <= 0 || rr <= 0 || sbp <= 0 || dbp <= 0 || age <= 0) {
     return {
       value: null,
       unit: '',

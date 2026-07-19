@@ -3,11 +3,11 @@ import { calculateNaDeficit } from '../../engine/CommonCalculators';
 
 @Component
 export struct NaDeficitCalculator {
+  @State resetKey: number = 0;
   @State weight: number = 0;
   @State na: number = 0;
-  @State targetNa: number = 140;
-  @State isFemale: boolean = false;
-  @State isChild: boolean = false;
+  @State targetNa: number = 0;
+  @State tbwGroup: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() {
@@ -15,10 +15,33 @@ export struct NaDeficitCalculator {
   }
 
   calculate() {
-    this.result = calculateNaDeficit(this.weight, this.na, this.targetNa, this.isFemale, this.isChild);
+    if (this.tbwGroup < 0) {
+      this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
+      return;
+    }
+    this.result = calculateNaDeficit(this.weight, this.na, this.targetNa, this.tbwGroup === 1, this.tbwGroup === 2);
+  }
+
+  reset() {
+    this.weight = 0;
+    this.na = 0;
+    this.targetNa = 0;
+    this.tbwGroup = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
   }
 
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() {
         Text('计算低钠血症的钠缺失量')
@@ -27,7 +50,7 @@ export struct NaDeficitCalculator {
           .fontWeight(FontWeight.Medium);
         Text('Na缺失 = TBW因子 × 体重 × (目标Na - 实测Na)')
           .fontSize(12)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
@@ -35,7 +58,7 @@ export struct NaDeficitCalculator {
       .margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
@@ -46,7 +69,7 @@ export struct NaDeficitCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'kg' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -67,7 +90,7 @@ export struct NaDeficitCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -93,7 +116,7 @@ export struct NaDeficitCalculator {
               .margin({ bottom: 6 });
             TextInput({ placeholder: '140', text: this.targetNa > 0 ? this.targetNa.toString() : '' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -117,26 +140,26 @@ export struct NaDeficitCalculator {
             .fontColor('#1F2421')
             .margin({ bottom: 8 });
           Row() {
-            Toggle({ type: ToggleType.Button, isOn: !this.isFemale && !this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 0 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isFemale = false; this.isChild = false; this.calculate(); }
+                if (isOn) { this.tbwGroup = 0; this.calculate(); }
               })
               .width(48).height(32);
             Text('男0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
-            Toggle({ type: ToggleType.Button, isOn: this.isFemale && !this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 1 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isFemale = true; this.isChild = false; this.calculate(); }
+                if (isOn) { this.tbwGroup = 1; this.calculate(); }
               })
               .width(48).height(32);
             Text('女0.5').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
 
-            Toggle({ type: ToggleType.Button, isOn: this.isChild })
+            Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 2 })
               .selectedColor('#1F3D2F')
               .onChange((isOn: boolean) => {
-                if (isOn) { this.isChild = true; this.calculate(); }
+                if (isOn) { this.tbwGroup = 2; this.calculate(); }
               })
               .width(48).height(32);
             Text('儿童0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4 });
@@ -157,8 +180,8 @@ export struct NaDeficitCalculator {
           Row() {
             Column() {
               Text('Na⁺ 缺失量')
-                .fontSize(10)
-                .fontColor('#7A8074')
+                .fontSize(12)
+                .fontColor('#5F6654')
                 .letterSpacing(1.5);
               Text(this.result!.value !== null ?
                 `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')

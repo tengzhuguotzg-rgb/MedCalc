@@ -16,7 +16,9 @@ export function calculateSofa(
 ): CalcResult {
   const fio2Value = fio2Mode === 'pct' ? fio2 / 100 : fio2;
 
-  if (pao2 <= 0 || fio2Value <= 0) {
+  if (pao2 <= 0 || fio2Value <= 0 || platelet <= 0 || bilirubin <= 0
+    || vaso === '' || (vaso === 'none' && map <= 0)
+    || gcs < 3 || creatinine <= 0 || urineOutput < 0) {
     return {
       value: null,
       unit: '',

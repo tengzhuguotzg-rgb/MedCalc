@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateNa } from '../../engine/CommonCalculators';
 
 @Component
-export struct NaCalculator {  @State na: number = 0;
+export struct NaCalculator {
+  @State resetKey: number = 0;  @State na: number = 0;
   @State glu: number = 0;
   @State result: CalcResult | null = null;
 
@@ -14,7 +15,24 @@ export struct NaCalculator {  @State na: number = 0;
     this.result = calculateNa(this.na, this.glu);
   }
 
+  reset() {
+    this.na = 0;
+    this.glu = 0;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() {
         Text('用于校正高血糖所致假性低钠血症')
@@ -23,7 +41,7 @@ export struct NaCalculator {  @State na: number = 0;
           .fontWeight(FontWeight.Medium);
         Text('校正Na = 实测Na + 1.6×(Glu-5.6)/5.6')
           .fontSize(12)
-          .fontColor('#7A8074')
+          .fontColor('#5F6654')
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
@@ -31,7 +49,7 @@ export struct NaCalculator {  @State na: number = 0;
       .margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
@@ -42,7 +60,7 @@ export struct NaCalculator {  @State na: number = 0;
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -63,7 +81,7 @@ export struct NaCalculator {  @State na: number = 0;
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Glu' })
               .type(InputType.Number)
-              .height(40)
+              .height(48)
               .fontSize(16)
               .backgroundColor('#FFFFFF')
               .borderRadius(8)
@@ -91,8 +109,8 @@ export struct NaCalculator {  @State na: number = 0;
           Row() {
             Column() {
               Text('校正 Na⁺')
-                .fontSize(10)
-                .fontColor('#7A8074')
+                .fontSize(12)
+                .fontColor('#5F6654')
                 .letterSpacing(1.5);
               Text(this.result!.value !== null ? 
                 `${this.result!.value!.toFixed(1)} ${this.result!.unit}` : '—')
