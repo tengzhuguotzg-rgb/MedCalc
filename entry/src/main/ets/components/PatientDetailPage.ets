@@ -597,16 +597,6 @@ export struct PatientDetailPage {
     return mo + '/' + da + ' ' + h + ':' + m;
   }
 
-  getTierIcon(tierClass: string): string {
-    if (tierClass === 'tier-danger') {
-      return '🔴';
-    }
-    if (tierClass === 'tier-warn') {
-      return '🟡';
-    }
-    return '🟢';
-  }
-
   getRecordIcon(type: string): string {
     if (type === 'image') {
       return '📷';
@@ -1017,31 +1007,6 @@ export struct PatientDetailPage {
             .margin({ left: 6 })
         }
         Blank()
-        Row() {
-          if (this.getDangerCount() > 0) {
-            Row() {
-              Text(this.getDangerCount().toString())
-                .fontSize(12)
-                .fontColor('#FFFFFF')
-                .fontWeight(FontWeight.Bold)
-            }
-            .backgroundColor('#B1452A')
-            .borderRadius(8)
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          }
-          if (this.getWarnCount() > 0) {
-            Row() {
-              Text(this.getWarnCount().toString())
-                .fontSize(12)
-                .fontColor('#FFFFFF')
-                .fontWeight(FontWeight.Bold)
-            }
-            .backgroundColor('#C8881A')
-            .borderRadius(8)
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-            .margin({ left: 4 })
-          }
-        }
       }
       .width('100%')
 
@@ -1049,9 +1014,12 @@ export struct PatientDetailPage {
         Column() {
           ForEach(this.getWarningAlerts().slice(0, 3), (alert: PatientAlert) => {
             Row() {
-              Text(this.getTierIcon(this.parseAlertResult(alert).tierClass))
-                .fontSize(12)
-                .margin({ right: 4 })
+              Column()
+                .width(3)
+                .height(12)
+                .backgroundColor(getTierColor(this.parseAlertResult(alert).tierClass))
+                .borderRadius(1)
+                .margin({ right: 6 })
               Text(alert.calcName)
                 .fontSize(13)
                 .fontColor('#1F3D2F')
@@ -1169,7 +1137,7 @@ export struct PatientDetailPage {
               Column()
                 .width(3)
                 .height(14)
-                .backgroundColor(this.getSourceColor(diag.source))
+                .backgroundColor(this.getUrgencyColor(diag.urgency))
                 .borderRadius(1)
                 .margin({ right: 6 })
               Text(diag.name)
@@ -1225,39 +1193,13 @@ export struct PatientDetailPage {
           .fontColor('#1F3D2F')
           .layoutWeight(1)
           .margin({ left: 8 })
-        Row() {
-          if (this.getDangerCount() > 0) {
-            Row() {
-              Text(this.getDangerCount().toString())
-                .fontSize(12)
-                .fontColor('#FFFFFF')
-                .fontWeight(FontWeight.Bold)
-            }
+        if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
+          Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
+            .fontSize(12)
+            .fontColor('#FFFFFF')
             .backgroundColor('#B1452A')
-            .borderRadius(8)
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          }
-          if (this.getWarnCount() > 0) {
-            Row() {
-              Text(this.getWarnCount().toString())
-                .fontSize(12)
-                .fontColor('#FFFFFF')
-                .fontWeight(FontWeight.Bold)
-            }
-            .backgroundColor('#C8881A')
-            .borderRadius(8)
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-            .margin({ left: 4 })
-          }
-          if (this.dashboard.labAlertCount > 0) {
-            Text('检验' + this.dashboard.labAlertCount.toString())
-              .fontSize(10)
-              .fontColor('#FFFFFF')
-              .backgroundColor('#7A6B9D')
-              .borderRadius(8)
-              .padding({ left: 5, right: 5, top: 2, bottom: 2 })
-              .margin({ left: 4 })
-          }
+            .borderRadius(10)
+            .padding({ left: 6, right: 6, top: 1, bottom: 1 })
         }
       }
       .width('100%')
@@ -2479,7 +2421,7 @@ export struct PatientDetailPage {
     .padding(10)
     .backgroundColor(diag.source === 'rule' ? '#FFFFFF' : (diag.source === 'partial' ? '#FFFCF5' : (diag.source === 'llm_hint' ? '#F8F5FF' : '#F5FFF5')))
     .borderRadius(8)
-    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getSourceColor(diag.source) })
+    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getUrgencyColor(diag.urgency) })
     .margin({ bottom: 6 })
   }
 
@@ -2991,14 +2933,22 @@ export struct PatientDetailPage {
   AlertCard(alert: PatientAlert) {
     Column() {
       Row() {
-        Text(this.getTierIcon(this.parseAlertResult(alert).tierClass))
-          .fontSize(14)
-          .margin({ right: 6 })
+        Column()
+          .width(4)
+          .height(16)
+          .backgroundColor(getTierColor(this.parseAlertResult(alert).tierClass))
+          .borderRadius(2)
+          .margin({ right: 8 })
         Text(alert.calcName)
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
           .fontColor('#1F3D2F')
           .layoutWeight(1)
+        Text(this.parseAlertResult(alert).tier)
+          .fontSize(11)
+          .fontColor(getTierColor(this.parseAlertResult(alert).tierClass))
+          .maxLines(1)
+          .margin({ right: 6 })
         Text(alert.completeness + '%')
           .fontSize(12)
           .fontColor('#7A8074')
