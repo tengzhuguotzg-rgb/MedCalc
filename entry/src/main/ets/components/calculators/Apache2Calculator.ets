@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor as calcTierColor, getTierBgColor as calcTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct Apache2Calculator {
@@ -95,7 +96,7 @@ export struct Apache2Calculator {
       this.Header();
       this.InputForm();
       if (this.result) {
-        this.ResultCard();
+        ResultCard({ title: 'APACHE II', value: this.result!.value, unit: this.result!.unit, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }
     .width('100%')
@@ -122,7 +123,7 @@ export struct Apache2Calculator {
 
   @Builder
   InputForm() {
-    Column() {
+    CalcCard() {
       Row() { Text('— 生命体征')
         .fontSize(12)
         .fontColor(AppColors.warning)
@@ -131,132 +132,22 @@ export struct Apache2Calculator {
         ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
-        Column() {
-          Text('体温 (°C)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '37.0' }).type(InputType.NUMBER_DECIMAL)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.temp = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('心率 (次/分)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '80' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.hr = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: '体温 (°C)', placeholder: '37.0', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: '心率 (次/分)', placeholder: '80', onTextChange: (value: string) => { this.hr = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
 
       Row() {
-        Column() {
-          Text('收缩压 (mmHg)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '120' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.sbp = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('舒张压 (mmHg)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '80' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.dbp = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: '收缩压 (mmHg)', placeholder: '120', onTextChange: (value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: '舒张压 (mmHg)', placeholder: '80', onTextChange: (value: string) => { this.dbp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
 
-      Column() {
-        Text('呼吸频率 (次/分)')
-          .fontSize(14)
-          .fontColor(AppColors.textPrimary)
-          .fontWeight(FontWeight.Medium)
-          .margin({ bottom: 6 });
-        TextInput({ placeholder: '16' })
-          .type(InputType.Number)
-          .height(AppDimens.inputHeight)
-          .fontSize(16)
-          .fontColor(AppColors.textPrimary)
-          .placeholderColor(AppColors.placeholder)
-          .backgroundColor(AppColors.card)
-          .borderRadius(8)
-          .border({ width: 1, color: AppColors.border })
-          .padding({ left: 12, right: 12 })
-          .width('100%')
-          .onChange((value: string) => {
-            this.rr = parseFloat(value) || 0;
-            this.calculate();
-          });
-      }
-      .width('100%')
-      .margin({ bottom: 16 });
+      InputRow({ label: '呼吸频率 (次/分)', placeholder: '16', onTextChange: (value: string) => { this.rr = parseFloat(value) || 0; this.calculate(); } })
+        .width('100%')
+        .margin({ bottom: 16 });
 
       Text('— 氧合参数')
         .fontSize(12)
@@ -321,54 +212,8 @@ export struct Apache2Calculator {
       .margin({ bottom: 16 });
 
       Row() {
-        Column() {
-          Text('PaO₂ (mmHg)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '80' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.pao2 = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('PaCO₂ (mmHg)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '40' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .enabled(this.paco2Filled)
-            .onChange((value: string) => {
-              this.paco2 = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: 'PaO₂ (mmHg)', placeholder: '80', onTextChange: (value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: 'PaCO₂ (mmHg)', placeholder: '40', inputEnabled: this.paco2Filled, onTextChange: (value: string) => { this.paco2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -381,58 +226,13 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Button('pH (首选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.phFilled ? AppColors.card : AppColors.textOption).backgroundColor(this.phFilled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.phFilled ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ right: 4 }).onClick(() => { this.phFilled = true; this.hco3Filled = false; this.calculate(); });
-        Button('HCO₃⁻ (备选)').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.hco3Filled ? AppColors.card : AppColors.textOption).backgroundColor(this.hco3Filled ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.hco3Filled ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.hco3Filled = true; this.phFilled = false; this.calculate(); });
+        OptionChip({ label: 'pH (首选)', selected: this.phFilled, fontSize: 13, bold: true, onChipClick: () => { this.phFilled = true; this.hco3Filled = false; this.calculate(); } }).layoutWeight(1).margin({ right: 4 });
+        OptionChip({ label: 'HCO₃⁻ (备选)', selected: this.hco3Filled, fontSize: 13, bold: true, onChipClick: () => { this.hco3Filled = true; this.phFilled = false; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
       }.width('100%').margin({ bottom: 10 });
 
       Row() {
-        Column() {
-          Text('pH')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '7.40' }).type(InputType.NUMBER_DECIMAL)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .enabled(this.phFilled)
-            .onChange((value: string) => {
-              this.ph = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('HCO₃⁻ (mmol/L)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '24' }).type(InputType.NUMBER_DECIMAL)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .enabled(this.hco3Filled)
-            .onChange((value: string) => {
-              this.hco3 = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: 'pH', placeholder: '7.40', inputType: InputType.NUMBER_DECIMAL, inputEnabled: this.phFilled, onTextChange: (value: string) => { this.ph = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: 'HCO₃⁻ (mmol/L)', placeholder: '24', inputType: InputType.NUMBER_DECIMAL, inputEnabled: this.hco3Filled, onTextChange: (value: string) => { this.hco3 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -445,106 +245,18 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Column() {
-          Text('Na⁺ (mmol/L)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '140' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.na = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('K⁺ (mmol/L)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '4.0' }).type(InputType.NUMBER_DECIMAL)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.k = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: 'Na⁺ (mmol/L)', placeholder: '140', onTextChange: (value: string) => { this.na = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: 'K⁺ (mmol/L)', placeholder: '4.0', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.k = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
 
       Row() {
         Column() {
-          Text('肌酐')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '80' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.cr = parseFloat(value) || 0;
-              this.calculate();
-            });
+          InputRow({ label: '肌酐', placeholder: '80', onTextChange: (value: string) => { this.cr = parseFloat(value) || 0; this.calculate(); } });
           Row() {
-            Button('µmol/L')
-              .fontSize(12)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(this.crUnit === 'umol' ? AppColors.card : AppColors.textOption)
-              .backgroundColor(this.crUnit === 'umol' ? AppColors.primary : AppColors.fillNeutral)
-              .border({ width: 1, color: this.crUnit === 'umol' ? AppColors.primary : AppColors.border })
-              .borderRadius(6)
-              .height(28)
-              .layoutWeight(1)
-              .onClick(() => {
-                this.crUnit = 'umol';
-                this.calculate();
-              });
-            Button('mg/dL')
-              .fontSize(12)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(this.crUnit === 'mgdl' ? AppColors.card : AppColors.textOption)
-              .backgroundColor(this.crUnit === 'mgdl' ? AppColors.primary : AppColors.fillNeutral)
-              .border({ width: 1, color: this.crUnit === 'mgdl' ? AppColors.primary : AppColors.border })
-              .borderRadius(6)
-              .height(28)
-              .layoutWeight(1)
-              .margin({ left: 4 })
-              .onClick(() => {
-                this.crUnit = 'mgdl';
-                this.calculate();
-              });
+            OptionChip({ label: 'µmol/L', selected: this.crUnit === 'umol', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.crUnit = 'umol'; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: 'mg/dL', selected: this.crUnit === 'mgdl', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.crUnit = 'mgdl'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
           }
           .width('100%')
           .margin({ top: 6 });
@@ -561,33 +273,8 @@ export struct Apache2Calculator {
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          Button('否')
-            .fontSize(15)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.arf === 0 ? AppColors.card : AppColors.textOption)
-            .backgroundColor(this.arf === 0 ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.arf === 0 ? AppColors.primary : AppColors.border })
-            .borderRadius(8)
-            .height(AppDimens.inputHeight)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.arf = 0;
-              this.calculate();
-            });
-          Button('是')
-            .fontSize(15)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.arf === 1 ? AppColors.card : AppColors.textOption)
-            .backgroundColor(this.arf === 1 ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.arf === 1 ? AppColors.primary : AppColors.border })
-            .borderRadius(8)
-            .height(AppDimens.inputHeight)
-            .layoutWeight(1)
-            .margin({ left: 12 })
-            .onClick(() => {
-              this.arf = 1;
-              this.calculate();
-            });
+          OptionChip({ label: '否', selected: this.arf === 0, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.arf = 0; this.calculate(); } }).layoutWeight(1);
+          OptionChip({ label: '是', selected: this.arf === 1, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.arf = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }
         .width('100%');
       }
@@ -602,53 +289,8 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Column() {
-          Text('HCT (%)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '40' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.hct = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('WBC (×10⁹/L)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '8' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.wbc = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: 'HCT (%)', placeholder: '40', onTextChange: (value: string) => { this.hct = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: 'WBC (×10⁹/L)', placeholder: '8', onTextChange: (value: string) => { this.wbc = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -661,53 +303,8 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Column() {
-          Text('GCS (3-15)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '15' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.gcs = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('年龄 (岁)')
-            .fontSize(14)
-            .fontColor(AppColors.textPrimary)
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '50' })
-            .type(InputType.Number)
-            .height(AppDimens.inputHeight)
-            .fontSize(16)
-            .fontColor(AppColors.textPrimary)
-            .placeholderColor(AppColors.placeholder)
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .border({ width: 1, color: AppColors.border })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.age = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: 'GCS (3-15)', placeholder: '15', onTextChange: (value: string) => { this.gcs = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: '年龄 (岁)', placeholder: '50', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -720,108 +317,12 @@ export struct Apache2Calculator {
         .margin({ bottom: 12 });
 
       Row() {
-        Button('无')
-          .fontSize(12)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(this.chronic === 'none' ? AppColors.card : AppColors.textOption)
-          .backgroundColor(this.chronic === 'none' ? AppColors.primary : AppColors.fillNeutral)
-          .border({ width: 1, color: this.chronic === 'none' ? AppColors.primary : AppColors.border })
-          .borderRadius(8)
-          .height(AppDimens.touchTarget)
-          .layoutWeight(1)
-          .onClick(() => {
-            this.chronic = 'none';
-            this.calculate();
-          });
-        Button('择期术后')
-          .fontSize(12)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(this.chronic === 'elective' ? AppColors.card : AppColors.textOption)
-          .backgroundColor(this.chronic === 'elective' ? AppColors.primary : AppColors.fillNeutral)
-          .border({ width: 1, color: this.chronic === 'elective' ? AppColors.primary : AppColors.border })
-          .borderRadius(8)
-          .height(AppDimens.touchTarget)
-          .layoutWeight(1)
-          .margin({ left: 4 })
-          .onClick(() => {
-            this.chronic = 'elective';
-            this.calculate();
-          });
-        Button('非手术/急诊')
-          .fontSize(12)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(this.chronic === 'nonop' ? AppColors.card : AppColors.textOption)
-          .backgroundColor(this.chronic === 'nonop' ? AppColors.primary : AppColors.fillNeutral)
-          .border({ width: 1, color: this.chronic === 'nonop' ? AppColors.primary : AppColors.border })
-          .borderRadius(8)
-          .height(AppDimens.touchTarget)
-          .layoutWeight(1)
-          .margin({ left: 4 })
-          .onClick(() => {
-            this.chronic = 'nonop';
-            this.calculate();
-          });
+        OptionChip({ label: '无', selected: this.chronic === 'none', fontSize: 12, bold: true, onChipClick: () => { this.chronic = 'none'; this.calculate(); } }).layoutWeight(1);
+        OptionChip({ label: '择期术后', selected: this.chronic === 'elective', fontSize: 12, bold: true, onChipClick: () => { this.chronic = 'elective'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+        OptionChip({ label: '非手术/急诊', selected: this.chronic === 'nonop', fontSize: 12, bold: true, onChipClick: () => { this.chronic = 'nonop'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
       }
       .width('100%')
       .margin({ bottom: 16 });
     }
-    .padding(AppDimens.cardPadding)
-    .backgroundColor(AppColors.card)
-    .borderRadius(AppDimens.cardRadius)
-    .width('100%')
-    .margin({ bottom: 16 });
-  }
-
-  @Builder
-  ResultCard() {
-    Column() {
-      Row() {
-        Column() {
-          Text('APACHE II')
-            .fontSize(12)
-            .fontColor(AppColors.textSecondary)
-            .letterSpacing(1.5)
-            .fontWeight(FontWeight.Medium);
-          Text(this.result!.value !== null ? 
-            `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
-            .fontSize(32)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
-            .margin({ top: 8 });
-          Text(this.result!.tier)
-            .fontSize(13)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.getTierTextColor(this.result!.tierClass))
-            .backgroundColor(this.getTierBgColor(this.result!.tierClass))
-            .borderRadius(20)
-            .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-            .margin({ top: 8 });
-        }
-        .alignItems(HorizontalAlign.Start)
-        .layoutWeight(1);
-
-        Column() {
-          Text(this.result!.footnote)
-            .fontSize(14)
-            .fontColor(AppColors.textBody)
-            .lineHeight(22);
-        }
-        .layoutWeight(1)
-        .alignItems(HorizontalAlign.Start);
-      }
-      .width('100%');
-    }
-    .padding(AppDimens.cardPadding)
-    .backgroundColor(AppColors.card)
-    .borderRadius(AppDimens.cardRadius)
-    .width('100%');
-  }
-
-  private getTierTextColor(tierClass: string): ResourceColor {
-    return calcTierColor(tierClass);
-  }
-
-  private getTierBgColor(tierClass: string): ResourceColor {
-    return calcTierBgColor(tierClass);
   }
 }
