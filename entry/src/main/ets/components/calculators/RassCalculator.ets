@@ -56,8 +56,8 @@ export struct RassCalculator {
         Row() { Text('— 选择评分').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([4, 3, 2, 1, 0, -1, -2, -3, -4, -5], (item: number) => {
-            Button(`${item >= 0 ? '+' : ''}${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.score === item ? AppColors.card : '#2D5440')
-              .backgroundColor(this.score === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.score === item ? AppColors.primary : '#E0E0E0' })
+            Button(`${item >= 0 ? '+' : ''}${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.score === item ? AppColors.card : AppColors.textOption)
+              .backgroundColor(this.score === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.score === item ? AppColors.primary : AppColors.border })
               .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.score = item; this.calculate(); });
           }, (item: number) => item.toString() + '-' + this.score.toString());
         }.width('100%');
@@ -72,7 +72,7 @@ export struct RassCalculator {
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
+            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
         }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
@@ -94,7 +94,7 @@ struct RassTable {
     ForEach(this.levels, (level: RassLevel) => {
       Row() {
         Column() {
-          Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor('#1F2421');
+          Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor(AppColors.textPrimary);
           Text(level.desc).fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
         }.layoutWeight(1).alignItems(HorizontalAlign.Start);
         Column() {

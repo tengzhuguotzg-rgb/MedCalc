@@ -58,7 +58,7 @@ export struct NaCalculator {
             Text('实测血 Na⁺ (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
@@ -66,9 +66,9 @@ export struct NaCalculator {
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.na = parseFloat(value) || 0;
                 this.calculate();
@@ -79,7 +79,7 @@ export struct NaCalculator {
             Text('血糖 Glu (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Glu' })
               .type(InputType.Number)
@@ -87,9 +87,9 @@ export struct NaCalculator {
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.glu = parseFloat(value) || 0;
                 this.calculate();
@@ -132,7 +132,7 @@ export struct NaCalculator {
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1);
             Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
+              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }
           .width('100%');

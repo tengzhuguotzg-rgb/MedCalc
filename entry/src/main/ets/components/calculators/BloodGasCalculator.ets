@@ -290,7 +290,7 @@ export struct BloodGasCalculator {
         Button('急性')
           .height(32)
           .fontSize(13)
-          .fontColor(this.acute === 'acute' ? AppColors.card : '#2D5440')
+          .fontColor(this.acute === 'acute' ? AppColors.card : AppColors.textOption)
           .backgroundColor(this.acute === 'acute' ? AppColors.primary : AppColors.fillNeutral)
           .borderRadius(6)
           .layoutWeight(1)
@@ -298,7 +298,7 @@ export struct BloodGasCalculator {
         Button('慢性')
           .height(32)
           .fontSize(13)
-          .fontColor(this.acute === 'chronic' ? AppColors.card : '#2D5440')
+          .fontColor(this.acute === 'chronic' ? AppColors.card : AppColors.textOption)
           .backgroundColor(this.acute === 'chronic' ? AppColors.primary : AppColors.fillNeutral)
           .borderRadius(6)
           .layoutWeight(1)
@@ -313,17 +313,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('pH')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '7.35-7.45' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.ph = value; this.calculate(); });
@@ -332,17 +332,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('HCO\u2083\u207B (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '22-27' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.hco3 = value; this.calculate(); });
@@ -356,18 +356,18 @@ export struct BloodGasCalculator {
       Column() {
         Text('PaCO\u2082')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
           TextInput({ placeholder: '35-45' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .layoutWeight(1)
             .onChange((value: string) => { this.paco2 = value; this.calculate(); });
@@ -375,14 +375,14 @@ export struct BloodGasCalculator {
             Button('mmHg')
               .height(28)
               .fontSize(12)
-              .fontColor(this.paco2Unit === 'mmhg' ? AppColors.card : '#2D5440')
+              .fontColor(this.paco2Unit === 'mmhg' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.paco2Unit === 'mmhg' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .onClick(() => { this.paco2Unit = 'mmhg'; this.calculate(); });
             Button('kPa')
               .height(28)
               .fontSize(12)
-              .fontColor(this.paco2Unit === 'kpa' ? AppColors.card : '#2D5440')
+              .fontColor(this.paco2Unit === 'kpa' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.paco2Unit === 'kpa' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .margin({ left: 4 })
@@ -398,18 +398,18 @@ export struct BloodGasCalculator {
       Column() {
         Text('PaO\u2082')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
           TextInput({ placeholder: '80-100' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .layoutWeight(1)
             .onChange((value: string) => { this.pao2 = value; this.calculate(); });
@@ -417,14 +417,14 @@ export struct BloodGasCalculator {
             Button('mmHg')
               .height(28)
               .fontSize(12)
-              .fontColor(this.pao2Unit === 'mmhg' ? AppColors.card : '#2D5440')
+              .fontColor(this.pao2Unit === 'mmhg' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.pao2Unit === 'mmhg' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .onClick(() => { this.pao2Unit = 'mmhg'; this.calculate(); });
             Button('kPa')
               .height(28)
               .fontSize(12)
-              .fontColor(this.pao2Unit === 'kpa' ? AppColors.card : '#2D5440')
+              .fontColor(this.pao2Unit === 'kpa' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.pao2Unit === 'kpa' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .margin({ left: 4 })
@@ -441,17 +441,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('BE 碱剩余 (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '-3~+3' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.be = value; this.calculate(); });
@@ -460,17 +460,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('SaO\u2082 (%)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '95-100' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.sao2 = value; this.calculate(); });
@@ -485,17 +485,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('Lac 乳酸 (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '0-2' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.lac = value; this.calculate(); });
@@ -504,17 +504,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('K\u207A (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '3.5-5.5' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.k = value; this.calculate(); });
@@ -528,18 +528,18 @@ export struct BloodGasCalculator {
       Column() {
         Text('Hgb 血红蛋白')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
           TextInput({ placeholder: '120-160' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .layoutWeight(1)
             .onChange((value: string) => { this.hgb = value; this.calculate(); });
@@ -547,14 +547,14 @@ export struct BloodGasCalculator {
             Button('g/L')
               .height(28)
               .fontSize(12)
-              .fontColor(this.hgbUnit === 'gl' ? AppColors.card : '#2D5440')
+              .fontColor(this.hgbUnit === 'gl' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.hgbUnit === 'gl' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .onClick(() => { this.hgbUnit = 'gl'; this.calculate(); });
             Button('g/dL')
               .height(28)
               .fontSize(12)
-              .fontColor(this.hgbUnit === 'gdl' ? AppColors.card : '#2D5440')
+              .fontColor(this.hgbUnit === 'gdl' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.hgbUnit === 'gdl' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .margin({ left: 4 })
@@ -571,17 +571,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('Na\u207A (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '135-145' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.na = value; this.calculate(); });
@@ -590,17 +590,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('Cl\u207B (可选, 算AG) (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '98-106' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.cl = value; this.calculate(); });
@@ -615,17 +615,17 @@ export struct BloodGasCalculator {
         Column() {
           Text('Glu 血糖 (mmol/L)')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .fontWeight(FontWeight.Medium)
             .margin({ bottom: 6 });
           TextInput({ placeholder: '3.9-7.8' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .width('100%')
             .onChange((value: string) => { this.glu = value; this.calculate(); });
@@ -638,18 +638,18 @@ export struct BloodGasCalculator {
       Column() {
         Text('FiO\u2082')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
           TextInput({ placeholder: '0.21-1.0' }).type(InputType.NUMBER_DECIMAL)
             .height(AppDimens.inputHeight)
             .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
+            .fontColor(AppColors.textPrimary)
+            .placeholderColor(AppColors.placeholder)
             .backgroundColor(AppColors.card)
             .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
+            .border({ width: 1, color: AppColors.border })
             .padding({ left: 12, right: 12 })
             .layoutWeight(1)
             .onChange((value: string) => { this.fio2 = value; this.calculate(); });
@@ -657,14 +657,14 @@ export struct BloodGasCalculator {
             Button('小数')
               .height(28)
               .fontSize(12)
-              .fontColor(this.fio2Mode === 'dec' ? AppColors.card : '#2D5440')
+              .fontColor(this.fio2Mode === 'dec' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.fio2Mode === 'dec' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .onClick(() => { this.fio2Mode = 'dec'; this.calculate(); });
             Button('%')
               .height(28)
               .fontSize(12)
-              .fontColor(this.fio2Mode === 'pct' ? AppColors.card : '#2D5440')
+              .fontColor(this.fio2Mode === 'pct' ? AppColors.card : AppColors.textOption)
               .backgroundColor(this.fio2Mode === 'pct' ? AppColors.primary : AppColors.fillNeutral)
               .borderRadius(4)
               .margin({ left: 4 })
@@ -701,18 +701,18 @@ export struct BloodGasCalculator {
           Column() {
             Text('PvCO\u2082')
               .fontSize(14)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             Row() {
               TextInput({ placeholder: '40-50' }).type(InputType.NUMBER_DECIMAL)
                 .height(AppDimens.inputHeight)
                 .fontSize(16)
-                .fontColor('#1F2421')
-                .placeholderColor('#999999')
+                .fontColor(AppColors.textPrimary)
+                .placeholderColor(AppColors.placeholder)
                 .backgroundColor(AppColors.card)
                 .borderRadius(8)
-                .border({ width: 1, color: '#E0E0E0' })
+                .border({ width: 1, color: AppColors.border })
                 .padding({ left: 12, right: 12 })
                 .layoutWeight(1)
                 .onChange((value: string) => { this.pvco2 = value; this.calculate(); });
@@ -720,14 +720,14 @@ export struct BloodGasCalculator {
                 Button('mmHg')
                   .height(28)
                   .fontSize(12)
-                  .fontColor(this.pvco2Unit === 'mmhg' ? AppColors.card : '#2D5440')
+                  .fontColor(this.pvco2Unit === 'mmhg' ? AppColors.card : AppColors.textOption)
                   .backgroundColor(this.pvco2Unit === 'mmhg' ? AppColors.primary : AppColors.fillNeutral)
                   .borderRadius(4)
                   .onClick(() => { this.pvco2Unit = 'mmhg'; this.calculate(); });
                 Button('kPa')
                   .height(28)
                   .fontSize(12)
-                  .fontColor(this.pvco2Unit === 'kpa' ? AppColors.card : '#2D5440')
+                  .fontColor(this.pvco2Unit === 'kpa' ? AppColors.card : AppColors.textOption)
                   .backgroundColor(this.pvco2Unit === 'kpa' ? AppColors.primary : AppColors.fillNeutral)
                   .borderRadius(4)
                   .margin({ left: 4 })
@@ -743,17 +743,17 @@ export struct BloodGasCalculator {
           Column() {
             Text('SvO\u2082 (%)')
               .fontSize(14)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             TextInput({ placeholder: '60-80' }).type(InputType.NUMBER_DECIMAL)
               .height(AppDimens.inputHeight)
               .fontSize(16)
-              .fontColor('#1F2421')
-              .placeholderColor('#999999')
+              .fontColor(AppColors.textPrimary)
+              .placeholderColor(AppColors.placeholder)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
               .width('100%')
               .onChange((value: string) => { this.svo2 = value; this.calculate(); });
@@ -764,18 +764,18 @@ export struct BloodGasCalculator {
           Column() {
             Text('PvO\u2082 (可选, 算呼吸商 C(a-v)O\u2082)')
               .fontSize(14)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .fontWeight(FontWeight.Medium)
               .margin({ bottom: 6 });
             Row() {
               TextInput({ placeholder: '35-45' }).type(InputType.NUMBER_DECIMAL)
                 .height(AppDimens.inputHeight)
                 .fontSize(16)
-                .fontColor('#1F2421')
-                .placeholderColor('#999999')
+                .fontColor(AppColors.textPrimary)
+                .placeholderColor(AppColors.placeholder)
                 .backgroundColor(AppColors.card)
                 .borderRadius(8)
-                .border({ width: 1, color: '#E0E0E0' })
+                .border({ width: 1, color: AppColors.border })
                 .padding({ left: 12, right: 12 })
                 .layoutWeight(1)
                 .onChange((value: string) => { this.pvo2 = value; this.calculate(); });
@@ -783,14 +783,14 @@ export struct BloodGasCalculator {
                 Button('mmHg')
                   .height(28)
                   .fontSize(12)
-                  .fontColor(this.pvo2Unit === 'mmhg' ? AppColors.card : '#2D5440')
+                  .fontColor(this.pvo2Unit === 'mmhg' ? AppColors.card : AppColors.textOption)
                   .backgroundColor(this.pvo2Unit === 'mmhg' ? AppColors.primary : AppColors.fillNeutral)
                   .borderRadius(4)
                   .onClick(() => { this.pvo2Unit = 'mmhg'; this.calculate(); });
                 Button('kPa')
                   .height(28)
                   .fontSize(12)
-                  .fontColor(this.pvo2Unit === 'kpa' ? AppColors.card : '#2D5440')
+                  .fontColor(this.pvo2Unit === 'kpa' ? AppColors.card : AppColors.textOption)
                   .backgroundColor(this.pvo2Unit === 'kpa' ? AppColors.primary : AppColors.fillNeutral)
                   .borderRadius(4)
                   .margin({ left: 4 })
@@ -831,7 +831,7 @@ export struct BloodGasCalculator {
           if (this.result.ab.detail.length > 0) {
             Text(this.result.ab.detail)
               .fontSize(12)
-              .fontColor('#4A5247')
+              .fontColor(AppColors.textBody)
               .width('100%')
               .margin({ top: 6 });
           }
@@ -860,12 +860,12 @@ export struct BloodGasCalculator {
           Text(this.result.o2.conclusion)
             .fontSize(14)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .width('100%');
           if (this.result.o2.detail.length > 0) {
             Text(this.result.o2.detail)
               .fontSize(12)
-              .fontColor('#4A5247')
+              .fontColor(AppColors.textBody)
               .width('100%')
               .margin({ top: 6 });
           }
@@ -891,7 +891,7 @@ export struct BloodGasCalculator {
             if (this.hypoxiaDetail.length > 0) {
               Text(this.hypoxiaDetail)
                 .fontSize(12)
-                .fontColor('#4A5247')
+                .fontColor(AppColors.textBody)
                 .width('100%')
                 .margin({ top: 4 });
             }
@@ -939,7 +939,7 @@ export struct BloodGasCalculator {
             if (this.rDetail.length > 0) {
               Text(this.rDetail)
                 .fontSize(12)
-                .fontColor('#4A5247')
+                .fontColor(AppColors.textBody)
                 .width('100%')
                 .margin({ top: 4 });
             }
@@ -1009,7 +1009,7 @@ export struct BloodGasCalculator {
           if (this.result.summary.detail.length > 0) {
             Text(this.result.summary.detail)
               .fontSize(12)
-              .fontColor('#4A5247')
+              .fontColor(AppColors.textBody)
               .width('100%')
               .margin({ top: 6 });
           }

@@ -41,4 +41,44 @@ export class AppColors {
   static readonly tierDangerBg: string = '#FFEBEE';
   /** 分级底色·信息·浅灰（取值同 fillNeutral，原 #F5F5F5） */
   static readonly tierInfoBg: string = AppColors.fillNeutral;
+
+  // ─── 中性色 ───
+  /** 正文深色（原 #1F2421）：字段标签、输入文字、主要正文 */
+  static readonly textPrimary: string = '#1F2421';
+  /** 正文灰绿（原 #4A5247）：脚注、描述段落、表格正文（并收编 #3A3F35/#5A5F4E） */
+  static readonly textBody: string = '#4A5247';
+  /** 未选中选项文字绿（原 #2D5440）：切换/选项按钮未选态文字 */
+  static readonly textOption: string = '#2D5440';
+  /** 输入占位灰（原 #999999）：placeholder */
+  static readonly placeholder: string = '#999999';
+  /** 极浅提示灰（原 #B0B0A8）：分隔符、来源标注、极次要信息（并收编 #9A9E94/#9B9E8E） */
+  static readonly textFaint: string = '#B0B0A8';
+  /** 描边灰（原 #E0E0E0）：输入框/卡片描边 */
+  static readonly border: string = '#E0E0E0';
+  /** 米色分隔线（原 #E0DCC8）：Divider、暖色细边（并收编 #E8DCC8） */
+  static readonly divider: string = '#E0DCC8';
+  /** 米灰填充（原 #E8E5D8）：次级按钮/标签底色（并收编 #E8E6DA） */
+  static readonly fillBeige: string = '#E8E5D8';
+  /** 浅米区块底（原 #F5F4EF）：区块/代码块/徽章底（并收编 #F0EDE3/#F0EDE2/#F1EEE2/#F5F5F0） */
+  static readonly surfaceMuted: string = '#F5F4EF';
+  /** 近白浅底（原 #F9F8F3）：弱化卡片底、编辑区底（并收编 #FAFAF5/#FAFAFA） */
+  static readonly surfaceSubtle: string = '#F9F8F3';
+
+  // ─── 功能强调色（保留原值，多色设计） ───
+  /** 浅底上的琥珀警示文字（原 #9A6B1E）：警示徽章/条件级证据文字 */
+  static readonly warningText: string = '#9A6B1E';
+  /** 知识库强调绿（原 #4A7C6F）：h2 边条、引用竖条、项目符（并收编 #4A6B5A） */
+  static readonly kbAccent: string = '#4A7C6F';
+  /** 知识库墨绿（原 #3A5F4F）：h3 标题、分类色板 */
+  static readonly kbDeepGreen: string = '#3A5F4F';
+  /** 知识库暖棕（原 #8B6B4A）：分类色板 */
+  static readonly kbWarmBrown: string = '#8B6B4A';
+  /** AI/LLM 紫（原 #7A6B9D）：LLM 提示、AI 内容标记 */
+  static readonly aiAccent: string = '#7A6B9D';
+  /** AI/LLM 浅紫底（原 #F0EBF5，并收编 #F8F5FF） */
+  static readonly aiAccentBg: string = '#F0EBF5';
+  /** 信息蓝（原 #2B5C8A）：证据分级 GPS/良好实践级（并收编 #5B7FA5） */
+  static readonly infoAccent: string = '#2B5C8A';
+  /** 信息蓝浅底（原 #DBEAFE）：证据 GPS 级底色 */
+  static readonly infoAccentBg: string = '#DBEAFE';
 }

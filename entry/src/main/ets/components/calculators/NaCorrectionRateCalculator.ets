@@ -79,7 +79,7 @@ export struct NaCorrectionRateCalculator {
             Text('体重 (kg)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'kg' })
               .type(InputType.Number)
@@ -87,9 +87,9 @@ export struct NaCorrectionRateCalculator {
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.weight = parseFloat(value) || 0;
                 this.calculate();
@@ -100,7 +100,7 @@ export struct NaCorrectionRateCalculator {
             Text('实测 Na⁺ (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
@@ -108,9 +108,9 @@ export struct NaCorrectionRateCalculator {
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.na = parseFloat(value) || 0;
                 this.calculate();
@@ -126,7 +126,7 @@ export struct NaCorrectionRateCalculator {
             Text('目标 Na⁺ (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: '140', text: this.targetNa > 0 ? this.targetNa.toString() : '' })
               .type(InputType.Number)
@@ -134,9 +134,9 @@ export struct NaCorrectionRateCalculator {
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.targetNa = parseFloat(value) || 0;
                 this.calculate();
@@ -147,7 +147,7 @@ export struct NaCorrectionRateCalculator {
             Text('纠正速率 (mmol/L/24h)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: '8', text: this.rateMmolPerDay > 0 ? this.rateMmolPerDay.toString() : '' })
               .type(InputType.Number)
@@ -155,9 +155,9 @@ export struct NaCorrectionRateCalculator {
               .fontSize(16)
               .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.rateMmolPerDay = parseFloat(value) || 0;
                 this.calculate();
@@ -173,7 +173,7 @@ export struct NaCorrectionRateCalculator {
           Text('补液类型')
             .fontSize(14)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .margin({ bottom: 6 });
           Row() {
             ForEach(this.fluidOptions, (item: FluidItem, idx: number) => {
@@ -186,7 +186,7 @@ export struct NaCorrectionRateCalculator {
                   .width(40).height(28);
                 Text(item.name)
                   .fontSize(12)
-                  .fontColor('#4A5247')
+                  .fontColor(AppColors.textBody)
                   .margin({ top: 2 });
               }
               .margin({ right: 8 });
@@ -201,7 +201,7 @@ export struct NaCorrectionRateCalculator {
           Text('TBW因子')
             .fontSize(14)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .margin({ bottom: 8 });
           Row() {
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 0 })
@@ -210,7 +210,7 @@ export struct NaCorrectionRateCalculator {
                 if (isOn) { this.tbwGroup = 0; this.calculate(); }
               })
               .width(48).height(32);
-            Text('男0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
+            Text('男0.6').fontSize(12).fontColor(AppColors.textBody).margin({ left: 4, right: 16 });
 
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 1 })
               .selectedColor(AppColors.primary)
@@ -218,7 +218,7 @@ export struct NaCorrectionRateCalculator {
                 if (isOn) { this.tbwGroup = 1; this.calculate(); }
               })
               .width(48).height(32);
-            Text('女0.5').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
+            Text('女0.5').fontSize(12).fontColor(AppColors.textBody).margin({ left: 4, right: 16 });
 
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 2 })
               .selectedColor(AppColors.primary)
@@ -226,7 +226,7 @@ export struct NaCorrectionRateCalculator {
                 if (isOn) { this.tbwGroup = 2; this.calculate(); }
               })
               .width(48).height(32);
-            Text('儿童0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4 });
+            Text('儿童0.6').fontSize(12).fontColor(AppColors.textBody).margin({ left: 4 });
           }
         }
         .width('100%')
@@ -264,7 +264,7 @@ export struct NaCorrectionRateCalculator {
             .alignItems(HorizontalAlign.Start)
             .layoutWeight(1);
             Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
+              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }
           .width('100%');

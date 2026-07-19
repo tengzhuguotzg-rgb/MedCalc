@@ -45,37 +45,37 @@ export struct ScaiCalculator {
 
         Row() {
           Column() {
-            Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
+            Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
+            TextInput({ placeholder: 'SBP' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((v: string) => { this.sbp = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
-            Text('乳酸 (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
-            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
+            Text('乳酸 (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
+            TextInput({ placeholder: '乳酸' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((v: string) => { this.lac = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });
 
         Column() {
-          Text('血管活性药').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
+          Text('血管活性药').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Flex({ wrap: FlexWrap.Wrap }) {
-            Button('无').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'none' ? AppColors.card : '#2D5440').backgroundColor(this.vaso === 'none' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'none' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'none'; this.calculate(); });
-            Button('1种低剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'low' ? AppColors.card : '#2D5440').backgroundColor(this.vaso === 'low' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'low' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'low'; this.calculate(); });
-            Button('≥2种/高剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'high' ? AppColors.card : '#2D5440').backgroundColor(this.vaso === 'high' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'high' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.vaso = 'high'; this.calculate(); });
+            Button('无').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'none' ? AppColors.card : AppColors.textOption).backgroundColor(this.vaso === 'none' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'none' ? AppColors.primary : AppColors.border }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'none'; this.calculate(); });
+            Button('1种低剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'low' ? AppColors.card : AppColors.textOption).backgroundColor(this.vaso === 'low' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'low' ? AppColors.primary : AppColors.border }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.vaso = 'low'; this.calculate(); });
+            Button('≥2种/高剂量').fontSize(13).fontWeight(FontWeight.Bold).fontColor(this.vaso === 'high' ? AppColors.card : AppColors.textOption).backgroundColor(this.vaso === 'high' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.vaso === 'high' ? AppColors.primary : AppColors.border }).borderRadius(8).height(34).padding({ left: 8, right: 8 }).margin({ bottom: 4 }).onClick(() => { this.vaso = 'high'; this.calculate(); });
           }.width('100%');
         }.width('100%').margin({ bottom: 8 });
 
         Column() {
-          Text('末梢灌注').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
+          Text('末梢灌注').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            Button('正常').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.perf === 'ok' ? AppColors.card : '#2D5440').backgroundColor(this.perf === 'ok' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.perf === 'ok' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.perf = 'ok'; this.calculate(); });
-            Button('差 (冷/紫/少尿)').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.perf === 'bad' ? AppColors.card : '#2D5440').backgroundColor(this.perf === 'bad' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.perf === 'bad' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.perf = 'bad'; this.calculate(); });
+            Button('正常').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.perf === 'ok' ? AppColors.card : AppColors.textOption).backgroundColor(this.perf === 'ok' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.perf === 'ok' ? AppColors.primary : AppColors.border }).borderRadius(8).layoutWeight(1).onClick(() => { this.perf = 'ok'; this.calculate(); });
+            Button('差 (冷/紫/少尿)').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.perf === 'bad' ? AppColors.card : AppColors.textOption).backgroundColor(this.perf === 'bad' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.perf === 'bad' ? AppColors.primary : AppColors.border }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.perf = 'bad'; this.calculate(); });
           }.width('100%');
         }.width('100%').margin({ bottom: 8 });
 
         Column() {
-          Text('CPR / ECMO / 机械循环支持?').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });
+          Text('CPR / ECMO / 机械循环支持?').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.resus === 'no' ? AppColors.card : '#2D5440').backgroundColor(this.resus === 'no' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.resus === 'no' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).layoutWeight(1).onClick(() => { this.resus = 'no'; this.calculate(); });
-            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.resus === 'yes' ? AppColors.card : '#2D5440').backgroundColor(this.resus === 'yes' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.resus === 'yes' ? AppColors.primary : '#E0E0E0' }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.resus = 'yes'; this.calculate(); });
+            Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.resus === 'no' ? AppColors.card : AppColors.textOption).backgroundColor(this.resus === 'no' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.resus === 'no' ? AppColors.primary : AppColors.border }).borderRadius(8).layoutWeight(1).onClick(() => { this.resus = 'no'; this.calculate(); });
+            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.resus === 'yes' ? AppColors.card : AppColors.textOption).backgroundColor(this.resus === 'yes' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.resus === 'yes' ? AppColors.primary : AppColors.border }).borderRadius(8).layoutWeight(1).margin({ left: 4 }).onClick(() => { this.resus = 'yes'; this.calculate(); });
           }.width('100%');
         }.width('100%');
       }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
@@ -89,7 +89,7 @@ export struct ScaiCalculator {
               Text(this.result!.tier).fontSize(12).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass)).backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
             Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
+              Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22);
             }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
         }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');

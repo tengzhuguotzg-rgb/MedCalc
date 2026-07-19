@@ -67,8 +67,8 @@ export struct HuntHessCalculator {
         Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([0, 1, 2, 3, 4, 5], (item: number) => {
-            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : '#2D5440')
-              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : '#E0E0E0' })
+            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : AppColors.textOption)
+              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : AppColors.border })
               .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
           }, (item: number) => item.toString() + '-' + this.grade.toString());
         }.width('100%');
@@ -82,7 +82,7 @@ export struct HuntHessCalculator {
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
+            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
         }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
@@ -128,8 +128,8 @@ export struct WfnsCalculator {
         Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4, 5], (item: number) => {
-            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : '#2D5440')
-              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : '#E0E0E0' })
+            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : AppColors.textOption)
+              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : AppColors.border })
               .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
           }, (item: number) => item.toString() + '-' + this.grade.toString());
         }.width('100%');
@@ -143,7 +143,7 @@ export struct WfnsCalculator {
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
+            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
         }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
@@ -189,8 +189,8 @@ export struct FisherCalculator {
         Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4], (item: number) => {
-            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : '#2D5440')
-              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : '#E0E0E0' })
+            Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? AppColors.card : AppColors.textOption)
+              .backgroundColor(this.grade === item ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.grade === item ? AppColors.primary : AppColors.border })
               .borderRadius(8).height(AppDimens.inputHeight).width(60).margin({ right: 8, bottom: 8 }).onClick(() => { this.grade = item; this.calculate(); });
           }, (item: number) => item.toString() + '-' + this.grade.toString());
         }.width('100%');
@@ -204,7 +204,7 @@ export struct FisherCalculator {
               Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
                 .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
+            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
           }.width('100%');
         }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
       }
@@ -226,7 +226,7 @@ struct GradeTable {
     ForEach(this.levels, (level: GradeInfo) => {
       Row() {
         Column() {
-          Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor('#1F2421');
+          Text(level.label).fontSize(13).fontWeight(FontWeight.Bold).fontColor(AppColors.textPrimary);
           Text(level.desc).fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
         }.layoutWeight(1).alignItems(HorizontalAlign.Start);
         Column() {
