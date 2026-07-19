@@ -12,6 +12,7 @@ import {
   parseKbMarkdown, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
 import { DIAGNOSIS_RULES, DIAGNOSIS_CATEGORIES, DiagnosisRule } from '../model/DiagnosisRules';
+import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo, picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
@@ -385,7 +386,7 @@ export struct PatientDetailPage {
       const keys: string[] = DATA_DOMAINS[name];
       let hasData = false;
       for (let j = 0; j < keys.length; j++) {
-        if (this.dashboard.latestData.has(keys[j])) {
+        if (this.dashboard.latestData.has(keys[j]) && this.isDisplayableDataKey(keys[j])) {
           hasData = true;
           break;
         }
@@ -436,22 +437,118 @@ export struct PatientDetailPage {
     return false;
   }
 
-  getFieldValueLabel(key: string): string {
+  findFieldSpec(key: string): DataFieldSpec | null {
     for (let i = 0; i < this.dataFieldSpecs.length; i++) {
       if (this.dataFieldSpecs[i].key === key) {
-        return this.dataFieldSpecs[i].label;
+        return this.dataFieldSpecs[i];
       }
+    }
+    const lowerKey = key.toLowerCase();
+    for (let i = 0; i < this.dataFieldSpecs.length; i++) {
+      if (this.dataFieldSpecs[i].key.toLowerCase() === lowerKey) {
+        return this.dataFieldSpecs[i];
+      }
+    }
+    return null;
+  }
+
+  getFieldValueLabel(key: string): string {
+    const spec = this.findFieldSpec(key);
+    if (spec !== null) {
+      return spec.label;
     }
     return key;
   }
 
   getFieldUnit(key: string): string {
-    for (let i = 0; i < this.dataFieldSpecs.length; i++) {
-      if (this.dataFieldSpecs[i].key === key) {
-        return this.dataFieldSpecs[i].unit;
-      }
+    const spec = this.findFieldSpec(key);
+    if (spec !== null) {
+      return spec.unit;
     }
     return '';
+  }
+
+  isDerivedFlagField(key: string): boolean {
+    const spec = this.findFieldSpec(key);
+    if (spec === null) {
+      return false;
+    }
+    if (spec.type === 'select' && spec.options !== undefined &&
+      spec.options.length === 2 && spec.options[0] === '0' && spec.options[1] === '1') {
+      return true;
+    }
+    return false;
+  }
+
+  isDisplayableDataKey(key: string): boolean {
+    return !this.isDerivedFlagField(key);
+  }
+
+  criterionOpSymbol(op: string): string {
+    if (op === 'lt') {
+      return '<';
+    }
+    if (op === 'gt') {
+      return '>';
+    }
+    if (op === 'le' || op === 'lte') {
+      return '<=';
+    }
+    if (op === 'ge' || op === 'gte') {
+      return '>=';
+    }
+    if (op === 'eq') {
+      return '=';
+    }
+    if (op === 'ne' || op === 'neq') {
+      return '≠';
+    }
+    return '';
+  }
+
+  formatCriterion(criterion: string): string {
+    const tokens = criterion.split(' ');
+    if (tokens.length !== 3) {
+      return criterion;
+    }
+    const field = tokens[0];
+    const op = tokens[1];
+    const value = tokens[2];
+    if (field.indexOf('calcResult:') === 0) {
+      const calcId = field.substring('calcResult:'.length);
+      const calc = CALCULATORS.find((c: Calculator) => c.id === calcId);
+      const calcName = calc !== undefined ? calc.name : calcId;
+      if (op === 'has_tier') {
+        return calcName + ' 达到' + value;
+      }
+      if (op === 'has_tier_containing') {
+        return calcName + ' 分级含"' + value + '"';
+      }
+      const opSym = this.criterionOpSymbol(op);
+      if (opSym.length === 0) {
+        return criterion;
+      }
+      return calcName + ' ' + opSym + ' ' + value;
+    }
+    const opSym = this.criterionOpSymbol(op);
+    if (opSym.length === 0) {
+      return criterion;
+    }
+    const label = this.getFieldValueLabel(field);
+    const unit = this.getFieldUnit(field);
+    return label + ' ' + opSym + ' ' + value + (unit.length > 0 ? ' ' + unit : '');
+  }
+
+  formatMissingCriteria(raw: string): string {
+    if (raw.length === 0) {
+      return raw;
+    }
+    const parts = raw.split('; ');
+    const out: string[] = [];
+    for (let i = 0; i < parts.length; i++) {
+      out.push(this.formatCriterion(parts[i]));
+    }
+    return out.join('；');
   }
 
   getDomainColor(domainName: string): string {
@@ -465,7 +562,7 @@ export struct PatientDetailPage {
   getDomainDataCount(domainKeys: string[]): number {
     let count = 0;
     for (let i = 0; i < domainKeys.length; i++) {
-      if (this.dashboard.latestData.has(domainKeys[i])) {
+      if (this.dashboard.latestData.has(domainKeys[i]) && this.isDisplayableDataKey(domainKeys[i])) {
         count++;
       }
     }
@@ -2343,7 +2440,7 @@ export struct PatientDetailPage {
       .width('100%')
       if (diag.missingCriteria.length > 0) {
         Column() {
-          Text('缺：' + diag.missingCriteria)
+          Text('缺：' + this.formatMissingCriteria(diag.missingCriteria))
             .fontSize(11)
             .fontColor('#C8881A')
             .width('100%')
@@ -2410,12 +2507,6 @@ export struct PatientDetailPage {
               .fontSize(10)
               .fontColor('#7A8074')
               .margin({ left: 4 });
-            if (this.getDiagnosisKb(diag.ruleId)!.verifyInfo.length > 0) {
-              Text(this.getDiagnosisKb(diag.ruleId)!.verifyInfo)
-                .fontSize(9)
-                .fontColor('#999999')
-                .margin({ left: 4 });
-            }
           }
           Blank();
           if (!this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
@@ -3047,7 +3138,13 @@ export struct PatientDetailPage {
   }
 
   getDataFieldCount(): number {
-    return this.dashboard.latestData.size;
+    let count = 0;
+    this.dashboard.latestData.forEach((val: string, key: string) => {
+      if (this.isDisplayableDataKey(key)) {
+        count++;
+      }
+    });
+    return count;
   }
 
   getDataDomainCount(): number {
@@ -3059,6 +3156,9 @@ export struct PatientDetailPage {
     const keys = Array.from(this.dashboard.latestData.keys());
     for (let i = 0; i < keys.length && items.length < 5; i++) {
       const key = keys[i];
+      if (!this.isDisplayableDataKey(key)) {
+        continue;
+      }
       const val = this.dashboard.latestData.get(key);
       const unit = this.getFieldUnit(key);
       items.push(this.getFieldValueLabel(key) + ' ' + val + (unit.length > 0 ? ' ' + unit : ''));
@@ -3206,7 +3306,7 @@ export struct PatientDetailPage {
                 if (this.isDomainExpanded(entry.name)) {
                   Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start, alignContent: FlexAlign.Start }) {
                     ForEach(entry.keys, (key: string) => {
-                      if (this.dashboard.latestData.has(key)) {
+                      if (this.dashboard.latestData.has(key) && this.isDisplayableDataKey(key)) {
                         Column() {
                           Text(this.getFieldValueLabel(key))
                             .fontSize(10)
