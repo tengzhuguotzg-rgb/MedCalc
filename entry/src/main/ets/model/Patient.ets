@@ -129,5 +129,5 @@ export const DOMAIN_COLORS: Record<string, string> = {
   '代谢': AppColors.tierWarn,
   '内分泌': '#9B59B6',
   '肌肉': '#E67E22',
-  'ICU评分': '#4A5247',
+  'ICU评分': AppColors.textBody,
 };

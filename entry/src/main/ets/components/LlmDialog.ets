@@ -225,7 +225,7 @@ export struct LlmDialog {
       }
       .width('100%')
       .padding(8)
-      .backgroundColor('#FFF4E0')
+      .backgroundColor(AppColors.tierWarnBg)
       .borderRadius(6)
       .margin({ bottom: 12 })
     }
@@ -274,7 +274,7 @@ export struct LlmDialog {
 
           Text(this.getCalcDescription(rec.id))
             .fontSize(11)
-            .fontColor('#4A5247')
+            .fontColor(AppColors.textBody)
             .width('100%')
             .margin({ top: 2 })
         }
@@ -286,7 +286,7 @@ export struct LlmDialog {
       Button('跳转 →')
         .fontSize(12)
         .fontColor(AppColors.primary)
-        .backgroundColor('#E8E5D8')
+        .backgroundColor(AppColors.fillBeige)
         .borderRadius(6)
         .height(30)
         .width('100%')
@@ -297,7 +297,7 @@ export struct LlmDialog {
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#F9F8F3')
+    .backgroundColor(AppColors.surfaceSubtle)
     .borderRadius(8)
     .margin({ bottom: 8 })
   }

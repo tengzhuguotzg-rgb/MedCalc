@@ -95,7 +95,7 @@ export struct CalcKbLinks {
                 .layoutWeight(1);
                 Text('\u203A')
                   .fontSize(14)
-                  .fontColor('#B0B0A8');
+                  .fontColor(AppColors.textFaint);
               }
               .width('100%')
               .padding({ top: 6, bottom: 6, left: 4, right: 4 })

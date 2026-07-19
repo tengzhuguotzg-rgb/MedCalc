@@ -17,7 +17,7 @@ export struct Sidebar {
     .width(220)
     .height('100%')
     .backgroundColor(AppColors.background)
-    .border({ width: { right: 1 }, color: '#E0DCC8' });
+    .border({ width: { right: 1 }, color: AppColors.divider });
   }
 
   @Builder
@@ -102,7 +102,7 @@ export struct Sidebar {
       if (!this.sidebarCollapsed) {
         Text(calc.name)
           .fontSize(12.5)
-          .fontColor(calc.id === this.currentCalc ? AppColors.primary : '#1F2421')
+          .fontColor(calc.id === this.currentCalc ? AppColors.primary : AppColors.textPrimary)
           .fontWeight(calc.id === this.currentCalc ? FontWeight.Bold : FontWeight.Normal)
           .layoutWeight(1);
       }

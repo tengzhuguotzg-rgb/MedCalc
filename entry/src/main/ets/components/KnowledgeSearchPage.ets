@@ -208,7 +208,7 @@ export struct KnowledgeSearchPage {
 
   getCategoryColor(name: string): string {
     // 品牌大地色系：深绿 / 墨绿 / 灰绿 / 暖棕
-    const colors: string[] = [AppColors.primary, '#3A5F4F', AppColors.textSecondary, '#8B6B4A'];
+    const colors: string[] = [AppColors.primary, AppColors.kbDeepGreen, AppColors.textSecondary, AppColors.kbWarmBrown];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = (hash * 31 + name.charCodeAt(i)) % colors.length;
@@ -398,7 +398,7 @@ export struct KnowledgeSearchPage {
           .fontColor(AppColors.textSecondary);
         Text('试试其他关键词，如"脓毒症""ARDS""镇静"')
           .fontSize(12)
-          .fontColor('#B0B0A8')
+          .fontColor(AppColors.textFaint)
           .margin({ top: 6 });
       }
       .width('100%')
@@ -460,7 +460,7 @@ export struct KnowledgeSearchPage {
       if (sr.snippet.length > 0) {
         Text(stripMarkdownInline(sr.snippet))
           .fontSize(12)
-          .fontColor('#6B6F5E')
+          .fontColor(AppColors.textSecondary)
           .maxLines(3)
           .margin({ top: 4 })
           .width('100%');
@@ -500,7 +500,7 @@ export struct KnowledgeSearchPage {
           .fontColor(AppColors.textSecondary);
         Text('请检查知识库数据是否已正确部署')
           .fontSize(12)
-          .fontColor('#B0B0A8')
+          .fontColor(AppColors.textFaint)
           .margin({ top: 6 });
       }
       .width('100%')
@@ -667,7 +667,7 @@ export struct KnowledgeSearchPage {
         if (page.sourceInfo.length > 0 && page.groupName.length > 0) {
           Text(page.sourceInfo)
             .fontSize(10)
-            .fontColor('#9B9E8E')
+            .fontColor(AppColors.textFaint)
             .maxLines(1)
             .margin({ top: 1 })
             .width('100%');
@@ -677,7 +677,7 @@ export struct KnowledgeSearchPage {
 
       Text('\u203A')
         .fontSize(18)
-        .fontColor('#B0B0A8');
+        .fontColor(AppColors.textFaint);
     }
     .width('100%')
     .padding({ left: 12, right: 12, top: 10, bottom: 10 })
@@ -720,7 +720,7 @@ export struct KnowledgeSearchPage {
                 if (index > 0) {
                   Text(' \u203A ')
                     .fontSize(10)
-                    .fontColor('#B0B0A8');
+                    .fontColor(AppColors.textFaint);
                 }
                 Text(item.label)
                   .fontSize(10)
@@ -774,7 +774,7 @@ export struct KnowledgeSearchPage {
               .margin({ right: 6 });
             Text(entry.text)
               .fontSize(12)
-              .fontColor('#3A3F35')
+              .fontColor(AppColors.textBody)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .layoutWeight(1);
@@ -856,19 +856,19 @@ export struct KnowledgeSearchPage {
         .width('100%')
         .margin({ top: 14, bottom: 6 })
         .padding({ bottom: 4, left: 8 })
-        .border({ width: { left: 3, right: 0, top: 0, bottom: 0 }, color: '#4A7C6F' });
+        .border({ width: { left: 3, right: 0, top: 0, bottom: 0 }, color: AppColors.kbAccent });
     } else if (ml.type === 'h3') {
       Text(stripMarkdownInline(ml.text))
         .fontSize(15)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#3A5F4F')
+        .fontColor(AppColors.kbDeepGreen)
         .width('100%')
         .margin({ top: 10, bottom: 4 });
     } else if (ml.type === 'h4') {
       Text(stripMarkdownInline(ml.text))
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#4A6B5A')
+        .fontColor(AppColors.kbAccent)
         .width('100%')
         .margin({ top: 8, bottom: 3 });
     } else if (ml.type === 'callout') {
@@ -883,11 +883,11 @@ export struct KnowledgeSearchPage {
       Row() {
         Text('\u2022')
           .fontSize(10)
-          .fontColor('#4A7C6F')
+          .fontColor(AppColors.kbAccent)
           .margin({ right: 6, top: 2 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(13)
-          .fontColor('#3A3F35')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1);
       }
       .width('100%')
@@ -902,7 +902,7 @@ export struct KnowledgeSearchPage {
           .margin({ top: 4, bottom: 4 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(12)
-          .fontColor('#5A5F4E')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1)
           .padding({ left: 8 });
       }
@@ -912,7 +912,7 @@ export struct KnowledgeSearchPage {
       Row()
         .width('100%')
         .height(1)
-        .backgroundColor('#E0DCC8')
+        .backgroundColor(AppColors.divider)
         .margin({ top: 10, bottom: 10 });
     } else if (ml.type === 'blank') {
       Row().height(4);
@@ -931,7 +931,7 @@ export struct KnowledgeSearchPage {
           }, (cell: string, idx: number) => idx.toString());
         }
         .width('100%')
-        .backgroundColor('#E8E6DA')
+        .backgroundColor(AppColors.fillBeige)
         .borderRadius(2);
       } else {
         Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
@@ -941,7 +941,7 @@ export struct KnowledgeSearchPage {
           .fontFamily('monospace')
           .width('100%')
           .padding({ left: 6, right: 6, top: 3, bottom: 3 })
-          .backgroundColor('#E8E6DA')
+          .backgroundColor(AppColors.fillBeige)
           .borderRadius(2);
       }
     } else if (ml.type === 'table') {
@@ -950,22 +950,22 @@ export struct KnowledgeSearchPage {
           ForEach(ml.cells, (cell: string, idx: number) => {
             Text(cell)
               .fontSize(11)
-              .fontColor('#4A5247')
+              .fontColor(AppColors.textBody)
               .layoutWeight(1)
               .padding({ left: 4, right: 4, top: 2, bottom: 2 });
           }, (cell: string, idx: number) => idx.toString());
         }
         .width('100%')
-        .backgroundColor(ml.tableRowIndex % 2 === 1 ? '#F1EEE2' : '#FAFAF5')
+        .backgroundColor(ml.tableRowIndex % 2 === 1 ? AppColors.surfaceMuted : AppColors.surfaceSubtle)
         .borderRadius(2);
       } else {
         Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
           .fontSize(11)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .fontFamily('monospace')
           .width('100%')
           .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          .backgroundColor('#FAFAF5')
+          .backgroundColor(AppColors.surfaceSubtle)
           .borderRadius(2);
       }
     } else if (ml.type === 'tagLine') {
@@ -976,7 +976,7 @@ export struct KnowledgeSearchPage {
             .fontColor(AppColors.primary)
             .backgroundColor(AppColors.background)
             .borderRadius(AppDimens.cardRadius)
-            .border({ width: 1, color: '#E0DCC8' })
+            .border({ width: 1, color: AppColors.divider })
             .padding({ left: 8, right: 8, top: 3, bottom: 3 })
             .margin({ right: 6, bottom: 6 })
             .onClick(() => { this.searchByTag(tag.substring(1)); });
@@ -987,7 +987,7 @@ export struct KnowledgeSearchPage {
     } else {
       Text(stripMarkdownInline(ml.text))
         .fontSize(13)
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .width('100%')
         .margin({ top: 1, bottom: 1 });
     }
@@ -1013,7 +1013,7 @@ export struct KnowledgeSearchPage {
       if (ml.calloutBody.length > 0) {
         Text(stripMarkdownInline(ml.calloutBody))
           .fontSize(12)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .width('100%')
           .padding({ left: 12, right: 10, top: ml.calloutTitle.length > 0 ? 0 : 8, bottom: 8 });
       }
@@ -1031,13 +1031,13 @@ export struct KnowledgeSearchPage {
       Text(ml.codeContent)
         .fontSize(11)
         .fontFamily('monospace')
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .width('100%');
     }
     .scrollable(ScrollDirection.Horizontal)
     .width('100%')
     .padding(10)
-    .backgroundColor('#F5F5F0')
+    .backgroundColor(AppColors.surfaceMuted)
     .borderRadius(6)
     .margin({ top: 6, bottom: 6 });
   }
@@ -1067,16 +1067,16 @@ export struct KnowledgeSearchPage {
       Row()
         .width(3)
         .height('100%')
-        .backgroundColor('#4A7C6F')
+        .backgroundColor(AppColors.kbAccent)
         .borderRadius(2);
       Text(stripMarkdownInline(ml.text))
         .fontSize(13)
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .layoutWeight(1)
         .padding({ left: 8, right: 8, top: 6, bottom: 6 });
     }
     .width('100%')
-    .backgroundColor('#EDF5F0')
+    .backgroundColor(AppColors.tierOkBg)
     .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 6, bottomRight: 6 })
     .margin({ top: 4, bottom: 4 });
   }
@@ -1087,7 +1087,7 @@ export struct KnowledgeSearchPage {
       Row()
         .width('100%')
         .height(1)
-        .backgroundColor('#E0DCC8')
+        .backgroundColor(AppColors.divider)
         .margin({ top: 16, bottom: 12 });
 
       if (this.wikilinks.length > 0) {
@@ -1138,7 +1138,7 @@ export struct KnowledgeSearchPage {
               .layoutWeight(1);
               Text('\u203A')
                 .fontSize(16)
-                .fontColor('#B0B0A8');
+                .fontColor(AppColors.textFaint);
             }
             .width('100%')
             .padding({ top: 8, bottom: 8, left: 8, right: 8 })

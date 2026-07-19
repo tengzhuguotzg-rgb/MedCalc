@@ -325,7 +325,7 @@ struct Index {
     .height(44)
     .padding({ left: 12, right: 12 })
     .backgroundColor(AppColors.card)
-    .border({ width: { bottom: 1 }, color: '#E0DCC8' });
+    .border({ width: { bottom: 1 }, color: AppColors.divider });
   }
 
   @Builder
@@ -350,7 +350,7 @@ struct Index {
         .fontColor(AppColors.primary);
       Text('此计算器正在移植中，敬请期待')
         .fontSize(11.5)
-        .fontColor('#4A5247')
+        .fontColor(AppColors.textBody)
         .margin({ top: 8 });
     }
     .width('100%')

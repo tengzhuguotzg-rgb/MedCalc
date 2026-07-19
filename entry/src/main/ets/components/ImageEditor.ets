@@ -449,7 +449,7 @@ export struct ImageEditor {
         .width('100%')
         .backgroundColor(AppColors.card)
 
-        Divider().color('#E0DCC8')
+        Divider().color(AppColors.divider)
 
         if (this.errorMsg.length > 0) {
           Text(this.errorMsg)
@@ -457,7 +457,7 @@ export struct ImageEditor {
             .fontColor(AppColors.warning)
             .width('100%')
             .padding(12)
-            .backgroundColor('#FFF3E0')
+            .backgroundColor(AppColors.tierWarnBg)
         }
 
         Stack() {
@@ -534,7 +534,7 @@ export struct ImageEditor {
           Button('撤销')
             .fontSize(12)
             .fontColor(AppColors.primary)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .borderRadius(6)
             .height(32)
             .padding({ left: 10, right: 10 })
@@ -545,7 +545,7 @@ export struct ImageEditor {
           Button('清空')
             .fontSize(12)
             .fontColor(AppColors.warning)
-            .backgroundColor('#FFF3E0')
+            .backgroundColor(AppColors.tierWarnBg)
             .borderRadius(6)
             .height(32)
             .padding({ left: 10, right: 10 })

@@ -110,7 +110,7 @@ export struct PatientListPage {
                       Text(patient.bedNo + '床')
                         .fontSize(12)
                         .fontColor(AppColors.textSecondary)
-                        .backgroundColor('#E8E5D8')
+                        .backgroundColor(AppColors.fillBeige)
                         .borderRadius(4)
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                     }
@@ -169,7 +169,7 @@ export struct PatientListPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   @Builder
@@ -204,14 +204,14 @@ export struct PatientListPage {
         Row() {
           Text('性别')
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .layoutWeight(1)
           Button('男')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.newSex === 'male' ? AppColors.card : '#2D5440')
+            .fontColor(this.newSex === 'male' ? AppColors.card : AppColors.textOption)
             .backgroundColor(this.newSex === 'male' ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.newSex === 'male' ? AppColors.primary : '#E0E0E0' })
+            .border({ width: 1, color: this.newSex === 'male' ? AppColors.primary : AppColors.border })
             .borderRadius(8)
             .height(AppDimens.touchTarget)
             .layoutWeight(1)
@@ -219,9 +219,9 @@ export struct PatientListPage {
           Button('女')
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.newSex === 'female' ? AppColors.card : '#2D5440')
+            .fontColor(this.newSex === 'female' ? AppColors.card : AppColors.textOption)
             .backgroundColor(this.newSex === 'female' ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.newSex === 'female' ? AppColors.primary : '#E0E0E0' })
+            .border({ width: 1, color: this.newSex === 'female' ? AppColors.primary : AppColors.border })
             .borderRadius(8)
             .height(AppDimens.touchTarget)
             .layoutWeight(1)
@@ -295,7 +295,7 @@ export struct PatientListPage {
           .margin({ bottom: 8 })
         Text('删除后该患者的所有数据、上传记录和预警将被永久清除，无法恢复。')
           .fontSize(13)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .lineHeight(20)
           .margin({ bottom: 16 })
         Row() {

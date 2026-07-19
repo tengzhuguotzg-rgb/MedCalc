@@ -216,7 +216,7 @@ export struct SettingsPage {
       .height(AppDimens.touchTarget)
       .padding({ left: 16, right: 16 })
       .backgroundColor(AppColors.card)
-      .border({ width: { bottom: 1 }, color: '#E0DCC8' })
+      .border({ width: { bottom: 1 }, color: AppColors.divider })
 
       Scroll() {
         Column({ space: 16 }) {
@@ -248,7 +248,7 @@ export struct SettingsPage {
               }
               .width('100%')
               .padding(AppDimens.cardPadding)
-              .backgroundColor('#F9F8F3')
+              .backgroundColor(AppColors.surfaceSubtle)
               .borderRadius(8)
             }
 
@@ -259,11 +259,11 @@ export struct SettingsPage {
                     .fontSize(13)
                     .fontColor(AppColors.primary)
                     .fontWeight(FontWeight.Medium)
-                  Row().width(8).height(1).backgroundColor('#E8E5D8').layoutWeight(1)
+                  Row().width(8).height(1).backgroundColor(AppColors.fillBeige).layoutWeight(1)
                   Button('+')
                     .fontSize(14)
                     .fontColor(AppColors.primary)
-                    .backgroundColor('#E8E5D8')
+                    .backgroundColor(AppColors.fillBeige)
                     .width(28)
                     .height(28)
                     .borderRadius(14)
@@ -288,7 +288,7 @@ export struct SettingsPage {
                     Column({ space: 2 }) {
                       Text(llm.name)
                         .fontSize(14)
-                        .fontColor(this.selectedLlmId === llm.id ? AppColors.primary : '#4A5247')
+                        .fontColor(this.selectedLlmId === llm.id ? AppColors.primary : AppColors.textBody)
                       Text(llm.baseUrl.replace(/^https?:\/\//, '') + (llm.modelName.length > 0 ? ' · ' + llm.modelName : ''))
                         .fontSize(10)
                         .fontColor(AppColors.textSecondary)
@@ -309,7 +309,7 @@ export struct SettingsPage {
                     Row({ space: 4 }) {
                       Button(this.testingLlmId === llm.id ? '...' : '测试')
                         .fontSize(10)
-                        .backgroundColor(this.testingLlmId === llm.id ? '#E8E5D8' : '#F0EDE3')
+                        .backgroundColor(this.testingLlmId === llm.id ? AppColors.fillBeige : AppColors.surfaceMuted)
                         .fontColor(AppColors.primary)
                         .height(22)
                         .borderRadius(3)
@@ -319,7 +319,7 @@ export struct SettingsPage {
                         })
                       Button('编辑')
                         .fontSize(10)
-                        .backgroundColor('#F0EDE3')
+                        .backgroundColor(AppColors.surfaceMuted)
                         .fontColor(AppColors.primary)
                         .height(22)
                         .borderRadius(3)
@@ -329,7 +329,7 @@ export struct SettingsPage {
                         })
                       Button('删除')
                         .fontSize(10)
-                        .backgroundColor('#FFF0F0')
+                        .backgroundColor(AppColors.tierDangerBg)
                         .fontColor(AppColors.danger)
                         .height(22)
                         .borderRadius(3)
@@ -350,7 +350,7 @@ export struct SettingsPage {
             Button('+ 添加服务商')
               .fontSize(14)
               .fontColor(AppColors.primary)
-              .backgroundColor('#E8E5D8')
+              .backgroundColor(AppColors.fillBeige)
               .borderRadius(8)
               .height(40)
               .width('100%')
@@ -431,7 +431,7 @@ export struct SettingsPage {
         Row({ space: 12 }) {
           Button('取消')
             .fontSize(14)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .fontColor(AppColors.textSecondary)
             .height(40)
             .borderRadius(8)
@@ -567,7 +567,7 @@ export struct SettingsPage {
         Row({ space: 12 }) {
           Button('取消')
             .fontSize(14)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .fontColor(AppColors.textSecondary)
             .height(40)
             .borderRadius(8)

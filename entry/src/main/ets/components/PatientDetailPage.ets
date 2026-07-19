@@ -861,7 +861,7 @@ export struct PatientDetailPage {
             Text(this.dashboard.patient.bedNo + '床')
               .fontSize(13)
               .fontColor(AppColors.textSecondary)
-              .backgroundColor('#E8E5D8')
+              .backgroundColor(AppColors.fillBeige)
               .borderRadius(4)
               .padding({ left: 6, right: 6, top: 2, bottom: 2 })
           }
@@ -904,7 +904,7 @@ export struct PatientDetailPage {
           Button('上传PDF')
             .fontSize(12)
             .fontColor(AppColors.primary)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
@@ -913,7 +913,7 @@ export struct PatientDetailPage {
           Button('输入文本')
             .fontSize(12)
             .fontColor(AppColors.primary)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
@@ -921,7 +921,7 @@ export struct PatientDetailPage {
           Button('手动录入')
             .fontSize(12)
             .fontColor(AppColors.primary)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)
@@ -952,13 +952,13 @@ export struct PatientDetailPage {
             .fontColor(AppColors.warning)
             .width('100%')
             .padding({ left: 16, right: 16, top: 6, bottom: 6 })
-            .backgroundColor('#FFF3E0')
+            .backgroundColor(AppColors.tierWarnBg)
         }
         }
        }
        .width('100%')
        .height('100%')
-       .backgroundColor('#F5F4EF')
+       .backgroundColor(AppColors.surfaceMuted)
 
         if (this.showTimelineDialog) {
           this.TimelineDialog();
@@ -1050,7 +1050,7 @@ export struct PatientDetailPage {
           Row()
             .width('100%')
             .height(1)
-            .backgroundColor('#E0DCC8')
+            .backgroundColor(AppColors.divider)
             .margin({ top: 4, bottom: 4 });
           ForEach(this.dashboard.labAlerts.slice(0, 3), (la: PatientLabAlert) => {
             Row() {
@@ -1123,7 +1123,7 @@ export struct PatientDetailPage {
             Text(tag)
               .fontSize(10)
               .fontColor(AppColors.primary)
-              .backgroundColor('#E8E5D8')
+              .backgroundColor(AppColors.fillBeige)
               .borderRadius(4)
               .padding({ left: 4, right: 4, top: 1, bottom: 1 })
               .margin({ left: 3 })
@@ -1261,7 +1261,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   getWarningAlerts(): PatientAlert[] {
@@ -1329,7 +1329,7 @@ export struct PatientDetailPage {
             this.DiagnosisGroup('rule', '确定性', AppColors.primary, false);
             this.DiagnosisGroup('user', '自添加', AppColors.tierOk, false);
             this.DiagnosisGroup('partial', '可能性', AppColors.tierWarn, false);
-            this.DiagnosisGroup('llm_hint', 'LLM提示', '#7A6B9D', true);
+            this.DiagnosisGroup('llm_hint', 'LLM提示', AppColors.aiAccent, true);
           }
           Row() {
             Text('+ 添加诊断')
@@ -1353,7 +1353,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   getDiagnosesBySource(source: string): PatientDiagnosis[] {
@@ -1487,7 +1487,7 @@ export struct PatientDetailPage {
       return AppColors.tierWarn;
     }
     if (source === 'llm_hint') {
-      return '#7A6B9D';
+      return AppColors.aiAccent;
     }
     if (source === 'user') {
       return AppColors.tierOk;
@@ -2308,10 +2308,10 @@ export struct PatientDetailPage {
 
   getCategoryBorderColor(cat: string): string {
     if (cat === '病理生理') {
-      return '#7A6B9D';
+      return AppColors.aiAccent;
     }
     if (cat === '诊断要点') {
-      return '#5B7FA5';
+      return AppColors.infoAccent;
     }
     if (cat === '监测评估') {
       return AppColors.tierWarn;
@@ -2392,13 +2392,13 @@ export struct PatientDetailPage {
         .width('100%')
         .margin({ top: 4 })
         .padding(6)
-        .backgroundColor('#FFF8E7')
+        .backgroundColor(AppColors.tierWarnBg)
         .borderRadius(4)
       }
       if (diag.llmNote.length > 0) {
         Text(diag.llmNote)
           .fontSize(12)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .margin({ top: 4 })
           .width('100%')
       }
@@ -2406,7 +2406,7 @@ export struct PatientDetailPage {
         Text(diag.category)
           .fontSize(10)
           .fontColor(AppColors.textSecondary)
-          .backgroundColor('#F5F4EF')
+          .backgroundColor(AppColors.surfaceMuted)
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })
         Text(this.formatDateTime(diag.triggeredAt))
@@ -2421,7 +2421,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor(diag.source === 'rule' ? AppColors.card : (diag.source === 'partial' ? '#FFFCF5' : (diag.source === 'llm_hint' ? '#F8F5FF' : '#F5FFF5')))
+    .backgroundColor(diag.source === 'rule' ? AppColors.card : (diag.source === 'partial' ? AppColors.tierWarnBg : (diag.source === 'llm_hint' ? AppColors.aiAccentBg : AppColors.tierOkBg)))
     .borderRadius(8)
     .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: this.getUrgencyColor(diag.urgency) })
     .margin({ bottom: 6 })
@@ -2434,7 +2434,7 @@ export struct PatientDetailPage {
         Row()
           .width('100%')
           .height(1)
-          .backgroundColor('#E0DCC8')
+          .backgroundColor(AppColors.divider)
           .margin({ top: 8, bottom: 8 });
 
         Row() {
@@ -2456,8 +2456,8 @@ export struct PatientDetailPage {
           if (!this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
             Text('重搜')
               .fontSize(10)
-              .fontColor('#9A6B1E')
-              .backgroundColor('#FFF3E0')
+              .fontColor(AppColors.warningText)
+              .backgroundColor(AppColors.tierWarnBg)
               .borderRadius(3)
               .padding({ left: 4, right: 4, top: 1, bottom: 1 })
               .margin({ right: 8 })
@@ -2493,7 +2493,7 @@ export struct PatientDetailPage {
                 if (step.status === 'done') {
                   Text('✓')
                     .fontSize(10)
-                    .fontColor('#2D6A4F')
+                    .fontColor(AppColors.tierOk)
                     .margin({ right: 4 });
                 } else {
                   LoadingProgress().width(10).height(10).color(AppColors.textSecondary)
@@ -2530,8 +2530,8 @@ export struct PatientDetailPage {
                   if (this.getDiagnosisKb(diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
                     Text('片段')
                       .fontSize(8)
-                      .fontColor('#9A6B1E')
-                      .backgroundColor('#FFF3E0')
+                      .fontColor(AppColors.warningText)
+                      .backgroundColor(AppColors.tierWarnBg)
                       .borderRadius(2)
                       .padding({ left: 3, right: 3, top: 0, bottom: 0 })
                       .margin({ left: 4 });
@@ -2560,7 +2560,7 @@ export struct PatientDetailPage {
         Row()
           .width('100%')
           .height(1)
-          .backgroundColor('#E0DCC8')
+          .backgroundColor(AppColors.divider)
           .margin({ top: 8, bottom: 8 });
 
         if (this.getDiagnosisKb(diag.ruleId)!.loadingKb) {
@@ -2579,7 +2579,7 @@ export struct PatientDetailPage {
                 if (step.status === 'done') {
                   Text('✓')
                     .fontSize(10)
-                    .fontColor('#2D6A4F')
+                    .fontColor(AppColors.tierOk)
                     .margin({ right: 4 });
                 } else if (step.status === 'error') {
                   Text('✗')
@@ -2617,7 +2617,7 @@ export struct PatientDetailPage {
             if (this.adviceReadyRuleId === diag.ruleId) {
               Text('已就绪')
                 .fontSize(10)
-                .fontColor('#2D6A4F')
+                .fontColor(AppColors.tierOk)
                 .backgroundColor(AppColors.tierOkBg)
                 .borderRadius(3)
                 .padding({ left: 4, right: 4, top: 1, bottom: 1 })
@@ -2720,28 +2720,28 @@ export struct PatientDetailPage {
 
   getEvidenceColor(level: string): string {
     if (level.indexOf('强') >= 0) {
-      return '#2D6A4F';
+      return AppColors.tierOk;
     }
     if (level.indexOf('条件') >= 0) {
-      return '#9A6B1E';
+      return AppColors.warningText;
     }
     if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
-      return '#2B5C8A';
+      return AppColors.infoAccent;
     }
     return AppColors.textSecondary;
   }
 
   getEvidenceBgColor(level: string): string {
     if (level.indexOf('强') >= 0) {
-      return '#D8F3DC';
+      return AppColors.tierOkBg;
     }
     if (level.indexOf('条件') >= 0) {
-      return '#FEF3C7';
+      return AppColors.tierWarnBg;
     }
     if (level.indexOf('GPS') >= 0 || level.indexOf('良好') >= 0) {
-      return '#DBEAFE';
+      return AppColors.infoAccentBg;
     }
-    return '#F0EDE2';
+    return AppColors.surfaceMuted;
   }
 
   getDiagnosisNameByRuleId(ruleId: string): string {
@@ -2785,11 +2785,11 @@ export struct PatientDetailPage {
               Row() {
                 Text('⚠️ 低相关性文献')
                   .fontSize(11)
-                  .fontColor('#9A6B1E')
+                  .fontColor(AppColors.warningText)
                   .fontWeight(FontWeight.Medium)
                 Text('未找到高度相关文献，以下内容可能仅供参考')
                   .fontSize(10)
-                  .fontColor('#9A9E94')
+                  .fontColor(AppColors.textFaint)
                   .margin({ left: 6 })
               }
               .width('100%')
@@ -2810,7 +2810,7 @@ export struct PatientDetailPage {
                 .margin({ bottom: 4 });
                 Text('以下内容由AI根据指南和教材推荐意见归纳整理，仅供参考，详细内容请展开下方各分类查看原文。')
                   .fontSize(10)
-                  .fontColor('#9A9E94')
+                  .fontColor(AppColors.textFaint)
                   .width('100%')
                   .margin({ bottom: 6 });
                 ForEach(this.summaryLines, (ml: MarkdownLine) => {
@@ -2819,9 +2819,9 @@ export struct PatientDetailPage {
               }
               .width('100%')
               .padding(10)
-              .backgroundColor('#FFF9F0')
+              .backgroundColor(AppColors.tierWarnBg)
               .borderRadius(8)
-              .border({ width: 1, color: '#E8DCC8' })
+              .border({ width: 1, color: AppColors.divider })
               .margin({ bottom: 8 });
             }
             this.RecommendationCategorySection(this.activeAdviceRuleId, '病理生理', '病理生理');
@@ -2838,7 +2838,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   @Builder
@@ -2883,14 +2883,14 @@ export struct PatientDetailPage {
                 Column() {
                   Text(rec.text)
                     .fontSize(13)
-                    .fontColor('#4A5247')
+                    .fontColor(AppColors.textBody)
                     .width('100%');
                   Row() {
                     if (rec.type.length > 0) {
                       Text(rec.type)
                         .fontSize(9)
-                        .fontColor(rec.type === '推荐意见' ? '#2D6A4F' : (rec.type === '知识要点' ? '#2B5C8A' : '#7A6B9D'))
-                        .backgroundColor(rec.type === '推荐意见' ? AppColors.tierOkBg : (rec.type === '知识要点' ? '#E3F2FD' : '#F0EBF5'))
+                        .fontColor(rec.type === '推荐意见' ? AppColors.tierOk : (rec.type === '知识要点' ? AppColors.infoAccent : AppColors.aiAccent))
+                        .backgroundColor(rec.type === '推荐意见' ? AppColors.tierOkBg : (rec.type === '知识要点' ? '#E3F2FD' : AppColors.aiAccentBg))
                         .borderRadius(3)
                         .padding({ left: 4, right: 4, top: 1, bottom: 1 });
                     }
@@ -2907,7 +2907,7 @@ export struct PatientDetailPage {
                     if (rec.source.length > 0) {
                       Text(rec.source)
                         .fontSize(9)
-                        .fontColor('#9A9E94')
+                        .fontColor(AppColors.textFaint)
                         .maxLines(1)
                         .textOverflow({ overflow: TextOverflow.Ellipsis })
                         .layoutWeight(1)
@@ -3000,7 +3000,7 @@ export struct PatientDetailPage {
       if (this.parseAlertResult(alert).footnote.length > 0) {
         Text(this.parseAlertResult(alert).footnote)
           .fontSize(12)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .lineHeight(18)
       }
       Text(this.formatDateTime(alert.triggeredAt))
@@ -3032,7 +3032,7 @@ export struct PatientDetailPage {
           Row() {
             Text(la.fieldLabel + ' ' + la.value + ' ' + la.unit)
               .fontSize(12)
-              .fontColor('#4A5247')
+              .fontColor(AppColors.textBody)
               .layoutWeight(1)
             Text(la.threshold)
               .fontSize(11)
@@ -3141,7 +3141,7 @@ export struct PatientDetailPage {
             Text(entry.name)
               .fontSize(10)
               .fontColor(AppColors.tierOk)
-              .backgroundColor('#E8E5D8')
+              .backgroundColor(AppColors.fillBeige)
               .borderRadius(4)
               .padding({ left: 4, right: 4, top: 1, bottom: 1 })
               .margin({ left: 3 })
@@ -3281,7 +3281,7 @@ export struct PatientDetailPage {
                         }
                         .width('48%')
                         .padding({ left: 8, right: 8, top: 6, bottom: 6 })
-                        .backgroundColor('#F5F4EF')
+                        .backgroundColor(AppColors.surfaceMuted)
                         .borderRadius(6)
                         .margin({ bottom: 4, right: '2%' })
                         .alignItems(HorizontalAlign.Start)
@@ -3315,7 +3315,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   getRecordPreviewItems(): string[] {
@@ -3468,7 +3468,7 @@ export struct PatientDetailPage {
                 if (this.expandedRecordIds.has(record.id) && record.extractedJson.length > 0) {
                   Text(record.extractedJson)
                     .fontSize(11)
-                    .fontColor('#4A5247')
+                    .fontColor(AppColors.textBody)
                     .width('100%')
                     .padding({ top: 6, bottom: 6 })
                     .lineHeight(16)
@@ -3490,7 +3490,7 @@ export struct PatientDetailPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   @Builder
@@ -3572,7 +3572,7 @@ export struct PatientDetailPage {
             .width('100%')
             .padding({ top: 8, bottom: 8 })
             .borderRadius(6)
-            .backgroundColor('#F9F8F3')
+            .backgroundColor(AppColors.surfaceSubtle)
             .padding({ left: 8, right: 8, top: 8, bottom: 8 })
             .margin({ bottom: 6 })
           }, (dp: PatientDataPoint) => dp.id.toString())
@@ -3726,7 +3726,7 @@ export struct PatientDetailPage {
                   }
                   .width('100%')
                   .padding(8)
-                  .backgroundColor(this.manualFieldKey === spec.key ? '#E8E5D8' : '#F9F8F3')
+                  .backgroundColor(this.manualFieldKey === spec.key ? AppColors.fillBeige : AppColors.surfaceSubtle)
                   .borderRadius(6)
                   .onClick(() => { this.manualFieldKey = spec.key; })
                 }
@@ -3800,7 +3800,7 @@ export struct PatientDetailPage {
           .margin({ bottom: 8 })
         Text('删除此记录后，由它提供的数据将被一并删除，预警也将重新计算。')
           .fontSize(13)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .lineHeight(20)
           .margin({ bottom: 16 })
         Row() {
@@ -3959,16 +3959,16 @@ export struct PatientDetailPage {
         Row()
           .width(3)
           .height('100%')
-          .backgroundColor('#4A7C6F')
+          .backgroundColor(AppColors.kbAccent)
           .borderRadius(2);
         Text(stripMarkdownInline(ml.text))
           .fontSize(12)
-          .fontColor('#3A3F35')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1)
           .padding({ left: 8, right: 8, top: 6, bottom: 6 });
       }
       .width('100%')
-      .backgroundColor('#EDF5F0')
+      .backgroundColor(AppColors.tierOkBg)
       .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 6, bottomRight: 6 })
       .margin({ top: 4, bottom: 4 });
     } else if (ml.type === 'li') {
@@ -3979,7 +3979,7 @@ export struct PatientDetailPage {
           .margin({ right: 6 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(12)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1);
       }
       .width('100%')
@@ -3995,7 +3995,7 @@ export struct PatientDetailPage {
           .margin({ top: 4, bottom: 4 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(11)
-          .fontColor('#5A5F4E')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1)
           .padding({ left: 8 });
       }
@@ -4005,7 +4005,7 @@ export struct PatientDetailPage {
       Row()
         .width('100%')
         .height(1)
-        .backgroundColor('#E0DCC8')
+        .backgroundColor(AppColors.divider)
         .margin({ top: 6, bottom: 6 });
     } else if (ml.type === 'blank') {
       Row().height(4);
@@ -4024,7 +4024,7 @@ export struct PatientDetailPage {
           }, (cell: string, idx: number) => idx.toString());
         }
         .width('100%')
-        .backgroundColor('#E8E6DA')
+        .backgroundColor(AppColors.fillBeige)
         .borderRadius(2);
       } else {
         Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
@@ -4034,7 +4034,7 @@ export struct PatientDetailPage {
           .fontFamily('monospace')
           .width('100%')
           .padding({ left: 6, right: 6, top: 3, bottom: 3 })
-          .backgroundColor('#E8E6DA')
+          .backgroundColor(AppColors.fillBeige)
           .borderRadius(2);
       }
     } else if (ml.type === 'table') {
@@ -4043,22 +4043,22 @@ export struct PatientDetailPage {
           ForEach(ml.cells, (cell: string, idx: number) => {
             Text(cell)
               .fontSize(11)
-              .fontColor('#4A5247')
+              .fontColor(AppColors.textBody)
               .layoutWeight(1)
               .padding({ left: 4, right: 4, top: 2, bottom: 2 });
           }, (cell: string, idx: number) => idx.toString());
         }
         .width('100%')
-        .backgroundColor('#FAFAF5')
+        .backgroundColor(AppColors.surfaceSubtle)
         .borderRadius(2);
       } else {
         Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
           .fontSize(11)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .fontFamily('monospace')
           .width('100%')
           .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          .backgroundColor('#FAFAF5')
+          .backgroundColor(AppColors.surfaceSubtle)
           .borderRadius(2);
       }
     } else if (ml.type === 'tagLine') {
@@ -4078,7 +4078,7 @@ export struct PatientDetailPage {
     } else {
       Text(stripMarkdownInline(ml.text))
         .fontSize(12)
-        .fontColor('#4A5247')
+        .fontColor(AppColors.textBody)
         .width('100%')
         .margin({ top: 1, bottom: 1 });
     }
@@ -4104,7 +4104,7 @@ export struct PatientDetailPage {
       if (ml.calloutBody.length > 0) {
         Text(stripMarkdownInline(ml.calloutBody))
           .fontSize(12)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .width('100%')
           .padding({ left: 12, right: 10, top: ml.calloutTitle.length > 0 ? 0 : 8, bottom: 8 });
       }
@@ -4122,13 +4122,13 @@ export struct PatientDetailPage {
       Text(ml.codeContent)
         .fontSize(11)
         .fontFamily('monospace')
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .width('100%');
     }
     .scrollable(ScrollDirection.Horizontal)
     .width('100%')
     .padding(10)
-    .backgroundColor('#F5F5F0')
+    .backgroundColor(AppColors.surfaceMuted)
     .borderRadius(6)
     .margin({ top: 6, bottom: 6 });
   }
@@ -4152,7 +4152,7 @@ export struct PatientDetailPage {
 
         Text('分类')
           .fontSize(13)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .margin({ top: 12, bottom: 6 })
 
         Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
@@ -4160,7 +4160,7 @@ export struct PatientDetailPage {
             Text(cat)
               .fontSize(12)
               .fontColor(this.addDiagCategory === cat ? AppColors.card : AppColors.primary)
-              .backgroundColor(this.addDiagCategory === cat ? AppColors.primary : '#E8E5D8')
+              .backgroundColor(this.addDiagCategory === cat ? AppColors.primary : AppColors.fillBeige)
               .borderRadius(4)
               .padding({ left: 8, right: 8, top: 4, bottom: 4 })
               .margin({ right: 4, bottom: 4 })

@@ -242,7 +242,7 @@ export struct AssistantPage {
         }
         .width('100%')
         .padding(8)
-        .backgroundColor('#FFF4E0')
+        .backgroundColor(AppColors.tierWarnBg)
       }
 
       List({ space: 12, scroller: this.scroller }) {
@@ -323,7 +323,7 @@ export struct AssistantPage {
     .height(AppDimens.touchTarget)
     .padding({ left: 16, right: 16 })
     .backgroundColor(AppColors.card)
-    .border({ width: { bottom: 1 }, color: '#E0DCC8' })
+    .border({ width: { bottom: 1 }, color: AppColors.divider })
   }
 
   @Builder
@@ -340,13 +340,13 @@ export struct AssistantPage {
         .textAlign(TextAlign.Center)
       Column() {
         Text('示例输入：').fontSize(12).fontColor(AppColors.textSecondary).margin({ bottom: 4 })
-        Text('• 65岁男性，肌酐200μmol/L，体重70kg').fontSize(12).fontColor('#4A5247')
-        Text('• 患者GCS 8分，收缩压90，心率110').fontSize(12).fontColor('#4A5247')
-        Text('• [上传血气分析报告图片]').fontSize(12).fontColor('#4A5247')
+        Text('• 65岁男性，肌酐200μmol/L，体重70kg').fontSize(12).fontColor(AppColors.textBody)
+        Text('• 患者GCS 8分，收缩压90，心率110').fontSize(12).fontColor(AppColors.textBody)
+        Text('• [上传血气分析报告图片]').fontSize(12).fontColor(AppColors.textBody)
       }
       .margin({ top: 8 })
       .padding(8)
-      .backgroundColor('#F9F8F3')
+      .backgroundColor(AppColors.surfaceSubtle)
       .borderRadius(8)
     }
     .width('100%')
@@ -438,7 +438,7 @@ export struct AssistantPage {
     }
     .width('100%')
     .padding(8)
-    .backgroundColor('#F9F8F3')
+    .backgroundColor(AppColors.surfaceSubtle)
     .borderRadius(6)
     .margin({ bottom: 8 })
   }
@@ -527,7 +527,7 @@ export struct AssistantPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor(match.completeness === 100 ? '#F9F8F3' : '#FFF8F0')
+    .backgroundColor(match.completeness === 100 ? AppColors.surfaceSubtle : AppColors.tierWarnBg)
     .borderRadius(8)
     .margin({ bottom: 6 })
   }
@@ -560,7 +560,7 @@ export struct AssistantPage {
         Column() {
           Text(match.result!.footnote)
             .fontSize(12)
-            .fontColor('#4A5247')
+            .fontColor(AppColors.textBody)
             .lineHeight(18)
         }
         .layoutWeight(1)
@@ -572,7 +572,7 @@ export struct AssistantPage {
       Button('查看详情 →')
         .fontSize(12)
         .fontColor(AppColors.primary)
-        .backgroundColor('#E8E5D8')
+        .backgroundColor(AppColors.fillBeige)
         .borderRadius(6)
         .height(28)
         .width('100%')
@@ -633,9 +633,9 @@ export struct AssistantPage {
         ForEach(this.getFieldOptions(fieldKey), (opt: string) => {
           Button(this.getOptionLabel(fieldKey, opt))
             .fontSize(12)
-            .fontColor(this.supplementFields[fieldKey] === opt ? AppColors.card : '#2D5440')
+            .fontColor(this.supplementFields[fieldKey] === opt ? AppColors.card : AppColors.textOption)
             .backgroundColor(this.supplementFields[fieldKey] === opt ? AppColors.primary : AppColors.fillNeutral)
-            .border({ width: 1, color: this.supplementFields[fieldKey] === opt ? AppColors.primary : '#E0E0E0' })
+            .border({ width: 1, color: this.supplementFields[fieldKey] === opt ? AppColors.primary : AppColors.border })
             .borderRadius(8)
             .height(30)
             .padding({ left: 8, right: 8 })
@@ -889,7 +889,7 @@ export struct AssistantPage {
             .flexShrink(0)
           Text('已选择图片')
             .fontSize(12)
-            .fontColor('#4A5247')
+            .fontColor(AppColors.textBody)
             .layoutWeight(1)
             .margin({ left: 6 })
             .maxLines(1)
@@ -901,7 +901,7 @@ export struct AssistantPage {
             .height(24)
             .textAlign(TextAlign.Center)
             .borderRadius(AppDimens.cardRadius)
-            .backgroundColor('#E8E5D8')
+            .backgroundColor(AppColors.fillBeige)
             .onClick(() => {
               this.clearImage();
             })
@@ -1041,12 +1041,12 @@ export struct AssistantPage {
       .width('100%')
       .backgroundColor(AppColors.card)
 
-      Divider().color('#E0DCC8')
+      Divider().color(AppColors.divider)
 
       TextArea({ text: this.expandedEditorText })
         .fontSize(16)
         .fontColor(AppColors.primary)
-        .backgroundColor('#FAFAFA')
+        .backgroundColor(AppColors.surfaceSubtle)
         .borderRadius(0)
         .layoutWeight(1)
         .width('100%')
@@ -1057,6 +1057,6 @@ export struct AssistantPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FAFAFA')
+    .backgroundColor(AppColors.surfaceSubtle)
   }
 }

@@ -447,7 +447,7 @@ export function getCalloutStyle(calloutType: string): CalloutStyle {
     case 'faq':
       return new CalloutStyle(AppColors.primary, AppColors.background, '\u2753');
     default:
-      return new CalloutStyle(AppColors.textSecondary, '#F5F4EF', '\uD83D\uDCC4');
+      return new CalloutStyle(AppColors.textSecondary, AppColors.surfaceMuted, '\uD83D\uDCC4');
   }
 }
 
