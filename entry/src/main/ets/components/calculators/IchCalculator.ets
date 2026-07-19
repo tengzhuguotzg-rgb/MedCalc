@@ -1,7 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateIch } from '../../engine/IchCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct IchCalculator {
@@ -43,39 +44,30 @@ export struct IchCalculator {
     Column() {
       Column() { Text('用于自发性脑出血30天死亡率预测').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项：GCS+年龄+幕下+出血量+脑室出血，总分0-6').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
-        Column() { Text('血肿体积 (mL)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入体积' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
+        InputRow({ label: '血肿体积 (mL)', placeholder: '请输入体积', onTextChange: (value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
 
         Column() {
           Text('出血部位').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
           Row() {
-            Button('幕上').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.location === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.location === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.location === 0 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.location = 0; this.calculate(); });
-            Button('幕下').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.location === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.location === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.location === 1 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).margin({ left: 8 }).onClick(() => { this.location = 1; this.calculate(); });
+            OptionChip({ label: '幕上', selected: this.location === 0, fontSize: 14, bold: true, onChipClick: () => { this.location = 0; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: '幕下', selected: this.location === 1, fontSize: 14, bold: true, onChipClick: () => { this.location = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
 
         Row() { Text('脑室出血').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
-          Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.ivh === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.ivh === 0 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.ivh = 0; this.calculate(); });
-            Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.ivh === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.ivh === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.ivh === 1 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.ivh = 1; this.calculate(); });
+          Row() { OptionChip({ label: '无', selected: this.ivh === 0, fontSize: 14, bold: true, onChipClick: () => { this.ivh = 0; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: '有', selected: this.ivh === 1, fontSize: 14, bold: true, onChipClick: () => { this.ivh = 1; this.calculate(); } }).layoutWeight(1);
           }.width(100);
         }.width('100%').margin({ bottom: 16 });
 
-        Column() { Text('年龄 (岁)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+        InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%');
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() { Text('ICH Score').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'ICH Score', value: this.result!.value, unit: this.result!.unit, decimals: 0, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }

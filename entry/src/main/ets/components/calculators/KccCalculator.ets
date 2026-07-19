@@ -1,7 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateKcc } from '../../engine/KccCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct KccCalculator {
@@ -45,40 +46,31 @@ export struct KccCalculator {
     Column() {
       Column() { Text('用于急性肝衰竭紧急肝移植决策').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('对乙酰氨基酚/非对乙酰氨基酚两种标准评估').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
+      CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
-          Column() { Text('INR').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
-          Column() { Text(this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
+          InputRow({ label: 'INR', placeholder: '请输入INR', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)', placeholder: '请输入胆红素', onTextChange: (value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 8 });
 
         Row() {
           Text('胆红素单位').fontSize(12).fontColor(AppColors.textSecondary).layoutWeight(1);
-          Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'umol' ? AppColors.card : AppColors.textOption).backgroundColor(this.bilirubinUnit === 'umol' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.bilirubinUnit === 'umol' ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).onClick(() => { this.bilirubinUnit = 'umol'; this.calculate(); });
-          Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'mgdl' ? AppColors.card : AppColors.textOption).backgroundColor(this.bilirubinUnit === 'mgdl' ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.bilirubinUnit === 'mgdl' ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).margin({ left: 6 }).onClick(() => { this.bilirubinUnit = 'mgdl'; this.calculate(); });
+          OptionChip({ label: 'µmol/L', selected: this.bilirubinUnit === 'umol', fontSize: 12, bold: true, onChipClick: () => { this.bilirubinUnit = 'umol'; this.calculate(); } });
+          OptionChip({ label: 'mg/dL', selected: this.bilirubinUnit === 'mgdl', fontSize: 12, bold: true, onChipClick: () => { this.bilirubinUnit = 'mgdl'; this.calculate(); } }).margin({ left: 6 });
         }.width('100%').margin({ bottom: 8 });
 
-        Column() { Text('年龄 (岁)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).fontColor(AppColors.textPrimary).placeholderColor(AppColors.placeholder).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
+        InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
 
         Row() { Text('病因：扑热息痛/不明原因').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
-          Row() { Button('否').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.etiology === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.etiology === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.etiology === 0 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.etiology = 0; this.calculate(); });
-            Button('是').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.etiology === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.etiology === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.etiology === 1 ? AppColors.primary : AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { this.etiology = 1; this.calculate(); });
+          Row() { OptionChip({ label: '否', selected: this.etiology === 0, fontSize: 14, bold: true, onChipClick: () => { this.etiology = 0; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: '是', selected: this.etiology === 1, fontSize: 14, bold: true, onChipClick: () => { this.etiology = 1; this.calculate(); } }).layoutWeight(1);
           }.width(100);
         }.width('100%');
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() { Text('KCC').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? (this.result!.value === 1 ? '符合' : '不符合') : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 8 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor(AppColors.textBody).lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        ResultCard({ title: 'KCC', value: this.result!.value, valueText: this.result!.value === 1 ? '符合' : '不符合', tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
