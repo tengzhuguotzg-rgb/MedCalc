@@ -723,7 +723,7 @@ export struct KnowledgeSearchPage {
                 }
                 Text(item.label)
                   .fontSize(10)
-                  .fontColor(item.clickable ? '#2B6CB0' : AppColors.textSecondary)
+                  .fontColor(item.clickable ? AppColors.primary : AppColors.textSecondary)
                   .onClick(() => {
                     if (item.clickable) {
                       this.openPage(item.targetPath.endsWith('.md') ? item.targetPath : item.targetPath + '/index.md');
@@ -1101,9 +1101,9 @@ export struct KnowledgeSearchPage {
             Row() {
               Text(this.getWikilinkDisplayName(link))
                 .fontSize(12)
-                .fontColor('#2B6CB0');
+                .fontColor(AppColors.primary);
             }
-            .backgroundColor('#EBF2FA')
+            .backgroundColor(AppColors.background)
             .borderRadius(12)
             .padding({ left: 8, right: 10, top: 4, bottom: 4 })
             .margin({ right: 6, bottom: 6 })

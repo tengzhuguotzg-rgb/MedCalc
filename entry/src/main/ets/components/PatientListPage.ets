@@ -312,7 +312,7 @@ export struct PatientListPage {
           Button('删除')
             .fontSize(14)
             .fontColor(AppColors.card)
-            .backgroundColor(AppColors.warning)
+            .backgroundColor(AppColors.danger)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)

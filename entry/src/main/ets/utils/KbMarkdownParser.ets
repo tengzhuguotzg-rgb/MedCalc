@@ -397,11 +397,11 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
     const keyword = boldMatch[1];
     let color = AppColors.textSecondary;
     if (keyword.indexOf('新增') >= 0 || keyword.indexOf('New') >= 0) {
-      color = '#2E7D32';
+      color = AppColors.tierOk;
     } else if (keyword.indexOf('重新审视') >= 0 || keyword.indexOf('Revisited') >= 0) {
-      color = '#E65100';
+      color = AppColors.warning;
     } else if (keyword.indexOf('沿用') >= 0 || keyword.indexOf('Carryover') >= 0) {
-      color = '#1565C0';
+      color = AppColors.primary;
     }
     const badge = new AnnotationBadge();
     badge.keyword = keyword;
@@ -425,27 +425,27 @@ export class AnnotationBadge {
 export function getCalloutStyle(calloutType: string): CalloutStyle {
   switch (calloutType) {
     case 'warning':
-      return new CalloutStyle('#E65100', '#FFF3E0', '\u26A0');
+      return new CalloutStyle(AppColors.warning, AppColors.tierWarnBg, '\u26A0');
     case 'danger':
-      return new CalloutStyle('#C62828', AppColors.tierDangerBg, '\u274C');
+      return new CalloutStyle(AppColors.danger, AppColors.tierDangerBg, '\u274C');
     case 'important':
-      return new CalloutStyle('#7B1FA2', '#F3E5F5', '\u2757');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\u2757');
     case 'tip':
-      return new CalloutStyle('#2E7D32', AppColors.tierOkBg, '\uD83D\uDCA1');
+      return new CalloutStyle(AppColors.tierOk, AppColors.tierOkBg, '\uD83D\uDCA1');
     case 'note':
-      return new CalloutStyle('#1565C0', '#E3F2FD', '\uD83D\uDCDD');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\uD83D\uDCDD');
     case 'info':
-      return new CalloutStyle('#0277BD', '#E1F5FE', '\u2139');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\u2139');
     case 'abstract':
-      return new CalloutStyle('#00695C', '#E0F2F1', '\uD83D\uDCCB');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\uD83D\uDCCB');
     case 'example':
-      return new CalloutStyle('#F57F17', '#FFFDE7', '\uD83D\uDCD6');
+      return new CalloutStyle(AppColors.tierWarn, AppColors.tierWarnBg, '\uD83D\uDCD6');
     case 'success':
-      return new CalloutStyle('#1B5E20', AppColors.tierOkBg, '\u2705');
+      return new CalloutStyle(AppColors.tierOk, AppColors.tierOkBg, '\u2705');
     case 'quote':
       return new CalloutStyle(AppColors.tierWarn, AppColors.tierWarnBg, '\uD83D\uDCAC');
     case 'faq':
-      return new CalloutStyle('#6A1B9A', '#F3E5F5', '\u2753');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\u2753');
     default:
       return new CalloutStyle(AppColors.textSecondary, '#F5F4EF', '\uD83D\uDCC4');
   }
