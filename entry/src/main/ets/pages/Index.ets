@@ -136,6 +136,7 @@ struct Index {
     .onChange((index: number) => { this.currentTab = index; })
     .width('100%')
     .height('100%')
+    .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
   }
 
   @Builder
