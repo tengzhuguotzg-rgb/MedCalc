@@ -21,202 +21,9 @@ import { pdfService } from '@kit.PDFKit';
 import { ImageEditor } from './ImageEditor';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
-
-class DomainEntry {
-  name: string = '';
-  keys: string[] = [];
-  hasData: boolean = false;
-}
-
-class ParsedRecommendations {
-  recommendations: GuidelineRecommendation[] = [];
-  summary: string = '';
-  gaps: GapSignal[] = [];
-}
-
-class GuidelineRecommendation {
-  text: string = '';
-  evidenceLevel: string = '';
-  source: string = '';
-  category: string = '';
-  type: string = '';
-}
-
-class PathScore {
-  path: string = '';
-  score: number = 0;
-}
-
-class AgentStep {
-  agent: string = '';
-  status: string = '';
-  input: string = '';
-  output: string = '';
-  durationMs: number = 0;
-
-  toJson(): Record<string, Object> {
-    return {
-      'agent': this.agent,
-      'status': this.status,
-      'input': this.input,
-      'output': this.output,
-      'durationMs': this.durationMs,
-    };
-  }
-
-  static fromJson(obj: Record<string, Object>): AgentStep {
-    const s = new AgentStep();
-    s.agent = (obj['agent'] as string) || '';
-    s.status = (obj['status'] as string) || '';
-    s.input = (obj['input'] as string) || '';
-    s.output = (obj['output'] as string) || '';
-    s.durationMs = (obj['durationMs'] as number) || 0;
-    return s;
-  }
-}
-
-class AuditIssue {
-  index: number = 0;
-  type: string = '';
-  description: string = '';
-}
-
-class GapSignal {
-  category: string = '';
-  supplementaryTerms: string[] = [];
-}
-
-class AuditAgentResult {
-  issues: AuditIssue[] = [];
-  gaps: GapSignal[] = [];
-}
-
-class DiagnosisKbData {
-  ruleId: string = '';
-  searchResults: SearchResult[] = [];
-  verifiedPaths: string[] = [];
-  partialPaths: string[] = [];
-  candidatePaths: string[] = [];
-  recommendations: GuidelineRecommendation[] = [];
-  loadingKb: boolean = false;
-  loadingAdvice: boolean = false;
-  summary: string = '';
-  verifyInfo: string = '';
-  isLowRelevance: boolean = false;
-  adviceError: string = '';
-  agentSteps: AgentStep[] = [];
-  feedbackRound: number = 0;
-  expandedInfo: string = '';
-  matchedDirs: string[] = [];
-  expandedSearchTerms: string[] = [];
-  expandedEtiologyTerms: string[] = [];
-  expandedTreatmentTerms: string[] = [];
-  expandedMonitoringTerms: string[] = [];
-
-  toJson(): string {
-    const srList: Record<string, string>[] = [];
-    for (const sr of this.searchResults) {
-      srList.push({ 'path': sr.path, 'title': sr.title });
-    }
-    const recList: Record<string, string>[] = [];
-    for (const rec of this.recommendations) {
-      recList.push({ 'text': rec.text, 'evidenceLevel': rec.evidenceLevel, 'source': rec.source, 'category': rec.category, 'type': rec.type });
-    }
-    const stepsList: Record<string, Object>[] = [];
-    for (const step of this.agentSteps) {
-      stepsList.push(step.toJson());
-    }
-    const obj: Record<string, Object> = {
-      'ruleId': this.ruleId,
-      'searchResults': srList,
-      'verifiedPaths': this.verifiedPaths,
-      'partialPaths': this.partialPaths,
-      'candidatePaths': this.candidatePaths,
-      'recommendations': recList,
-      'summary': this.summary,
-      'verifyInfo': this.verifyInfo,
-      'isLowRelevance': this.isLowRelevance,
-      'adviceError': this.adviceError,
-      'agentSteps': stepsList,
-      'feedbackRound': this.feedbackRound,
-      'expandedInfo': this.expandedInfo,
-      'matchedDirs': this.matchedDirs,
-      'expandedSearchTerms': this.expandedSearchTerms,
-      'expandedEtiologyTerms': this.expandedEtiologyTerms,
-      'expandedTreatmentTerms': this.expandedTreatmentTerms,
-      'expandedMonitoringTerms': this.expandedMonitoringTerms,
-    };
-    return JSON.stringify(obj);
-  }
-
-  static fromJson(jsonStr: string): DiagnosisKbData | null {
-    const parsed: Object | null = JSON.parse(jsonStr);
-    if (parsed === null) {
-      return null;
-    }
-    const obj = parsed as Record<string, Object>;
-    const d = new DiagnosisKbData();
-    d.ruleId = (obj['ruleId'] as string) || '';
-    const srArr = obj['searchResults'] as Array<Record<string, string>>;
-    if (srArr !== undefined && srArr !== null) {
-      for (const sr of srArr) {
-        const searchResult = new SearchResult();
-        searchResult.path = sr['path'] || '';
-        searchResult.title = sr['title'] || '';
-        d.searchResults.push(searchResult);
-      }
-    }
-    const vpArr = obj['verifiedPaths'] as Array<string>;
-    if (vpArr !== undefined && vpArr !== null) {
-      d.verifiedPaths = vpArr;
-    }
-    const ppArr = obj['partialPaths'] as Array<string>;
-    if (ppArr !== undefined && ppArr !== null) {
-      d.partialPaths = ppArr;
-    }
-    const recArr = obj['recommendations'] as Array<Record<string, string>>;
-    if (recArr !== undefined && recArr !== null) {
-      for (const rec of recArr) {
-        const gr = new GuidelineRecommendation();
-        gr.text = rec['text'] || '';
-        gr.evidenceLevel = rec['evidenceLevel'] || '未标注';
-        gr.source = rec['source'] || '';
-        gr.category = rec['category'] || '';
-        gr.type = rec['type'] || '';
-        d.recommendations.push(gr);
-      }
-    }
-    d.summary = (obj['summary'] as string) || '';
-    d.verifyInfo = (obj['verifyInfo'] as string) || '';
-    d.isLowRelevance = (obj['isLowRelevance'] as boolean) || false;
-    d.adviceError = (obj['adviceError'] as string) || '';
-    const cpArr = obj['candidatePaths'] as Array<string>;
-    if (cpArr !== undefined && cpArr !== null) {
-      d.candidatePaths = cpArr;
-    }
-    const stepsArr = obj['agentSteps'] as Array<Record<string, Object>>;
-    if (stepsArr !== undefined && stepsArr !== null) {
-      for (const stepObj of stepsArr) {
-        d.agentSteps.push(AgentStep.fromJson(stepObj));
-      }
-    }
-    d.feedbackRound = (obj['feedbackRound'] as number) || 0;
-    d.expandedInfo = (obj['expandedInfo'] as string) || '';
-    const mdArr = obj['matchedDirs'] as Array<string>;
-    if (mdArr !== undefined && mdArr !== null) {
-      d.matchedDirs = mdArr;
-    }
-    const estArr = obj['expandedSearchTerms'] as Array<string>;
-    if (estArr !== undefined && estArr !== null) { d.expandedSearchTerms = estArr; }
-    const eetArr = obj['expandedEtiologyTerms'] as Array<string>;
-    if (eetArr !== undefined && eetArr !== null) { d.expandedEtiologyTerms = eetArr; }
-    const ettArr = obj['expandedTreatmentTerms'] as Array<string>;
-    if (ettArr !== undefined && ettArr !== null) { d.expandedTreatmentTerms = ettArr; }
-    const emtArr = obj['expandedMonitoringTerms'] as Array<string>;
-    if (emtArr !== undefined && emtArr !== null) { d.expandedMonitoringTerms = emtArr; }
-    return d;
-  }
-}
+import { DomainEntry, ParsedRecommendations, GuidelineRecommendation, PathScore, AgentStep, AuditIssue, GapSignal, AuditAgentResult, DiagnosisKbData } from './patient/PatientDetailTypes';
+import { KbReaderOverlay } from './patient/KbReaderOverlay';
+import { KbMarkdownRenderer } from './patient/KbMarkdownRenderer';
 
 @Component
 export struct PatientDetailPage {
@@ -257,11 +64,12 @@ export struct PatientDetailPage {
   @State editorResultBase64: string = '';
   @State editorResultMime: string = '';
   @State diagnosisKbMap: DiagnosisKbData[] = [];
-  @State showKbReader: boolean = false;
-  @State @Watch('onKbReaderPathChanged') kbReaderPath: string = '';
+  @Provide showKbReader: boolean = false;
+  @Provide @Watch('onKbReaderPathChanged') kbReaderPath: string = '';
+  @Provide kbReaderTitle: string = '';
+  @Provide kbReaderLines: MarkdownLine[] = [];
   @State expandedCategories: Set<string> = new Set();
   @State expandedRefIds: Set<string> = new Set();
-  @State kbReaderTitle: string = '';
   @State showRecommendationsDetail: boolean = false;
   @State activeAdviceRuleId: string = '';
   @State adviceReadyRuleId: string = '';
@@ -964,9 +772,9 @@ export struct PatientDetailPage {
         if (this.showDeleteConfirm) {
            this.DeleteConfirmDialog();
          }
-         if (this.showKbReader) {
-           this.KbReaderOverlay();
-         }
+          if (this.showKbReader) {
+            KbReaderOverlay();
+          }
          if (this.showAddDiagnosis) {
            this.AddDiagnosisDialog();
          }
@@ -2759,9 +2567,7 @@ export struct PatientDetailPage {
                   .fontColor(AppColors.textFaint)
                   .width('100%')
                   .margin({ bottom: 6 });
-                ForEach(this.summaryLines, (ml: MarkdownLine) => {
-                  this.KbMarkdownLineView(ml);
-                }, (ml: MarkdownLine, index: number) => index.toString());
+                KbMarkdownRenderer({ lines: this.summaryLines });
               }
               .width('100%')
               .padding(10)
@@ -3791,292 +3597,12 @@ export struct PatientDetailPage {
     .justifyContent(FlexAlign.Center)
   }
 
-  @Builder
-  KbReaderOverlay() {
-    Column() {
-      Row() {
-        Button('< 返回')
-          .fontSize(14)
-          .fontColor(AppColors.primary)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
-            this.showKbReader = false;
-            this.kbReaderPath = '';
-          });
-        Text(this.kbReaderTitle)
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-          .margin({ left: 8 })
-          .maxLines(1)
-          .textOverflow({ overflow: TextOverflow.Ellipsis });
-      }
-      .width('100%')
-      .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card);
-
-      Scroll() {
-        Column() {
-          Text(this.kbReaderTitle)
-            .fontSize(17)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
-            .width('100%');
-          Text(this.kbReaderPath)
-            .fontSize(11)
-            .fontColor(AppColors.textSecondary)
-            .width('100%')
-            .margin({ top: 4, bottom: 8 });
-          this.KbReaderContent();
-        }
-        .padding(12);
-      }
-      .layoutWeight(1);
-    }
-    .width('95%')
-    .height('85%')
-    .backgroundColor(AppColors.card)
-    .borderRadius(AppDimens.cardRadius);
-  }
-
-  @State kbReaderLines: MarkdownLine[] = [];
-
   async loadKbReaderContent(path: string) {
     const page = await this.kbService.getPage(path);
     if (page !== null) {
       this.kbReaderTitle = page.title.length > 0 ? page.title : path.split('/').pop() || '';
       this.kbReaderLines = parseKbMarkdown(page.content);
     }
-  }
-
-  @Builder
-  KbReaderContent() {
-    ForEach(this.kbReaderLines, (ml: MarkdownLine) => {
-      this.KbMarkdownLineView(ml);
-    }, (ml: MarkdownLine, index: number) => index.toString());
-  }
-
-  @Builder
-  KbMarkdownLineView(ml: MarkdownLine) {
-    if (ml.type === 'h1') {
-      Text(stripMarkdownInline(ml.text))
-        .fontSize(18)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(AppColors.primary)
-        .width('100%')
-        .margin({ top: 12, bottom: 6 });
-    } else if (ml.type === 'h2') {
-      Text(stripMarkdownInline(ml.text))
-        .fontSize(15)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(AppColors.primary)
-        .width('100%')
-        .margin({ top: 8, bottom: 4 });
-    } else if (ml.type === 'h3') {
-      Text(stripMarkdownInline(ml.text))
-        .fontSize(14)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(AppColors.primary)
-        .width('100%')
-        .margin({ top: 6, bottom: 3 });
-    } else if (ml.type === 'callout') {
-      this.KbCalloutView(ml);
-    } else if (ml.type === 'codeBlock') {
-      this.KbCodeBlockView(ml);
-    } else if (ml.type === 'annotation') {
-      Row() {
-        Text(getAnnotationBadgeInfo(ml.text).keyword)
-          .fontSize(11)
-          .fontColor(AppColors.card)
-          .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
-          .borderRadius(3)
-          .padding({ left: 6, right: 6, top: 1, bottom: 1 });
-        if (getAnnotationBadgeInfo(ml.text).detail.length > 0) {
-          Text(getAnnotationBadgeInfo(ml.text).detail)
-            .fontSize(11)
-            .fontColor(AppColors.textSecondary)
-            .margin({ left: 6 });
-        }
-      }
-      .margin({ top: 4, bottom: 4 });
-    } else if (ml.type === 'kvQuote') {
-      Row() {
-        Row()
-          .width(3)
-          .height('100%')
-          .backgroundColor(AppColors.kbAccent)
-          .borderRadius(2);
-        Text(stripMarkdownInline(ml.text))
-          .fontSize(12)
-          .fontColor(AppColors.textBody)
-          .layoutWeight(1)
-          .padding({ left: 8, right: 8, top: 6, bottom: 6 });
-      }
-      .width('100%')
-      .backgroundColor(AppColors.tierOkBg)
-      .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 6, bottomRight: 6 })
-      .margin({ top: 4, bottom: 4 });
-    } else if (ml.type === 'li') {
-      Row() {
-        Text('\u2022')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ right: 6 });
-        Text(stripMarkdownInline(ml.text))
-          .fontSize(12)
-          .fontColor(AppColors.textBody)
-          .layoutWeight(1);
-      }
-      .width('100%')
-      .alignItems(VerticalAlign.Top)
-      .padding({ left: ml.indent * 12 + 8, top: 1, bottom: 1 });
-    } else if (ml.type === 'quote') {
-      Row() {
-        Row()
-          .width(3)
-          .height(14)
-          .backgroundColor(AppColors.tierWarn)
-          .borderRadius(2)
-          .margin({ top: 4, bottom: 4 });
-        Text(stripMarkdownInline(ml.text))
-          .fontSize(11)
-          .fontColor(AppColors.textBody)
-          .layoutWeight(1)
-          .padding({ left: 8 });
-      }
-      .width('100%')
-      .margin({ top: 2, bottom: 2 });
-    } else if (ml.type === 'hr') {
-      Row()
-        .width('100%')
-        .height(1)
-        .backgroundColor(AppColors.divider)
-        .margin({ top: 6, bottom: 6 });
-    } else if (ml.type === 'blank') {
-      Row().height(4);
-    } else if (ml.type === 'tableSep') {
-      Row();
-    } else if (ml.type === 'tableHeader') {
-      if (ml.cells.length > 0) {
-        Row() {
-          ForEach(ml.cells, (cell: string, idx: number) => {
-            Text(cell)
-              .fontSize(11)
-              .fontColor(AppColors.primary)
-              .fontWeight(FontWeight.Bold)
-              .layoutWeight(1)
-              .padding({ left: 4, right: 4, top: 3, bottom: 3 });
-          }, (cell: string, idx: number) => idx.toString());
-        }
-        .width('100%')
-        .backgroundColor(AppColors.fillBeige)
-        .borderRadius(2);
-      } else {
-        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
-          .fontSize(11)
-          .fontColor(AppColors.primary)
-          .fontWeight(FontWeight.Bold)
-          .fontFamily('monospace')
-          .width('100%')
-          .padding({ left: 6, right: 6, top: 3, bottom: 3 })
-          .backgroundColor(AppColors.fillBeige)
-          .borderRadius(2);
-      }
-    } else if (ml.type === 'table') {
-      if (ml.cells.length > 0) {
-        Row() {
-          ForEach(ml.cells, (cell: string, idx: number) => {
-            Text(cell)
-              .fontSize(11)
-              .fontColor(AppColors.textBody)
-              .layoutWeight(1)
-              .padding({ left: 4, right: 4, top: 2, bottom: 2 });
-          }, (cell: string, idx: number) => idx.toString());
-        }
-        .width('100%')
-        .backgroundColor(AppColors.surfaceSubtle)
-        .borderRadius(2);
-      } else {
-        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
-          .fontSize(11)
-          .fontColor(AppColors.textBody)
-          .fontFamily('monospace')
-          .width('100%')
-          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          .backgroundColor(AppColors.surfaceSubtle)
-          .borderRadius(2);
-      }
-    } else if (ml.type === 'tagLine') {
-      Row() {
-        ForEach(ml.text.split(/\s+/).filter((t: string): boolean => t.startsWith('#') && t.length > 1), (tag: string) => {
-          Text(tag.substring(1))
-            .fontSize(11)
-            .fontColor(AppColors.primary)
-            .backgroundColor(AppColors.background)
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-            .margin({ right: 4, bottom: 4 });
-        }, (tag: string) => tag);
-      }
-      .width('100%')
-      .margin({ top: 4, bottom: 4 });
-    } else {
-      Text(stripMarkdownInline(ml.text))
-        .fontSize(12)
-        .fontColor(AppColors.textBody)
-        .width('100%')
-        .margin({ top: 1, bottom: 1 });
-    }
-  }
-
-  @Builder
-  KbCalloutView(ml: MarkdownLine) {
-    Column() {
-      if (ml.calloutTitle.length > 0) {
-        Row() {
-          Text(getCalloutStyle(ml.calloutType).icon)
-            .fontSize(14)
-            .margin({ right: 6 });
-          Text(stripMarkdownInline(ml.calloutTitle))
-            .fontSize(13)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(getCalloutStyle(ml.calloutType).borderColor)
-            .layoutWeight(1);
-        }
-        .width('100%')
-        .padding({ left: 12, right: 10, top: 8, bottom: 4 });
-      }
-      if (ml.calloutBody.length > 0) {
-        Text(stripMarkdownInline(ml.calloutBody))
-          .fontSize(12)
-          .fontColor(AppColors.textBody)
-          .width('100%')
-          .padding({ left: 12, right: 10, top: ml.calloutTitle.length > 0 ? 0 : 8, bottom: 8 });
-      }
-    }
-    .width('100%')
-    .borderRadius(6)
-    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: getCalloutStyle(ml.calloutType).borderColor })
-    .backgroundColor(getCalloutStyle(ml.calloutType).bgColor)
-    .margin({ top: 6, bottom: 6 });
-  }
-
-  @Builder
-  KbCodeBlockView(ml: MarkdownLine) {
-    Scroll() {
-      Text(ml.codeContent)
-        .fontSize(11)
-        .fontFamily('monospace')
-        .fontColor(AppColors.textBody)
-        .width('100%');
-    }
-    .scrollable(ScrollDirection.Horizontal)
-    .width('100%')
-    .padding(10)
-    .backgroundColor(AppColors.surfaceMuted)
-    .borderRadius(6)
-    .margin({ top: 6, bottom: 6 });
   }
 
   @Builder
