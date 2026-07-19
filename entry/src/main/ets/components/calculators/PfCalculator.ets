@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculatePf } from '../../engine/CommonCalculators';
 
 @Component
-export struct PfCalculator {  @State pao2: number = 0;
+export struct PfCalculator {
+  @State resetKey: number = 0;  @State pao2: number = 0;
   @State fio2: number = 0;
   @State fio2Mode: string = 'dec';
   @State peep: number | null = null;
@@ -12,12 +13,32 @@ export struct PfCalculator {  @State pao2: number = 0;
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculatePf(this.pao2, this.fio2, this.fio2Mode, this.peep); }
 
+  reset() {
+    this.pao2 = 0;
+    this.fio2 = 0;
+    this.fio2Mode = 'dec';
+    this.peep = null;
+    this.peepText = '';
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估氧合功能，ARDS诊断分级').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('PaO₂/FiO₂比值，Berlin 2012标准，需PEEP≥5').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() { Text('PaO₂ (mmHg)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入PaO2' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);

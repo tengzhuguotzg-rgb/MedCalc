@@ -3,6 +3,7 @@ import { calculateKdigo } from '../../engine/KdigoCalculator';
 
 @Component
 export struct KdigoCalculator {
+  @State resetKey: number = 0;
   @State cr0Raw: number = 0;
   @State cr0Unit: string = 'mgdl';
   @State cr1Raw: number = 0;
@@ -21,12 +22,33 @@ export struct KdigoCalculator {
     this.result = calculateKdigo(cr0, this.cr0Unit, this.cr1Raw, this.cr1Unit, this.urine > 0 ? this.urine : null, this.rrt === 1);
   }
 
+  reset() {
+    this.cr0Raw = 0;
+    this.cr0Unit = 'mgdl';
+    this.cr1Raw = 0;
+    this.cr1Unit = 'mgdl';
+    this.urine = 0;
+    this.rrt = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于急性肾损伤分期评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('基于肌酐变化和尿量，KDIGO 2012').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 基础 Cr (如未知填 0)').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 基础 Cr (如未知填 0)').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() {
             Text('基础 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

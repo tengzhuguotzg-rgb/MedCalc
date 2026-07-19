@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateNihss } from '../../engine/MoreCalculators';
 
 @Component
-export struct NihssCalculator {  @State ia: number = -1;
+export struct NihssCalculator {
+  @State resetKey: number = 0;  @State ia: number = -1;
   @State ib: number = -1;
   @State ic: number = -1;
   @State gaze: number = -1;
@@ -20,11 +21,39 @@ export struct NihssCalculator {  @State ia: number = -1;
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateNihss(this.ia, this.ib, this.ic, this.gaze, this.vis, this.face, this.armA, this.armB, this.ata, this.sens, this.lang, this.dys, this.neg); }
 
+  reset() {
+    this.ia = -1;
+    this.ib = -1;
+    this.ic = -1;
+    this.gaze = -1;
+    this.vis = -1;
+    this.face = -1;
+    this.armA = -1;
+    this.armB = -1;
+    this.ata = -1;
+    this.sens = -1;
+    this.lang = -1;
+    this.dys = -1;
+    this.neg = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估脑卒中神经功能缺损严重程度').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('11项评估，总分0-42，≥6分考虑溶栓/取栓').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() { Text('1a 意识水平').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-3' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.ia = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1);
           Column() { Text('1b 提问').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '0-2' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.ib = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); }); }.layoutWeight(1).margin({ left: 8 });

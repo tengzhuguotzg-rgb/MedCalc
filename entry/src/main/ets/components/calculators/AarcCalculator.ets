@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateAarc } from '../../engine/AarcCalculator';
 
 @Component
-export struct AarcCalculator {  @State bilirubin: number = 0;
+export struct AarcCalculator {
+  @State resetKey: number = 0;  @State bilirubin: number = 0;
   @State bilUnit: string = 'umol';
   @State inr: number = 0;
   @State lactate: number = 0;
@@ -20,12 +21,34 @@ export struct AarcCalculator {  @State bilirubin: number = 0;
     this.result = calculateAarc(this.bilirubin, this.bilUnit, this.inr, this.lactate, this.hepaticEnceph, this.age, this.acKf === 1);
   }
 
+  reset() {
+    this.bilirubin = 0;
+    this.bilUnit = 'umol';
+    this.inr = 0;
+    this.lactate = 0;
+    this.hepaticEnceph = -1;
+    this.age = 0;
+    this.acKf = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估慢加急性肝衰竭严重程度及预后').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项指标：胆红素 + INR + 乳酸 + 肝性脑病 + 年龄 + AKI').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Column() { Text('胆红素').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 6 });
         Row() { Button('µmol/L').fontSize(11).fontWeight(FontWeight.Bold).fontColor(this.bilUnit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.bilUnit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.bilUnit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(32).layoutWeight(1).onClick(() => { this.bilUnit = 'umol'; this.calculate(); });

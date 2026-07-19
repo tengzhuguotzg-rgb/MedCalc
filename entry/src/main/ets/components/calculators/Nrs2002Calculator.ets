@@ -2,7 +2,8 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 
 @Component
-export struct Nrs2002Calculator {  @State patientHeight: number = 0;
+export struct Nrs2002Calculator {
+  @State resetKey: number = 0;  @State patientHeight: number = 0;
   @State patientWeight: number = 0;
   @State weightLoss: string = '';
   @State intake: string = '';
@@ -22,7 +23,28 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
     this.result = calculateNrs2002(this.patientHeight, this.patientWeight, this.weightLoss, this.intake, this.disease, this.ageAdj === 1);
   }
 
+  reset() {
+    this.patientHeight = 0;
+    this.patientWeight = 0;
+    this.weightLoss = '';
+    this.intake = '';
+    this.disease = '';
+    this.ageAdj = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       this.Header();
       this.InputForm();
@@ -55,12 +77,12 @@ export struct Nrs2002Calculator {  @State patientHeight: number = 0;
   @Builder
   InputForm() {
     Column() {
-      Text('— 输入参数')
+      Row() { Text('— 输入参数')
         .fontSize(12)
         .fontColor('#E76F2C')
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Column() {

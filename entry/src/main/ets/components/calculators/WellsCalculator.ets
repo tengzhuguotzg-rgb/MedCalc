@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateWells } from '../../engine/WellsCalculator';
 
 @Component
-export struct WellsCalculator {  @State clinical: number = -1;
+export struct WellsCalculator {
+  @State resetKey: number = 0;  @State clinical: number = -1;
   @State hr: number = -1;
   @State surgery: number = -1;
   @State hemoptysis: number = -1;
@@ -18,12 +19,32 @@ export struct WellsCalculator {  @State clinical: number = -1;
     this.result = calculateWells(this.clinical === 1, this.hr === 1, this.surgery === 1, this.hemoptysis === 1, this.cancer === 1);
   }
 
+  reset() {
+    this.clinical = -1;
+    this.hr = -1;
+    this.surgery = -1;
+    this.hemoptysis = -1;
+    this.cancer = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估肺栓塞临床概率，指导D-二聚体解读').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('7项：DVT症状+PE主诊断+心率+制动+咯血+肿瘤+其他').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('深静脉血栓临床表现').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
           Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.clinical === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.clinical === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.clinical === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.clinical = 0; this.calculate(); });

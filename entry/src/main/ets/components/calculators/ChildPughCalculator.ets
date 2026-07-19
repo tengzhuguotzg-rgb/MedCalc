@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateChildPugh } from '../../engine/ChildPughCalculator';
 
 @Component
-export struct ChildPughCalculator {  @State bilirubin: number = 0;
+export struct ChildPughCalculator {
+  @State resetKey: number = 0;  @State bilirubin: number = 0;
   @State bilirubinUnit: string = 'umol';
   @State albumin: number = 0;
   @State albUnit: string = 'gl';
@@ -14,12 +15,34 @@ export struct ChildPughCalculator {  @State bilirubin: number = 0;
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateChildPugh(this.bilirubin, this.bilirubinUnit, this.albumin, this.albUnit, this.inr, this.ascites, this.encephalopathy); }
 
+  reset() {
+    this.bilirubin = 0;
+    this.bilirubinUnit = 'umol';
+    this.albumin = 0;
+    this.albUnit = 'gl';
+    this.inr = 0;
+    this.ascites = 0;
+    this.encephalopathy = 0;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估肝硬化患者肝功能储备及手术风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：胆红素+白蛋白+INR+腹水+肝性脑病，A/B/C三级').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() { Text(this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);

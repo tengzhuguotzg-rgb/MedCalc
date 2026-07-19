@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateGfr } from '../../engine/GfrCalculator';
 
 @Component
-export struct GfrCalculator {  @State sex: string = '';
+export struct GfrCalculator {
+  @State resetKey: number = 0;  @State sex: string = '';
   @State age: number = 0;
   @State creatinine: number = 0;
   @State crUnit: string = 'umol';
@@ -11,12 +12,31 @@ export struct GfrCalculator {  @State sex: string = '';
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateGfr(this.sex, this.age, this.creatinine, this.crUnit); }
 
+  reset() {
+    this.sex = '';
+    this.age = 0;
+    this.creatinine = 0;
+    this.crUnit = 'umol';
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估肾小球滤过率，CKD分期').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('CKD-EPI 2021 race-free公式，需肌酐+年龄+性别').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Button('男').fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.sex === 'male' ? '#FFFFFF' : '#2D5440')

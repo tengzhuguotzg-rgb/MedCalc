@@ -23,18 +23,35 @@ const RASS_LEVELS: RassLevel[] = [
 
 @Component
 export struct RassCalculator {
+  @State resetKey: number = 0;
   @State score: number = -99;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateRass(this.score); }
 
+  reset() {
+    this.score = -99;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估ICU患者镇静深度及躁动状态').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('+4(攻击)至-5(昏迷)，目标-2至0').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 选择评分').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 选择评分').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([4, 3, 2, 1, 0, -1, -2, -3, -4, -5], (item: number) => {
             Button(`${item >= 0 ? '+' : ''}${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.score === item ? '#FFFFFF' : '#2D5440')

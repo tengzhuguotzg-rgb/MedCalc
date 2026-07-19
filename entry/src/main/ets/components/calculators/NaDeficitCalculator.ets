@@ -3,6 +3,7 @@ import { calculateNaDeficit } from '../../engine/CommonCalculators';
 
 @Component
 export struct NaDeficitCalculator {
+  @State resetKey: number = 0;
   @State weight: number = 0;
   @State na: number = 0;
   @State targetNa: number = 0;
@@ -21,7 +22,26 @@ export struct NaDeficitCalculator {
     this.result = calculateNaDeficit(this.weight, this.na, this.targetNa, this.tbwGroup === 1, this.tbwGroup === 2);
   }
 
+  reset() {
+    this.weight = 0;
+    this.na = 0;
+    this.targetNa = 0;
+    this.tbwGroup = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() {
         Text('计算低钠血症的钠缺失量')
@@ -38,7 +58,7 @@ export struct NaDeficitCalculator {
       .margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {

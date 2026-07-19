@@ -2,7 +2,8 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 
 @Component
-export struct Apache2Calculator {  @State temp: number = 0;
+export struct Apache2Calculator {
+  @State resetKey: number = 0;  @State temp: number = 0;
   @State sbp: number = 0;
   @State dbp: number = 0;
   @State hr: number = 0;
@@ -48,7 +49,46 @@ export struct Apache2Calculator {  @State temp: number = 0;
     );
   }
 
+  reset() {
+    this.temp = 0;
+    this.sbp = 0;
+    this.dbp = 0;
+    this.hr = 0;
+    this.rr = 0;
+    this.fio2 = 0;
+    this.fio2Mode = 'pct';
+    this.pao2 = 0;
+    this.paco2 = 0;
+    this.paco2Filled = true;
+    this.ph = 0;
+    this.phFilled = true;
+    this.hco3 = 0;
+    this.hco3Filled = false;
+    this.na = 0;
+    this.k = 0;
+    this.cr = 0;
+    this.crUnit = 'umol';
+    this.arf = -1;
+    this.hct = 0;
+    this.wbc = 0;
+    this.gcs = 0;
+    this.age = 0;
+    this.chronic = '';
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       this.Header();
       this.InputForm();
@@ -81,12 +121,12 @@ export struct Apache2Calculator {  @State temp: number = 0;
   @Builder
   InputForm() {
     Column() {
-      Text('— 生命体征')
+      Row() { Text('— 生命体征')
         .fontSize(12)
         .fontColor('#E76F2C')
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Column() {

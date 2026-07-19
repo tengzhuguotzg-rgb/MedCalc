@@ -2,7 +2,8 @@ import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngin
 import { calculateCrCl } from '../../engine/CrClCalculator';
 
 @Component
-export struct CrClCalculator {  @State sex: string = '';
+export struct CrClCalculator {
+  @State resetKey: number = 0;  @State sex: string = '';
   @State age: number = 0;
   @State weight: number = 0;
   @State creatinine: number = 0;
@@ -12,12 +13,32 @@ export struct CrClCalculator {  @State sex: string = '';
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateCrCl(this.sex, this.age, this.weight, this.creatinine, this.crUnit); }
 
+  reset() {
+    this.sex = '';
+    this.age = 0;
+    this.weight = 0;
+    this.creatinine = 0;
+    this.crUnit = 'umol';
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估肾功能，指导经肾药物剂量调整').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('Cockcroft-Gault公式，需肌酐+年龄+体重+性别').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Button('男').fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.sex === 'male' ? '#FFFFFF' : '#2D5440').backgroundColor(this.sex === 'male' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.sex === 'male' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(40).layoutWeight(1).onClick(() => { this.sex = 'male'; this.calculate(); });

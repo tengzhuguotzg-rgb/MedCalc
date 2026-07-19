@@ -34,18 +34,35 @@ const FISHER_LEVELS: GradeInfo[] = [
 
 @Component
 export struct HuntHessCalculator {
+  @State resetKey: number = 0;
   @State grade: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateHuntHess(this.grade); }
 
+  reset() {
+    this.grade = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于蛛网膜下腔出血手术风险分层').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('0-5级，基于临床症状严重程度').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([0, 1, 2, 3, 4, 5], (item: number) => {
             Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? '#FFFFFF' : '#2D5440')
@@ -78,18 +95,35 @@ export struct HuntHessCalculator {
 
 @Component
 export struct WfnsCalculator {
+  @State resetKey: number = 0;
   @State grade: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateWfns(this.grade); }
 
+  reset() {
+    this.grade = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于蛛网膜下腔出血临床分级及预后评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('I-V级，基于GCS和局灶体征').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4, 5], (item: number) => {
             Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? '#FFFFFF' : '#2D5440')
@@ -122,18 +156,35 @@ export struct WfnsCalculator {
 
 @Component
 export struct FisherCalculator {
+  @State resetKey: number = 0;
   @State grade: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateFisher(this.grade); }
 
+  reset() {
+    this.grade = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于预测蛛网膜下腔出血后脑血管痉挛风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('1-4级，基于CT出血量').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 选择分级').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4], (item: number) => {
             Button(`${item}`).fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.grade === item ? '#FFFFFF' : '#2D5440')

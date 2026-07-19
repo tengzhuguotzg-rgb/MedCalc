@@ -3,6 +3,7 @@ import { calculateTimiStemi, calculateTimiNstemi } from '../../engine/TimiCalcul
 
 @Component
 export struct TimiStemiCalculator {
+  @State resetKey: number = 0;
   @State ageCat: number = -1;
   @State sbpLt100: number = -1;
   @State hrGt100: number = -1;
@@ -30,12 +31,35 @@ export struct TimiStemiCalculator {
     }.width(100);
   }
 
+  reset() {
+    this.ageCat = -1;
+    this.sbpLt100 = -1;
+    this.hrGt100 = -1;
+    this.weightLt67 = -1;
+    this.dmHtnAngina = -1;
+    this.killip = 0;
+    this.anteriorLbbb = -1;
+    this.timeToTreat = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('TIMI STEMI — ST段抬高型心肌梗死').fontSize(16).fontColor('#1F3D2F').fontWeight(FontWeight.Bold); Text('30天死亡风险 · 0-14分 (InTIME-II 2000)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 患者因素').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
+        Row() { Text('— 患者因素').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 10 });
         Column() { Text('年龄').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
           Flex({ wrap: FlexWrap.Wrap }) {
             Button('< 55').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.ageCat === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.ageCat === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ageCat === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(32).padding({ left: 10, right: 10 }).margin({ right: 6, bottom: 4 }).onClick(() => { this.ageCat = 0; this.calculate(); });
@@ -82,6 +106,7 @@ export struct TimiStemiCalculator {
 
 @Component
 export struct TimiNstemiCalculator {
+  @State resetKey: number = 0;
   @State ageGte65: number = -1;
   @State rfHtn: number = -1;
   @State rfDm: number = -1;
@@ -117,12 +142,38 @@ export struct TimiNstemiCalculator {
     }.width(100);
   }
 
+  reset() {
+    this.ageGte65 = -1;
+    this.rfHtn = -1;
+    this.rfDm = -1;
+    this.rfSmoker = -1;
+    this.rfHyperlipid = -1;
+    this.rfFamily = -1;
+    this.knownCAD = -1;
+    this.priorAspirin = -1;
+    this.severeAngina = -1;
+    this.stDevGte05 = -1;
+    this.biomarkerElevated = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('TIMI NSTEMI — 非ST段抬高型心肌梗死/不稳定型心绞痛').fontSize(16).fontColor('#1F3D2F').fontWeight(FontWeight.Bold); Text('14天死亡/MI风险 · 0-7分 (Antman 2000)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 患者因素').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
+        Row() { Text('— 患者因素').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 10 });
         Row() { Column() { Text('年龄 ≥ 65 岁').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.ageGte65, (v) => { this.ageGte65 = v; this.calculate(); }); }.layoutWeight(1);
           Column() { Text('冠脉狭窄 ≥ 50% (已知CAD)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); this.YesNoBtn(this.knownCAD, (v) => { this.knownCAD = v; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 14 });

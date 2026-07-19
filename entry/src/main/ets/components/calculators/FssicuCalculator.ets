@@ -3,6 +3,7 @@ import { calculateFssicu } from '../../engine/FssicuCalculator';
 
 @Component
 export struct FssicuCalculator {
+  @State resetKey: number = 0;
   @State roll: number = -1;
   @State situp: number = -1;
   @State sit: number = -1;
@@ -13,12 +14,32 @@ export struct FssicuCalculator {
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateFssicu(this.roll, this.situp, this.sit, this.standup, this.stand); }
 
+  reset() {
+    this.roll = -1;
+    this.situp = -1;
+    this.sit = -1;
+    this.standup = -1;
+    this.stand = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于 ICU 患者功能状态评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5 项各 0-7, 总分 0-35 (Thrush 2012)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(10).fontColor('#7A8074').margin({ bottom: 12 });
+        Row() { Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(10).fontColor('#7A8074'); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });
         FssRowComponent({ label: '② 卧位→坐位', value: this.situp, onChange: (v: number): void => { this.situp = v; this.calculate(); } });

@@ -6,7 +6,8 @@ interface CritLine {
 }
 
 @Component
-export struct BloodGasCalculator {  @State ph: string = '';
+export struct BloodGasCalculator {
+  @State resetKey: number = 0;  @State ph: string = '';
   @State paco2: string = '';
   @State paco2Unit: string = 'mmhg';
   @State pao2: string = '';
@@ -199,7 +200,59 @@ export struct BloodGasCalculator {  @State ph: string = '';
     return '#28A745';
   }
 
+  reset() {
+    this.ph = '';
+    this.paco2 = '';
+    this.paco2Unit = 'mmhg';
+    this.pao2 = '';
+    this.pao2Unit = 'mmhg';
+    this.hco3 = '';
+    this.be = '';
+    this.sao2 = '';
+    this.lac = '';
+    this.hgb = '';
+    this.hgbUnit = 'gl';
+    this.k = '';
+    this.na = '';
+    this.cl = '';
+    this.glu = '';
+    this.fio2 = '';
+    this.fio2Mode = 'dec';
+    this.acute = 'chronic';
+    this.pvco2 = '';
+    this.pvco2Unit = 'mmhg';
+    this.svo2 = '';
+    this.pvo2 = '';
+    this.pvo2Unit = 'mmhg';
+    this.showVenous = false;
+    this.result = null;
+    this.hypoxiaType = '';
+    this.hypoxiaDetail = '';
+    this.hypoxiaCalc = '';
+    this.hypoxiaCls = '';
+    this.hypoxiaTierText = '';
+    this.hypoxiaHtml = '';
+    this.rConclusion = '';
+    this.rDetail = '';
+    this.rCls = '';
+    this.rTierText = '';
+    this.rHtml = '';
+    this.critLines = [];
+    this.critHtml = '';
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       this.Header();
       this.InputForm();
@@ -232,12 +285,12 @@ export struct BloodGasCalculator {  @State ph: string = '';
   @Builder
   InputForm() {
     Column() {
-      Text('— 动脉血气 (必填)')
+      Row() { Text('— 动脉血气 (必填)')
         .fontSize(12)
         .fontColor('#E76F2C')
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+        ; Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
       Row() {
         Button('急性')

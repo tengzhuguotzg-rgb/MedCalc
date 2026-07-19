@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateRox } from '../../engine/MoreCalculators';
 
 @Component
-export struct RoxCalculator {  @State spo2: number = 0;
+export struct RoxCalculator {
+  @State resetKey: number = 0;  @State spo2: number = 0;
   @State fio2: number = 0;
   @State fio2Mode: string = 'dec';
   @State rr: number = 0;
@@ -11,12 +12,31 @@ export struct RoxCalculator {  @State spo2: number = 0;
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateRox(this.spo2, this.fio2, this.fio2Mode, this.rr); }
 
+  reset() {
+    this.spo2 = 0;
+    this.fio2 = 0;
+    this.fio2Mode = 'dec';
+    this.rr = 0;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于预测高流量氧疗(HFNC)失败风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('ROX = SpO₂/(FiO₂×RR)，Roca 2016').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() {
             Text('SpO₂ (%)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

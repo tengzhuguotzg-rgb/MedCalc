@@ -3,6 +3,7 @@ import { calculateCamicu } from '../../engine/CamicuCalculator';
 
 @Component
 export struct CamicuCalculator {
+  @State resetKey: number = 0;
   @State f1: number = -1;
   @State f2: number = -1;
   @State f3: number = -1;
@@ -12,12 +13,31 @@ export struct CamicuCalculator {
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateCamicu(this.f1, this.f2, this.f3, this.f4); }
 
+  reset() {
+    this.f1 = -1;
+    this.f2 = -1;
+    this.f3 = -1;
+    this.f4 = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于ICU谵妄筛查金标准').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('4 步法 · 特征①+②+(③或④) (Ely 2001)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 评估特征').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 评估特征').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Column() {
           Text('① 意识状态急性改变或波动').fontSize(13).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

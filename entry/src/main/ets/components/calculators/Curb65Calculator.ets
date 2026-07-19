@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateCurb65 } from '../../engine/CommonCalculators';
 
 @Component
-export struct Curb65Calculator {  @State confusion: number = -1;
+export struct Curb65Calculator {
+  @State resetKey: number = 0;  @State confusion: number = -1;
   @State urea: number = 0;
   @State ureaUnit: string = 'mmol';
   @State rr: number = 0;
@@ -20,12 +21,34 @@ export struct Curb65Calculator {  @State confusion: number = -1;
     this.result = calculateCurb65(this.confusion === 1, this.urea, this.ureaUnit, this.rr, this.sbp, this.dbp, this.age);
   }
 
+  reset() {
+    this.confusion = -1;
+    this.urea = 0;
+    this.ureaUnit = 'mmol';
+    this.rr = 0;
+    this.sbp = 0;
+    this.dbp = 0;
+    this.age = 0;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估社区获得性肺炎严重程度及住院决策').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：意识+BUN+呼吸+血压+年龄≥65，0-5分').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         
         Row() {
           Text('C 意识混乱').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);

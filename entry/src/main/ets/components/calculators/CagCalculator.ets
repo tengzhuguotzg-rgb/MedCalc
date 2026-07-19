@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateCag } from '../../engine/MoreCalculators';
 
 @Component
-export struct CagCalculator {  @State na: number = 0;
+export struct CagCalculator {
+  @State resetKey: number = 0;  @State na: number = 0;
   @State cl: number = 0;
   @State hco3: number = 0;
   @State alb: number = 0;
@@ -12,12 +13,32 @@ export struct CagCalculator {  @State na: number = 0;
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateCag(this.na, this.cl, this.hco3, this.alb, this.albUnit); }
 
+  reset() {
+    this.na = 0;
+    this.cl = 0;
+    this.hco3 = 0;
+    this.alb = 0;
+    this.albUnit = 'gl';
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于校正低蛋白血症时的阴离子间隙').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('校正AG = 计算AG + 2.5×(4 - 白蛋白g/dL)，低蛋白时必校').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 电解质').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 电解质').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() {
             Text('Na⁺ (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

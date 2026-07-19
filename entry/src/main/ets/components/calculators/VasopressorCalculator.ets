@@ -11,6 +11,7 @@ const VP_DRUGS: string[][] = [
 
 @Component
 export struct VasopressorCalculator {
+  @State resetKey: number = 0;
   @State weight: number = 0;
   @State drug: string = 'norepinephrine';
   @State concA: number = 0;
@@ -124,12 +125,36 @@ export struct VasopressorCalculator {
     return '';
   }
 
+  reset() {
+    this.weight = 0;
+    this.drug = 'norepinephrine';
+    this.concA = 0;
+    this.concB = 0;
+    this.mlhText = '';
+    this.doseText = '';
+    this.resultMlh = 0;
+    this.resultDose = 0;
+    this.resultUnit = '';
+    this.calculated = false;
+    this.inputMode = 'mlh';
+    this.resetKey = this.resetKey + 1;
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('支持双向换算：调速→剂量 或 剂量→调速').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 患者参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 患者参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         if (!this.isVp()) {
           Column() {
             Text('体重 (kg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateMehran } from '../../engine/MehranCalculator';
 
 @Component
-export struct MehranCalculator {  @State age: number = 0;
+export struct MehranCalculator {
+  @State resetKey: number = 0;  @State age: number = 0;
   @State chf: number = -1;
   @State dm: number = -1;
   @State gfr: number = 0;
@@ -19,12 +20,33 @@ export struct MehranCalculator {  @State age: number = 0;
     this.result = calculateMehran(this.age, this.chf === 1, this.dm === 1, this.gfr, this.contrastVol, this.anemia === 1);
   }
 
+  reset() {
+    this.age = 0;
+    this.chf = -1;
+    this.dm = -1;
+    this.gfr = 0;
+    this.contrastVol = 0;
+    this.anemia = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于预测冠脉介入后造影剂肾病风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('8项：低血压+IABP+心衰+年龄+贫血+糖尿病+造影剂+肌酐/eGFR').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() { Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(40).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);

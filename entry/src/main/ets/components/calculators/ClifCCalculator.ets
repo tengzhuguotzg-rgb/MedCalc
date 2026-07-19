@@ -3,6 +3,7 @@ import { calculateClifC } from '../../engine/ClifCCalculator';
 
 @Component
 export struct ClifCCalculator {
+  @State resetKey: number = 0;
   @State bilirubin: number = 0;
   @State bilUnit: string = 'umol';
   @State inr: number = 0;
@@ -21,12 +22,40 @@ export struct ClifCCalculator {
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateClifC(this.bilirubin, this.bilUnit, this.creatinine, this.crUnit, this.inr, this.hepaticEnceph, this.map, this.vaso, this.pao2, this.fio2, this.fio2Mode, this.age, this.wbc); }
 
+  reset() {
+    this.bilirubin = 0;
+    this.bilUnit = 'umol';
+    this.inr = 0;
+    this.hepaticEnceph = -1;
+    this.map = 0;
+    this.vaso = '';
+    this.creatinine = 0;
+    this.crUnit = 'umol';
+    this.pao2 = 0;
+    this.fio2 = 0;
+    this.fio2Mode = 'dec';
+    this.age = 0;
+    this.wbc = 0;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于慢加急性肝衰竭死亡率预测 (CLIF-C ACLF)').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('6器官评估(0-3) + 年龄 + WBC，连续评分 (Jalan 2014)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 肝功能').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 肝功能').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Column() { Text('胆红素').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '胆红素' }).type(InputType.NUMBER_DECIMAL).height(40).fontSize(16).backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).placeholderColor('#999999').width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 4 });
         Flex({ wrap: FlexWrap.Wrap }) {

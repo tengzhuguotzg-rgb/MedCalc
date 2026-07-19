@@ -3,6 +3,7 @@ import { calculateMnutric } from '../../engine/MnutricCalculator';
 
 @Component
 export struct MnutricCalculator {
+  @State resetKey: number = 0;
   @State age: number = -1;
   @State apache2: number = 0;
   @State sofa: number = 0;
@@ -13,12 +14,32 @@ export struct MnutricCalculator {
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculateMnutric(this.age, this.apache2, this.sofa, this.comorb, this.icuDay); }
 
+  reset() {
+    this.age = -1;
+    this.apache2 = 0;
+    this.sofa = 0;
+    this.comorb = -1;
+    this.icuDay = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于 ICU 患者营养风险评估').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5 项, 总分 0-9, ≥5 高营养风险 (Heyland 2011)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Column() {
           Text('年龄').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').margin({ bottom: 6 });

@@ -2,7 +2,8 @@ import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngi
 import { calculateChadsvasc } from '../../engine/MoreCalculators';
 
 @Component
-export struct ChadsvascCalculator {  @State chf: number = -1;
+export struct ChadsvascCalculator {
+  @State resetKey: number = 0;  @State chf: number = -1;
   @State htn: number = -1;
   @State age75: number = -1;
   @State dm: number = -1;
@@ -21,12 +22,35 @@ export struct ChadsvascCalculator {  @State chf: number = -1;
     this.result = calculateChadsvasc(this.chf === 1, this.htn === 1, this.age75 === 1, this.dm === 1, this.stroke === 1, this.vasc === 1, this.age65 === 1, this.female === 1);
   }
 
+  reset() {
+    this.chf = -1;
+    this.htn = -1;
+    this.age75 = -1;
+    this.dm = -1;
+    this.stroke = -1;
+    this.vasc = -1;
+    this.age65 = -1;
+    this.female = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于评估房颤患者脑卒中风险，指导抗凝决策').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('8项：心衰+高血压+年龄+糖尿病+卒中+血管病+性别，总分0-9').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         
         Row() { Text('C 心衰').fontSize(14).fontWeight(FontWeight.Medium).fontColor('#1F2421').layoutWeight(1);
           Row() { Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.chf === 0 ? '#FFFFFF' : '#2D5440').backgroundColor(this.chf === 0 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.chf === 0 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(36).layoutWeight(1).onClick(() => { this.chf = 0; this.calculate(); });

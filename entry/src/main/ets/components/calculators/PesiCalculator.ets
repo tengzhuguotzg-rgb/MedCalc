@@ -3,6 +3,7 @@ import { calculatePesi } from '../../engine/PesiCalculator';
 
 @Component
 export struct PesiCalculator {
+  @State resetKey: number = 0;
   @State age: number = 0;
   @State sex: number = -1;
   @State cancer: number = -1;
@@ -19,12 +20,38 @@ export struct PesiCalculator {
   aboutToAppear() { this.calculate(); }
   calculate() { this.result = calculatePesi(this.age, this.sex, this.cancer, this.chf, this.cld, this.hr, this.sbp, this.rr, this.temp, this.ams, this.osp); }
 
+  reset() {
+    this.age = 0;
+    this.sex = -1;
+    this.cancer = -1;
+    this.chf = -1;
+    this.cld = -1;
+    this.hr = 0;
+    this.sbp = 0;
+    this.rr = 0;
+    this.temp = 0;
+    this.ams = -1;
+    this.osp = -1;
+    this.result = null;
+    this.resetKey = this.resetKey + 1;
+    this.calculate();
+  }
+
   build() {
+    if (this.resetKey % 2 === 0) {
+      this.CalcContent();
+    } else {
+      this.CalcContent();
+    }
+  }
+
+  @Builder
+  CalcContent() {
     Column() {
       Column() { Text('用于肺栓塞 30 天死亡风险分层').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('11 项, 总分 0-300+, sPESI 简化版 (Aujesky 2005)').fontSize(12).fontColor('#7A8074').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Text('— PESI 参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Row() { Text('— PESI 参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#7A8074').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
