@@ -14,12 +14,17 @@ interface CrumbItem {
 
 @Component
 export struct KnowledgeSearchPage {
+  kbStack: NavPathStack = new NavPathStack();
+  onNavDepthChanged: (depth: number) => void = () => {};
+  @Watch('onBackAction') @Prop backAction: number = 0;
+  private lastBackAction: number = 0;
+  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
   @State searchKeyword: string = '';
   @State searchResults: SearchResult[] = [];
   @State dirEntries: KnowledgeDirEntry[] = [];
   @State groupedPages: GroupedPageEntry[] = [];
   @State currentCategoryName: string = '';
-  @Watch('syncNavDepth') @State readingPage: KnowledgePage | null = null;
+  @Watch('notifyNavDepth') @State readingPage: KnowledgePage | null = null;
   @State readingPath: string = '';
   @State pageNavStack: string[] = [];
   @State relatedPages: SearchResult[] = [];
@@ -27,14 +32,11 @@ export struct KnowledgeSearchPage {
   @State isPageLoading: boolean = false;
   @State isLoadingCategory: boolean = false;
   @State isKbIniting: boolean = true;
-  @Watch('syncNavDepth') @State browseMode: string = 'root';
+  @Watch('notifyNavDepth') @State browseMode: string = 'root';
   @State markdownLines: MarkdownLine[] = [];
   @State wikilinks: string[] = [];
   @State tocEntries: TocEntry[] = [];
   @State showToc: boolean = false;
-  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
-  @Watch('onKbBackFlagChanged') @StorageLink('kbBackFlag') kbBackFlag: number = 0;
-  private lastKbBackFlag: number = 0;
 
   private kbService: KnowledgeService = KnowledgeService.getInstance();
   private pageScroller: Scroller = new Scroller();
@@ -43,7 +45,7 @@ export struct KnowledgeSearchPage {
     this.waitForInit();
   }
 
-  syncNavDepth() {
+  getNavDepth(): number {
     let depth = 0;
     if (this.browseMode === 'category') {
       depth = 1;
@@ -51,30 +53,18 @@ export struct KnowledgeSearchPage {
     if (this.readingPage !== null) {
       depth = 2;
     }
-    AppStorage.setOrCreate<number>('kbNavDepth', depth);
+    return depth;
   }
 
-  onKbBackFlagChanged() {
-    if (this.kbBackFlag !== this.lastKbBackFlag) {
-      this.lastKbBackFlag = this.kbBackFlag;
+  notifyNavDepth() {
+    this.onNavDepthChanged(this.getNavDepth());
+  }
+
+  onBackAction() {
+    if (this.backAction !== this.lastBackAction) {
+      this.lastBackAction = this.backAction;
       this.navigateBack();
     }
-  }
-
-  navigateBack(): boolean {
-    if (this.readingPage !== null) {
-      this.closeReader();
-      this.syncNavDepth();
-      return true;
-    }
-    if (this.browseMode === 'category') {
-      this.browseMode = 'root';
-      this.groupedPages = [];
-      this.currentCategoryName = '';
-      this.syncNavDepth();
-      return true;
-    }
-    return false;
   }
 
   onKbNavigate() {
@@ -83,6 +73,22 @@ export struct KnowledgeSearchPage {
       AppStorage.setOrCreate<string>('kbNavigatePath', '');
       this.openPage(path);
     }
+  }
+
+  navigateBack(): boolean {
+    if (this.readingPage !== null) {
+      this.closeReader();
+      this.notifyNavDepth();
+      return true;
+    }
+    if (this.browseMode === 'category') {
+      this.browseMode = 'root';
+      this.groupedPages = [];
+      this.currentCategoryName = '';
+      this.notifyNavDepth();
+      return true;
+    }
+    return false;
   }
 
   async waitForInit() {
@@ -141,7 +147,7 @@ export struct KnowledgeSearchPage {
     this.relatedPages = [];
     this.showToc = false;
     this.searchKeyword = tag;
-    this.syncNavDepth();
+    this.notifyNavDepth();
     this.doSearch();
   }
 

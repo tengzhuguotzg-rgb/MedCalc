@@ -5,7 +5,7 @@ import { AppDimens } from '../utils/AppDimens';
 
 @Component
 export struct PatientListPage {
-  @Link currentPatientId: string;
+  patientStack: NavPathStack = new NavPathStack();
   @State patients: Patient[] = [];
   @State searchKeyword: string = '';
   @State alertCounts: Map<string, number> = new Map();
@@ -151,7 +151,7 @@ export struct PatientListPage {
               .backgroundColor(AppColors.card)
               .borderRadius(10)
               .onClick(() => {
-                this.currentPatientId = patient.id;
+                this.patientStack.pushPath({ name: 'PatientDetail', param: patient.id });
               })
             }
           }, (patient: Patient) => patient.id)

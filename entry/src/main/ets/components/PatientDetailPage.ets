@@ -220,7 +220,10 @@ class DiagnosisKbData {
 
 @Component
 export struct PatientDetailPage {
-  @Link currentPatientId: string;
+  patientStack: NavPathStack = new NavPathStack();
+  @Prop currentPatientId: string = '';
+  @Watch('onBackFlagChanged') @Prop backFlag: number = 0;
+  private lastBackFlag: number = 0;
   @State dashboard: PatientDashboard = new PatientDashboard();
   @State loading: boolean = false;
   @State expandedAlertIds: Set<number> = new Set();
@@ -245,8 +248,6 @@ export struct PatientDetailPage {
   @State @Watch('onDetailNavChanged') showDiagnosisDetail: boolean = false;
   @State @Watch('onDetailNavChanged') showDataDetail: boolean = false;
   @State @Watch('onDetailNavChanged') showRecordsDetail: boolean = false;
-  @StorageLink('patientNavDepth') patientNavDepth: number = 0;
-  @Watch('onBackFlagChanged') @StorageLink('patientBackFlag') patientBackFlag: number = 0;
   @State deleteRecordId: string = '';
   @State showDeleteConfirm: boolean = false;
   @State uploading: boolean = false;
@@ -273,12 +274,26 @@ export struct PatientDetailPage {
   private assistantService: AssistantService = AssistantService.getInstance();
   private kbService: KnowledgeService = KnowledgeService.getInstance();
   private dataFieldSpecs: DataFieldSpec[] = [];
-  private lastBackFlag: number = 0;
 
   aboutToAppear() {
+    const paramArr: string[] = this.patientStack.getParamByName('PatientDetail') as string[];
+    if (paramArr !== null && paramArr !== undefined && paramArr.length > 0) {
+      const paramId = paramArr[0];
+      if (paramId !== undefined && paramId !== null && paramId.length > 0) {
+        this.currentPatientId = paramId;
+      }
+    }
     this.dataFieldSpecs = this.assistantService.getDataFieldSpecs();
     this.loadDashboard();
-    this.syncNavDepth();
+  }
+
+  onBackFlagChanged() {
+    if (this.backFlag !== this.lastBackFlag) {
+      this.lastBackFlag = this.backFlag;
+      if (!this.navigateBack()) {
+        this.patientStack.pop();
+      }
+    }
   }
 
   saveKbData(kbData: DiagnosisKbData) {
@@ -306,32 +321,11 @@ export struct PatientDetailPage {
   }
 
   onDetailNavChanged() {
-    this.syncNavDepth();
   }
 
   onKbReaderPathChanged() {
     if (this.showKbReader && this.kbReaderPath.length > 0) {
       this.loadKbReaderContent(this.kbReaderPath);
-    }
-  }
-
-  syncNavDepth() {
-    let depth = 0;
-    if (this.currentPatientId.length > 0) {
-      depth = 1;
-    }
-    if (this.showAlertDetail || this.showDiagnosisDetail || this.showDataDetail || this.showRecordsDetail || this.showRecommendationsDetail) {
-      depth = 2;
-    }
-    AppStorage.setOrCreate<number>('patientNavDepth', depth);
-  }
-
-  onBackFlagChanged() {
-    if (this.patientBackFlag !== this.lastBackFlag) {
-      this.lastBackFlag = this.patientBackFlag;
-      if (this.patientNavDepth > 0) {
-        this.navigateBack();
-      }
     }
   }
 
@@ -356,10 +350,6 @@ export struct PatientDetailPage {
     }
     if (this.showRecordsDetail) {
       this.showRecordsDetail = false;
-      return true;
-    }
-    if (this.currentPatientId.length > 0) {
-      this.currentPatientId = '';
       return true;
     }
     return false;
@@ -849,7 +839,9 @@ export struct PatientDetailPage {
             .fontColor(AppColors.primary)
             .backgroundColor(Color.Transparent)
             .onClick(() => {
-              this.navigateBack();
+              if (!this.navigateBack()) {
+                this.patientStack.pop();
+              }
             })
           Text(this.dashboard.patient.name)
             .fontSize(18)
@@ -987,11 +979,11 @@ export struct PatientDetailPage {
        })
       }
      }
-     .width('100%')
-     .height('100%')
+      .width('100%')
+      .height('100%')
     }
 
-   @Builder
+    @Builder
   AlertPreviewCard() {
     Column() {
       Row() {

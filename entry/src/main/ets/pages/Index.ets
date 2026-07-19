@@ -57,38 +57,28 @@ struct Index {
   @State favorites: string[] = [];
   @State sidebarCollapsed: boolean = true;
   @State currentTab: number = 0;
-  @State currentPatientId: string = '';
-  @StorageLink('patientNavDepth') patientNavDepth: number = 0;
-  @StorageLink('patientBackFlag') patientBackFlag: number = 0;
-  @StorageLink('kbNavDepth') kbNavDepth: number = 0;
-  @Watch('onKbNav') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
+  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
+  @State kbNavDepth: number = 0;
+  @State kbBackAction: number = 0;
+  @State patientBackFlag: number = 0;
+  patientStack: NavPathStack = new NavPathStack();
+  kbStack: NavPathStack = new NavPathStack();
 
   aboutToAppear() {
     const prefsService = PreferencesService.getInstance();
     this.favorites = prefsService.getFavorites();
     this.currentCalc = prefsService.getLastCalculator();
-    AppStorage.setOrCreate<number>('patientNavDepth', 0);
-    AppStorage.setOrCreate<number>('patientBackFlag', 0);
-    AppStorage.setOrCreate<number>('kbNavDepth', 0);
-    AppStorage.setOrCreate<number>('kbBackFlag', 0);
-    AppStorage.setOrCreate<string>('kbNavigatePath', '');
   }
 
-  onKbNav() {
+  onKbNavigate() {
     if (this.kbNavigatePath.length > 0) {
       this.currentTab = 3;
     }
   }
 
   onBackPress(): boolean | void {
-    if (this.kbNavDepth > 0) {
-      const flag = AppStorage.get<number>('kbBackFlag') || 0;
-      AppStorage.setOrCreate<number>('kbBackFlag', flag + 1);
-      return true;
-    }
-    if (this.patientNavDepth > 0) {
-      const flag = AppStorage.get<number>('patientBackFlag') || 0;
-      AppStorage.setOrCreate<number>('patientBackFlag', flag + 1);
+    if (this.currentTab === 3 && this.kbNavDepth > 0) {
+      this.kbBackAction++;
       return true;
     }
     return false;
@@ -113,16 +103,24 @@ struct Index {
       .tabBar(this.TabBarBuilder('助手', 1))
 
       TabContent() {
-        if (this.currentPatientId.length > 0) {
-          PatientDetailPage({ currentPatientId: $currentPatientId });
-        } else {
-          PatientListPage({ currentPatientId: $currentPatientId });
+        Navigation(this.patientStack) {
+          PatientListPage({ patientStack: this.patientStack });
         }
+        .hideTitleBar(true)
+        .navDestination(this.PatientRouteMap)
       }
       .tabBar(this.TabBarBuilder('病历', 2))
 
       TabContent() {
-        KnowledgeSearchPage();
+        Navigation(this.kbStack) {
+          KnowledgeSearchPage({
+            kbStack: this.kbStack,
+            onNavDepthChanged: (depth: number) => { this.kbNavDepth = depth; },
+            backAction: this.kbBackAction,
+          });
+        }
+        .hideTitleBar(true)
+        .navDestination(this.KbRouteMap)
       }
       .tabBar(this.TabBarBuilder('知识库', 3))
 
@@ -138,6 +136,24 @@ struct Index {
     .width('100%')
     .height('100%')
     .expandSafeArea([SafeAreaType.SYSTEM], [SafeAreaEdge.BOTTOM])
+  }
+
+  @Builder
+  PatientRouteMap(name: string) {
+    if (name === 'PatientDetail') {
+      NavDestination() {
+        PatientDetailPage({ patientStack: this.patientStack, backFlag: this.patientBackFlag });
+      }
+      .hideTitleBar(true)
+      .onBackPressed(() => {
+        this.patientBackFlag++;
+        return true;
+      })
+    }
+  }
+
+  @Builder
+  KbRouteMap(name: string) {
   }
 
   @Builder
