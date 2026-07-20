@@ -61,8 +61,10 @@
   - 已做：color.json base 44 token + dark 44 token；AppColors→ResourceStr+$r()；CalcEngine/BloodGas/Patient/KbMarkdownParser 色返回值→ResourceStr；SettingsPage 外观Radio(跟随系统/浅色/深色)；PreferencesService saveThemeMode/getThemeMode；EntryAbility 启动读theme→setColorMode（`05d3a9f`）
 - [x] **15. 返回逻辑碎片化**：`Index.ets:82-94` AppStorage flag 模拟返回栈；详情页 5 层布尔分发
   - 已做：Patient tab→Navigation(patientStack)+NavDestination.onBackPressed→patientBackFlag计数器；KB tab→Navigation(kbStack)+onNavDepthChanged/backAction回调；Index.onBackPress仅委托KB tab；所有旧AppStorage flag已清除grep零引用（`2aff4cb`）；修复ResourceStr+'20'徽章底色回归→getUrgencyBgColor/getLlmConfirmBgColor（`9912c8f`）；清除死代码KbRouteMap/空onDetailNavChanged/kbStack传递（`aa05b95`）
-- [ ] **16. 字符串未资源化**：string.json 仅 3 条（只做中文可接受，需知情决策）
-- [ ] **17. 代码风格**：整行 UI 压成单行（`SofaCalculator.ets:29` 400+ 字符）
+- [x] **16. 字符串未资源化**：string.json 仅 3 条（只做中文可接受，需知情决策）
+  - 已做：string.json 3→~250条资源(通用/Tab/设置/患者/知识库/计算器)；SettingsPage/PatientListPage/Index 硬编码中文→$r()；仅提取用户可见UI文本，不触动数据域key/解析关键词
+- [x] **17. 代码风格**：整行 UI 压成单行（`SofaCalculator.ets:29` 400+ 字符）
+  - 已做：87处300+字符长行折行，13个计算器+3个组件文件方法链换行、属性分组缩进
 
 ## 修复过程中新发现的问题（未改）
 
