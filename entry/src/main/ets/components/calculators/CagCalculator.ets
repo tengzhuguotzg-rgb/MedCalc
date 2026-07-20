@@ -38,7 +38,12 @@ export struct CagCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于校正低蛋白血症时的阴离子间隙').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('校正AG = 计算AG + 2.5×(4 - 白蛋白g/dL)，低蛋白时必校').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() {
+        Text('用于校正低蛋白血症时的阴离子间隙')
+          .fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
+        Text('校正AG = 计算AG + 2.5×(4 - 白蛋白g/dL)，低蛋白时必校')
+          .fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
         Row() { Text('— 电解质').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
@@ -64,7 +69,12 @@ export struct CagCalculator {
         Column() {
           Text('血清白蛋白').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Row() {
-            TextInput({ placeholder: '白蛋白' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).layoutWeight(1)
+            TextInput({ placeholder: '白蛋白' })
+              .type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+              .layoutWeight(1)
               .onChange((value: string) => { this.alb = parseFloat(value) || 0; this.calculate(); });
             Row() {
               Button('g/L').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gl' ? AppColors.card : AppColors.textOption)

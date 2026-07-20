@@ -39,7 +39,12 @@ export struct MnutricCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于 ICU 患者营养风险评估').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5 项, 总分 0-9, ≥5 高营养风险 (Heyland 2011)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() {
+        Text('用于 ICU 患者营养风险评估')
+          .fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
+        Text('5 项, 总分 0-9, ≥5 高营养风险 (Heyland 2011)')
+          .fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
         Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
@@ -57,11 +62,21 @@ export struct MnutricCalculator {
         Row() {
           Column() {
             Text('APACHE II').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '0-71' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((v: string) => { this.apache2 = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '0-71' })
+              .type(InputType.Number).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+              .onChange((v: string) => { this.apache2 = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('SOFA 评分').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '0-24' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).onChange((v: string) => { this.sofa = parseFloat(v) || 0; this.calculate(); });
+            TextInput({ placeholder: '0-24' })
+              .type(InputType.Number).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+              .onChange((v: string) => { this.sofa = parseFloat(v) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 10 });
 

@@ -84,8 +84,20 @@ struct OptRow {
     Row() {
       Text(this.label).fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
       Row() {
-        Button('无').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.value === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: this.value === 0 ? 0 : 1, color: AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { if (this.onChange) { this.onChange(0); } });
-        Button('有').fontSize(14).fontWeight(FontWeight.Bold).fontColor(this.value === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: this.value === 1 ? 0 : 1, color: AppColors.border }).borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1).onClick(() => { if (this.onChange) { this.onChange(1); } });
+        Button('无')
+          .fontSize(14).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 0 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 0 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: this.value === 0 ? 0 : 1, color: AppColors.border })
+          .borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1)
+          .onClick(() => { if (this.onChange) { this.onChange(0); } });
+        Button('有')
+          .fontSize(14).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 1 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 1 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: this.value === 1 ? 0 : 1, color: AppColors.border })
+          .borderRadius(8).height(AppDimens.touchTarget).layoutWeight(1)
+          .onClick(() => { if (this.onChange) { this.onChange(1); } });
       }.width(100);
     }.width('100%').margin({ bottom: 12 });
   }

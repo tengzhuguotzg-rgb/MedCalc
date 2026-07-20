@@ -65,11 +65,23 @@ export struct News2Calculator {
         Row() {
           Column() {
             Text('体温 (°C)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: '体温' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).width('100%').onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: '体温' })
+              .type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+              .width('100%')
+              .onChange((value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
             Text('收缩压 SBP (mmHg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: 'SBP' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder).width('100%').onChange((value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); });
+            TextInput({ placeholder: 'SBP' })
+              .type(InputType.Number).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+              .width('100%')
+              .onChange((value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
 

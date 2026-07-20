@@ -39,10 +39,20 @@ export struct FssicuCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于 ICU 患者功能状态评估').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5 项各 0-7, 总分 0-35 (Thrush 2012)').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() {
+        Text('用于 ICU 患者功能状态评估')
+          .fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
+        Text('5 项各 0-7, 总分 0-35 (Thrush 2012)')
+          .fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立').fontSize(12).fontColor(AppColors.textSecondary); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() {
+          Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立')
+            .fontSize(12).fontColor(AppColors.textSecondary);
+          Blank();
+          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+        }.width('100%').margin({ bottom: 12 });
 
         FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });
         FssRowComponent({ label: '② 卧位→坐位', value: this.situp, onChange: (v: number): void => { this.situp = v; this.calculate(); } });
@@ -68,14 +78,62 @@ struct FssRowComponent {
     Column() {
       Text(this.label).fontSize(13).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
       Row() {
-        Button('0').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 0 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 0 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 0 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(0); } });
-        Button('1').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 1 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 1 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 1 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(1); } });
-        Button('2').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 2 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 2 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 2 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(2); } });
-        Button('3').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 3 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 3 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 3 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(3); } });
-        Button('4').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 4 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 4 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 4 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(4); } });
-        Button('5').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 5 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 5 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 5 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(5); } });
-        Button('6').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 6 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 6 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 6 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(6); } });
-        Button('7').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.value === 7 ? AppColors.card : AppColors.textOption).backgroundColor(this.value === 7 ? AppColors.primary : AppColors.fillNeutral).border({ width: 1, color: this.value === 7 ? AppColors.primary : AppColors.border }).borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 }).onClick(() => { if (this.onChange) { this.onChange(7); } });
+        Button('0')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 0 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 0 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 0 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(0); } });
+        Button('1')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 1 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 1 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 1 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(1); } });
+        Button('2')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 2 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 2 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 2 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(2); } });
+        Button('3')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 3 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 3 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 3 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(3); } });
+        Button('4')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 4 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 4 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 4 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(4); } });
+        Button('5')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 5 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 5 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 5 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(5); } });
+        Button('6')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 6 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 6 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 6 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(6); } });
+        Button('7')
+          .fontSize(12).fontWeight(FontWeight.Bold)
+          .fontColor(this.value === 7 ? AppColors.card : AppColors.textOption)
+          .backgroundColor(this.value === 7 ? AppColors.primary : AppColors.fillNeutral)
+          .border({ width: 1, color: this.value === 7 ? AppColors.primary : AppColors.border })
+          .borderRadius(6).height(32).width(32).margin({ right: 3, bottom: 4 })
+          .onClick(() => { if (this.onChange) { this.onChange(7); } });
       }.width('100%');
     }.width('100%').margin({ bottom: 10 });
   }

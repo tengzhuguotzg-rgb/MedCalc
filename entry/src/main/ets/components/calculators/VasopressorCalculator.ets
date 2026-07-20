@@ -153,7 +153,12 @@ export struct VasopressorCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('支持双向换算：调速→剂量 或 剂量→调速').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() {
+        Text('升压药剂量换算 (mL/h ↔ μg/kg/min，垂体后叶素为 U/min)')
+          .fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
+        Text('支持双向换算：调速→剂量 或 剂量→调速')
+          .fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+      }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
         Row() { Text('— 患者参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
@@ -180,7 +185,11 @@ export struct VasopressorCalculator {
         Row() {
           Column() {
             Text(this.getConcLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+            TextInput({ placeholder: this.isVp() ? 'U' : 'mg' })
+              .type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .onChange((value: string) => { this.onConcAChange(value); });
           }.layoutWeight(1);
           Column() {
@@ -203,7 +212,11 @@ export struct VasopressorCalculator {
           }.layoutWeight(1);
           Column() {
             Text(this.getDoseLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+            TextInput({ placeholder: this.isVp() ? 'U/min' : 'μg/kg/min' })
+              .type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16)
+              .backgroundColor(AppColors.card).borderRadius(8)
+              .border({ width: 1, color: AppColors.border })
+              .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .onChange((value: string) => { this.onDoseChange(value); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%');
