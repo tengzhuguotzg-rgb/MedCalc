@@ -114,13 +114,11 @@ struct Index {
       TabContent() {
         Navigation(this.kbStack) {
           KnowledgeSearchPage({
-            kbStack: this.kbStack,
             onNavDepthChanged: (depth: number) => { this.kbNavDepth = depth; },
             backAction: this.kbBackAction,
           });
         }
         .hideTitleBar(true)
-        .navDestination(this.KbRouteMap)
       }
       .tabBar(this.TabBarBuilder('知识库', 3))
 
@@ -150,10 +148,6 @@ struct Index {
         return true;
       })
     }
-  }
-
-  @Builder
-  KbRouteMap(name: string) {
   }
 
   @Builder

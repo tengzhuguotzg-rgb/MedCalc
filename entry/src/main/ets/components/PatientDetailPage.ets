@@ -52,10 +52,10 @@ export struct PatientDetailPage {
   @State manualFilterKeyword: string = '';
   @State domainEntries: DomainEntry[] = [];
   @State expandedRecordIds: Set<string> = new Set();
-  @State @Watch('onDetailNavChanged') showAlertDetail: boolean = false;
-  @State @Watch('onDetailNavChanged') showDiagnosisDetail: boolean = false;
-  @State @Watch('onDetailNavChanged') showDataDetail: boolean = false;
-  @State @Watch('onDetailNavChanged') showRecordsDetail: boolean = false;
+  @State showAlertDetail: boolean = false;
+  @State showDiagnosisDetail: boolean = false;
+  @State showDataDetail: boolean = false;
+  @State showRecordsDetail: boolean = false;
   @State deleteRecordId: string = '';
   @State showDeleteConfirm: boolean = false;
   @State uploading: boolean = false;
@@ -127,9 +127,6 @@ export struct PatientDetailPage {
         }
       }
     }
-  }
-
-  onDetailNavChanged() {
   }
 
   onKbReaderPathChanged() {

@@ -14,7 +14,6 @@ interface CrumbItem {
 
 @Component
 export struct KnowledgeSearchPage {
-  kbStack: NavPathStack = new NavPathStack();
   onNavDepthChanged: (depth: number) => void = () => {};
   @Watch('onBackAction') @Prop backAction: number = 0;
   private lastBackAction: number = 0;
