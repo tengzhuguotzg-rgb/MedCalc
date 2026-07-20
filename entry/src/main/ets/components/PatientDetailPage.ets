@@ -398,8 +398,8 @@ export struct PatientDetailPage {
     } catch (e) {
       this.uploading = false;
       const errMsg = e instanceof Error ? e.message : '未知错误';
-      this.uploadMsg = '上传失败: ' + errMsg;
-      hilog.error(0xF000, 'PatientDetail', 'processUpload failed');
+      this.uploadMsg = '上传失败，请重试';
+      hilog.error(0xF000, 'PatientDetail', 'processUpload failed: ' + errMsg);
     }
   }
 
@@ -426,10 +426,11 @@ export struct PatientDetailPage {
               }
             });
           } else if (this.showDiagnosisDetail) {
-           DiagnosisDetailPageView({
-             dashboard: this.dashboard,
-             currentPatientId: this.currentPatientId,
-             loading: this.loading,
+            DiagnosisDetailPageView({
+              dashboard: this.dashboard,
+              currentPatientId: this.currentPatientId,
+              loading: this.loading,
+              dataFieldSpecs: this.dataFieldSpecs,
              addDiagName: $addDiagName,
              addDiagCategory: $addDiagCategory,
              showAddDiagnosis: $showAddDiagnosis,
@@ -477,9 +478,10 @@ export struct PatientDetailPage {
              }
            });
          } else if (this.showRecordsDetail) {
-           RecordsDetailPageView({
-             dashboard: this.dashboard,
-             expandedRecordIds: $expandedRecordIds,
+            RecordsDetailPageView({
+              dashboard: this.dashboard,
+              dataFieldSpecs: this.dataFieldSpecs,
+              expandedRecordIds: $expandedRecordIds,
              deleteRecordId: $deleteRecordId,
              showDeleteConfirm: $showDeleteConfirm,
              onBack: () => { this.showRecordsDetail = false; }

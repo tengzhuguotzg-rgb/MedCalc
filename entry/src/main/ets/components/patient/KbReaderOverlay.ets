@@ -3,6 +3,20 @@ import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
 import { KbMarkdownRenderer } from './KbMarkdownRenderer';
 
+function formatKbBreadcrumb(path: string): string {
+  if (path.length === 0) {
+    return '';
+  }
+  let display = path;
+  if (display.indexOf('kb/') === 0) {
+    display = display.substring(3);
+  }
+  if (display.indexOf('.md') === display.length - 3) {
+    display = display.substring(0, display.length - 3);
+  }
+  return display.replace(/\//g, ' › ');
+}
+
 @Component
 export struct KbReaderOverlay {
   @Consume showKbReader: boolean;
@@ -41,7 +55,7 @@ export struct KbReaderOverlay {
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary)
             .width('100%');
-          Text(this.kbReaderPath)
+          Text(formatKbBreadcrumb(this.kbReaderPath))
             .fontSize(11)
             .fontColor(AppColors.textSecondary)
             .width('100%')

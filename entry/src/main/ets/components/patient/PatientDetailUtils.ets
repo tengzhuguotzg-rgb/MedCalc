@@ -562,11 +562,23 @@ export function formatCriterion(criterion: string, specs: DataFieldSpec[]): stri
     if (op === 'has_tier_containing') {
       return calcName + ' 分级含"' + value + '"';
     }
+    if (op === 'has_bilirubin_score') {
+      return calcName + ' 胆红素评分≥' + value;
+    }
     const opSym = criterionOpSymbol(op);
     if (opSym.length === 0) {
       return criterion;
     }
     return calcName + ' ' + opSym + ' ' + value;
+  }
+  if (op === 'in') {
+    const label = getFieldValueLabel(field, specs);
+    const options = value.split(',');
+    const translated: string[] = [];
+    for (let i = 0; i < options.length; i++) {
+      translated.push(translateSelectValue(field, options[i].trim(), specs));
+    }
+    return label + ' 为' + translated.join('或');
   }
   const opSym = criterionOpSymbol(op);
   if (opSym.length === 0) {
@@ -574,7 +586,85 @@ export function formatCriterion(criterion: string, specs: DataFieldSpec[]): stri
   }
   const label = getFieldValueLabel(field, specs);
   const unit = getFieldUnit(field, specs);
-  return label + ' ' + opSym + ' ' + value + (unit.length > 0 ? ' ' + unit : '');
+  const displayValue = translateSelectValue(field, value, specs);
+  return label + ' ' + opSym + ' ' + displayValue + (unit.length > 0 && displayValue === value ? ' ' + unit : '');
+}
+
+export function translateSelectValue(field: string, value: string, specs: DataFieldSpec[]): string {
+  const spec = findFieldSpec(field, specs);
+  if (spec === null || spec.type !== 'select' || spec.options === undefined) {
+    return value;
+  }
+  if (spec.options.indexOf(value) < 0) {
+    return value;
+  }
+  if (value === 'none') {
+    return '无';
+  }
+  if (value === '0') {
+    return '否';
+  }
+  if (value === '1') {
+    return '是';
+  }
+  if (field === 'vaso') {
+    const vasoMap: Record<string, string> = {
+      'none': '无',
+      'dopamine_low': '多巴胺(低)',
+      'dopamine_mid': '多巴胺(中)',
+      'dopamine_high': '多巴胺(高)',
+      'norepinephrine': '去甲肾上腺素',
+      'epinephrine': '肾上腺素',
+      'dobutamine': '多巴酚丁胺'
+    };
+    const mapped = vasoMap[value];
+    if (mapped !== undefined) {
+      return mapped;
+    }
+  }
+  if (field === 'consciousness') {
+    const map: Record<string, string> = {
+      'alert': '清醒',
+      'voice': '对声音有反应',
+      'pain': '对疼痛有反应',
+      'unresponsive': '无反应'
+    };
+    const mapped = map[value];
+    if (mapped !== undefined) {
+      return mapped;
+    }
+  }
+  if (field === 'sex') {
+    if (value === 'male') { return '男'; }
+    if (value === 'female') { return '女'; }
+  }
+  if (field === 'fio2Mode') {
+    if (value === 'dec') { return '小数'; }
+    if (value === 'pct') { return '百分比'; }
+  }
+  if (field === 'chronic') {
+    const map: Record<string, string> = {
+      'none': '无',
+      'nonSurgical': '非手术',
+      'surgical': '手术'
+    };
+    const mapped = map[value];
+    if (mapped !== undefined) {
+      return mapped;
+    }
+  }
+  if (field === 'perf' || field === 'resus') {
+    if (value === 'A') { return 'A(稳定)'; }
+    if (value === 'B') { return 'B(代偿)'; }
+    if (value === 'C') { return 'C(失代偿)'; }
+  }
+  if (field === 'ageCat') {
+    if (value === '0') { return '<65岁'; }
+    if (value === '1') { return '65-74岁'; }
+    if (value === '2') { return '≥75岁'; }
+    if (value === '3') { return '≥75岁'; }
+  }
+  return value;
 }
 
 export function formatMissingCriteria(raw: string, specs: DataFieldSpec[]): string {
@@ -651,4 +741,47 @@ export function getDiagnosisKb(diagnosisKbMap: DiagnosisKbData[], ruleId: string
     }
   }
   return null;
+}
+
+export function formatExtractedJson(json: string, specs: DataFieldSpec[]): string[] {
+  if (json.length === 0) {
+    return [];
+  }
+  let parsed: Record<string, string> = {};
+  try {
+    const obj = JSON.parse(json) as Record<string, string>;
+    parsed = obj;
+  } catch (_e) {
+    return [json];
+  }
+  const lines: string[] = [];
+  const keys = Object.keys(parsed);
+  for (let i = 0; i < keys.length; i++) {
+    const key = keys[i];
+    const label = getFieldValueLabel(key, specs);
+    const unit = getFieldUnit(key, specs);
+    const value = translateSelectValue(key, parsed[key], specs);
+    lines.push(label + '：' + value + (unit.length > 0 ? ' ' + unit : ''));
+  }
+  return lines;
+}
+
+export function translateAgentName(agent: string): string {
+  const map: Record<string, string> = {
+    'ExpandAgent': '扩展诊断',
+    'SearchAgent': '检索文献',
+    'AuditAgent': '审核验证',
+    'SummarizeAgent': '生成摘要',
+    'ValidateAgent': '校验',
+    'ReflectAgent': '反思修正',
+    'RankAgent': '排序筛选'
+  };
+  const translated = map[agent];
+  if (translated !== undefined) {
+    return translated;
+  }
+  if (agent.indexOf('Agent') >= 0) {
+    return agent.replace('Agent', '');
+  }
+  return agent;
 }

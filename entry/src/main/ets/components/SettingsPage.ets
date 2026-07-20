@@ -220,7 +220,7 @@ export struct SettingsPage {
       this.testingLlmId = '';
       this.testResultId = llm.id;
       this.testResultOk = false;
-      this.testResultMsg = _err.message.substring(0, 60);
+      this.testResultMsg = '连接失败';
     });
   }
 

@@ -230,9 +230,11 @@ export struct ManualInputDialog {
                       .fontSize(13)
                       .fontColor(AppColors.primary)
                       .layoutWeight(1)
-                    Text(spec.key)
-                      .fontSize(11)
-                      .fontColor(AppColors.textSecondary)
+                    if (spec.unit.length > 0) {
+                      Text(spec.unit)
+                        .fontSize(11)
+                        .fontColor(AppColors.textSecondary)
+                    }
                   }
                   .width('100%')
                   .padding(8)

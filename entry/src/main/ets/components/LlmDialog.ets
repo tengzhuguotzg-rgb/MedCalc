@@ -43,7 +43,7 @@ export struct LlmDialog {
       this.results = recs;
     }).catch((err: Error) => {
       this.loading = false;
-      this.errorMsg = err.message;
+      this.errorMsg = '请求失败，请重试';
     });
   }
 

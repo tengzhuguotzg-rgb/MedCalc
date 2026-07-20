@@ -2,7 +2,7 @@ import { PatientDiagnosis } from '../../model/Patient';
 import { AppColors } from '../../utils/AppColors';
 import { SearchResult } from '../../services/KnowledgeService';
 import { DiagnosisKbData, AgentStep } from './PatientDetailTypes';
-import { getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getDiagnosisKb } from './PatientDetailUtils';
+import { getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getDiagnosisKb, translateAgentName } from './PatientDetailUtils';
 import { MarkdownLine, parseKbMarkdown } from '../../utils/KbMarkdownParser';
 import { PreferencesService } from '../../services/PreferencesService';
 
@@ -270,7 +270,7 @@ export struct DiagnosisKbSection {
             LoadingProgress().width(10).height(10).color(AppColors.textSecondary)
               .margin({ right: 4 });
           }
-          Text(step.agent)
+          Text(translateAgentName(step.agent))
             .fontSize(10)
             .fontWeight(step.status === 'running' ? FontWeight.Bold : FontWeight.Normal)
             .fontColor(step.status === 'running' ? AppColors.primary : AppColors.textSecondary);

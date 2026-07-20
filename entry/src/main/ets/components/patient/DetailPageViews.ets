@@ -3,7 +3,7 @@ import { DataFieldSpec } from '../../services/AssistantService';
 import { AppColors } from '../../utils/AppColors';
 import { MarkdownLine } from '../../utils/KbMarkdownParser';
 import { DomainEntry, DiagnosisKbData, GuidelineRecommendation } from './PatientDetailTypes';
-import { parseAlertResult, formatTime, getRecordIcon, getRecordLabel, getDataFieldCount, getDiagnosisNameByRuleId, getCategoryCount, getCategoryBorderColor, getEvidenceColor, getEvidenceBgColor, getWarningAlerts as getWarningAlertsUtil, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, formatDateTime, getDomainColor, getDomainDataCount, findFieldSpec, getFieldValueLabel, getFieldUnit, isDerivedFlagField, isDisplayableDataKey, getDiagnosesBySource, getDiagnosisKb } from './PatientDetailUtils';
+import { parseAlertResult, formatTime, getRecordIcon, getRecordLabel, getDataFieldCount, getDiagnosisNameByRuleId, getCategoryCount, getCategoryBorderColor, getEvidenceColor, getEvidenceBgColor, getWarningAlerts as getWarningAlertsUtil, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, formatDateTime, getDomainColor, getDomainDataCount, findFieldSpec, getFieldValueLabel, getFieldUnit, isDerivedFlagField, isDisplayableDataKey, getDiagnosesBySource, getDiagnosisKb, formatMissingCriteria, formatCriterion, formatExtractedJson } from './PatientDetailUtils';
 import { AlertCardView, LabAlertCard } from './AlertSubviews';
 import { KbMarkdownRenderer } from './KbMarkdownRenderer';
 import { DiagnosisKbSection as DiagnosisKbSectionView } from './DiagnosisKbSection';
@@ -124,6 +124,7 @@ export struct DiagnosisDetailPageView {
   @Prop dashboard: PatientDashboard = new PatientDashboard();
   @Prop currentPatientId: string = '';
   @Prop loading: boolean = false;
+  @Prop dataFieldSpecs: DataFieldSpec[] = [];
   @Link addDiagName: string;
   @Link addDiagCategory: string;
   @Link showAddDiagnosis: boolean;
@@ -183,7 +184,7 @@ export struct DiagnosisDetailPageView {
       .width('100%')
       if (diag.missingCriteria.length > 0) {
         Column() {
-          Text('缺：' + diag.missingCriteria)
+          Text('缺：' + formatMissingCriteria(diag.missingCriteria, this.dataFieldSpecs))
             .fontSize(11)
             .fontColor(AppColors.tierWarn)
             .width('100%')
@@ -666,6 +667,7 @@ export struct DataDetailPageView {
 @Component
 export struct RecordsDetailPageView {
   @Prop dashboard: PatientDashboard = new PatientDashboard();
+  @Prop dataFieldSpecs: DataFieldSpec[] = [];
   @Link expandedRecordIds: Set<string>;
   @Link deleteRecordId: string;
   @Link showDeleteConfirm: boolean;
@@ -739,12 +741,16 @@ export struct RecordsDetailPageView {
                   this.expandedRecordIds = new Set(this.expandedRecordIds);
                 })
                 if (this.expandedRecordIds.has(record.id) && record.extractedJson.length > 0) {
-                  Text(record.extractedJson)
-                    .fontSize(11)
-                    .fontColor(AppColors.textBody)
-                    .width('100%')
-                    .padding({ top: 6, bottom: 6 })
-                    .lineHeight(16)
+                  Column() {
+                    ForEach(formatExtractedJson(record.extractedJson, this.dataFieldSpecs), (line: string) => {
+                      Text(line)
+                        .fontSize(11)
+                        .fontColor(AppColors.textBody)
+                        .width('100%')
+                    }, (line: string, index: number) => index.toString())
+                  }
+                  .width('100%')
+                  .padding({ top: 6, bottom: 6 })
                 }
               }
               .width('100%')
