@@ -1,4 +1,4 @@
-import { Patient, PatientDataPoint, PatientRecord, PatientDiagnosis, PatientDashboard, DATA_DOMAINS, DOMAIN_COLORS } from '../model/Patient';
+import { Patient, PatientDataPoint, PatientRecord, PatientDiagnosis, PatientDashboard } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
 import { AssistantService, DataFieldSpec } from '../services/AssistantService';
 import { PreferencesService } from '../services/PreferencesService';
@@ -11,7 +11,7 @@ import {
   parseKbMarkdown
 } from '../utils/KbMarkdownParser';
 import { DIAGNOSIS_RULES, DiagnosisRule } from '../model/DiagnosisRules';
-import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
+
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo, picker } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
@@ -22,9 +22,9 @@ import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
 import { DomainEntry, GuidelineRecommendation, PathScore, AgentStep, AuditIssue, GapSignal, AuditAgentResult, DiagnosisKbData } from './patient/PatientDetailTypes';
 import { KbReaderOverlay } from './patient/KbReaderOverlay';
-import { criterionOpSymbol, parseAlertResult, parseRecommendations, parseRecommendationsAndSummary } from './patient/PatientDetailUtils';
+import { criterionOpSymbol, parseAlertResult, parseRecommendations, parseRecommendationsAndSummary, formatCriterion, formatMissingCriteria, getDomainColor, getDomainDataCount, domainHasData, buildDomainEntries, getDiagnosesBySource, getDiagnosisKb } from './patient/PatientDetailUtils';
 import { AlertPreviewCard, DiagnosisPreviewCard as DiagnosisPreviewCardView, DataPreviewCard, RecordsPreviewCard } from './patient/DashboardPreviewCards';
-import { getDataFieldCount, getDataPreviewItems, getRecordPreviewItems, getDiagnosisCategoryTags } from './patient/PatientDetailUtils';
+import { getDataFieldCount, getDataPreviewItems, getRecordPreviewItems, getDiagnosisCategoryTags, findFieldSpec, getFieldValueLabel, getFieldUnit, isDerivedFlagField, isDisplayableDataKey } from './patient/PatientDetailUtils';
 import { AlertDetailPageView, DiagnosisDetailPageView, RecommendationsDetailPageView, DataDetailPageView, RecordsDetailPageView } from './patient/DetailPageViews';
 import { TimelineDialog, ExamTimeEditorDialog, ManualInputDialog, DeleteConfirmDialog, AddDiagnosisDialog } from './patient/PatientDetailDialogs';
 
@@ -169,37 +169,13 @@ export struct PatientDetailPage {
     }
     this.loading = true;
     this.dashboard = await this.patientService.getDashboard(this.currentPatientId);
-    this.domainEntries = this.buildDomainEntries();
+    this.domainEntries = buildDomainEntries(this.dashboard, this.dataFieldSpecs);
     this.loading = false;
     this.loadSavedKbData();
     if (this.dashboard.diagnoses.length > 0) {
       this.loadDiagnosisKb();
       this.patientService.reconfirmPendingDiagnoses(this.currentPatientId);
     }
-  }
-
-  buildDomainEntries(): DomainEntry[] {
-    const entries: DomainEntry[] = [];
-    const domainKeys = Object.keys(DATA_DOMAINS);
-    for (let i = 0; i < domainKeys.length; i++) {
-      const name = domainKeys[i];
-      const keys: string[] = DATA_DOMAINS[name];
-      let hasData = false;
-      for (let j = 0; j < keys.length; j++) {
-        if (this.dashboard.latestData.has(keys[j]) && this.isDisplayableDataKey(keys[j])) {
-          hasData = true;
-          break;
-        }
-      }
-      if (hasData) {
-        const entry = new DomainEntry();
-        entry.name = name;
-        entry.keys = keys;
-        entry.hasData = true;
-        entries.push(entry);
-      }
-    }
-    return entries;
   }
 
   isAlertExpanded(alertId: number): boolean {
@@ -226,125 +202,6 @@ export struct PatientDetailPage {
       this.expandedDomains.add(domain);
     }
     this.expandedDomains = new Set(this.expandedDomains);
-  }
-
-  domainHasData(domainKeys: string[]): boolean {
-    for (let i = 0; i < domainKeys.length; i++) {
-      if (this.dashboard.latestData.has(domainKeys[i])) {
-        return true;
-      }
-    }
-    return false;
-  }
-
-  findFieldSpec(key: string): DataFieldSpec | null {
-    for (let i = 0; i < this.dataFieldSpecs.length; i++) {
-      if (this.dataFieldSpecs[i].key === key) {
-        return this.dataFieldSpecs[i];
-      }
-    }
-    const lowerKey = key.toLowerCase();
-    for (let i = 0; i < this.dataFieldSpecs.length; i++) {
-      if (this.dataFieldSpecs[i].key.toLowerCase() === lowerKey) {
-        return this.dataFieldSpecs[i];
-      }
-    }
-    return null;
-  }
-
-  getFieldValueLabel(key: string): string {
-    const spec = this.findFieldSpec(key);
-    if (spec !== null) {
-      return spec.label;
-    }
-    return key;
-  }
-
-  getFieldUnit(key: string): string {
-    const spec = this.findFieldSpec(key);
-    if (spec !== null) {
-      return spec.unit;
-    }
-    return '';
-  }
-
-  isDerivedFlagField(key: string): boolean {
-    const spec = this.findFieldSpec(key);
-    if (spec === null) {
-      return false;
-    }
-    if (spec.type === 'select' && spec.options !== undefined &&
-      spec.options.length === 2 && spec.options[0] === '0' && spec.options[1] === '1') {
-      return true;
-    }
-    return false;
-  }
-
-  isDisplayableDataKey(key: string): boolean {
-    return !this.isDerivedFlagField(key);
-  }
-
-  formatCriterion(criterion: string): string {
-    const tokens = criterion.split(' ');
-    if (tokens.length !== 3) {
-      return criterion;
-    }
-    const field = tokens[0];
-    const op = tokens[1];
-    const value = tokens[2];
-    if (field.indexOf('calcResult:') === 0) {
-      const calcId = field.substring('calcResult:'.length);
-      const calc = CALCULATORS.find((c: Calculator) => c.id === calcId);
-      const calcName = calc !== undefined ? calc.name : calcId;
-      if (op === 'has_tier') {
-        return calcName + ' 达到' + value;
-      }
-      if (op === 'has_tier_containing') {
-        return calcName + ' 分级含"' + value + '"';
-      }
-      const opSym = criterionOpSymbol(op);
-      if (opSym.length === 0) {
-        return criterion;
-      }
-      return calcName + ' ' + opSym + ' ' + value;
-    }
-    const opSym = criterionOpSymbol(op);
-    if (opSym.length === 0) {
-      return criterion;
-    }
-    const label = this.getFieldValueLabel(field);
-    const unit = this.getFieldUnit(field);
-    return label + ' ' + opSym + ' ' + value + (unit.length > 0 ? ' ' + unit : '');
-  }
-
-  formatMissingCriteria(raw: string): string {
-    if (raw.length === 0) {
-      return raw;
-    }
-    const parts = raw.split('; ');
-    const out: string[] = [];
-    for (let i = 0; i < parts.length; i++) {
-      out.push(this.formatCriterion(parts[i]));
-    }
-    return out.join('；');
-  }
-
-  getDomainColor(domainName: string): ResourceStr {
-    const color = DOMAIN_COLORS[domainName];
-    if (color !== undefined && color !== null) {
-      return color;
-    }
-    return AppColors.textSecondary;
-  }
-
-  getDomainDataCount(domainKeys: string[]): number {
-    let count = 0;
-    for (let i = 0; i < domainKeys.length; i++) {
-      if (this.dashboard.latestData.has(domainKeys[i]) && this.isDisplayableDataKey(domainKeys[i])) {
-        count++;
-      }
-    }
-    return count;
   }
 
   async pickImage() {
@@ -836,14 +693,6 @@ export struct PatientDetailPage {
 
 
 
-  getDiagnosisCategoryTags(): string[] {
-    const tagSet = new Set<string>();
-    for (let i = 0; i < this.dashboard.diagnoses.length; i++) {
-      tagSet.add(this.dashboard.diagnoses[i].category);
-    }
-    return Array.from(tagSet);
-  }
-
   async loadDiagnosisKb() {
     for (const diag of this.dashboard.diagnoses) {
       const existing = this.diagnosisKbMap.find((d: DiagnosisKbData): boolean => d.ruleId === diag.ruleId);
@@ -916,18 +765,9 @@ export struct PatientDetailPage {
     }
   }
 
-  getDiagnosisKb(ruleId: string): DiagnosisKbData | null {
-    for (const item of this.diagnosisKbMap) {
-      if (item.ruleId === ruleId) {
-        return item;
-      }
-    }
-    return null;
-  }
-
   async loadDiagnosisAdvice(diag: PatientDiagnosis) {
     hilog.info(0x0001, 'MedCalc', 'loadDiagnosisAdvice called for ' + diag.ruleId);
-    const kbData = this.getDiagnosisKb(diag.ruleId);
+    const kbData = getDiagnosisKb(this.diagnosisKbMap, diag.ruleId);
     if (kbData === null) {
       hilog.warn(0x0001, 'MedCalc', 'loadDiagnosisAdvice: kbData is null');
       return;
@@ -1495,7 +1335,7 @@ export struct PatientDetailPage {
   }
 
   async executeManualInputSave(fieldKey: string, fieldValue: string) {
-    const savedRec = await this.patientService.saveRecord(this.currentPatientId, 'manual', '', fieldKey + '=' + fieldValue, '', '手动录入: ' + this.getFieldValueLabel(fieldKey));
+    const savedRec = await this.patientService.saveRecord(this.currentPatientId, 'manual', '', fieldKey + '=' + fieldValue, '', '手动录入: ' + getFieldValueLabel(fieldKey, this.dataFieldSpecs));
     await this.patientService.addManualData(this.currentPatientId, fieldKey, fieldValue, savedRec.id);
     this.showManualInput = false;
     this.manualFieldKey = '';

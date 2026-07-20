@@ -2,7 +2,7 @@ import { PatientDiagnosis } from '../../model/Patient';
 import { AppColors } from '../../utils/AppColors';
 import { SearchResult } from '../../services/KnowledgeService';
 import { DiagnosisKbData, AgentStep } from './PatientDetailTypes';
-import { getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary } from './PatientDetailUtils';
+import { getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getDiagnosisKb } from './PatientDetailUtils';
 import { MarkdownLine, parseKbMarkdown } from '../../utils/KbMarkdownParser';
 import { PreferencesService } from '../../services/PreferencesService';
 
@@ -22,17 +22,8 @@ export struct DiagnosisKbSection {
   onLoadDiagnosisKb: () => void = () => {};
   onLoadDiagnosisAdvice: (diag: PatientDiagnosis) => void = () => {};
 
-  private getDiagnosisKb(ruleId: string): DiagnosisKbData | null {
-    for (const d of this.diagnosisKbMap) {
-      if (d.ruleId === ruleId) {
-        return d;
-      }
-    }
-    return null;
-  }
-
   build() {
-    if (this.getDiagnosisKb(this.diag.ruleId) !== null) {
+    if (getDiagnosisKb(this.diagnosisKbMap, this.diag.ruleId) !== null) {
       Column() {
         Row()
           .width('100%')
@@ -45,18 +36,18 @@ export struct DiagnosisKbSection {
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary);
-          if (this.getDiagnosisKb(this.diag.ruleId)!.searchResults.length > 0) {
+          if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
             Text(this.expandedRefIds.has(this.diag.ruleId) ? ' ▲' : ' ▼')
               .fontSize(11)
               .fontColor(AppColors.textSecondary)
               .margin({ left: 4 });
-            Text(this.getDiagnosisKb(this.diag.ruleId)!.searchResults.length.toString() + '篇')
+            Text(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length.toString() + '篇')
               .fontSize(10)
               .fontColor(AppColors.textSecondary)
               .margin({ left: 4 });
           }
           Blank();
-          if (!this.getDiagnosisKb(this.diag.ruleId)!.loadingKb) {
+          if (!getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingKb) {
             Text('重搜')
               .fontSize(10)
               .fontColor(AppColors.warningText)
@@ -73,7 +64,7 @@ export struct DiagnosisKbSection {
                 this.onLoadDiagnosisKb();
               });
           }
-          if (this.getDiagnosisKb(this.diag.ruleId)!.searchResults.length > 0) {
+          if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
             Text(this.expandedRefIds.has(this.diag.ruleId) ? '收起' : '展开')
               .fontSize(11)
               .fontColor(AppColors.primary);
@@ -89,11 +80,11 @@ export struct DiagnosisKbSection {
           this.expandedRefIds = new Set(this.expandedRefIds);
         });
 
-        if (this.getDiagnosisKb(this.diag.ruleId)!.loadingKb) {
-          this.AgentStepList(this.getDiagnosisKb(this.diag.ruleId)!.agentSteps, false);
-        } else if (this.expandedRefIds.has(this.diag.ruleId) && this.getDiagnosisKb(this.diag.ruleId)!.searchResults.length > 0) {
+        if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingKb) {
+          this.AgentStepList(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.agentSteps, false);
+        } else if (this.expandedRefIds.has(this.diag.ruleId) && getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
           Column() {
-            ForEach(this.getDiagnosisKb(this.diag.ruleId)!.searchResults, (sr: SearchResult) => {
+            ForEach(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults, (sr: SearchResult) => {
               Column() {
                 Row() {
                   Text(getKbSearchResultTitle(sr))
@@ -102,7 +93,7 @@ export struct DiagnosisKbSection {
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1);
-                  if (this.getDiagnosisKb(this.diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
+                  if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
                     Text('片段')
                       .fontSize(8)
                       .fontColor(AppColors.warningText)
@@ -138,7 +129,7 @@ export struct DiagnosisKbSection {
           .backgroundColor(AppColors.divider)
           .margin({ top: 8, bottom: 8 });
 
-        if (this.getDiagnosisKb(this.diag.ruleId)!.loadingKb) {
+        if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingKb) {
           Row() {
             LoadingProgress().width(14).height(14).color(AppColors.textSecondary);
             Text('搜索指南中...')
@@ -147,11 +138,11 @@ export struct DiagnosisKbSection {
               .margin({ left: 6 });
           }
           .margin({ top: 6 });
-        } else if (this.getDiagnosisKb(this.diag.ruleId)!.loadingAdvice) {
-          this.AgentStepList(this.getDiagnosisKb(this.diag.ruleId)!.agentSteps, true);
-        } else if (this.getDiagnosisKb(this.diag.ruleId)!.recommendations.length > 0) {
+        } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingAdvice) {
+          this.AgentStepList(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.agentSteps, true);
+        } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.recommendations.length > 0) {
           Row() {
-            Text('指南建议 · ' + getRecommendationSummary(this.getDiagnosisKb(this.diag.ruleId)!.recommendations))
+            Text('指南建议 · ' + getRecommendationSummary(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.recommendations))
               .fontSize(12)
               .fontColor(AppColors.primary)
               .fontWeight(FontWeight.Medium);
@@ -173,14 +164,14 @@ export struct DiagnosisKbSection {
           .padding({ top: 6, bottom: 6 })
           .onClick(() => {
             this.activeAdviceRuleId = this.diag.ruleId;
-            const kbData2 = this.getDiagnosisKb(this.diag.ruleId);
+            const kbData2 = getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId);
             this.summaryLines = kbData2 !== null && kbData2.summary.length > 0 ? parseKbMarkdown(kbData2.summary) : [];
             this.showRecommendationsDetail = true;
           });
-        } else if (this.getDiagnosisKb(this.diag.ruleId)!.adviceError.length > 0) {
+        } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.adviceError.length > 0) {
           Column() {
             Row() {
-              Text(this.getDiagnosisKb(this.diag.ruleId)!.adviceError)
+              Text(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.adviceError)
                 .fontSize(10)
                 .fontColor(AppColors.tierWarn)
                 .layoutWeight(1)
@@ -188,24 +179,24 @@ export struct DiagnosisKbSection {
                 .textOverflow({ overflow: TextOverflow.Ellipsis })
             }
             Row() {
-              if (this.getDiagnosisKb(this.diag.ruleId)!.summary.length > 0) {
+              if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.summary.length > 0) {
                 Text('详情 >')
                   .fontSize(10)
                   .fontColor(AppColors.primary)
                   .onClick(() => {
                     this.activeAdviceRuleId = this.diag.ruleId;
-                    const kbD = this.getDiagnosisKb(this.diag.ruleId);
+                    const kbD = getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId);
                     this.summaryLines = kbD !== null && kbD.summary.length > 0 ? parseKbMarkdown(kbD.summary) : [];
                     this.showRecommendationsDetail = true;
                   });
               }
-              if (this.getDiagnosisKb(this.diag.ruleId)!.searchResults.length > 0) {
+              if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
                 Text('重试建议')
                   .fontSize(10)
                   .fontColor(AppColors.primary)
                   .margin({ left: 8 })
                   .onClick(() => {
-                    const kbD2 = this.getDiagnosisKb(this.diag.ruleId);
+                    const kbD2 = getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId);
                     if (kbD2 !== null) {
                       kbD2.loadingAdvice = true;
                       kbD2.adviceError = '';
@@ -236,7 +227,7 @@ export struct DiagnosisKbSection {
           .backgroundColor(AppColors.tierWarnBg)
           .borderRadius(4)
           .margin({ top: 4 });
-        } else if (this.getDiagnosisKb(this.diag.ruleId)!.verifiedPaths.length > 0) {
+        } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.verifiedPaths.length > 0) {
           Row() {
             Text('查看指南建议')
               .fontSize(12)

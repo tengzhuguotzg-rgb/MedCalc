@@ -1,9 +1,9 @@
-import { PatientAlert, PatientLabAlert, PatientDiagnosis, PatientRecord, PatientDashboard, DOMAIN_COLORS } from '../../model/Patient';
+import { PatientAlert, PatientLabAlert, PatientDiagnosis, PatientRecord, PatientDashboard } from '../../model/Patient';
 import { DataFieldSpec } from '../../services/AssistantService';
 import { AppColors } from '../../utils/AppColors';
 import { MarkdownLine } from '../../utils/KbMarkdownParser';
 import { DomainEntry, DiagnosisKbData, GuidelineRecommendation } from './PatientDetailTypes';
-import { parseAlertResult, formatTime, getRecordIcon, getRecordLabel, getDataFieldCount, getDiagnosisNameByRuleId, getCategoryCount, getCategoryBorderColor, getEvidenceColor, getEvidenceBgColor, getWarningAlerts as getWarningAlertsUtil, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, formatDateTime } from './PatientDetailUtils';
+import { parseAlertResult, formatTime, getRecordIcon, getRecordLabel, getDataFieldCount, getDiagnosisNameByRuleId, getCategoryCount, getCategoryBorderColor, getEvidenceColor, getEvidenceBgColor, getWarningAlerts as getWarningAlertsUtil, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, formatDateTime, getDomainColor, getDomainDataCount, findFieldSpec, getFieldValueLabel, getFieldUnit, isDerivedFlagField, isDisplayableDataKey, getDiagnosesBySource, getDiagnosisKb } from './PatientDetailUtils';
 import { AlertCardView, LabAlertCard } from './AlertSubviews';
 import { KbMarkdownRenderer } from './KbMarkdownRenderer';
 import { DiagnosisKbSection as DiagnosisKbSectionView } from './DiagnosisKbSection';
@@ -140,10 +140,6 @@ export struct DiagnosisDetailPageView {
   onLoadDiagnosisAdvice: (diag: PatientDiagnosis) => void = () => {};
   onDeleteUserDiagnosis: (diag: PatientDiagnosis) => void = () => {};
 
-  private getDiagnosesBySource(source: string): PatientDiagnosis[] {
-    return this.dashboard.diagnoses.filter((d: PatientDiagnosis): boolean => d.source === source);
-  }
-
   @Builder
   DiagnosisCard(diag: PatientDiagnosis, isLlmGroup: boolean) {
     Column() {
@@ -243,7 +239,7 @@ export struct DiagnosisDetailPageView {
 
   @Builder
   DiagnosisGroup(source: string, label: string, color: ResourceStr, isLlmGroup: boolean) {
-    if (this.getDiagnosesBySource(source).length > 0) {
+    if (getDiagnosesBySource(this.dashboard.diagnoses, source).length > 0) {
       Column() {
         Row() {
           Column()
@@ -256,7 +252,7 @@ export struct DiagnosisDetailPageView {
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
             .fontColor(color)
-          Text(this.getDiagnosesBySource(source).length.toString())
+          Text(getDiagnosesBySource(this.dashboard.diagnoses, source).length.toString())
             .fontSize(11)
             .fontColor(AppColors.textSecondary)
             .margin({ left: 4 })
@@ -264,7 +260,7 @@ export struct DiagnosisDetailPageView {
         .width('100%')
         .margin({ top: 8, bottom: 4 })
 
-        ForEach(this.getDiagnosesBySource(source), (diag: PatientDiagnosis) => {
+        ForEach(getDiagnosesBySource(this.dashboard.diagnoses, source), (diag: PatientDiagnosis) => {
           Row() {
             this.DiagnosisCard(diag, isLlmGroup);
           }
@@ -354,19 +350,10 @@ export struct RecommendationsDetailPageView {
 
   onBack: () => void = () => {};
 
-  private getDiagnosisKb(ruleId: string): DiagnosisKbData | null {
-    for (const item of this.diagnosisKbMap) {
-      if (item.ruleId === ruleId) {
-        return item;
-      }
-    }
-    return null;
-  }
-
   @Builder
   RecommendationCategorySection(ruleId: string, category: string, title: string) {
-    if (this.getDiagnosisKb(ruleId) !== null) {
-      if (getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category) > 0) {
+    if (getDiagnosisKb(this.diagnosisKbMap, ruleId) !== null) {
+      if (getCategoryCount(getDiagnosisKb(this.diagnosisKbMap, ruleId)!.recommendations, category) > 0) {
         Column() {
           Row() {
             Row()
@@ -379,7 +366,7 @@ export struct RecommendationsDetailPageView {
               .fontSize(14)
               .fontWeight(FontWeight.Bold)
               .fontColor(AppColors.primary);
-            Text(getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category).toString() + '条')
+            Text(getCategoryCount(getDiagnosisKb(this.diagnosisKbMap, ruleId)!.recommendations, category).toString() + '条')
               .fontSize(11)
               .fontColor(AppColors.textSecondary)
               .margin({ left: 6 });
@@ -400,7 +387,7 @@ export struct RecommendationsDetailPageView {
           });
 
           if (this.expandedCategories.has(category)) {
-            ForEach(this.getDiagnosisKb(ruleId)!.recommendations, (rec: GuidelineRecommendation) => {
+            ForEach(getDiagnosisKb(this.diagnosisKbMap, ruleId)!.recommendations, (rec: GuidelineRecommendation) => {
               if (rec.category === category) {
                 Column() {
                   Text(rec.text)
@@ -479,8 +466,8 @@ export struct RecommendationsDetailPageView {
 
       Scroll() {
         Column() {
-          if (this.activeAdviceRuleId.length > 0 && this.getDiagnosisKb(this.activeAdviceRuleId) !== null) {
-            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.isLowRelevance) {
+          if (this.activeAdviceRuleId.length > 0 && getDiagnosisKb(this.diagnosisKbMap, this.activeAdviceRuleId) !== null) {
+            if (getDiagnosisKb(this.diagnosisKbMap, this.activeAdviceRuleId)!.isLowRelevance) {
               Row() {
                 Text('⚠️ 低相关性文献')
                   .fontSize(11)
@@ -497,7 +484,7 @@ export struct RecommendationsDetailPageView {
               .borderRadius(6)
               .margin({ bottom: 8 });
             }
-            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.summary.length > 0) {
+            if (getDiagnosisKb(this.diagnosisKbMap, this.activeAdviceRuleId)!.summary.length > 0) {
               Column() {
                 Row() {
                   Text('临床要点')
@@ -549,84 +536,6 @@ export struct DataDetailPageView {
   onBack: () => void = () => {};
   onTimelineRequest: (fieldKey: string) => void = () => {};
 
-  private getDomainColor(domainName: string): ResourceStr {
-    const color = DOMAIN_COLORS[domainName];
-    if (color !== undefined && color !== null) {
-      return color;
-    }
-    return AppColors.textSecondary;
-  }
-
-  private findFieldSpec(key: string): DataFieldSpec | null {
-    for (let i = 0; i < this.dataFieldSpecs.length; i++) {
-      if (this.dataFieldSpecs[i].key === key) {
-        return this.dataFieldSpecs[i];
-      }
-    }
-    const lowerKey = key.toLowerCase();
-    for (let i = 0; i < this.dataFieldSpecs.length; i++) {
-      if (this.dataFieldSpecs[i].key.toLowerCase() === lowerKey) {
-        return this.dataFieldSpecs[i];
-      }
-    }
-    return null;
-  }
-
-  private getFieldValueLabel(key: string): string {
-    const spec = this.findFieldSpec(key);
-    if (spec !== null) {
-      return spec.label;
-    }
-    return key;
-  }
-
-  private getFieldUnit(key: string): string {
-    const spec = this.findFieldSpec(key);
-    if (spec !== null) {
-      return spec.unit;
-    }
-    return '';
-  }
-
-  private isDerivedFlagField(key: string): boolean {
-    const spec = this.findFieldSpec(key);
-    if (spec === null) {
-      return false;
-    }
-    if (spec.type === 'select' && spec.options !== undefined &&
-      spec.options.length === 2 && spec.options[0] === '0' && spec.options[1] === '1') {
-      return true;
-    }
-    return false;
-  }
-
-  private isDisplayableDataKey(key: string): boolean {
-    return !this.isDerivedFlagField(key);
-  }
-
-  private isDomainExpanded(domain: string): boolean {
-    return this.expandedDomains.has(domain);
-  }
-
-  private toggleDomain(domain: string): void {
-    if (this.expandedDomains.has(domain)) {
-      this.expandedDomains.delete(domain);
-    } else {
-      this.expandedDomains.add(domain);
-    }
-    this.expandedDomains = new Set(this.expandedDomains);
-  }
-
-  private getDomainDataCount(domainKeys: string[]): number {
-    let count = 0;
-    for (let i = 0; i < domainKeys.length; i++) {
-      if (this.dashboard.latestData.has(domainKeys[i]) && this.isDisplayableDataKey(domainKeys[i])) {
-        count++;
-      }
-    }
-    return count;
-  }
-
   build() {
     Column() {
       Row() {
@@ -665,7 +574,7 @@ export struct DataDetailPageView {
                   Column()
                     .width(4)
                     .height(16)
-                    .backgroundColor(this.getDomainColor(entry.name))
+                    .backgroundColor(getDomainColor(entry.name))
                     .borderRadius(2)
                     .margin({ right: 8 })
                   Text(entry.name)
@@ -673,26 +582,33 @@ export struct DataDetailPageView {
                     .fontWeight(FontWeight.Bold)
                     .fontColor(AppColors.primary)
                     .layoutWeight(1)
-                  Text(this.getDomainDataCount(entry.keys) + '项')
+                  Text(getDomainDataCount(entry.keys, this.dashboard, this.dataFieldSpecs) + '项')
                     .fontSize(10)
                     .fontColor(AppColors.card)
-                    .backgroundColor(this.getDomainColor(entry.name))
+                    .backgroundColor(getDomainColor(entry.name))
                     .borderRadius(8)
                     .padding({ left: 5, right: 5, top: 1, bottom: 1 })
                     .margin({ right: 6 })
-                  Text(this.isDomainExpanded(entry.name) ? ' ▲' : ' ▼')
+                  Text(this.expandedDomains.has(entry.name) ? ' ▲' : ' ▼')
                     .fontSize(10)
                     .fontColor(AppColors.textSecondary)
                 }
                 .width('100%')
-                .onClick(() => { this.toggleDomain(entry.name); })
+                .onClick(() => {
+                  if (this.expandedDomains.has(entry.name)) {
+                    this.expandedDomains.delete(entry.name);
+                  } else {
+                    this.expandedDomains.add(entry.name);
+                  }
+                  this.expandedDomains = new Set(this.expandedDomains);
+                })
 
-                if (this.isDomainExpanded(entry.name)) {
+                if (this.expandedDomains.has(entry.name)) {
                   Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start, alignContent: FlexAlign.Start }) {
                     ForEach(entry.keys, (key: string) => {
-                      if (this.dashboard.latestData.has(key) && this.isDisplayableDataKey(key)) {
+                      if (this.dashboard.latestData.has(key) && isDisplayableDataKey(key, this.dataFieldSpecs)) {
                         Column() {
-                          Text(this.getFieldValueLabel(key))
+                          Text(getFieldValueLabel(key, this.dataFieldSpecs))
                             .fontSize(10)
                             .fontColor(AppColors.textSecondary)
                             .maxLines(1)
@@ -702,8 +618,8 @@ export struct DataDetailPageView {
                               .fontSize(14)
                               .fontColor(AppColors.primary)
                               .fontWeight(FontWeight.Bold)
-                            if (this.getFieldUnit(key).length > 0) {
-                              Text(this.getFieldUnit(key))
+                            if (getFieldUnit(key, this.dataFieldSpecs).length > 0) {
+                              Text(getFieldUnit(key, this.dataFieldSpecs))
                                 .fontSize(10)
                                 .fontColor(AppColors.textSecondary)
                                 .margin({ left: 2 })

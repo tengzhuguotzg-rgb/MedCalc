@@ -1,9 +1,10 @@
-import { PatientAlert, PatientRecord, PatientDiagnosis, PatientDashboard, PatientLabAlert } from '../../model/Patient';
+import { PatientAlert, PatientRecord, PatientDiagnosis, PatientDashboard, PatientLabAlert, DATA_DOMAINS, DOMAIN_COLORS } from '../../model/Patient';
 import { CalcResult } from '../../engine/CalcEngine';
 import { AppColors } from '../../utils/AppColors';
 import { SearchResult } from '../../services/KnowledgeService';
 import { DIAGNOSIS_RULES, DiagnosisRule } from '../../model/DiagnosisRules';
-import { GuidelineRecommendation, ParsedRecommendations, GapSignal, AgentStep, DomainEntry } from './PatientDetailTypes';
+import { CALCULATORS, Calculator } from '../../model/CalculatorRegistry';
+import { GuidelineRecommendation, ParsedRecommendations, GapSignal, AgentStep, DomainEntry, DiagnosisKbData } from './PatientDetailTypes';
 import { DataFieldSpec } from '../../services/AssistantService';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
@@ -541,4 +542,113 @@ export function getRecordPreviewItems(records: PatientRecord[]): string[] {
     items.push(getRecordIcon(record.type) + ' ' + getRecordLabel(record) + ' ' + formatTime(record.timestamp));
   }
   return items;
+}
+
+export function formatCriterion(criterion: string, specs: DataFieldSpec[]): string {
+  const tokens = criterion.split(' ');
+  if (tokens.length !== 3) {
+    return criterion;
+  }
+  const field = tokens[0];
+  const op = tokens[1];
+  const value = tokens[2];
+  if (field.indexOf('calcResult:') === 0) {
+    const calcId = field.substring('calcResult:'.length);
+    const calc = CALCULATORS.find((c: Calculator) => c.id === calcId);
+    const calcName = calc !== undefined ? calc.name : calcId;
+    if (op === 'has_tier') {
+      return calcName + ' 达到' + value;
+    }
+    if (op === 'has_tier_containing') {
+      return calcName + ' 分级含"' + value + '"';
+    }
+    const opSym = criterionOpSymbol(op);
+    if (opSym.length === 0) {
+      return criterion;
+    }
+    return calcName + ' ' + opSym + ' ' + value;
+  }
+  const opSym = criterionOpSymbol(op);
+  if (opSym.length === 0) {
+    return criterion;
+  }
+  const label = getFieldValueLabel(field, specs);
+  const unit = getFieldUnit(field, specs);
+  return label + ' ' + opSym + ' ' + value + (unit.length > 0 ? ' ' + unit : '');
+}
+
+export function formatMissingCriteria(raw: string, specs: DataFieldSpec[]): string {
+  if (raw.length === 0) {
+    return raw;
+  }
+  const parts = raw.split('; ');
+  const out: string[] = [];
+  for (let i = 0; i < parts.length; i++) {
+    out.push(formatCriterion(parts[i], specs));
+  }
+  return out.join('；');
+}
+
+export function getDomainColor(domainName: string): ResourceStr {
+  const color = DOMAIN_COLORS[domainName];
+  if (color !== undefined && color !== null) {
+    return color;
+  }
+  return AppColors.textSecondary;
+}
+
+export function getDomainDataCount(domainKeys: string[], dashboard: PatientDashboard, specs: DataFieldSpec[]): number {
+  let count = 0;
+  for (let i = 0; i < domainKeys.length; i++) {
+    if (dashboard.latestData.has(domainKeys[i]) && isDisplayableDataKey(domainKeys[i], specs)) {
+      count++;
+    }
+  }
+  return count;
+}
+
+export function domainHasData(domainKeys: string[], dashboard: PatientDashboard): boolean {
+  for (let i = 0; i < domainKeys.length; i++) {
+    if (dashboard.latestData.has(domainKeys[i])) {
+      return true;
+    }
+  }
+  return false;
+}
+
+export function buildDomainEntries(dashboard: PatientDashboard, specs: DataFieldSpec[]): DomainEntry[] {
+  const entries: DomainEntry[] = [];
+  const domainKeys = Object.keys(DATA_DOMAINS);
+  for (let i = 0; i < domainKeys.length; i++) {
+    const name = domainKeys[i];
+    const keys: string[] = DATA_DOMAINS[name];
+    let hasData = false;
+    for (let j = 0; j < keys.length; j++) {
+      if (dashboard.latestData.has(keys[j]) && isDisplayableDataKey(keys[j], specs)) {
+        hasData = true;
+        break;
+      }
+    }
+    if (hasData) {
+      const entry = new DomainEntry();
+      entry.name = name;
+      entry.keys = keys;
+      entry.hasData = true;
+      entries.push(entry);
+    }
+  }
+  return entries;
+}
+
+export function getDiagnosesBySource(diagnoses: PatientDiagnosis[], source: string): PatientDiagnosis[] {
+  return diagnoses.filter((d: PatientDiagnosis): boolean => d.source === source);
+}
+
+export function getDiagnosisKb(diagnosisKbMap: DiagnosisKbData[], ruleId: string): DiagnosisKbData | null {
+  for (const item of diagnosisKbMap) {
+    if (item.ruleId === ruleId) {
+      return item;
+    }
+  }
+  return null;
 }
