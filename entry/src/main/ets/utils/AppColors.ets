@@ -14,6 +14,7 @@
 export class AppColors {
   /** 品牌主色·深绿：标题、主按钮、选中态、强调文字 */
   static readonly primary: ResourceStr = $r('app.color.app_color_primary');
+  static readonly onPrimary: ResourceStr = $r('app.color.app_color_on_primary');
   /** 页面背景·米：根级页面底色 */
   static readonly background: ResourceStr = $r('app.color.app_color_background');
   /** 卡片白：卡片/输入框底色、深色底上的反白文字 */

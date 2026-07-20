@@ -2,6 +2,7 @@
   "color": [
     { "name": "start_window_background", "value": "#121212" },
     { "name": "app_color_primary", "value": "#6BAF8A" },
+    { "name": "app_color_on_primary", "value": "#1A2A1E" },
     { "name": "app_color_background", "value": "#1A1A1A" },
     { "name": "app_color_card", "value": "#2A2A2A" },
     { "name": "app_color_text_secondary", "value": "#9CA89A" },
