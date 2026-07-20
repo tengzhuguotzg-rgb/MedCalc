@@ -96,6 +96,16 @@ export function getUrgencyColor(urgency: string): ResourceStr {
   return AppColors.tierOk;
 }
 
+export function getUrgencyBgColor(urgency: string): ResourceStr {
+  if (urgency === 'critical') {
+    return AppColors.tierDangerBg;
+  }
+  if (urgency === 'warning') {
+    return AppColors.tierWarnBg;
+  }
+  return AppColors.tierOkBg;
+}
+
 export function getUrgencyLabel(urgency: string): string {
   if (urgency === 'critical') {
     return '危重';
@@ -130,6 +140,19 @@ export function getLlmConfirmColor(confirmed: number): ResourceStr {
     return AppColors.tierWarn;
   }
   return AppColors.textSecondary;
+}
+
+export function getLlmConfirmBgColor(confirmed: number): ResourceStr {
+  if (confirmed === 1) {
+    return AppColors.tierOkBg;
+  }
+  if (confirmed === -1) {
+    return AppColors.fillNeutral;
+  }
+  if (confirmed === 2) {
+    return AppColors.tierWarnBg;
+  }
+  return AppColors.fillNeutral;
 }
 
 export function parseRecommendations(responseText: string): GuidelineRecommendation[] {

@@ -24,7 +24,7 @@ import { AppDimens } from '../utils/AppDimens';
 import { DomainEntry, ParsedRecommendations, GuidelineRecommendation, PathScore, AgentStep, AuditIssue, GapSignal, AuditAgentResult, DiagnosisKbData } from './patient/PatientDetailTypes';
 import { KbReaderOverlay } from './patient/KbReaderOverlay';
 import { KbMarkdownRenderer } from './patient/KbMarkdownRenderer';
-import { criterionOpSymbol, parseAlertResult, formatTime, formatDateTime, getRecordIcon, getRecordLabel, formatResultValue, getUrgencyColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, parseRecommendations, parseRecommendationsAndSummary, parseGapsFromJson, getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getCategoryCount, getCategoryBorderColor, getCategoryLabel, getEvidenceColor, getEvidenceBgColor, getDiagnosisNameByRuleId, getLabAlertUrgencyColor, getLabAlertUrgencyLabel } from './patient/PatientDetailUtils';
+import { criterionOpSymbol, parseAlertResult, formatTime, formatDateTime, getRecordIcon, getRecordLabel, formatResultValue, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, parseRecommendations, parseRecommendationsAndSummary, parseGapsFromJson, getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getCategoryCount, getCategoryBorderColor, getCategoryLabel, getEvidenceColor, getEvidenceBgColor, getDiagnosisNameByRuleId, getLabAlertUrgencyColor, getLabAlertUrgencyLabel } from './patient/PatientDetailUtils';
 
 @Component
 export struct PatientDetailPage {
@@ -1752,15 +1752,15 @@ export struct PatientDetailPage {
         Text(getUrgencyLabel(diag.urgency))
           .fontSize(10)
           .fontColor(getUrgencyColor(diag.urgency))
-          .backgroundColor(getUrgencyColor(diag.urgency) + '20')
-          .borderRadius(4)
-          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-          .margin({ left: 4 })
+          .backgroundColor(getUrgencyBgColor(diag.urgency))
+        .borderRadius(4)
+        .padding({ left: 4, right: 4, top: 1, bottom: 1 })
+        .margin({ left: 4 })
         if (diag.source === 'rule' && diag.llmConfirmed !== 1) {
           Text(getLlmConfirmLabel(diag.llmConfirmed))
             .fontSize(10)
             .fontColor(getLlmConfirmColor(diag.llmConfirmed))
-            .backgroundColor(getLlmConfirmColor(diag.llmConfirmed) + '20')
+            .backgroundColor(getLlmConfirmBgColor(diag.llmConfirmed))
             .borderRadius(4)
             .padding({ left: 4, right: 4, top: 1, bottom: 1 })
             .margin({ left: 4 })
