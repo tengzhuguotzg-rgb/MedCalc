@@ -92,3 +92,15 @@
 | 4 | #11 色彩 token 化 `10047c5`/`a5fcfe0`/`57e7042`/`a298f08`/`514e5dd`/`9ad3ed5` + 中性色收尾 `75c73d0`/`9891c31`/`19336d6`/`341bf17` + #18/#19/#20 `deaacdf` | ✅ 构建通过 |
 | 5 | #12 共享组件+迁移 `8d3ce43`…`aaf6e5a`（16 commits）+ #21 `33caadf` + #22 `82630ba` + #23 `9cbe37e` | ✅ 构建通过 |
 | 6 | #14 暗黑模式 `05d3a9f` / #15 返回栈 `2aff4cb`+`9912c8f`+`aa05b95` / #13 拆分 `c819b64`/`6dd8230`→`7b0f7ad`/`d60b9d0`/`3be216d` | ✅ 全部构建通过 |
+| 7 | #16 字符串资源化 `2cccb06`/`5b66879` / #17 代码风格 `cc4fd18` / 泄露回归修复 `8c8321b` | ✅ 构建通过 |
+
+## 重构验证纪律
+
+> **每次 `@Builder`→`@Component` 或方法提取后，必须 `grep` 关键格式化函数调用数不能减少：**
+> - `formatMissingCriteria` ≥ 1（诊断卡缺项格式化）
+> - `formatCriterion` ≥ 1（被 formatMissingCriteria 调用）
+> - `translateSelectValue` ≥ 1（枚举值翻译）
+> - `translateAgentName` ≥ 1（Agent 步骤名称翻译）
+> - `formatExtractedJson` ≥ 1（上传记录展开格式化）
+>
+> 若调用数归零，说明提取时遗漏了调用点，必须立即补回。
