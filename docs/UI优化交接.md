@@ -2,14 +2,14 @@
 
 > 写给接手继续 UI 优化的 AI / 开发者。
 > 读这份文档前，先读 `docs/UI优化清单.md`（逐项状态与 commit 对照）和 `PITFALLS.md`（ArkTS 踩坑日志，含返回键、手势、@Builder 等硬性约束）。
-> 本文最后更新：2026-07-20，基于分支 `ui-overhaul` 顶端 `59224ae`。
+> 本文最后更新：2026-07-20，基于分支 `ui-overhaul` 顶端 `aa05b95`。
 
 ---
 
 ## 0. TL;DR
 
-UI 优化清单 23 项已完成 17 项（#1–#12、#18–#23），剩 5 项工程项（#13 大文件拆分、#14 暗黑模式、#15 返回栈、#16 字符串资源、#17 代码风格）。
-**建议施工顺序：#14 暗黑模式 → #15 返回栈 → #13 大文件拆分（与 #15 耦合）→ #16 / #17（可选）。**
+UI 优化清单 23 项已完成 19 项（#1–#12、#14、#15、#18–#23），剩 4 项（#13 大文件拆分进行中、#16 字符串资源、#17 代码风格）。
+**建议施工顺序：#13 拆分继续 → #16 / #17（可选）。**
 
 ## 1. 仓库与构建环境
 
@@ -148,6 +148,6 @@ cd /e/ai/MedCalc && hvigorw assembleApp
 | `entry/src/main/ets/components/calculators/widgets/CalcWidgets.ets` | 计算器共享组件 |
 | `entry/src/main/ets/engine/CalcEngine.ets` | CalcResult + tier 分级（引用 AppColors） |
 | `entry/src/main/ets/pages/Index.ets` | 4-Tab 主框架 + onBackPress（#15 战场） |
-| `entry/src/main/ets/components/PatientDetailPage.ets` | 4166 行（#13 战场） |
+| `entry/src/main/ets/components/PatientDetailPage.ets` | 3275 行（#13 进行中） |
 | `entry/src/main/ets/components/KnowledgeSearchPage.ets` + `utils/KbMarkdownParser.ets` | 知识库 UI + Markdown 渲染管线 |
 | `entry/src/main/ets/services/PreferencesService.ets` | 偏好持久化（#14 主题存这里） |

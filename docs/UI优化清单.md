@@ -56,8 +56,11 @@
 - [x] **12. 样式全量复制粘贴**：卡片样式 108 处重复。建议抽公共组件：`CalcCard`/`InputRow`/`ResultCard`/`OptionChip`
   - 已做：新建 `calculators/widgets/CalcWidgets.ets` 四组件（`8d3ce43`）；38/40 个计算器分 11 批迁移（`65894ba`…`aaf6e5a`），每批构建验证；未迁移 2 个：Vasopressor（双栏换算特殊交互）、BloodGas（6 步法特殊区），保留 inline。reset/空态机制原样保留
 - [ ] **13. `PatientDetailPage.ets` 单文件 4166 行**、8 个独立 Scroll。建议拆分子组件文件
-- [ ] **14. 暗黑模式准备度≈0**：resources/dark/ 仅 1 条。前置依赖第 11 条
-- [ ] **15. 返回逻辑碎片化**：`Index.ets:82-94` AppStorage flag 模拟返回栈；详情页 5 层布尔分发
+  - 进行中：已提取 PatientDetailTypes.ets(197行)、KbMarkdownRenderer.ets(239行)、KbReaderOverlay.ets(60行)、PatientDetailUtils.ets(420行)，主文件降至3275行；@Builder→@Component拆分待继续
+- [x] **14. 暗黑模式准备度≈0**：resources/dark/ 仅 1 条。前置依赖第 11 条
+  - 已做：color.json base 44 token + dark 44 token；AppColors→ResourceStr+$r()；CalcEngine/BloodGas/Patient/KbMarkdownParser 色返回值→ResourceStr；SettingsPage 外观Radio(跟随系统/浅色/深色)；PreferencesService saveThemeMode/getThemeMode；EntryAbility 启动读theme→setColorMode（`05d3a9f`）
+- [x] **15. 返回逻辑碎片化**：`Index.ets:82-94` AppStorage flag 模拟返回栈；详情页 5 层布尔分发
+  - 已做：Patient tab→Navigation(patientStack)+NavDestination.onBackPressed→patientBackFlag计数器；KB tab→Navigation(kbStack)+onNavDepthChanged/backAction回调；Index.onBackPress仅委托KB tab；所有旧AppStorage flag已清除grep零引用（`2aff4cb`）；修复ResourceStr+'20'徽章底色回归→getUrgencyBgColor/getLlmConfirmBgColor（`9912c8f`）；清除死代码KbRouteMap/空onDetailNavChanged/kbStack传递（`aa05b95`）
 - [ ] **16. 字符串未资源化**：string.json 仅 3 条（只做中文可接受，需知情决策）
 - [ ] **17. 代码风格**：整行 UI 压成单行（`SofaCalculator.ets:29` 400+ 字符）
 
@@ -86,4 +89,4 @@
 | 3 | #6 `56fa191` / #7 `9c4c999` / #8 `1b6c67f` | ✅ 构建通过 |
 | 4 | #11 色彩 token 化 `10047c5`/`a5fcfe0`/`57e7042`/`a298f08`/`514e5dd`/`9ad3ed5` + 中性色收尾 `75c73d0`/`9891c31`/`19336d6`/`341bf17` + #18/#19/#20 `deaacdf` | ✅ 构建通过 |
 | 5 | #12 共享组件+迁移 `8d3ce43`…`aaf6e5a`（16 commits）+ #21 `33caadf` + #22 `82630ba` + #23 `9cbe37e` | ✅ 构建通过 |
-| 6 | #13 大文件拆分 / #14 暗黑模式 / #15 返回栈 / #16 字符串资源 / #17 代码风格 | 待议（#14 前置已就绪） |
+| 6 | #14 暗黑模式 `05d3a9f` / #15 返回栈 `2aff4cb` + `9912c8f` + `aa05b95` / #13 拆分(进行中) `c819b64`/`6dd8230` | ✅ #14#15构建通过; #13进行中 |
