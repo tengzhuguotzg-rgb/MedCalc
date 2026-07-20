@@ -95,12 +95,12 @@ struct Index {
       TabContent() {
         this.CalcModeView();
       }
-      .tabBar(this.TabBarBuilder('计算器', 0))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_calculator'), 0))
 
       TabContent() {
         AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab });
       }
-      .tabBar(this.TabBarBuilder('助手', 1))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_assistant'), 1))
 
       TabContent() {
         Navigation(this.patientStack) {
@@ -109,7 +109,7 @@ struct Index {
         .hideTitleBar(true)
         .navDestination(this.PatientRouteMap)
       }
-      .tabBar(this.TabBarBuilder('病历', 2))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_patient'), 2))
 
       TabContent() {
         Navigation(this.kbStack) {
@@ -120,12 +120,12 @@ struct Index {
         }
         .hideTitleBar(true)
       }
-      .tabBar(this.TabBarBuilder('知识库', 3))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_knowledge'), 3))
 
       TabContent() {
         SettingsPage();
       }
-      .tabBar(this.TabBarBuilder('设置', 4))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_settings'), 4))
     }
     .barBackgroundColor(AppColors.card)
     .barMode(BarMode.Fixed)
@@ -151,7 +151,7 @@ struct Index {
   }
 
   @Builder
-  TabBarBuilder(title: string, index: number) {
+  TabBarBuilder(title: ResourceStr, index: number) {
     Column({ space: 4 }) {
       Text(title)
         .fontSize(14)
@@ -354,11 +354,11 @@ struct Index {
   @Builder
   PlaceholderCalculator() {
     Column() {
-      Text('开发中...')
+      Text($r('app.string.calc_placeholder'))
         .fontSize(17)
         .fontWeight(FontWeight.Bold)
         .fontColor(AppColors.primary);
-      Text('此计算器正在移植中，敬请期待')
+      Text($r('app.string.calc_placeholder_hint'))
         .fontSize(11.5)
         .fontColor(AppColors.textBody)
         .margin({ top: 8 });

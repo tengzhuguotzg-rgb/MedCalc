@@ -227,7 +227,7 @@ export struct SettingsPage {
   build() {
     Column() {
       Row() {
-        Text('设置')
+        Text($r('app.string.settings_title'))
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -240,13 +240,13 @@ export struct SettingsPage {
 
       Scroll() {
         Column({ space: 16 }) {
-          Text('LLM 服务配置')
+          Text($r('app.string.settings_llm_config'))
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary)
             .width('100%')
 
-          Text('配置 AI 服务的 API 地址和密钥，计算器和智能助手共用')
+          Text($r('app.string.settings_llm_desc'))
             .fontSize(12)
             .fontColor(AppColors.textSecondary)
             .width('100%')
@@ -254,13 +254,13 @@ export struct SettingsPage {
           Column({ space: 8 }) {
             if (this.llmModels.length === 0) {
               Column() {
-                Text('暂无 LLM 服务')
+                Text($r('app.string.settings_llm_empty'))
                   .fontSize(14)
                   .fontColor(AppColors.textSecondary)
                   .width('100%')
                   .textAlign(TextAlign.Center)
                   .margin({ top: 12, bottom: 12 })
-                Text('请点击下方按钮添加')
+                Text($r('app.string.settings_llm_empty_hint'))
                   .fontSize(12)
                   .fontColor(AppColors.textSecondary)
                   .width('100%')
@@ -328,16 +328,16 @@ export struct SettingsPage {
 
                     Row({ space: 4 }) {
                       Button(this.testingLlmId === llm.id ? '...' : '测试')
-                        .fontSize(10)
-                        .backgroundColor(this.testingLlmId === llm.id ? AppColors.fillBeige : AppColors.surfaceMuted)
-                        .fontColor(AppColors.primary)
-                        .height(22)
-                        .borderRadius(3)
-                        .enabled(this.testingLlmId.length === 0)
-                        .onClick(() => {
-                          this.testLlm(llm);
-                        })
-                      Button('编辑')
+                     .fontSize(10)
+                     .backgroundColor(this.testingLlmId === llm.id ? AppColors.fillBeige : AppColors.surfaceMuted)
+                     .fontColor(AppColors.primary)
+                     .height(22)
+                     .borderRadius(3)
+                     .enabled(this.testingLlmId.length === 0)
+                     .onClick(() => {
+                       this.testLlm(llm);
+                     })
+                       Button($r('app.string.common_edit'))
                         .fontSize(10)
                         .backgroundColor(AppColors.surfaceMuted)
                         .fontColor(AppColors.primary)
@@ -347,7 +347,7 @@ export struct SettingsPage {
                         .onClick(() => {
                           this.openEditLlm(llm);
                         })
-                      Button('删除')
+                       Button($r('app.string.common_delete'))
                         .fontSize(10)
                         .backgroundColor(AppColors.tierDangerBg)
                         .fontColor(AppColors.danger)
@@ -367,7 +367,7 @@ export struct SettingsPage {
               .width('100%')
             }, (provider: string) => provider)
 
-            Button('+ 添加服务商')
+            Button($r('app.string.settings_add_provider'))
               .fontSize(14)
               .fontColor(AppColors.primary)
               .backgroundColor(AppColors.fillBeige)
@@ -384,7 +384,7 @@ export struct SettingsPage {
           .backgroundColor(AppColors.card)
           .borderRadius(AppDimens.cardRadius)
 
-          Text('外观')
+          Text($r('app.string.settings_appearance'))
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary)
@@ -399,7 +399,7 @@ export struct SettingsPage {
                 })
                 .width(20)
                 .height(20)
-              Text('跟随系统')
+               Text($r('app.string.settings_theme_system'))
                 .fontSize(14)
                 .fontColor(AppColors.textPrimary)
                 .margin({ left: 8 })
@@ -414,7 +414,7 @@ export struct SettingsPage {
                 })
                 .width(20)
                 .height(20)
-              Text('浅色模式')
+               Text($r('app.string.settings_theme_light'))
                 .fontSize(14)
                 .fontColor(AppColors.textPrimary)
                 .margin({ left: 8 })
@@ -429,7 +429,7 @@ export struct SettingsPage {
                 })
                 .width(20)
                 .height(20)
-              Text('深色模式')
+               Text($r('app.string.settings_theme_dark'))
                 .fontSize(14)
                 .fontColor(AppColors.textPrimary)
                 .margin({ left: 8 })
@@ -441,17 +441,17 @@ export struct SettingsPage {
           .backgroundColor(AppColors.card)
           .borderRadius(AppDimens.cardRadius)
 
-          Text('关于')
+          Text($r('app.string.settings_about'))
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary)
             .width('100%')
 
           Column({ space: 4 }) {
-            Text('重症智算 v1.0')
+             Text($r('app.string.settings_app_name_version'))
               .fontSize(14)
               .fontColor(AppColors.primary)
-            Text('智能医学评分计算器')
+             Text($r('app.string.settings_app_subtitle'))
               .fontSize(12)
               .fontColor(AppColors.textSecondary)
           }
@@ -487,7 +487,7 @@ export struct SettingsPage {
           .width('100%')
 
         Column({ space: 4 }) {
-          Text('模型名称')
+           Text($r('app.string.settings_model_name'))
             .fontSize(13)
             .fontColor(AppColors.textSecondary)
             .width('100%')
@@ -500,13 +500,13 @@ export struct SettingsPage {
         }
         .width('100%')
 
-        Text('将复用该服务商下已有模型的 API 格式、URL 和 Key')
+         Text($r('app.string.settings_reuse_hint'))
           .fontSize(11)
           .fontColor(AppColors.textSecondary)
           .width('100%')
 
         Row({ space: 12 }) {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .backgroundColor(AppColors.fillBeige)
             .fontColor(AppColors.textSecondary)
@@ -514,7 +514,7 @@ export struct SettingsPage {
             .borderRadius(8)
             .layoutWeight(1)
             .onClick(() => { this.showLlmDialog = false; })
-          Button('确认')
+           Button($r('app.string.common_confirm'))
             .fontSize(14)
             .backgroundColor(AppColors.primary)
             .fontColor(AppColors.onPrimary)
@@ -537,7 +537,7 @@ export struct SettingsPage {
 
         Column({ space: 12 }) {
           Column({ space: 4 }) {
-            Text('服务商')
+             Text($r('app.string.settings_provider'))
               .fontSize(13)
               .fontColor(AppColors.textSecondary)
               .width('100%')
@@ -575,7 +575,7 @@ export struct SettingsPage {
           .width('100%')
 
           Row() {
-            Text('API 格式')
+             Text($r('app.string.settings_api_format'))
               .fontSize(14)
               .fontColor(AppColors.primary)
               .layoutWeight(1)
@@ -625,11 +625,11 @@ export struct SettingsPage {
           .width('100%')
 
           Column({ space: 4 }) {
-            Text('API Key')
+             Text($r('app.string.settings_api_key'))
               .fontSize(13)
               .fontColor(AppColors.textSecondary)
               .width('100%')
-            TextInput({ placeholder: '请输入 API Key', text: this.editLlmApiKey })
+             TextInput({ placeholder: $r('app.string.settings_ph_api_key'), text: this.editLlmApiKey })
               .fontSize(14)
               .fontColor(AppColors.primary)
               .backgroundColor(AppColors.background)
@@ -642,7 +642,7 @@ export struct SettingsPage {
         .width('100%')
 
         Row({ space: 12 }) {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .backgroundColor(AppColors.fillBeige)
             .fontColor(AppColors.textSecondary)
@@ -650,7 +650,7 @@ export struct SettingsPage {
             .borderRadius(8)
             .layoutWeight(1)
             .onClick(() => { this.showLlmDialog = false; })
-          Button('确认')
+           Button($r('app.string.common_confirm'))
             .fontSize(14)
             .backgroundColor(AppColors.primary)
             .fontColor(AppColors.onPrimary)

@@ -50,12 +50,12 @@ export struct PatientListPage {
   build() {
     Column() {
       Row() {
-        Text('病历管理')
+        Text($r('app.string.patient_list_title'))
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .layoutWeight(1)
-        Button('+ 新建')
+        Button($r('app.string.patient_new_btn'))
           .fontSize(12)
           .fontColor(AppColors.card)
           .backgroundColor(AppColors.primary)
@@ -69,7 +69,7 @@ export struct PatientListPage {
       .width('100%')
       .padding({ left: 16, right: 16, top: 12, bottom: 12 })
 
-      TextInput({ placeholder: '搜索姓名/床号...' })
+      TextInput({ placeholder: $r('app.string.patient_search_hint') })
         .height(AppDimens.inputHeight)
         .fontSize(14)
         .backgroundColor(AppColors.card)
@@ -82,11 +82,11 @@ export struct PatientListPage {
 
       if (this.patients.length === 0) {
         Column() {
-          Text('还没有患者记录')
+          Text($r('app.string.patient_empty'))
             .fontSize(16)
             .fontColor(AppColors.textSecondary)
             .margin({ bottom: 8 })
-          Text('点击右上角新建患者开始')
+          Text($r('app.string.patient_empty_hint'))
             .fontSize(13)
             .fontColor(AppColors.textSecondary)
         }
@@ -130,11 +130,11 @@ export struct PatientListPage {
                       .fontColor(AppColors.warning)
                       .fontWeight(FontWeight.Bold)
                   } else {
-                    Text('暂无预警')
+                     Text($r('app.string.patient_no_alert'))
                       .fontSize(12)
                       .fontColor(AppColors.tierOk)
                   }
-                  Text('删除')
+                   Text($r('app.string.common_delete'))
                     .fontSize(12)
                     .fontColor(AppColors.danger)
                     .padding({ left: 14, right: 14, top: 14, bottom: 14 })
@@ -176,19 +176,19 @@ export struct PatientListPage {
   CreateDialog() {
     Column() {
       Column() {
-        Text('新建患者')
+        Text($r('app.string.patient_create_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .margin({ bottom: 16 })
 
-        TextInput({ placeholder: '姓名*' })
+        TextInput({ placeholder: $r('app.string.patient_ph_name') })
           .height(AppDimens.inputHeight)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newName = value; })
 
-        TextInput({ placeholder: '床号' })
+        TextInput({ placeholder: $r('app.string.patient_ph_bedno') })
           .height(AppDimens.inputHeight)
           .fontSize(14)
           .margin({ bottom: 8 })
