@@ -157,7 +157,10 @@ export struct DiagnosisKbSection {
             Text('指南建议 · ' + getRecommendationSummary(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.recommendations))
               .fontSize(12)
               .fontColor(AppColors.primary)
-              .fontWeight(FontWeight.Medium);
+              .fontWeight(FontWeight.Medium)
+              .layoutWeight(1)
+              .maxLines(2)
+              .textOverflow({ overflow: TextOverflow.Ellipsis });
             Blank();
             if (this.adviceReadyRuleId === this.diag.ruleId) {
                Text($r('app.string.kb_ready'))
@@ -290,7 +293,10 @@ export struct DiagnosisKbSection {
             Text(step.output)
               .fontSize(9)
               .fontColor(AppColors.textSecondary)
-              .margin({ left: 4 });
+              .margin({ left: 4 })
+              .layoutWeight(1)
+              .maxLines(1)
+              .textOverflow({ overflow: TextOverflow.Ellipsis });
           }
         }
         .width('100%')
