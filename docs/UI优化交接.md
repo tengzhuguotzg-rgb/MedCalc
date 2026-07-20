@@ -148,6 +148,7 @@ cd /e/ai/MedCalc && hvigorw assembleApp
 | `entry/src/main/ets/components/calculators/widgets/CalcWidgets.ets` | 计算器共享组件 |
 | `entry/src/main/ets/engine/CalcEngine.ets` | CalcResult + tier 分级（引用 AppColors） |
 | `entry/src/main/ets/pages/Index.ets` | 4-Tab 主框架 + onBackPress（#15 战场） |
-| `entry/src/main/ets/components/PatientDetailPage.ets` | 3275 行（#13 进行中） |
+| `entry/src/main/ets/components/PatientDetailPage.ets` | 1367 行（#13 已拆分） |
+| `entry/src/main/ets/components/patient/` | 拆分子组件目录：PatientDetailTypes/KbMarkdownRenderer/KbReaderOverlay/PatientDetailUtils/AlertSubviews/DiagnosisKbSection/DashboardPreviewCards/DetailPageViews/PatientDetailDialogs |
 | `entry/src/main/ets/components/KnowledgeSearchPage.ets` + `utils/KbMarkdownParser.ets` | 知识库 UI + Markdown 渲染管线 |
 | `entry/src/main/ets/services/PreferencesService.ets` | 偏好持久化（#14 主题存这里） |

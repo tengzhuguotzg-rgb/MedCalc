@@ -55,8 +55,8 @@
   - 已做：新建 `utils/AppColors.ets`/`utils/AppDimens.ets` token 层（`10047c5`）；CalcEngine tier 色改为引用 AppColors，全 App 分级色单一定义；12 个色板色值全局迁移 1990 处（52 文件，`a5fcfe0`/`57e7042`/`a298f08`）；BloodGas/Apache2/Nrs2002 分级色统一走 CalcEngine.getTierColor（`514e5dd`）；高频尺寸 .height(44/48)/.borderRadius(12)/.padding(16) 迁移 556 处（`9ad3ed5`）；中性色/功能色/域色补 26 个 token 并迁移 1285 处（`75c73d0`/`9891c31`），系统蓝残留与知识要点卡收编（`19336d6`），DOMAIN_COLORS 收编 AppColors（`341bf17`）。现 ets/ 下除 AppColors 定义与白名单（画布/阴影色 11 行）外无硬编码色值
 - [x] **12. 样式全量复制粘贴**：卡片样式 108 处重复。建议抽公共组件：`CalcCard`/`InputRow`/`ResultCard`/`OptionChip`
   - 已做：新建 `calculators/widgets/CalcWidgets.ets` 四组件（`8d3ce43`）；38/40 个计算器分 11 批迁移（`65894ba`…`aaf6e5a`），每批构建验证；未迁移 2 个：Vasopressor（双栏换算特殊交互）、BloodGas（6 步法特殊区），保留 inline。reset/空态机制原样保留
-- [ ] **13. `PatientDetailPage.ets` 单文件 4166 行**、8 个独立 Scroll。建议拆分子组件文件
-  - 进行中：已提取 PatientDetailTypes.ets(197行)、KbMarkdownRenderer.ets(239行)、KbReaderOverlay.ets(60行)、PatientDetailUtils.ets(420行)，主文件降至3275行；@Builder→@Component拆分待继续
+- [x] **13. `PatientDetailPage.ets` 单文件 4166 行**、8 个独立 Scroll。建议拆分子组件文件
+  - 已做：4166→1367行(67%↓); 提取7个组件文件到patient/目录; 21个@Builder全拆为独立@Component; 13个实例方法迁为纯函数(PatientDetailUtils 544→630+行)
 - [x] **14. 暗黑模式准备度≈0**：resources/dark/ 仅 1 条。前置依赖第 11 条
   - 已做：color.json base 44 token + dark 44 token；AppColors→ResourceStr+$r()；CalcEngine/BloodGas/Patient/KbMarkdownParser 色返回值→ResourceStr；SettingsPage 外观Radio(跟随系统/浅色/深色)；PreferencesService saveThemeMode/getThemeMode；EntryAbility 启动读theme→setColorMode（`05d3a9f`）
 - [x] **15. 返回逻辑碎片化**：`Index.ets:82-94` AppStorage flag 模拟返回栈；详情页 5 层布尔分发
@@ -89,4 +89,4 @@
 | 3 | #6 `56fa191` / #7 `9c4c999` / #8 `1b6c67f` | ✅ 构建通过 |
 | 4 | #11 色彩 token 化 `10047c5`/`a5fcfe0`/`57e7042`/`a298f08`/`514e5dd`/`9ad3ed5` + 中性色收尾 `75c73d0`/`9891c31`/`19336d6`/`341bf17` + #18/#19/#20 `deaacdf` | ✅ 构建通过 |
 | 5 | #12 共享组件+迁移 `8d3ce43`…`aaf6e5a`（16 commits）+ #21 `33caadf` + #22 `82630ba` + #23 `9cbe37e` | ✅ 构建通过 |
-| 6 | #14 暗黑模式 `05d3a9f` / #15 返回栈 `2aff4cb` + `9912c8f` + `aa05b95` / #13 拆分(进行中) `c819b64`/`6dd8230` | ✅ #14#15构建通过; #13进行中 |
+| 6 | #14 暗黑模式 `05d3a9f` / #15 返回栈 `2aff4cb`+`9912c8f`+`aa05b95` / #13 拆分 `c819b64`/`6dd8230`→`7b0f7ad`/`d60b9d0`/`3be216d` | ✅ 全部构建通过 |
