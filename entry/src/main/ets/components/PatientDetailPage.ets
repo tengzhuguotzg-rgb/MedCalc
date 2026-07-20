@@ -486,7 +486,7 @@ export struct PatientDetailPage {
            });
         } else {
         Row() {
-          Button('< 返回')
+           Button($r('app.string.common_back'))
             .fontSize(14)
             .fontColor(AppColors.primary)
             .backgroundColor(Color.Transparent)
@@ -547,7 +547,7 @@ export struct PatientDetailPage {
         }
 
         Row() {
-          Button('上传图片')
+           Button($r('app.string.detail_upload_image'))
             .fontSize(12)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.primary)
@@ -555,7 +555,7 @@ export struct PatientDetailPage {
             .height(40)
             .layoutWeight(1)
             .onClick(() => { this.pickImage(); })
-          Button('上传PDF')
+           Button($r('app.string.detail_upload_pdf'))
             .fontSize(12)
             .fontColor(AppColors.primary)
             .backgroundColor(AppColors.fillBeige)
@@ -564,7 +564,7 @@ export struct PatientDetailPage {
             .layoutWeight(1)
             .margin({ left: 8 })
             .onClick(() => { this.pickPdf(); })
-          Button('输入文本')
+           Button($r('app.string.detail_input_text'))
             .fontSize(12)
             .fontColor(AppColors.primary)
             .backgroundColor(AppColors.fillBeige)
@@ -572,7 +572,7 @@ export struct PatientDetailPage {
             .height(40)
             .layoutWeight(1)
             .margin({ left: 8 })
-          Button('手动录入')
+           Button($r('app.string.detail_manual_input'))
             .fontSize(12)
             .fontColor(AppColors.primary)
             .backgroundColor(AppColors.fillBeige)

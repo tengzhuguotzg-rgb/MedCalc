@@ -32,7 +32,7 @@ export struct DiagnosisKbSection {
           .margin({ top: 8, bottom: 8 });
 
         Row() {
-          Text('指南参考')
+           Text($r('app.string.kb_guideline_reference'))
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
             .fontColor(AppColors.primary);
@@ -48,7 +48,7 @@ export struct DiagnosisKbSection {
           }
           Blank();
           if (!getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingKb) {
-            Text('重搜')
+               Text($r('app.string.kb_research'))
               .fontSize(10)
               .fontColor(AppColors.warningText)
               .backgroundColor(AppColors.tierWarnBg)
@@ -65,7 +65,7 @@ export struct DiagnosisKbSection {
               });
           }
           if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
-            Text(this.expandedRefIds.has(this.diag.ruleId) ? '收起' : '展开')
+             Text(this.expandedRefIds.has(this.diag.ruleId) ? $r('app.string.kb_collapse') : $r('app.string.kb_expand'))
               .fontSize(11)
               .fontColor(AppColors.primary);
           }
@@ -94,7 +94,7 @@ export struct DiagnosisKbSection {
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1);
                   if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
-                    Text('片段')
+                     Text($r('app.string.kb_fragment'))
                       .fontSize(8)
                       .fontColor(AppColors.warningText)
                       .backgroundColor(AppColors.tierWarnBg)
@@ -132,7 +132,7 @@ export struct DiagnosisKbSection {
         if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingKb) {
           Row() {
             LoadingProgress().width(14).height(14).color(AppColors.textSecondary);
-            Text('搜索指南中...')
+             Text($r('app.string.kb_searching'))
               .fontSize(11)
               .fontColor(AppColors.textSecondary)
               .margin({ left: 6 });
@@ -148,7 +148,7 @@ export struct DiagnosisKbSection {
               .fontWeight(FontWeight.Medium);
             Blank();
             if (this.adviceReadyRuleId === this.diag.ruleId) {
-              Text('已就绪')
+               Text($r('app.string.kb_ready'))
                 .fontSize(10)
                 .fontColor(AppColors.tierOk)
                 .backgroundColor(AppColors.tierOkBg)
@@ -156,7 +156,7 @@ export struct DiagnosisKbSection {
                 .padding({ left: 4, right: 4, top: 1, bottom: 1 })
                 .margin({ right: 4 });
             }
-            Text('查看 >')
+             Text($r('app.string.kb_view_gt'))
               .fontSize(12)
               .fontColor(AppColors.primary);
           }
@@ -180,7 +180,7 @@ export struct DiagnosisKbSection {
             }
             Row() {
               if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.summary.length > 0) {
-                Text('详情 >')
+                 Text($r('app.string.kb_detail_gt'))
                   .fontSize(10)
                   .fontColor(AppColors.primary)
                   .onClick(() => {
@@ -191,7 +191,7 @@ export struct DiagnosisKbSection {
                   });
               }
               if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
-                Text('重试建议')
+                 Text($r('app.string.kb_retry_advice'))
                   .fontSize(10)
                   .fontColor(AppColors.primary)
                   .margin({ left: 8 })
@@ -207,7 +207,7 @@ export struct DiagnosisKbSection {
                   });
               }
               Blank();
-              Text('重搜')
+              Text($r('app.string.kb_research'))
                 .fontSize(10)
                 .fontColor(AppColors.primary)
                 .onClick(() => {
@@ -229,7 +229,7 @@ export struct DiagnosisKbSection {
           .margin({ top: 4 });
         } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.verifiedPaths.length > 0) {
           Row() {
-            Text('查看指南建议')
+             Text($r('app.string.kb_view_guideline_advice'))
               .fontSize(12)
               .fontColor(AppColors.primary);
             Blank();
@@ -241,7 +241,7 @@ export struct DiagnosisKbSection {
           .padding({ top: 6, bottom: 6 })
           .onClick(() => { this.onLoadDiagnosisAdvice(this.diag); });
         } else {
-          Text('暂无指南建议')
+           Text($r('app.string.kb_no_guideline_advice'))
             .fontSize(11)
             .fontColor(AppColors.textSecondary)
             .margin({ top: 4 });

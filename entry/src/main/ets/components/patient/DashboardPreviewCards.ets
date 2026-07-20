@@ -17,7 +17,7 @@ export struct AlertPreviewCard {
   build() {
     Column() {
       Row() {
-        Text('预警')
+        Text($r('app.string.dashboard_alert'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -108,7 +108,7 @@ export struct AlertPreviewCard {
       }
 
       if (getWarningAlerts(this.dashboard.alerts).length === 0 && this.dashboard.labAlerts.length === 0) {
-        Text('暂无异常预警')
+         Text($r('app.string.dashboard_no_alert'))
           .fontSize(12)
           .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
@@ -131,7 +131,7 @@ export struct DiagnosisPreviewCard {
   build() {
     Column() {
       Row() {
-        Text('诊断')
+        Text($r('app.string.dashboard_diagnosis'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -193,7 +193,7 @@ export struct DiagnosisPreviewCard {
         .width('100%')
         .margin({ top: 8 })
       } else {
-        Text('暂无诊断')
+         Text($r('app.string.dashboard_no_diagnosis'))
           .fontSize(12)
           .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
@@ -219,7 +219,7 @@ export struct DataPreviewCard {
   build() {
     Column() {
       Row() {
-        Text('结构化数据')
+        Text($r('app.string.dashboard_data'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -277,7 +277,7 @@ export struct DataPreviewCard {
         .width('100%')
         .margin({ top: 8 })
       } else {
-        Text('暂无数据，上传报告或手动录入')
+         Text($r('app.string.dashboard_no_data'))
           .fontSize(12)
           .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })
@@ -301,7 +301,7 @@ export struct RecordsPreviewCard {
   build() {
     Column() {
       Row() {
-        Text('上传记录')
+        Text($r('app.string.dashboard_records'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -316,7 +316,7 @@ export struct RecordsPreviewCard {
         }
         Blank()
         if (this.dashboard.records.length > 3) {
-          Text('查看全部')
+           Text($r('app.string.dashboard_view_all'))
             .fontSize(12)
             .fontColor(AppColors.tierOk)
         }
@@ -353,7 +353,7 @@ export struct RecordsPreviewCard {
         .width('100%')
         .margin({ top: 8 })
       } else {
-        Text('暂无上传记录')
+         Text($r('app.string.dashboard_no_records'))
           .fontSize(12)
           .fontColor(AppColors.textSecondary)
           .margin({ top: 4 })

@@ -194,7 +194,7 @@ export struct PatientListPage {
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newBedNo = value; })
 
-        TextInput({ placeholder: '年龄' })
+        TextInput({ placeholder: $r('app.string.patient_ph_age') })
           .height(AppDimens.inputHeight)
           .fontSize(14)
           .type(InputType.Number)
@@ -202,11 +202,11 @@ export struct PatientListPage {
           .onChange((value: string) => { this.newAge = value; })
 
         Row() {
-          Text('性别')
+           Text($r('app.string.patient_sex'))
             .fontSize(14)
             .fontColor(AppColors.textPrimary)
             .layoutWeight(1)
-          Button('男')
+           Button($r('app.string.patient_sex_male'))
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.newSex === 'male' ? AppColors.card : AppColors.textOption)
@@ -216,7 +216,7 @@ export struct PatientListPage {
             .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .onClick(() => { this.newSex = 'male'; })
-          Button('女')
+           Button($r('app.string.patient_sex_female'))
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.newSex === 'female' ? AppColors.card : AppColors.textOption)
@@ -232,7 +232,7 @@ export struct PatientListPage {
         .margin({ bottom: 16 })
 
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .fontColor(AppColors.textSecondary)
             .backgroundColor(AppColors.fillNeutral)
@@ -246,7 +246,7 @@ export struct PatientListPage {
               this.newAge = '';
               this.newSex = 'male';
             })
-          Button('创建')
+           Button($r('app.string.patient_create_btn'))
             .fontSize(14)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.primary)
@@ -288,18 +288,18 @@ export struct PatientListPage {
   DeleteConfirmDialog() {
     Column() {
       Column() {
-        Text('确认删除患者')
+         Text($r('app.string.patient_delete_confirm_title'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .margin({ bottom: 8 })
-        Text('删除后该患者的所有数据、上传记录和预警将被永久清除，无法恢复。')
+         Text($r('app.string.patient_delete_confirm_msg'))
           .fontSize(13)
           .fontColor(AppColors.textBody)
           .lineHeight(20)
           .margin({ bottom: 16 })
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .fontColor(AppColors.textSecondary)
             .backgroundColor(AppColors.fillNeutral)
@@ -310,7 +310,7 @@ export struct PatientListPage {
               this.showDeleteConfirm = false;
               this.deletePatientId = '';
             })
-          Button('删除')
+           Button($r('app.string.common_delete'))
             .fontSize(14)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.danger)

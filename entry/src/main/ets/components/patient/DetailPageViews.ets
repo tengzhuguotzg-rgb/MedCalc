@@ -34,12 +34,12 @@ export struct AlertDetailPageView {
   build() {
     Column() {
       Row() {
-        Button('< 返回')
+         Button($r('app.string.common_back'))
           .fontSize(14)
           .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.onBack(); })
-        Text('预警详情')
+         Text($r('app.string.alert_detail_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -61,7 +61,7 @@ export struct AlertDetailPageView {
       Scroll() {
         Column() {
           if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
-            Text('当前无异常预警')
+             Text($r('app.string.alert_no_warning'))
               .fontSize(14)
               .fontColor(AppColors.textSecondary)
               .width('100%')
@@ -71,7 +71,7 @@ export struct AlertDetailPageView {
             if (this.getWarningAlerts().length > 0) {
               Column() {
                 Row() {
-                  Text('评分预警')
+                   Text($r('app.string.alert_score_warning'))
                     .fontSize(13)
                     .fontWeight(FontWeight.Bold)
                     .fontColor(AppColors.primary)
@@ -92,7 +92,7 @@ export struct AlertDetailPageView {
             if (this.dashboard.labAlerts.length > 0) {
               Column() {
                 Row() {
-                  Text('检验预警')
+                   Text($r('app.string.alert_lab_warning'))
                     .fontSize(13)
                     .fontWeight(FontWeight.Bold)
                     .fontColor(AppColors.primary)
@@ -238,7 +238,7 @@ export struct DiagnosisDetailPageView {
   }
 
   @Builder
-  DiagnosisGroup(source: string, label: string, color: ResourceStr, isLlmGroup: boolean) {
+  DiagnosisGroup(source: string, label: ResourceStr, color: ResourceStr, isLlmGroup: boolean) {
     if (getDiagnosesBySource(this.dashboard.diagnoses, source).length > 0) {
       Column() {
         Row() {
@@ -275,12 +275,12 @@ export struct DiagnosisDetailPageView {
   build() {
     Column() {
       Row() {
-        Button('< 返回')
+         Button($r('app.string.common_back'))
           .fontSize(14)
           .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.onBack(); })
-        Text('诊断详情')
+         Text($r('app.string.diagnosis_detail_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -306,20 +306,20 @@ export struct DiagnosisDetailPageView {
       Scroll() {
         Column() {
           if (this.dashboard.diagnoses.length === 0) {
-            Text('暂无诊断')
+             Text($r('app.string.dashboard_no_diagnosis'))
               .fontSize(14)
               .fontColor(AppColors.textSecondary)
               .width('100%')
               .textAlign(TextAlign.Center)
               .padding(40)
           } else {
-            this.DiagnosisGroup('rule', '确定性', AppColors.primary, false);
-            this.DiagnosisGroup('user', '自添加', AppColors.tierOk, false);
-            this.DiagnosisGroup('partial', '可能性', AppColors.tierWarn, false);
-            this.DiagnosisGroup('llm_hint', 'LLM提示', AppColors.aiAccent, true);
+            this.DiagnosisGroup('rule', $r('app.string.diagnosis_group_rule'), AppColors.primary, false);
+            this.DiagnosisGroup('user', $r('app.string.diagnosis_group_user'), AppColors.tierOk, false);
+            this.DiagnosisGroup('partial', $r('app.string.diagnosis_group_partial'), AppColors.tierWarn, false);
+            this.DiagnosisGroup('llm_hint', $r('app.string.diagnosis_group_llm_hint'), AppColors.aiAccent, true);
           }
           Row() {
-            Text('+ 添加诊断')
+             Text($r('app.string.diagnosis_add_btn'))
               .fontSize(13)
               .fontColor(AppColors.primary)
               .margin({ top: 8 })
@@ -371,7 +371,7 @@ export struct RecommendationsDetailPageView {
               .fontColor(AppColors.textSecondary)
               .margin({ left: 6 });
             Blank();
-            Text(this.expandedCategories.has(category) ? '▲ 收起' : '▼ 展开')
+            Text(this.expandedCategories.has(category) ? $r('app.string.kb_collapse_label') : $r('app.string.kb_expand_label'))
               .fontSize(11)
               .fontColor(AppColors.primary);
           }
@@ -443,7 +443,7 @@ export struct RecommendationsDetailPageView {
   build() {
     Column() {
       Row() {
-        Button('< 返回')
+         Button($r('app.string.common_back'))
           .fontSize(14)
           .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
@@ -469,11 +469,11 @@ export struct RecommendationsDetailPageView {
           if (this.activeAdviceRuleId.length > 0 && getDiagnosisKb(this.diagnosisKbMap, this.activeAdviceRuleId) !== null) {
             if (getDiagnosisKb(this.diagnosisKbMap, this.activeAdviceRuleId)!.isLowRelevance) {
               Row() {
-                Text('⚠️ 低相关性文献')
+                 Text($r('app.string.kb_low_rel_warning'))
                   .fontSize(11)
                   .fontColor(AppColors.warningText)
                   .fontWeight(FontWeight.Medium)
-                Text('未找到高度相关文献，以下内容可能仅供参考')
+                 Text($r('app.string.kb_low_rel_hint'))
                   .fontSize(10)
                   .fontColor(AppColors.textFaint)
                   .margin({ left: 6 })
@@ -487,14 +487,14 @@ export struct RecommendationsDetailPageView {
             if (getDiagnosisKb(this.diagnosisKbMap, this.activeAdviceRuleId)!.summary.length > 0) {
               Column() {
                 Row() {
-                  Text('临床要点')
+                   Text($r('app.string.kb_clinical_keypoints'))
                     .fontSize(14)
                     .fontWeight(FontWeight.Bold)
                     .fontColor(AppColors.primary);
                 }
                 .width('100%')
                 .margin({ bottom: 4 });
-                Text('以下内容由AI根据指南和教材推荐意见归纳整理，仅供参考，详细内容请展开下方各分类查看原文。')
+                 Text($r('app.string.kb_ai_summary_disclaimer'))
                   .fontSize(10)
                   .fontColor(AppColors.textFaint)
                   .width('100%')
@@ -539,12 +539,12 @@ export struct DataDetailPageView {
   build() {
     Column() {
       Row() {
-        Button('< 返回')
+         Button($r('app.string.common_back'))
           .fontSize(14)
           .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.onBack(); })
-        Text('结构化数据')
+         Text($r('app.string.data_detail_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -561,7 +561,7 @@ export struct DataDetailPageView {
       Scroll() {
         Column() {
           if (getDataFieldCount(this.dashboard, this.dataFieldSpecs) === 0) {
-            Text('暂无数据，上传报告或手动录入')
+             Text($r('app.string.dashboard_no_data'))
               .fontSize(14)
               .fontColor(AppColors.textSecondary)
               .width('100%')
@@ -674,12 +674,12 @@ export struct RecordsDetailPageView {
   build() {
     Column() {
       Row() {
-        Button('< 返回')
+         Button($r('app.string.common_back'))
           .fontSize(14)
           .fontColor(AppColors.primary)
           .backgroundColor(Color.Transparent)
           .onClick(() => { this.onBack(); })
-        Text('上传记录')
+         Text($r('app.string.records_detail_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -696,7 +696,7 @@ export struct RecordsDetailPageView {
       Scroll() {
         Column() {
           if (this.dashboard.records.length === 0) {
-            Text('暂无上传记录')
+             Text($r('app.string.dashboard_no_records'))
               .fontSize(14)
               .fontColor(AppColors.textSecondary)
               .width('100%')
@@ -713,7 +713,7 @@ export struct RecordsDetailPageView {
                     .fontSize(13)
                     .fontColor(AppColors.primary)
                     .layoutWeight(1)
-                  Text('删除')
+                   Text($r('app.string.common_delete'))
                     .fontSize(12)
                     .fontColor(AppColors.warning)
                     .margin({ right: 8 })

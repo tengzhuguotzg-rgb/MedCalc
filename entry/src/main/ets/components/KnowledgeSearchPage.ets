@@ -365,9 +365,9 @@ export struct KnowledgeSearchPage {
   @Builder
   SearchBar() {
     Row() {
-      Search({ value: this.searchKeyword, placeholder: '搜索疾病、指南、关键词...' })
+      Search({ value: this.searchKeyword, placeholder: $r('app.string.kb_search_placeholder') })
         .width('100%')
-        .searchButton('搜索')
+        .searchButton($r('app.string.kb_search_btn'))
         .onChange((value: string) => {
           this.searchKeyword = value;
           if (value.trim().length === 0) {
@@ -387,7 +387,7 @@ export struct KnowledgeSearchPage {
     if (this.isSearching) {
       Column() {
         LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
-        Text('搜索中...')
+        Text($r('app.string.kb_searching_status'))
           .fontSize(13)
           .fontColor(AppColors.textSecondary)
           .margin({ top: 8 });
@@ -397,10 +397,10 @@ export struct KnowledgeSearchPage {
       .justifyContent(FlexAlign.Center);
     } else if (this.searchResults.length === 0) {
       Column() {
-        Text('未找到相关内容')
+         Text($r('app.string.kb_no_results'))
           .fontSize(15)
           .fontColor(AppColors.textSecondary);
-        Text('试试其他关键词，如"脓毒症""ARDS""镇静"')
+         Text($r('app.string.kb_no_results_hint'))
           .fontSize(12)
           .fontColor(AppColors.textFaint)
           .margin({ top: 6 });
@@ -489,7 +489,7 @@ export struct KnowledgeSearchPage {
     if (this.isKbIniting) {
       Column() {
         LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
-        Text('知识库加载中...')
+        Text($r('app.string.kb_initing'))
           .fontSize(13)
           .fontColor(AppColors.textSecondary)
           .margin({ top: 8 });
@@ -499,10 +499,10 @@ export struct KnowledgeSearchPage {
       .justifyContent(FlexAlign.Center);
     } else if (this.dirEntries.length === 0) {
       Column() {
-        Text('知识库为空')
+         Text($r('app.string.kb_empty'))
           .fontSize(15)
           .fontColor(AppColors.textSecondary);
-        Text('请检查知识库数据是否已正确部署')
+         Text($r('app.string.kb_empty_hint'))
           .fontSize(12)
           .fontColor(AppColors.textFaint)
           .margin({ top: 6 });
@@ -585,7 +585,7 @@ export struct KnowledgeSearchPage {
       if (this.isLoadingCategory) {
         Column() {
           LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
-          Text('加载中...')
+           Text($r('app.string.kb_loading'))
             .fontSize(13)
             .fontColor(AppColors.textSecondary)
             .margin({ top: 8 });
@@ -1095,7 +1095,7 @@ export struct KnowledgeSearchPage {
         .margin({ top: 16, bottom: 12 });
 
       if (this.wikilinks.length > 0) {
-        Text('相关章节')
+         Text($r('app.string.kb_related_sections'))
           .fontSize(13)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -1118,7 +1118,7 @@ export struct KnowledgeSearchPage {
       }
 
       if (this.relatedPages.length > 0) {
-        Text('相关指南')
+         Text($r('app.string.kb_related_guidelines'))
           .fontSize(13)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)

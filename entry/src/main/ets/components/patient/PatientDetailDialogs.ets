@@ -24,7 +24,7 @@ export struct TimelineDialog {
           .margin({ bottom: 12 })
 
         if (this.timelineData.length === 0) {
-          Text('无历史记录')
+           Text($r('app.string.timeline_no_history'))
             .fontSize(13)
             .fontColor(AppColors.textSecondary)
         } else {
@@ -39,7 +39,7 @@ export struct TimelineDialog {
               }
               .width('100%')
               Row() {
-                Text('报告')
+                 Text($r('app.string.timeline_report'))
                   .fontSize(10)
                   .fontColor(AppColors.card)
                   .backgroundColor(dp.examTime > 0 ? AppColors.tierOk : AppColors.danger)
@@ -51,7 +51,7 @@ export struct TimelineDialog {
                     .fontSize(12)
                     .fontColor(AppColors.primary)
                     .layoutWeight(1)
-                  Text('修改')
+                   Text($r('app.string.common_edit'))
                     .fontSize(10)
                     .fontColor(AppColors.tierOk)
                     .margin({ left: 4 })
@@ -59,11 +59,11 @@ export struct TimelineDialog {
                       this.onOpenExamTimeEditor(dp);
                     })
                 } else {
-                  Text('未设置')
+                   Text($r('app.string.timeline_unlink_exam'))
                     .fontSize(12)
                     .fontColor(AppColors.danger)
                     .layoutWeight(1)
-                  Text('录入')
+                   Text($r('app.string.dialog_manual_submit'))
                     .fontSize(10)
                     .fontColor(AppColors.card)
                     .backgroundColor(AppColors.tierOk)
@@ -78,7 +78,7 @@ export struct TimelineDialog {
               .width('100%')
               .margin({ top: 2 })
               Row() {
-                Text('上传')
+                 Text($r('app.string.timeline_upload'))
                   .fontSize(10)
                   .fontColor(AppColors.textSecondary)
                   .margin({ right: 4 })
@@ -98,7 +98,7 @@ export struct TimelineDialog {
           }, (dp: PatientDataPoint) => dp.id.toString())
         }
 
-        Button('关闭')
+         Button($r('app.string.common_close'))
           .fontSize(14)
           .fontColor(AppColors.card)
           .backgroundColor(AppColors.primary)
@@ -133,7 +133,7 @@ export struct ExamTimeEditorDialog {
   build() {
     Column() {
       Column() {
-        Text('设置报告时间')
+         Text($r('app.string.dialog_exam_time_title'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
@@ -158,7 +158,7 @@ export struct ExamTimeEditorDialog {
           .margin({ top: 8 })
 
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .fontColor(AppColors.textSecondary)
             .backgroundColor(AppColors.fillNeutral)
@@ -168,7 +168,7 @@ export struct ExamTimeEditorDialog {
             .onClick(() => {
               this.showExamTimeEditor = false;
             })
-          Button('保存')
+           Button($r('app.string.common_save'))
             .fontSize(14)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.tierOk)
@@ -208,13 +208,13 @@ export struct ManualInputDialog {
   build() {
     Column() {
       Column() {
-        Text('手动录入')
+         Text($r('app.string.dialog_manual_input_title'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .margin({ bottom: 12 })
 
-        TextInput({ placeholder: '搜索字段名...' })
+         TextInput({ placeholder: $r('app.string.dialog_manual_search_hint') })
           .height(40)
           .fontSize(14)
           .margin({ bottom: 8 })
@@ -247,7 +247,7 @@ export struct ManualInputDialog {
         .height(200)
         .margin({ bottom: 8 })
 
-        TextInput({ placeholder: '输入数值' })
+         TextInput({ placeholder: $r('app.string.dialog_manual_value_hint') })
           .height(40)
           .fontSize(14)
           .type(InputType.NUMBER_DECIMAL)
@@ -255,7 +255,7 @@ export struct ManualInputDialog {
           .onChange((value: string) => { this.manualFieldValue = value; })
 
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .fontColor(AppColors.textSecondary)
             .backgroundColor(AppColors.fillNeutral)
@@ -267,7 +267,7 @@ export struct ManualInputDialog {
               this.manualFieldKey = '';
               this.manualFieldValue = '';
             })
-          Button('录入')
+           Button($r('app.string.dialog_manual_submit'))
             .fontSize(14)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.primary)
@@ -304,18 +304,18 @@ export struct DeleteConfirmDialog {
   build() {
     Column() {
       Column() {
-        Text('确认删除')
+         Text($r('app.string.dialog_delete_title'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .margin({ bottom: 8 })
-        Text('删除此记录后，由它提供的数据将被一并删除，预警也将重新计算。')
+         Text($r('app.string.dialog_delete_record_msg'))
           .fontSize(13)
           .fontColor(AppColors.textBody)
           .lineHeight(20)
           .margin({ bottom: 16 })
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
             .fontColor(AppColors.textSecondary)
             .backgroundColor(AppColors.fillNeutral)
@@ -326,7 +326,7 @@ export struct DeleteConfirmDialog {
               this.showDeleteConfirm = false;
               this.deleteRecordId = '';
             })
-          Button('删除')
+           Button($r('app.string.common_delete'))
             .fontSize(14)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.warning)
@@ -365,20 +365,20 @@ export struct AddDiagnosisDialog {
   build() {
     Column() {
       Column() {
-        Text('添加诊断')
+         Text($r('app.string.dialog_add_diagnosis_title'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
           .fontColor(AppColors.primary)
           .margin({ bottom: 16 })
 
-        TextInput({ placeholder: '诊断名称', text: this.addDiagName })
+         TextInput({ placeholder: $r('app.string.dialog_add_diag_ph_name'), text: this.addDiagName })
           .fontSize(14)
           .width('100%')
           .onChange((value: string) => {
             this.addDiagName = value;
           })
 
-        Text('分类')
+         Text($r('app.string.dialog_add_diag_category'))
           .fontSize(13)
           .fontColor(AppColors.textBody)
           .margin({ top: 12, bottom: 6 })
@@ -399,7 +399,7 @@ export struct AddDiagnosisDialog {
         }
 
         Row() {
-          Text('取消')
+           Text($r('app.string.common_cancel'))
             .fontSize(14)
             .fontColor(AppColors.textSecondary)
             .layoutWeight(1)
@@ -408,7 +408,7 @@ export struct AddDiagnosisDialog {
             .onClick(() => {
               this.showAddDiagnosis = false;
             })
-          Text('添加')
+           Text($r('app.string.common_add'))
             .fontSize(14)
             .fontColor(AppColors.card)
             .backgroundColor(AppColors.primary)

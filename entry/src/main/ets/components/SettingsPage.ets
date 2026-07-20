@@ -327,7 +327,7 @@ export struct SettingsPage {
                     .alignItems(HorizontalAlign.Start)
 
                     Row({ space: 4 }) {
-                      Button(this.testingLlmId === llm.id ? '...' : '测试')
+                       Button(this.testingLlmId === llm.id ? '...' : $r('app.string.common_test'))
                      .fontSize(10)
                      .backgroundColor(this.testingLlmId === llm.id ? AppColors.fillBeige : AppColors.surfaceMuted)
                      .fontColor(AppColors.primary)
@@ -491,7 +491,7 @@ export struct SettingsPage {
             .fontSize(13)
             .fontColor(AppColors.textSecondary)
             .width('100%')
-          TextInput({ placeholder: '如 deepseek-chat', text: this.addToProviderModelName })
+             TextInput({ placeholder: $r('app.string.settings_ph_model'), text: this.addToProviderModelName })
             .fontSize(14)
             .fontColor(AppColors.primary)
             .backgroundColor(AppColors.background)
@@ -541,7 +541,7 @@ export struct SettingsPage {
               .fontSize(13)
               .fontColor(AppColors.textSecondary)
               .width('100%')
-            TextInput({ placeholder: '如 DeepSeek、OpenAI、MiniMax', text: this.editLlmProvider })
+             TextInput({ placeholder: $r('app.string.settings_ph_provider'), text: this.editLlmProvider })
               .fontSize(14)
               .fontColor(AppColors.primary)
               .backgroundColor(AppColors.background)
@@ -556,7 +556,7 @@ export struct SettingsPage {
               .fontColor(AppColors.textSecondary)
               .width('100%')
             if (this.llmDialogMode === 'edit') {
-              TextInput({ placeholder: '如 deepseek-chat', text: this.editLlmName })
+               TextInput({ placeholder: $r('app.string.settings_ph_model'), text: this.editLlmName })
                 .fontSize(14)
                 .fontColor(AppColors.primary)
                 .backgroundColor(AppColors.background)
