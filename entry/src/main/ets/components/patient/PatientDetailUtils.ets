@@ -1,9 +1,10 @@
-import { PatientAlert, PatientRecord, PatientDiagnosis } from '../../model/Patient';
+import { PatientAlert, PatientRecord, PatientDiagnosis, PatientDashboard, PatientLabAlert } from '../../model/Patient';
 import { CalcResult } from '../../engine/CalcEngine';
 import { AppColors } from '../../utils/AppColors';
 import { SearchResult } from '../../services/KnowledgeService';
 import { DIAGNOSIS_RULES, DiagnosisRule } from '../../model/DiagnosisRules';
-import { GuidelineRecommendation, ParsedRecommendations, GapSignal, AgentStep } from './PatientDetailTypes';
+import { GuidelineRecommendation, ParsedRecommendations, GapSignal, AgentStep, DomainEntry } from './PatientDetailTypes';
+import { DataFieldSpec } from '../../services/AssistantService';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
 export function criterionOpSymbol(op: string): string {
@@ -440,4 +441,104 @@ export function getLabAlertUrgencyLabel(urgency: string): string {
     return '警示';
   }
   return '关注';
+}
+
+export function getWarningAlerts(alerts: PatientAlert[]): PatientAlert[] {
+  const result: PatientAlert[] = [];
+  for (let i = 0; i < alerts.length; i++) {
+    const tierClass = parseAlertResult(alerts[i]).tierClass;
+    if (tierClass !== 'tier-ok' && tierClass !== 'tier-info') {
+      result.push(alerts[i]);
+    }
+  }
+  return result;
+}
+
+export function getDiagnosisCategoryTags(diagnoses: PatientDiagnosis[]): string[] {
+  const tagSet = new Set<string>();
+  for (let i = 0; i < diagnoses.length; i++) {
+    tagSet.add(diagnoses[i].category);
+  }
+  return Array.from(tagSet);
+}
+
+export function findFieldSpec(key: string, specs: DataFieldSpec[]): DataFieldSpec | null {
+  for (let i = 0; i < specs.length; i++) {
+    if (specs[i].key === key) {
+      return specs[i];
+    }
+  }
+  const lowerKey = key.toLowerCase();
+  for (let i = 0; i < specs.length; i++) {
+    if (specs[i].key.toLowerCase() === lowerKey) {
+      return specs[i];
+    }
+  }
+  return null;
+}
+
+export function getFieldValueLabel(key: string, specs: DataFieldSpec[]): string {
+  const spec = findFieldSpec(key, specs);
+  if (spec !== null) {
+    return spec.label;
+  }
+  return key;
+}
+
+export function getFieldUnit(key: string, specs: DataFieldSpec[]): string {
+  const spec = findFieldSpec(key, specs);
+  if (spec !== null) {
+    return spec.unit;
+  }
+  return '';
+}
+
+export function isDerivedFlagField(key: string, specs: DataFieldSpec[]): boolean {
+  const spec = findFieldSpec(key, specs);
+  if (spec === null) {
+    return false;
+  }
+  if (spec.type === 'select' && spec.options !== undefined &&
+    spec.options.length === 2 && spec.options[0] === '0' && spec.options[1] === '1') {
+    return true;
+  }
+  return false;
+}
+
+export function isDisplayableDataKey(key: string, specs: DataFieldSpec[]): boolean {
+  return !isDerivedFlagField(key, specs);
+}
+
+export function getDataFieldCount(dashboard: PatientDashboard, specs: DataFieldSpec[]): number {
+  let count = 0;
+  dashboard.latestData.forEach((val: string, key: string) => {
+    if (isDisplayableDataKey(key, specs)) {
+      count++;
+    }
+  });
+  return count;
+}
+
+export function getDataPreviewItems(dashboard: PatientDashboard, specs: DataFieldSpec[]): string[] {
+  const items: string[] = [];
+  const keys = Array.from(dashboard.latestData.keys());
+  for (let i = 0; i < keys.length && items.length < 5; i++) {
+    const key = keys[i];
+    if (!isDisplayableDataKey(key, specs)) {
+      continue;
+    }
+    const val = dashboard.latestData.get(key);
+    const unit = getFieldUnit(key, specs);
+    items.push(getFieldValueLabel(key, specs) + ' ' + val + (unit.length > 0 ? ' ' + unit : ''));
+  }
+  return items;
+}
+
+export function getRecordPreviewItems(records: PatientRecord[]): string[] {
+  const items: string[] = [];
+  for (let i = 0; i < records.length && items.length < 3; i++) {
+    const record = records[i];
+    items.push(getRecordIcon(record.type) + ' ' + getRecordLabel(record) + ' ' + formatTime(record.timestamp));
+  }
+  return items;
 }

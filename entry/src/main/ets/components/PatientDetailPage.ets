@@ -27,6 +27,8 @@ import { KbMarkdownRenderer } from './patient/KbMarkdownRenderer';
 import { criterionOpSymbol, parseAlertResult, formatTime, formatDateTime, getRecordIcon, getRecordLabel, formatResultValue, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, parseRecommendations, parseRecommendationsAndSummary, parseGapsFromJson, getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getCategoryCount, getCategoryBorderColor, getCategoryLabel, getEvidenceColor, getEvidenceBgColor, getDiagnosisNameByRuleId, getLabAlertUrgencyColor, getLabAlertUrgencyLabel } from './patient/PatientDetailUtils';
 import { AlertCardView, AlertDetailContent, LabAlertCard } from './patient/AlertSubviews';
 import { DiagnosisKbSection as DiagnosisKbSectionView } from './patient/DiagnosisKbSection';
+import { AlertPreviewCard, DiagnosisPreviewCard as DiagnosisPreviewCardView, DataPreviewCard, RecordsPreviewCard } from './patient/DashboardPreviewCards';
+import { getDataFieldCount, getDataPreviewItems, getRecordPreviewItems, getDiagnosisCategoryTags, getWarningAlerts as getWarningAlertsUtil } from './patient/PatientDetailUtils';
 
 @Component
 export struct PatientDetailPage {
@@ -602,10 +604,20 @@ export struct PatientDetailPage {
         } else {
           Scroll() {
             Column() {
-               this.AlertPreviewCard();
-               this.DiagnosisPreviewCard();
-               this.DataPreviewCard();
-               this.RecordsPreviewCard();
+                AlertPreviewCard({ dashboard: this.dashboard, onTap: () => { this.showAlertDetail = true; } });
+                DiagnosisPreviewCardView({ dashboard: this.dashboard, onTap: () => { this.showDiagnosisDetail = true; } });
+                DataPreviewCard({
+                  dashboard: this.dashboard,
+                  domainEntries: this.domainEntries,
+                  dataFieldCount: getDataFieldCount(this.dashboard, this.dataFieldSpecs),
+                  dataPreviewItems: getDataPreviewItems(this.dashboard, this.dataFieldSpecs),
+                  onTap: () => { this.showDataDetail = true; }
+                });
+                RecordsPreviewCard({
+                  dashboard: this.dashboard,
+                  recordPreviewItems: getRecordPreviewItems(this.dashboard.records),
+                  onTap: () => { this.showRecordsDetail = true; }
+                });
             }
             .padding({ left: 16, right: 16, bottom: 80 })
           }
@@ -711,194 +723,6 @@ export struct PatientDetailPage {
       .height('100%')
     }
 
-    @Builder
-  AlertPreviewCard() {
-    Column() {
-      Row() {
-        Text('预警')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-        if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
-          Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
-            .fontSize(12)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.danger)
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 1, bottom: 1 })
-            .margin({ left: 6 })
-        }
-        Blank()
-      }
-      .width('100%')
-
-      if (this.getWarningAlerts().length > 0) {
-        Column() {
-          ForEach(this.getWarningAlerts().slice(0, 3), (alert: PatientAlert) => {
-            Row() {
-              Column()
-                .width(3)
-                .height(12)
-                .backgroundColor(getTierColor(parseAlertResult(alert).tierClass))
-                .borderRadius(1)
-                .margin({ right: 6 })
-              Text(alert.calcName)
-                .fontSize(13)
-                .fontColor(AppColors.primary)
-                .layoutWeight(1)
-              Text(parseAlertResult(alert).tier)
-                .fontSize(11)
-                .fontColor(getTierColor(parseAlertResult(alert).tierClass))
-                .maxLines(1)
-            }
-            .width('100%')
-            .padding({ top: 4, bottom: 4 })
-          }, (alert: PatientAlert) => alert.id.toString())
-          if (this.getWarningAlerts().length > 3) {
-            Text('还有' + (this.getWarningAlerts().length - 3) + '项评分预警...')
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .margin({ top: 2 })
-          }
-        }
-        .width('100%')
-        .margin({ top: 8 })
-      }
-
-      if (this.dashboard.labAlerts.length > 0) {
-        Column() {
-          Row()
-            .width('100%')
-            .height(1)
-            .backgroundColor(AppColors.divider)
-            .margin({ top: 4, bottom: 4 });
-          ForEach(this.dashboard.labAlerts.slice(0, 3), (la: PatientLabAlert) => {
-            Row() {
-              Column()
-                .width(3)
-                .height(12)
-                .backgroundColor(getLabAlertUrgencyColor(la.urgency))
-                .borderRadius(1)
-                .margin({ right: 6 })
-              Text(la.fieldLabel + ' ' + la.value)
-                .fontSize(12)
-                .fontColor(AppColors.primary)
-                .layoutWeight(1)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text(la.threshold)
-                .fontSize(10)
-                .fontColor(getLabAlertUrgencyColor(la.urgency))
-                .maxLines(1)
-            }
-            .width('100%')
-            .padding({ top: 3, bottom: 3 })
-          }, (la: PatientLabAlert) => la.id.toString())
-          if (this.dashboard.labAlerts.length > 3) {
-            Text('还有' + (this.dashboard.labAlerts.length - 3) + '项检验预警...')
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .margin({ top: 2 })
-          }
-        }
-        .width('100%')
-        .margin({ top: 4 })
-      }
-
-      if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
-        Text('暂无异常预警')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ top: 4 })
-      }
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor(AppColors.card)
-    .borderRadius(10)
-    .margin({ bottom: 8 })
-    .onClick(() => { this.showAlertDetail = true; })
-  }
-
-  @Builder
-  DiagnosisPreviewCard() {
-    Column() {
-      Row() {
-        Text('诊断')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-        if (this.dashboard.diagnosisCount > 0) {
-          Text(this.dashboard.diagnosisCount.toString())
-            .fontSize(12)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.primary)
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 1, bottom: 1 })
-            .margin({ left: 6 })
-        }
-        Blank()
-        Row() {
-          ForEach(this.getDiagnosisCategoryTags().slice(0, 4), (tag: string) => {
-            Text(tag)
-              .fontSize(10)
-              .fontColor(AppColors.primary)
-              .backgroundColor(AppColors.fillBeige)
-              .borderRadius(4)
-              .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-              .margin({ left: 3 })
-          }, (tag: string) => tag)
-        }
-      }
-      .width('100%')
-
-      if (this.dashboard.diagnoses.length > 0) {
-        Column() {
-          ForEach(this.dashboard.diagnoses.slice(0, 3), (diag: PatientDiagnosis) => {
-            Row() {
-              Column()
-                .width(3)
-                .height(14)
-                .backgroundColor(getUrgencyColor(diag.urgency))
-                .borderRadius(1)
-                .margin({ right: 6 })
-              Text(diag.name)
-                .fontSize(13)
-                .fontColor(AppColors.primary)
-                .layoutWeight(1)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-              Text(getUrgencyLabel(diag.urgency))
-                .fontSize(9)
-                .fontColor(getUrgencyColor(diag.urgency))
-                .margin({ left: 4 })
-            }
-            .width('100%')
-            .padding({ top: 3, bottom: 3 })
-          }, (diag: PatientDiagnosis) => diag.id.toString())
-          if (this.dashboard.diagnoses.length > 3) {
-            Text('还有' + (this.dashboard.diagnoses.length - 3) + '项...')
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .margin({ top: 2 })
-          }
-        }
-        .width('100%')
-        .margin({ top: 8 })
-      } else {
-        Text('暂无诊断')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ top: 4 })
-      }
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor(AppColors.card)
-    .borderRadius(10)
-    .margin({ bottom: 12 })
-    .onClick(() => { this.showDiagnosisDetail = true; })
-  }
 
   @Builder
   AlertDetailPage() {
@@ -2016,110 +1840,10 @@ export struct PatientDetailPage {
   }
 
 
-  getDataFieldCount(): number {
-    let count = 0;
-    this.dashboard.latestData.forEach((val: string, key: string) => {
-      if (this.isDisplayableDataKey(key)) {
-        count++;
-      }
-    });
-    return count;
-  }
-
   getDataDomainCount(): number {
     return this.domainEntries.length;
   }
 
-  getDataPreviewItems(): string[] {
-    const items: string[] = [];
-    const keys = Array.from(this.dashboard.latestData.keys());
-    for (let i = 0; i < keys.length && items.length < 5; i++) {
-      const key = keys[i];
-      if (!this.isDisplayableDataKey(key)) {
-        continue;
-      }
-      const val = this.dashboard.latestData.get(key);
-      const unit = this.getFieldUnit(key);
-      items.push(this.getFieldValueLabel(key) + ' ' + val + (unit.length > 0 ? ' ' + unit : ''));
-    }
-    return items;
-  }
-
-  @Builder
-  DataPreviewCard() {
-    Column() {
-      Row() {
-        Text('结构化数据')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-        if (this.getDataFieldCount() > 0) {
-          Text(this.getDataFieldCount().toString())
-            .fontSize(12)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.tierOk)
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 1, bottom: 1 })
-            .margin({ left: 6 })
-        }
-        Blank()
-        Row() {
-          ForEach(this.domainEntries.slice(0, 4), (entry: DomainEntry) => {
-            Text(entry.name)
-              .fontSize(10)
-              .fontColor(AppColors.tierOk)
-              .backgroundColor(AppColors.fillBeige)
-              .borderRadius(4)
-              .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-              .margin({ left: 3 })
-          }, (entry: DomainEntry) => entry.name)
-        }
-      }
-      .width('100%')
-
-      if (this.getDataFieldCount() > 0) {
-        Column() {
-          ForEach(this.getDataPreviewItems(), (item: string) => {
-            Row() {
-              Column()
-                .width(3)
-                .height(14)
-                .backgroundColor(AppColors.tierOk)
-                .borderRadius(1)
-                .margin({ right: 6 })
-              Text(item)
-                .fontSize(13)
-                .fontColor(AppColors.primary)
-                .layoutWeight(1)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-            }
-            .width('100%')
-            .padding({ top: 3, bottom: 3 })
-          }, (item: string, index: number) => index.toString())
-          if (this.getDataFieldCount() > 5) {
-            Text('还有' + (this.getDataFieldCount() - 5) + '项...')
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .margin({ top: 2 })
-          }
-        }
-        .width('100%')
-        .margin({ top: 8 })
-      } else {
-        Text('暂无数据，上传报告或手动录入')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ top: 4 })
-      }
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor(AppColors.card)
-    .borderRadius(10)
-    .margin({ bottom: 8 })
-    .onClick(() => { this.showDataDetail = true; })
-  }
 
   @Builder
   DataDetailPage() {
@@ -2136,7 +1860,7 @@ export struct PatientDetailPage {
           .fontColor(AppColors.primary)
           .layoutWeight(1)
           .margin({ left: 8 })
-        Text(this.getDataFieldCount() + '项')
+        Text(getDataFieldCount(this.dashboard, this.dataFieldSpecs) + '项')
           .fontSize(13)
           .fontColor(AppColors.textSecondary)
       }
@@ -2146,7 +1870,7 @@ export struct PatientDetailPage {
 
       Scroll() {
         Column() {
-          if (this.getDataFieldCount() === 0) {
+          if (getDataFieldCount(this.dashboard, this.dataFieldSpecs) === 0) {
             Text('暂无数据，上传报告或手动录入')
               .fontSize(14)
               .fontColor(AppColors.textSecondary)
@@ -2245,84 +1969,6 @@ export struct PatientDetailPage {
     .backgroundColor(AppColors.surfaceMuted)
   }
 
-  getRecordPreviewItems(): string[] {
-    const items: string[] = [];
-    for (let i = 0; i < this.dashboard.records.length && items.length < 3; i++) {
-      const record = this.dashboard.records[i];
-      items.push(getRecordIcon(record.type) + ' ' + getRecordLabel(record) + ' ' + formatTime(record.timestamp));
-    }
-    return items;
-  }
-
-  @Builder
-  RecordsPreviewCard() {
-    Column() {
-      Row() {
-        Text('上传记录')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-        if (this.dashboard.records.length > 0) {
-          Text(this.dashboard.records.length.toString())
-            .fontSize(12)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.textSecondary)
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 1, bottom: 1 })
-            .margin({ left: 6 })
-        }
-        Blank()
-        if (this.dashboard.records.length > 3) {
-          Text('查看全部')
-            .fontSize(12)
-            .fontColor(AppColors.tierOk)
-        }
-      }
-      .width('100%')
-
-      if (this.dashboard.records.length > 0) {
-        Column() {
-          ForEach(this.getRecordPreviewItems(), (item: string) => {
-            Row() {
-              Column()
-                .width(3)
-                .height(14)
-                .backgroundColor(AppColors.textSecondary)
-                .borderRadius(1)
-                .margin({ right: 6 })
-              Text(item)
-                .fontSize(13)
-                .fontColor(AppColors.primary)
-                .layoutWeight(1)
-                .maxLines(1)
-                .textOverflow({ overflow: TextOverflow.Ellipsis })
-            }
-            .width('100%')
-            .padding({ top: 3, bottom: 3 })
-          }, (item: string, index: number) => index.toString())
-          if (this.dashboard.records.length > 3) {
-            Text('还有' + (this.dashboard.records.length - 3) + '条...')
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .margin({ top: 2 })
-          }
-        }
-        .width('100%')
-        .margin({ top: 8 })
-      } else {
-        Text('暂无上传记录')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ top: 4 })
-      }
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor(AppColors.card)
-    .borderRadius(10)
-    .margin({ bottom: 12 })
-    .onClick(() => { this.showRecordsDetail = true; })
-  }
 
   @Builder
   RecordsDetailPage() {
