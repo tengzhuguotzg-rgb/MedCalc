@@ -25,6 +25,7 @@ import { DomainEntry, ParsedRecommendations, GuidelineRecommendation, PathScore,
 import { KbReaderOverlay } from './patient/KbReaderOverlay';
 import { KbMarkdownRenderer } from './patient/KbMarkdownRenderer';
 import { criterionOpSymbol, parseAlertResult, formatTime, formatDateTime, getRecordIcon, getRecordLabel, formatResultValue, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, parseRecommendations, parseRecommendationsAndSummary, parseGapsFromJson, getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getCategoryCount, getCategoryBorderColor, getCategoryLabel, getEvidenceColor, getEvidenceBgColor, getDiagnosisNameByRuleId, getLabAlertUrgencyColor, getLabAlertUrgencyLabel } from './patient/PatientDetailUtils';
+import { AlertCardView, AlertDetailContent, LabAlertCard } from './patient/AlertSubviews';
 
 @Component
 export struct PatientDetailPage {
@@ -947,7 +948,11 @@ export struct PatientDetailPage {
                 .width('100%')
                 .margin({ bottom: 4 })
                 ForEach(this.getWarningAlerts(), (alert: PatientAlert) => {
-                  this.AlertCard(alert);
+                  AlertCardView({
+                    alert: alert,
+                    isExpanded: this.isAlertExpanded(alert.id),
+                    onToggle: () => { this.toggleAlert(alert.id); }
+                  });
                 }, (alert: PatientAlert) => alert.id.toString())
               }
               .width('100%')
@@ -964,7 +969,7 @@ export struct PatientDetailPage {
                 .width('100%')
                 .margin({ bottom: 4 })
                 ForEach(this.dashboard.labAlerts, (la: PatientLabAlert) => {
-                  this.LabAlertCard(la);
+                  LabAlertCard({ la: la });
                 }, (la: PatientLabAlert) => la.id.toString())
               }
               .width('100%');
@@ -2288,143 +2293,6 @@ export struct PatientDetailPage {
     }
   }
 
-  @Builder
-  AlertCard(alert: PatientAlert) {
-    Column() {
-      Row() {
-        Column()
-          .width(4)
-          .height(16)
-          .backgroundColor(getTierColor(parseAlertResult(alert).tierClass))
-          .borderRadius(2)
-          .margin({ right: 8 })
-        Text(alert.calcName)
-          .fontSize(14)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-        Text(parseAlertResult(alert).tier)
-          .fontSize(11)
-          .fontColor(getTierColor(parseAlertResult(alert).tierClass))
-          .maxLines(1)
-          .margin({ right: 6 })
-        Text(alert.completeness + '%')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-        Text(this.isAlertExpanded(alert.id) ? ' ▲' : ' ▼')
-          .fontSize(10)
-          .fontColor(AppColors.textSecondary)
-          .margin({ left: 4 })
-      }
-      .width('100%')
-      .onClick(() => { this.toggleAlert(alert.id); })
-
-      if (this.isAlertExpanded(alert.id)) {
-        this.AlertDetail(alert);
-      }
-    }
-    .width('100%')
-    .padding(10)
-    .backgroundColor(AppColors.card)
-    .borderRadius(8)
-    .margin({ bottom: 6 })
-  }
-
-  @Builder
-  AlertDetail(alert: PatientAlert) {
-    Column() {
-      if (parseAlertResult(alert).value !== null) {
-        Row() {
-          Text(formatResultValue(parseAlertResult(alert).value))
-            .fontSize(24)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
-          Text(parseAlertResult(alert).unit)
-            .fontSize(12)
-            .fontColor(AppColors.textSecondary)
-            .margin({ left: 4, top: 10 })
-        }
-        .margin({ top: 6, bottom: 4 })
-      }
-      Text(parseAlertResult(alert).tier)
-        .fontSize(13)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(getTierColor(parseAlertResult(alert).tierClass))
-        .backgroundColor(getTierBgColor(parseAlertResult(alert).tierClass))
-        .borderRadius(20)
-        .padding({ left: 8, right: 8, top: 2, bottom: 2 })
-        .margin({ bottom: 6 })
-      if (parseAlertResult(alert).footnote.length > 0) {
-        Text(parseAlertResult(alert).footnote)
-          .fontSize(12)
-          .fontColor(AppColors.textBody)
-          .lineHeight(18)
-      }
-      Text(formatDateTime(alert.triggeredAt))
-        .fontSize(11)
-        .fontColor(AppColors.textSecondary)
-        .margin({ top: 4 })
-    }
-    .width('100%')
-    .padding({ top: 6 })
-    .alignItems(HorizontalAlign.Start)
-  }
-
-  @Builder
-  LabAlertCard(la: PatientLabAlert) {
-    Column() {
-      Row() {
-        Column()
-          .width(4)
-          .height(16)
-          .backgroundColor(getLabAlertUrgencyColor(la.urgency))
-          .borderRadius(2)
-          .margin({ right: 8 })
-        Column() {
-          Text(la.name)
-            .fontSize(13)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
-            .width('100%')
-          Row() {
-            Text(la.fieldLabel + ' ' + la.value + ' ' + la.unit)
-              .fontSize(12)
-              .fontColor(AppColors.textBody)
-              .layoutWeight(1)
-            Text(la.threshold)
-              .fontSize(11)
-              .fontColor(getLabAlertUrgencyColor(la.urgency))
-              .fontWeight(FontWeight.Medium)
-          }
-          .width('100%')
-          .margin({ top: 2 })
-          if (la.description.length > 0) {
-            Text(la.description)
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .width('100%')
-              .margin({ top: 2 })
-          }
-        }
-        .layoutWeight(1)
-        .alignItems(HorizontalAlign.Start)
-        Text(getLabAlertUrgencyLabel(la.urgency))
-          .fontSize(10)
-          .fontColor(AppColors.card)
-          .backgroundColor(getLabAlertUrgencyColor(la.urgency))
-          .borderRadius(4)
-          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-          .margin({ left: 4 })
-      }
-      .width('100%')
-      .alignItems(VerticalAlign.Top)
-    }
-    .width('100%')
-    .padding(10)
-    .backgroundColor(AppColors.card)
-    .borderRadius(8)
-    .margin({ bottom: 6 })
-  }
 
   getDataFieldCount(): number {
     let count = 0;
