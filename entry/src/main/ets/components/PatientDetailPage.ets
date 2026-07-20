@@ -1,17 +1,16 @@
-import { Patient, PatientDataPoint, PatientRecord, PatientAlert, PatientDiagnosis, PatientLabAlert, PatientDashboard, DATA_DOMAINS, DOMAIN_COLORS } from '../model/Patient';
+import { Patient, PatientDataPoint, PatientRecord, PatientDiagnosis, PatientDashboard, DATA_DOMAINS, DOMAIN_COLORS } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
-import { AssistantService, DataFieldSpec, CalcMatch } from '../services/AssistantService';
-import { CalcResult, getTierColor, getTierBgColor } from '../engine/CalcEngine';
+import { AssistantService, DataFieldSpec } from '../services/AssistantService';
 import { PreferencesService } from '../services/PreferencesService';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { sendVisionRequest, ApiServiceConfig } from '../services/LlmService';
 import { ImageStore } from '../services/ImageStore';
 import { KnowledgeService, SearchResult, KnowledgePage, ExpandedQueryResult, SmartSearchResult } from '../services/KnowledgeService';
 import {
-  MarkdownLine, CalloutStyle, AnnotationBadge,
-  parseKbMarkdown, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
+  MarkdownLine,
+  parseKbMarkdown
 } from '../utils/KbMarkdownParser';
-import { DIAGNOSIS_RULES, DIAGNOSIS_CATEGORIES, DiagnosisRule } from '../model/DiagnosisRules';
+import { DIAGNOSIS_RULES, DiagnosisRule } from '../model/DiagnosisRules';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo, picker } from '@kit.CoreFileKit';
@@ -21,14 +20,13 @@ import { pdfService } from '@kit.PDFKit';
 import { ImageEditor } from './ImageEditor';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
-import { DomainEntry, ParsedRecommendations, GuidelineRecommendation, PathScore, AgentStep, AuditIssue, GapSignal, AuditAgentResult, DiagnosisKbData } from './patient/PatientDetailTypes';
+import { DomainEntry, GuidelineRecommendation, PathScore, AgentStep, AuditIssue, GapSignal, AuditAgentResult, DiagnosisKbData } from './patient/PatientDetailTypes';
 import { KbReaderOverlay } from './patient/KbReaderOverlay';
-import { KbMarkdownRenderer } from './patient/KbMarkdownRenderer';
-import { criterionOpSymbol, parseAlertResult, formatTime, formatDateTime, getRecordIcon, getRecordLabel, formatResultValue, getUrgencyColor, getUrgencyBgColor, getUrgencyLabel, getLlmConfirmLabel, getLlmConfirmColor, getLlmConfirmBgColor, parseRecommendations, parseRecommendationsAndSummary, parseGapsFromJson, getKbSearchResultTitle, getKbGuidelineName, getRecommendationSummary, getCategoryCount, getCategoryBorderColor, getCategoryLabel, getEvidenceColor, getEvidenceBgColor, getDiagnosisNameByRuleId, getLabAlertUrgencyColor, getLabAlertUrgencyLabel } from './patient/PatientDetailUtils';
-import { AlertCardView, AlertDetailContent, LabAlertCard } from './patient/AlertSubviews';
-import { DiagnosisKbSection as DiagnosisKbSectionView } from './patient/DiagnosisKbSection';
+import { criterionOpSymbol, parseAlertResult, parseRecommendations, parseRecommendationsAndSummary } from './patient/PatientDetailUtils';
 import { AlertPreviewCard, DiagnosisPreviewCard as DiagnosisPreviewCardView, DataPreviewCard, RecordsPreviewCard } from './patient/DashboardPreviewCards';
-import { getDataFieldCount, getDataPreviewItems, getRecordPreviewItems, getDiagnosisCategoryTags, getWarningAlerts as getWarningAlertsUtil } from './patient/PatientDetailUtils';
+import { getDataFieldCount, getDataPreviewItems, getRecordPreviewItems, getDiagnosisCategoryTags } from './patient/PatientDetailUtils';
+import { AlertDetailPageView, DiagnosisDetailPageView, RecommendationsDetailPageView, DataDetailPageView, RecordsDetailPageView } from './patient/DetailPageViews';
+import { TimelineDialog, ExamTimeEditorDialog, ManualInputDialog, DeleteConfirmDialog, AddDiagnosisDialog } from './patient/PatientDetailDialogs';
 
 @Component
 export struct PatientDetailPage {
@@ -553,15 +551,82 @@ export struct PatientDetailPage {
       if (!this.showImageEditor) {
       Column() {
          if (this.showAlertDetail) {
-           this.AlertDetailPage();
-         } else if (this.showRecommendationsDetail) {
-           this.RecommendationsDetailPage();
-         } else if (this.showDiagnosisDetail) {
-          this.DiagnosisDetailPage();
-        } else if (this.showDataDetail) {
-          this.DataDetailPage();
-        } else if (this.showRecordsDetail) {
-          this.RecordsDetailPage();
+           AlertDetailPageView({
+             dashboard: this.dashboard,
+             expandedAlertIds: $expandedAlertIds,
+             onBack: () => { this.showAlertDetail = false; }
+           });
+          } else if (this.showRecommendationsDetail) {
+            RecommendationsDetailPageView({
+              dashboard: this.dashboard,
+              activeAdviceRuleId: $activeAdviceRuleId,
+              summaryLines: this.summaryLines,
+              expandedCategories: $expandedCategories,
+              diagnosisKbMap: this.diagnosisKbMap,
+              onBack: () => {
+                this.showRecommendationsDetail = false;
+                this.activeAdviceRuleId = '';
+              }
+            });
+          } else if (this.showDiagnosisDetail) {
+           DiagnosisDetailPageView({
+             dashboard: this.dashboard,
+             currentPatientId: this.currentPatientId,
+             loading: this.loading,
+             addDiagName: $addDiagName,
+             addDiagCategory: $addDiagCategory,
+             showAddDiagnosis: $showAddDiagnosis,
+             diagnosisKbMap: $diagnosisKbMap,
+             expandedRefIds: $expandedRefIds,
+             adviceReadyRuleId: this.adviceReadyRuleId,
+             activeAdviceRuleId: $activeAdviceRuleId,
+             summaryLines: $summaryLines,
+             showRecommendationsDetail: $showRecommendationsDetail,
+             onBack: () => { this.showDiagnosisDetail = false; },
+             onReDiagnose: async () => {
+               this.loading = true;
+               await this.patientService.fullReDiagnose(this.currentPatientId);
+               this.loading = false;
+               this.loadDashboard();
+             },
+             onToggleAddDiagnosis: () => {
+               this.addDiagName = '';
+               this.addDiagCategory = '代谢';
+               this.showAddDiagnosis = true;
+             },
+             onLoadDiagnosisKb: () => { this.loadDiagnosisKb(); },
+             onLoadDiagnosisAdvice: (d: PatientDiagnosis) => { this.loadDiagnosisAdvice(d); },
+             onDeleteUserDiagnosis: (diag: PatientDiagnosis) => {
+               this.patientService.deleteUserDiagnosis(diag.id).then(() => {
+                 this.loadDashboard();
+                 this.diagnosisKbMap = this.diagnosisKbMap.filter((d: DiagnosisKbData): boolean => d.ruleId !== diag.ruleId);
+               });
+             }
+           });
+         } else if (this.showDataDetail) {
+           DataDetailPageView({
+             dashboard: this.dashboard,
+             domainEntries: this.domainEntries,
+             currentPatientId: this.currentPatientId,
+             expandedDomains: $expandedDomains,
+             dataFieldSpecs: this.dataFieldSpecs,
+             onBack: () => { this.showDataDetail = false; },
+             onTimelineRequest: (key: string) => {
+               this.timelineField = key;
+               this.patientService.getDataTimeline(this.currentPatientId, key).then((data: PatientDataPoint[]) => {
+                 this.timelineData = data;
+                 this.showTimelineDialog = true;
+               });
+             }
+           });
+         } else if (this.showRecordsDetail) {
+           RecordsDetailPageView({
+             dashboard: this.dashboard,
+             expandedRecordIds: $expandedRecordIds,
+             deleteRecordId: $deleteRecordId,
+             showDeleteConfirm: $showDeleteConfirm,
+             onBack: () => { this.showRecordsDetail = false; }
+           });
         } else {
         Row() {
           Button('< 返回')
@@ -693,22 +758,60 @@ export struct PatientDetailPage {
        .backgroundColor(AppColors.surfaceMuted)
 
         if (this.showTimelineDialog) {
-          this.TimelineDialog();
+          TimelineDialog({
+            timelineField: this.timelineField,
+            timelineData: this.timelineData,
+            showTimelineDialog: $showTimelineDialog,
+            dataFieldSpecs: this.dataFieldSpecs,
+            onOpenExamTimeEditor: (dp: PatientDataPoint) => { this.openExamTimeEditor(dp); }
+          });
         }
         if (this.showExamTimeEditor) {
-          this.ExamTimeEditorDialog();
+          ExamTimeEditorDialog({
+            editExamYear: $editExamYear,
+            editExamMonth: $editExamMonth,
+            editExamDay: $editExamDay,
+            editExamHour: $editExamHour,
+            editExamMinute: $editExamMinute,
+            showExamTimeEditor: $showExamTimeEditor,
+            onSave: () => { this.saveExamTime(); }
+          });
         }
         if (this.showManualInput) {
-         this.ManualInputDialog();
-       }
+          ManualInputDialog({
+            showManualInput: $showManualInput,
+            manualFieldKey: $manualFieldKey,
+            manualFieldValue: $manualFieldValue,
+            manualFilterKeyword: $manualFilterKeyword,
+            dataFieldSpecs: this.dataFieldSpecs,
+            currentPatientId: this.currentPatientId,
+            onManualInputSave: (fieldKey: string, fieldValue: string) => {
+              this.executeManualInputSave(fieldKey, fieldValue);
+            }
+          });
+        }
         if (this.showDeleteConfirm) {
-           this.DeleteConfirmDialog();
-         }
+          DeleteConfirmDialog({
+            showDeleteConfirm: $showDeleteConfirm,
+            deleteRecordId: $deleteRecordId,
+            onDelete: (recordId: string) => {
+              this.executeDeleteRecord(recordId);
+            }
+          });
+        }
           if (this.showKbReader) {
             KbReaderOverlay();
           }
          if (this.showAddDiagnosis) {
-           this.AddDiagnosisDialog();
+           AddDiagnosisDialog({
+             showAddDiagnosis: $showAddDiagnosis,
+             addDiagName: $addDiagName,
+             addDiagCategory: $addDiagCategory,
+             currentPatientId: this.currentPatientId,
+             onAddDiagnosis: (name: string, category: string) => {
+               this.executeAddDiagnosis(name, category);
+             }
+           });
          }
       } else {
        ImageEditor({
@@ -724,224 +827,14 @@ export struct PatientDetailPage {
     }
 
 
-  @Builder
-  AlertDetailPage() {
-    Column() {
-      Row() {
-        Button('< 返回')
-          .fontSize(14)
-          .fontColor(AppColors.primary)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => { this.showAlertDetail = false; })
-        Text('预警详情')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-          .margin({ left: 8 })
-        if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
-          Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
-            .fontSize(12)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.danger)
-            .borderRadius(10)
-            .padding({ left: 6, right: 6, top: 1, bottom: 1 })
-        }
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card)
 
-      Scroll() {
-        Column() {
-          if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
-            Text('当前无异常预警')
-              .fontSize(14)
-              .fontColor(AppColors.textSecondary)
-              .width('100%')
-              .textAlign(TextAlign.Center)
-              .padding(40)
-          } else {
-            if (this.getWarningAlerts().length > 0) {
-              Column() {
-                Row() {
-                  Text('评分预警')
-                    .fontSize(13)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor(AppColors.primary)
-                }
-                .width('100%')
-                .margin({ bottom: 4 })
-                ForEach(this.getWarningAlerts(), (alert: PatientAlert) => {
-                  AlertCardView({
-                    alert: alert,
-                    isExpanded: this.isAlertExpanded(alert.id),
-                    onToggle: () => { this.toggleAlert(alert.id); }
-                  });
-                }, (alert: PatientAlert) => alert.id.toString())
-              }
-              .width('100%')
-              .margin({ bottom: 8 });
-            }
-            if (this.dashboard.labAlerts.length > 0) {
-              Column() {
-                Row() {
-                  Text('检验预警')
-                    .fontSize(13)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor(AppColors.primary)
-                }
-                .width('100%')
-                .margin({ bottom: 4 })
-                ForEach(this.dashboard.labAlerts, (la: PatientLabAlert) => {
-                  LabAlertCard({ la: la });
-                }, (la: PatientLabAlert) => la.id.toString())
-              }
-              .width('100%');
-            }
-          }
-        }
-        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
-        .alignItems(HorizontalAlign.Start)
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.surfaceMuted)
-  }
 
-  getWarningAlerts(): PatientAlert[] {
-    const result: PatientAlert[] = [];
-    for (let i = 0; i < this.dashboard.alerts.length; i++) {
-      const tierClass = parseAlertResult(this.dashboard.alerts[i]).tierClass;
-      if (tierClass !== 'tier-ok' && tierClass !== 'tier-info') {
-        result.push(this.dashboard.alerts[i]);
-      }
-    }
-    return result;
-  }
 
-  @Builder
-  DiagnosisDetailPage() {
-    Column() {
-      Row() {
-        Button('< 返回')
-          .fontSize(14)
-          .fontColor(AppColors.primary)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => { this.showDiagnosisDetail = false; })
-        Text('诊断详情')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-          .margin({ left: 8 })
-        Row() {
-          Text('+')
-            .fontSize(14)
-            .fontColor(AppColors.primary)
-            .margin({ left: 6 })
-            .onClick(() => {
-              this.addDiagName = '';
-              this.addDiagCategory = '代谢';
-              this.showAddDiagnosis = true;
-            })
-          Text('⟳')
-            .fontSize(16)
-            .fontColor(AppColors.tierOk)
-            .margin({ left: 8 })
-            .onClick(async () => {
-              this.loading = true;
-              await this.patientService.fullReDiagnose(this.currentPatientId);
-              this.loading = false;
-              this.loadDashboard();
-            })
-        }
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card)
 
-      Scroll() {
-        Column() {
-          if (this.dashboard.diagnoses.length === 0) {
-            Text('暂无诊断')
-              .fontSize(14)
-              .fontColor(AppColors.textSecondary)
-              .width('100%')
-              .textAlign(TextAlign.Center)
-              .padding(40)
-          } else {
-            this.DiagnosisGroup('rule', '确定性', AppColors.primary, false);
-            this.DiagnosisGroup('user', '自添加', AppColors.tierOk, false);
-            this.DiagnosisGroup('partial', '可能性', AppColors.tierWarn, false);
-            this.DiagnosisGroup('llm_hint', 'LLM提示', AppColors.aiAccent, true);
-          }
-          Row() {
-            Text('+ 添加诊断')
-              .fontSize(13)
-              .fontColor(AppColors.primary)
-              .margin({ top: 8 })
-          }
-          .width('100%')
-          .justifyContent(FlexAlign.Center)
-          .onClick(() => {
-            this.addDiagName = '';
-            this.addDiagCategory = '代谢';
-            this.showAddDiagnosis = true;
-          })
-        }
-        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
-        .alignItems(HorizontalAlign.Start)
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.surfaceMuted)
-  }
 
-  getDiagnosesBySource(source: string): PatientDiagnosis[] {
-    return this.dashboard.diagnoses.filter((d: PatientDiagnosis): boolean => d.source === source);
-  }
 
-  @Builder
-  DiagnosisGroup(source: string, label: string, color: ResourceStr, isLlmGroup: boolean) {
-    if (this.getDiagnosesBySource(source).length > 0) {
-      Column() {
-        Row() {
-          Column()
-            .width(4)
-            .height(16)
-            .backgroundColor(color)
-            .borderRadius(2)
-            .margin({ right: 6 })
-          Text(label)
-            .fontSize(13)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(color)
-          Text(this.getDiagnosesBySource(source).length.toString())
-            .fontSize(11)
-            .fontColor(AppColors.textSecondary)
-            .margin({ left: 4 })
-        }
-        .width('100%')
-        .margin({ top: 8, bottom: 4 })
 
-        ForEach(this.getDiagnosesBySource(source), (diag: PatientDiagnosis) => {
-          Row() {
-            this.DiagnosisCard(diag, isLlmGroup);
-          }
-          .width('100%')
-          .alignItems(VerticalAlign.Top)
-        }, (diag: PatientDiagnosis) => diag.id.toString())
-      }
-      .width('100%');
-    }
-  }
+
 
   getDiagnosisCategoryTags(): string[] {
     const tagSet = new Set<string>();
@@ -1562,614 +1455,13 @@ export struct PatientDetailPage {
     return '- 关键数据：' + parts.join(', ');
   }
 
-  @Builder
-  DiagnosisCard(diag: PatientDiagnosis, isLlmGroup: boolean) {
-    Column() {
-      Row() {
-        if (isLlmGroup) {
-          Text('💡')
-            .fontSize(12)
-            .margin({ right: 4 })
-        }
-        Text(diag.name)
-          .fontSize(14)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-        Text(getUrgencyLabel(diag.urgency))
-          .fontSize(10)
-          .fontColor(getUrgencyColor(diag.urgency))
-          .backgroundColor(getUrgencyBgColor(diag.urgency))
-        .borderRadius(4)
-        .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-        .margin({ left: 4 })
-        if (diag.source === 'rule' && diag.llmConfirmed !== 1) {
-          Text(getLlmConfirmLabel(diag.llmConfirmed))
-            .fontSize(10)
-            .fontColor(getLlmConfirmColor(diag.llmConfirmed))
-            .backgroundColor(getLlmConfirmBgColor(diag.llmConfirmed))
-            .borderRadius(4)
-            .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-            .margin({ left: 4 })
-        }
-        if (diag.source === 'user') {
-          Text('×')
-            .fontSize(14)
-            .fontColor(AppColors.textSecondary)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.patientService.deleteUserDiagnosis(diag.id).then(() => {
-                this.loadDashboard();
-                this.diagnosisKbMap = this.diagnosisKbMap.filter((d: DiagnosisKbData): boolean => d.ruleId !== diag.ruleId);
-              });
-            })
-        }
-      }
-      .width('100%')
-      if (diag.missingCriteria.length > 0) {
-        Column() {
-          Text('缺：' + this.formatMissingCriteria(diag.missingCriteria))
-            .fontSize(11)
-            .fontColor(AppColors.tierWarn)
-            .width('100%')
-        }
-        .width('100%')
-        .margin({ top: 4 })
-        .padding(6)
-        .backgroundColor(AppColors.tierWarnBg)
-        .borderRadius(4)
-      }
-      if (diag.llmNote.length > 0) {
-        Text(diag.llmNote)
-          .fontSize(12)
-          .fontColor(AppColors.textBody)
-          .margin({ top: 4 })
-          .width('100%')
-      }
-      Row() {
-        Text(diag.category)
-          .fontSize(10)
-          .fontColor(AppColors.textSecondary)
-          .backgroundColor(AppColors.surfaceMuted)
-          .borderRadius(4)
-          .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-        Text(formatDateTime(diag.triggeredAt))
-          .fontSize(10)
-          .fontColor(AppColors.textSecondary)
-          .margin({ left: 8 })
-      }
-      .margin({ top: 4 })
-      .width('100%')
-
-      DiagnosisKbSectionView({
-        diag: diag,
-        currentPatientId: this.currentPatientId,
-        diagnosisKbMap: $diagnosisKbMap,
-        expandedRefIds: $expandedRefIds,
-        adviceReadyRuleId: this.adviceReadyRuleId,
-        activeAdviceRuleId: $activeAdviceRuleId,
-        summaryLines: $summaryLines,
-        showRecommendationsDetail: $showRecommendationsDetail,
-        onLoadDiagnosisKb: () => { this.loadDiagnosisKb(); },
-        onLoadDiagnosisAdvice: (d: PatientDiagnosis) => { this.loadDiagnosisAdvice(d); },
-      });
-    }
-    .width('100%')
-    .padding(10)
-    .backgroundColor(diag.source === 'rule' ? AppColors.card : (diag.source === 'partial' ? AppColors.tierWarnBg : (diag.source === 'llm_hint' ? AppColors.aiAccentBg : AppColors.tierOkBg)))
-    .borderRadius(8)
-    .border({ width: { left: 4, right: 0, top: 0, bottom: 0 }, color: getUrgencyColor(diag.urgency) })
-    .margin({ bottom: 6 })
-  }
 
 
-  @Builder
-  RecommendationsDetailPage() {
-    Column() {
-      Row() {
-        Button('< 返回')
-          .fontSize(14)
-          .fontColor(AppColors.primary)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => {
-            this.showRecommendationsDetail = false;
-            this.activeAdviceRuleId = '';
-          })
-        Text(getDiagnosisNameByRuleId(this.dashboard.diagnoses, this.activeAdviceRuleId) + ' · 指南建议')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-          .margin({ left: 8 })
-          .maxLines(1)
-          .textOverflow({ overflow: TextOverflow.Ellipsis });
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card);
 
-      Scroll() {
-        Column() {
-          if (this.activeAdviceRuleId.length > 0 && this.getDiagnosisKb(this.activeAdviceRuleId) !== null) {
-            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.isLowRelevance) {
-              Row() {
-                Text('⚠️ 低相关性文献')
-                  .fontSize(11)
-                  .fontColor(AppColors.warningText)
-                  .fontWeight(FontWeight.Medium)
-                Text('未找到高度相关文献，以下内容可能仅供参考')
-                  .fontSize(10)
-                  .fontColor(AppColors.textFaint)
-                  .margin({ left: 6 })
-              }
-              .width('100%')
-              .padding({ left: 10, right: 10, top: 6, bottom: 6 })
-              .backgroundColor(AppColors.tierWarnBg)
-              .borderRadius(6)
-              .margin({ bottom: 8 });
-            }
-            if (this.getDiagnosisKb(this.activeAdviceRuleId)!.summary.length > 0) {
-              Column() {
-                Row() {
-                  Text('临床要点')
-                    .fontSize(14)
-                    .fontWeight(FontWeight.Bold)
-                    .fontColor(AppColors.primary);
-                }
-                .width('100%')
-                .margin({ bottom: 4 });
-                Text('以下内容由AI根据指南和教材推荐意见归纳整理，仅供参考，详细内容请展开下方各分类查看原文。')
-                  .fontSize(10)
-                  .fontColor(AppColors.textFaint)
-                  .width('100%')
-                  .margin({ bottom: 6 });
-                KbMarkdownRenderer({ lines: this.summaryLines });
-              }
-              .width('100%')
-              .padding(10)
-              .backgroundColor(AppColors.tierWarnBg)
-              .borderRadius(8)
-              .border({ width: 1, color: AppColors.divider })
-              .margin({ bottom: 8 });
-            }
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '病理生理', '病理生理');
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '诊断要点', '诊断要点');
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '监测评估', '监测评估');
-            this.RecommendationCategorySection(this.activeAdviceRuleId, '治疗建议', '治疗建议');
-          }
-        }
-        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
-        .alignItems(HorizontalAlign.Start)
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.surfaceMuted)
-  }
-
-  @Builder
-  RecommendationCategorySection(ruleId: string, category: string, title: string) {
-    if (this.getDiagnosisKb(ruleId) !== null) {
-      if (getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category) > 0) {
-        Column() {
-          Row() {
-            Row()
-              .width(3)
-              .height(14)
-              .backgroundColor(getCategoryBorderColor(category))
-              .borderRadius(2)
-              .margin({ right: 6 });
-            Text(title)
-              .fontSize(14)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(AppColors.primary);
-            Text(getCategoryCount(this.getDiagnosisKb(ruleId)!.recommendations, category).toString() + '条')
-              .fontSize(11)
-              .fontColor(AppColors.textSecondary)
-              .margin({ left: 6 });
-            Blank();
-            Text(this.expandedCategories.has(category) ? '▲ 收起' : '▼ 展开')
-              .fontSize(11)
-              .fontColor(AppColors.primary);
-          }
-          .width('100%')
-          .margin({ top: 8, bottom: 4 })
-          .onClick(() => {
-            if (this.expandedCategories.has(category)) {
-              this.expandedCategories.delete(category);
-            } else {
-              this.expandedCategories.add(category);
-            }
-            this.expandedCategories = new Set(this.expandedCategories);
-          });
-
-          if (this.expandedCategories.has(category)) {
-            ForEach(this.getDiagnosisKb(ruleId)!.recommendations, (rec: GuidelineRecommendation) => {
-              if (rec.category === category) {
-                Column() {
-                  Text(rec.text)
-                    .fontSize(13)
-                    .fontColor(AppColors.textBody)
-                    .width('100%');
-                  Row() {
-                    if (rec.type.length > 0) {
-                      Text(rec.type)
-                        .fontSize(9)
-                        .fontColor(rec.type === '推荐意见' ? AppColors.tierOk : (rec.type === '知识要点' ? AppColors.primary : AppColors.aiAccent))
-                        .backgroundColor(rec.type === '推荐意见' ? AppColors.tierOkBg : (rec.type === '知识要点' ? AppColors.background : AppColors.aiAccentBg))
-                        .borderRadius(3)
-                        .padding({ left: 4, right: 4, top: 1, bottom: 1 });
-                    }
-                    if (rec.evidenceLevel.length > 0 && rec.evidenceLevel !== '未标注' && rec.evidenceLevel !== '-') {
-                      Text(rec.evidenceLevel)
-                        .fontSize(10)
-                        .fontColor(getEvidenceColor(rec.evidenceLevel))
-                        .backgroundColor(getEvidenceBgColor(rec.evidenceLevel))
-                        .borderRadius(3)
-                        .padding({ left: 4, right: 4, top: 1, bottom: 1 })
-                        .margin({ left: 4 });
-                    }
-                    Blank();
-                    if (rec.source.length > 0) {
-                      Text(rec.source)
-                        .fontSize(9)
-                        .fontColor(AppColors.textFaint)
-                        .maxLines(1)
-                        .textOverflow({ overflow: TextOverflow.Ellipsis })
-                        .layoutWeight(1)
-                        .textAlign(TextAlign.End);
-                    }
-                  }
-                  .width('100%')
-                  .margin({ top: 2 });
-                }
-                .width('100%')
-                .alignItems(HorizontalAlign.Start)
-                .padding({ top: 4, bottom: 4, left: 8 })
-                .border({ width: { left: 2, right: 0, top: 0, bottom: 0 }, color: getCategoryBorderColor(category) })
-                .margin({ bottom: 4 });
-              }
-            }, (rec: GuidelineRecommendation, index: number) => category + index.toString())
-          }
-        }
-        .width('100%');
-      }
-    }
-  }
 
 
   getDataDomainCount(): number {
     return this.domainEntries.length;
-  }
-
-
-  @Builder
-  DataDetailPage() {
-    Column() {
-      Row() {
-        Button('< 返回')
-          .fontSize(14)
-          .fontColor(AppColors.primary)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => { this.showDataDetail = false; })
-        Text('结构化数据')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-          .margin({ left: 8 })
-        Text(getDataFieldCount(this.dashboard, this.dataFieldSpecs) + '项')
-          .fontSize(13)
-          .fontColor(AppColors.textSecondary)
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card)
-
-      Scroll() {
-        Column() {
-          if (getDataFieldCount(this.dashboard, this.dataFieldSpecs) === 0) {
-            Text('暂无数据，上传报告或手动录入')
-              .fontSize(14)
-              .fontColor(AppColors.textSecondary)
-              .width('100%')
-              .textAlign(TextAlign.Center)
-              .padding(40)
-          } else {
-            ForEach(this.domainEntries, (entry: DomainEntry) => {
-               Column() {
-                 Row() {
-                   Column()
-                     .width(4)
-                     .height(16)
-                     .backgroundColor(this.getDomainColor(entry.name))
-                     .borderRadius(2)
-                     .margin({ right: 8 })
-                   Text(entry.name)
-                     .fontSize(13)
-                     .fontWeight(FontWeight.Bold)
-                     .fontColor(AppColors.primary)
-                     .layoutWeight(1)
-                   Text(this.getDomainDataCount(entry.keys) + '项')
-                     .fontSize(10)
-                     .fontColor(AppColors.card)
-                     .backgroundColor(this.getDomainColor(entry.name))
-                     .borderRadius(8)
-                     .padding({ left: 5, right: 5, top: 1, bottom: 1 })
-                     .margin({ right: 6 })
-                   Text(this.isDomainExpanded(entry.name) ? ' ▲' : ' ▼')
-                     .fontSize(10)
-                     .fontColor(AppColors.textSecondary)
-                 }
-                 .width('100%')
-                 .onClick(() => { this.toggleDomain(entry.name); })
-
-                if (this.isDomainExpanded(entry.name)) {
-                  Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start, alignContent: FlexAlign.Start }) {
-                    ForEach(entry.keys, (key: string) => {
-                      if (this.dashboard.latestData.has(key) && this.isDisplayableDataKey(key)) {
-                        Column() {
-                          Text(this.getFieldValueLabel(key))
-                            .fontSize(10)
-                            .fontColor(AppColors.textSecondary)
-                            .maxLines(1)
-                            .textOverflow({ overflow: TextOverflow.Ellipsis })
-                          Row() {
-                            Text(this.dashboard.latestData.get(key))
-                              .fontSize(14)
-                              .fontColor(AppColors.primary)
-                              .fontWeight(FontWeight.Bold)
-                            if (this.getFieldUnit(key).length > 0) {
-                              Text(this.getFieldUnit(key))
-                                .fontSize(10)
-                                .fontColor(AppColors.textSecondary)
-                                .margin({ left: 2 })
-                            }
-                          }
-                          .margin({ top: 2 })
-                        }
-                        .width('48%')
-                        .padding({ left: 8, right: 8, top: 6, bottom: 6 })
-                        .backgroundColor(AppColors.surfaceMuted)
-                        .borderRadius(6)
-                        .margin({ bottom: 4, right: '2%' })
-                        .alignItems(HorizontalAlign.Start)
-                        .onClick(() => {
-                          this.timelineField = key;
-                          this.patientService.getDataTimeline(this.currentPatientId, key).then((data: PatientDataPoint[]) => {
-                            this.timelineData = data;
-                            this.showTimelineDialog = true;
-                          });
-                        })
-                      }
-                    }, (key: string) => key)
-                  }
-                  .width('100%')
-                  .padding({ top: 6 })
-                }
-              }
-              .width('100%')
-              .padding(10)
-              .backgroundColor(AppColors.card)
-              .borderRadius(8)
-              .margin({ bottom: 6 })
-            }, (entry: DomainEntry) => entry.name)
-          }
-        }
-        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
-        .alignItems(HorizontalAlign.Start)
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.surfaceMuted)
-  }
-
-
-  @Builder
-  RecordsDetailPage() {
-    Column() {
-      Row() {
-        Button('< 返回')
-          .fontSize(14)
-          .fontColor(AppColors.primary)
-          .backgroundColor(Color.Transparent)
-          .onClick(() => { this.showRecordsDetail = false; })
-        Text('上传记录')
-          .fontSize(18)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .layoutWeight(1)
-          .margin({ left: 8 })
-        Text(this.dashboard.records.length + '条')
-          .fontSize(13)
-          .fontColor(AppColors.textSecondary)
-      }
-      .width('100%')
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card)
-
-      Scroll() {
-        Column() {
-          if (this.dashboard.records.length === 0) {
-            Text('暂无上传记录')
-              .fontSize(14)
-              .fontColor(AppColors.textSecondary)
-              .width('100%')
-              .textAlign(TextAlign.Center)
-              .padding(40)
-          } else {
-            ForEach(this.dashboard.records, (record: PatientRecord) => {
-              Column() {
-                Row() {
-                  Text(getRecordIcon(record.type))
-                    .fontSize(14)
-                    .margin({ right: 8 })
-                  Text(getRecordLabel(record))
-                    .fontSize(13)
-                    .fontColor(AppColors.primary)
-                    .layoutWeight(1)
-                  Text('删除')
-                    .fontSize(12)
-                    .fontColor(AppColors.warning)
-                    .margin({ right: 8 })
-                    .onClick(() => {
-                      this.deleteRecordId = record.id;
-                      this.showDeleteConfirm = true;
-                    })
-                  Text(formatTime(record.timestamp))
-                    .fontSize(12)
-                    .fontColor(AppColors.textSecondary)
-                    .margin({ right: 4 })
-                  Text(this.expandedRecordIds.has(record.id) ? ' ▲' : ' ▼')
-                    .fontSize(10)
-                    .fontColor(AppColors.textSecondary)
-                }
-                .width('100%')
-                .onClick(() => {
-                  if (this.expandedRecordIds.has(record.id)) {
-                    this.expandedRecordIds.delete(record.id);
-                  } else {
-                    this.expandedRecordIds.add(record.id);
-                  }
-                  this.expandedRecordIds = new Set(this.expandedRecordIds);
-                })
-                if (this.expandedRecordIds.has(record.id) && record.extractedJson.length > 0) {
-                  Text(record.extractedJson)
-                    .fontSize(11)
-                    .fontColor(AppColors.textBody)
-                    .width('100%')
-                    .padding({ top: 6, bottom: 6 })
-                    .lineHeight(16)
-                }
-              }
-              .width('100%')
-              .padding(10)
-              .backgroundColor(AppColors.card)
-              .borderRadius(8)
-              .margin({ bottom: 4 })
-            }, (record: PatientRecord) => record.id)
-          }
-        }
-        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
-        .alignItems(HorizontalAlign.Start)
-      }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.surfaceMuted)
-  }
-
-  @Builder
-  TimelineDialog() {
-    Column() {
-      Column() {
-        Text(this.getFieldValueLabel(this.timelineField) + ' 时间线')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .margin({ bottom: 12 })
-
-        if (this.timelineData.length === 0) {
-          Text('无历史记录')
-            .fontSize(13)
-            .fontColor(AppColors.textSecondary)
-        } else {
-          ForEach(this.timelineData, (dp: PatientDataPoint) => {
-            Column() {
-              Row() {
-                Text(dp.value + ' ' + this.getFieldUnit(this.timelineField))
-                  .fontSize(14)
-                  .fontColor(AppColors.primary)
-                  .fontWeight(FontWeight.Bold)
-                  .layoutWeight(1)
-              }
-              .width('100%')
-              Row() {
-                Text('报告')
-                  .fontSize(10)
-                  .fontColor(AppColors.card)
-                  .backgroundColor(dp.examTime > 0 ? AppColors.tierOk : AppColors.danger)
-                  .borderRadius(3)
-                  .padding({ left: 3, right: 3, top: 1, bottom: 1 })
-                  .margin({ right: 4 })
-                if (dp.examTime > 0) {
-                  Text(formatDateTime(dp.examTime))
-                    .fontSize(12)
-                    .fontColor(AppColors.primary)
-                    .layoutWeight(1)
-                  Text('修改')
-                    .fontSize(10)
-                    .fontColor(AppColors.tierOk)
-                    .margin({ left: 4 })
-                    .onClick(() => {
-                      this.openExamTimeEditor(dp);
-                    })
-                } else {
-                  Text('未设置')
-                    .fontSize(12)
-                    .fontColor(AppColors.danger)
-                    .layoutWeight(1)
-                  Text('录入')
-                    .fontSize(10)
-                    .fontColor(AppColors.card)
-                    .backgroundColor(AppColors.tierOk)
-                    .borderRadius(3)
-                    .padding({ left: 3, right: 3, top: 1, bottom: 1 })
-                    .margin({ left: 4 })
-                    .onClick(() => {
-                      this.openExamTimeEditor(dp);
-                    })
-                }
-              }
-              .width('100%')
-              .margin({ top: 2 })
-              Row() {
-                Text('上传')
-                  .fontSize(10)
-                  .fontColor(AppColors.textSecondary)
-                  .margin({ right: 4 })
-                Text(formatDateTime(dp.timestamp))
-                  .fontSize(11)
-                  .fontColor(AppColors.textSecondary)
-              }
-              .width('100%')
-              .margin({ top: 1 })
-            }
-            .width('100%')
-            .padding({ top: 8, bottom: 8 })
-            .borderRadius(6)
-            .backgroundColor(AppColors.surfaceSubtle)
-            .padding({ left: 8, right: 8, top: 8, bottom: 8 })
-            .margin({ bottom: 6 })
-          }, (dp: PatientDataPoint) => dp.id.toString())
-        }
-
-        Button('关闭')
-          .fontSize(14)
-          .fontColor(AppColors.card)
-          .backgroundColor(AppColors.primary)
-          .borderRadius(8)
-          .height(36)
-          .width('100%')
-          .margin({ top: 12 })
-          .onClick(() => { this.showTimelineDialog = false; })
-      }
-      .padding(20)
-      .backgroundColor(AppColors.card)
-      .borderRadius(AppDimens.cardRadius)
-      .width('85%')
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
-    .justifyContent(FlexAlign.Center)
   }
 
   openExamTimeEditor(dp: PatientDataPoint) {
@@ -2202,220 +1494,27 @@ export struct PatientDetailPage {
     });
   }
 
-  @Builder
-  ExamTimeEditorDialog() {
-    Column() {
-      Column() {
-        Text('设置报告时间')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .margin({ bottom: 12 })
-
-        DatePicker({
-          selected: new Date(this.editExamYear, this.editExamMonth - 1, this.editExamDay)
-        })
-          .onChange((value: DatePickerResult) => {
-            if (value.year !== undefined) this.editExamYear = value.year as number;
-            if (value.month !== undefined) this.editExamMonth = (value.month as number) + 1;
-            if (value.day !== undefined) this.editExamDay = value.day as number;
-          })
-
-        TimePicker({
-          selected: new Date(2025, 0, 1, this.editExamHour, this.editExamMinute)
-        })
-          .onChange((value: TimePickerResult) => {
-            if (value.hour !== undefined) this.editExamHour = value.hour as number;
-            if (value.minute !== undefined) this.editExamMinute = value.minute as number;
-          })
-          .margin({ top: 8 })
-
-        Row() {
-          Button('取消')
-            .fontSize(14)
-            .fontColor(AppColors.textSecondary)
-            .backgroundColor(AppColors.fillNeutral)
-            .borderRadius(8)
-            .height(36)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.showExamTimeEditor = false;
-            })
-          Button('保存')
-            .fontSize(14)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.tierOk)
-            .borderRadius(8)
-            .height(36)
-            .layoutWeight(1)
-            .margin({ left: 8 })
-            .onClick(() => {
-              this.saveExamTime();
-            })
-        }
-        .width('100%')
-        .margin({ top: 12 })
-      }
-      .padding(20)
-      .backgroundColor(AppColors.card)
-      .borderRadius(AppDimens.cardRadius)
-      .width('85%')
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
-    .justifyContent(FlexAlign.Center)
+  async executeManualInputSave(fieldKey: string, fieldValue: string) {
+    const savedRec = await this.patientService.saveRecord(this.currentPatientId, 'manual', '', fieldKey + '=' + fieldValue, '', '手动录入: ' + this.getFieldValueLabel(fieldKey));
+    await this.patientService.addManualData(this.currentPatientId, fieldKey, fieldValue, savedRec.id);
+    this.showManualInput = false;
+    this.manualFieldKey = '';
+    this.manualFieldValue = '';
+    this.loadDashboard();
   }
 
-  @Builder
-  ManualInputDialog() {
-    Column() {
-      Column() {
-        Text('手动录入')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .margin({ bottom: 12 })
-
-        TextInput({ placeholder: '搜索字段名...' })
-          .height(40)
-          .fontSize(14)
-          .margin({ bottom: 8 })
-          .onChange((value: string) => { this.manualFilterKeyword = value; })
-
-        List({ space: 4 }) {
-          ForEach(this.dataFieldSpecs, (spec: DataFieldSpec) => {
-            if (spec.type === 'number') {
-              if (this.manualFilterKeyword.length === 0 || spec.label.indexOf(this.manualFilterKeyword) >= 0 || spec.key.indexOf(this.manualFilterKeyword) >= 0) {
-                ListItem() {
-                  Row() {
-                    Text(spec.label)
-                      .fontSize(13)
-                      .fontColor(AppColors.primary)
-                      .layoutWeight(1)
-                    Text(spec.key)
-                      .fontSize(11)
-                      .fontColor(AppColors.textSecondary)
-                  }
-                  .width('100%')
-                  .padding(8)
-                  .backgroundColor(this.manualFieldKey === spec.key ? AppColors.fillBeige : AppColors.surfaceSubtle)
-                  .borderRadius(6)
-                  .onClick(() => { this.manualFieldKey = spec.key; })
-                }
-              }
-            }
-          }, (spec: DataFieldSpec) => spec.key)
-        }
-        .height(200)
-        .margin({ bottom: 8 })
-
-        TextInput({ placeholder: '输入数值' })
-          .height(40)
-          .fontSize(14)
-          .type(InputType.NUMBER_DECIMAL)
-          .margin({ bottom: 12 })
-          .onChange((value: string) => { this.manualFieldValue = value; })
-
-        Row() {
-          Button('取消')
-            .fontSize(14)
-            .fontColor(AppColors.textSecondary)
-            .backgroundColor(AppColors.fillNeutral)
-            .borderRadius(8)
-            .height(36)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.showManualInput = false;
-              this.manualFieldKey = '';
-              this.manualFieldValue = '';
-            })
-          Button('录入')
-            .fontSize(14)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.primary)
-            .borderRadius(8)
-            .height(36)
-            .layoutWeight(1)
-            .margin({ left: 8 })
-            .onClick(async () => {
-              if (this.manualFieldKey.length > 0 && this.manualFieldValue.length > 0) {
-                const savedRec = await this.patientService.saveRecord(this.currentPatientId, 'manual', '', this.manualFieldKey + '=' + this.manualFieldValue, '', '手动录入: ' + this.getFieldValueLabel(this.manualFieldKey));
-                await this.patientService.addManualData(this.currentPatientId, this.manualFieldKey, this.manualFieldValue, savedRec.id);
-                this.showManualInput = false;
-                this.manualFieldKey = '';
-                this.manualFieldValue = '';
-                this.loadDashboard();
-              }
-            })
-        }
-        .width('100%')
-      }
-      .padding(20)
-      .backgroundColor(AppColors.card)
-      .borderRadius(AppDimens.cardRadius)
-      .width('85%')
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
-    .justifyContent(FlexAlign.Center)
+  async executeDeleteRecord(recordId: string) {
+    await this.patientService.deleteRecord(recordId);
+    this.showDeleteConfirm = false;
+    this.deleteRecordId = '';
+    this.loadDashboard();
   }
 
-  @Builder
-  DeleteConfirmDialog() {
-    Column() {
-      Column() {
-        Text('确认删除')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .margin({ bottom: 8 })
-        Text('删除此记录后，由它提供的数据将被一并删除，预警也将重新计算。')
-          .fontSize(13)
-          .fontColor(AppColors.textBody)
-          .lineHeight(20)
-          .margin({ bottom: 16 })
-        Row() {
-          Button('取消')
-            .fontSize(14)
-            .fontColor(AppColors.textSecondary)
-            .backgroundColor(AppColors.fillNeutral)
-            .borderRadius(8)
-            .height(36)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.showDeleteConfirm = false;
-              this.deleteRecordId = '';
-            })
-          Button('删除')
-            .fontSize(14)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.warning)
-            .borderRadius(8)
-            .height(36)
-            .layoutWeight(1)
-            .margin({ left: 8 })
-            .onClick(async () => {
-              if (this.deleteRecordId.length > 0) {
-                await this.patientService.deleteRecord(this.deleteRecordId);
-                this.showDeleteConfirm = false;
-                this.deleteRecordId = '';
-                this.loadDashboard();
-              }
-            })
-        }
-        .width('100%')
-      }
-      .padding(20)
-      .backgroundColor(AppColors.card)
-      .borderRadius(AppDimens.cardRadius)
-      .width('85%')
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
-    .justifyContent(FlexAlign.Center)
+  executeAddDiagnosis(name: string, category: string) {
+    this.patientService.addUserDiagnosis(this.currentPatientId, name, category).then(() => {
+      this.showAddDiagnosis = false;
+      this.loadDashboard();
+    });
   }
 
   async loadKbReaderContent(path: string) {
@@ -2424,88 +1523,5 @@ export struct PatientDetailPage {
       this.kbReaderTitle = page.title.length > 0 ? page.title : path.split('/').pop() || '';
       this.kbReaderLines = parseKbMarkdown(page.content);
     }
-  }
-
-  @Builder
-  AddDiagnosisDialog() {
-    Column() {
-      Column() {
-        Text('添加诊断')
-          .fontSize(16)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
-          .margin({ bottom: 16 })
-
-        TextInput({ placeholder: '诊断名称', text: this.addDiagName })
-          .fontSize(14)
-          .width('100%')
-          .onChange((value: string) => {
-            this.addDiagName = value;
-          })
-
-        Text('分类')
-          .fontSize(13)
-          .fontColor(AppColors.textBody)
-          .margin({ top: 12, bottom: 6 })
-
-        Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
-          ForEach(DIAGNOSIS_CATEGORIES, (cat: string) => {
-            Text(cat)
-              .fontSize(12)
-              .fontColor(this.addDiagCategory === cat ? AppColors.card : AppColors.primary)
-              .backgroundColor(this.addDiagCategory === cat ? AppColors.primary : AppColors.fillBeige)
-              .borderRadius(4)
-              .padding({ left: 8, right: 8, top: 4, bottom: 4 })
-              .margin({ right: 4, bottom: 4 })
-              .onClick(() => {
-                this.addDiagCategory = cat;
-              })
-          }, (cat: string) => cat)
-        }
-
-        Row() {
-          Text('取消')
-            .fontSize(14)
-            .fontColor(AppColors.textSecondary)
-            .layoutWeight(1)
-            .textAlign(TextAlign.Center)
-            .padding(10)
-            .onClick(() => {
-              this.showAddDiagnosis = false;
-            })
-          Text('添加')
-            .fontSize(14)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.primary)
-            .layoutWeight(1)
-            .textAlign(TextAlign.Center)
-            .padding(10)
-            .borderRadius(6)
-            .onClick(() => {
-              if (this.addDiagName.trim().length > 0) {
-                this.patientService.addUserDiagnosis(
-                  this.currentPatientId, this.addDiagName.trim(), this.addDiagCategory
-                ).then(() => {
-                  this.showAddDiagnosis = false;
-                  this.loadDashboard();
-                });
-              }
-            })
-        }
-        .width('100%')
-        .margin({ top: 20 })
-      }
-      .padding(20)
-      .backgroundColor(AppColors.card)
-      .borderRadius(AppDimens.cardRadius)
-      .width('85%')
-    }
-    .width('100%')
-    .height('100%')
-    .justifyContent(FlexAlign.Center)
-    .backgroundColor('rgba(0,0,0,0.4)')
-    .onClick(() => {
-      this.showAddDiagnosis = false;
-    })
   }
 }
