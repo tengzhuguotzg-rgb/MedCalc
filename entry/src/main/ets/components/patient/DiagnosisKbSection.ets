@@ -81,45 +81,53 @@ export struct DiagnosisKbSection {
         });
 
         if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingKb) {
-          this.AgentStepList(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.agentSteps, false);
-        } else if (this.expandedRefIds.has(this.diag.ruleId) && getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
           Column() {
-            ForEach(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults, (sr: SearchResult) => {
-              Column() {
-                Row() {
-                  Text(getKbSearchResultTitle(sr))
-                    .fontSize(10)
-                    .fontColor(AppColors.primary)
+            this.AgentStepList(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.agentSteps, false);
+          }
+          .constraintSize({ maxHeight: 120 })
+          .width('100%');
+        } else if (this.expandedRefIds.has(this.diag.ruleId) && getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults.length > 0) {
+          Scroll() {
+            Column() {
+              ForEach(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.searchResults, (sr: SearchResult) => {
+                Column() {
+                  Row() {
+                    Text(getKbSearchResultTitle(sr))
+                      .fontSize(10)
+                      .fontColor(AppColors.primary)
+                      .maxLines(1)
+                      .textOverflow({ overflow: TextOverflow.Ellipsis })
+                      .layoutWeight(1);
+                    if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
+                       Text($r('app.string.kb_fragment'))
+                        .fontSize(8)
+                        .fontColor(AppColors.warningText)
+                        .backgroundColor(AppColors.tierWarnBg)
+                        .borderRadius(2)
+                        .padding({ left: 3, right: 3, top: 0, bottom: 0 })
+                        .margin({ left: 4 });
+                    }
+                  }
+                  .width('100%');
+                  Text(getKbGuidelineName(sr))
+                    .fontSize(9)
+                    .fontColor(AppColors.textSecondary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
-                    .layoutWeight(1);
-                  if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.partialPaths.indexOf(sr.path) >= 0) {
-                     Text($r('app.string.kb_fragment'))
-                      .fontSize(8)
-                      .fontColor(AppColors.warningText)
-                      .backgroundColor(AppColors.tierWarnBg)
-                      .borderRadius(2)
-                      .padding({ left: 3, right: 3, top: 0, bottom: 0 })
-                      .margin({ left: 4 });
-                  }
+                    .width('100%');
                 }
-                .width('100%');
-                Text(getKbGuidelineName(sr))
-                  .fontSize(9)
-                  .fontColor(AppColors.textSecondary)
-                  .maxLines(1)
-                  .textOverflow({ overflow: TextOverflow.Ellipsis })
-                  .width('100%');
-              }
-              .width('100%')
-              .padding({ top: 4, bottom: 4 })
-              .onClick(() => {
-                this.kbReaderPath = sr.path;
-                this.kbReaderTitle = getKbSearchResultTitle(sr);
-                this.showKbReader = true;
-              });
-            }, (sr: SearchResult) => sr.path);
+                .width('100%')
+                .padding({ top: 4, bottom: 4 })
+                .onClick(() => {
+                  this.kbReaderPath = sr.path;
+                  this.kbReaderTitle = getKbSearchResultTitle(sr);
+                  this.showKbReader = true;
+                });
+              }, (sr: SearchResult) => sr.path);
+            }
           }
+          .constraintSize({ maxHeight: 160 })
+          .width('100%')
           .margin({ top: 4 });
         }
 
@@ -139,7 +147,11 @@ export struct DiagnosisKbSection {
           }
           .margin({ top: 6 });
         } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.loadingAdvice) {
-          this.AgentStepList(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.agentSteps, true);
+          Column() {
+            this.AgentStepList(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.agentSteps, true);
+          }
+          .constraintSize({ maxHeight: 120 })
+          .width('100%');
         } else if (getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.recommendations.length > 0) {
           Row() {
             Text('指南建议 · ' + getRecommendationSummary(getDiagnosisKb(this.diagnosisKbMap,this.diag.ruleId)!.recommendations))
