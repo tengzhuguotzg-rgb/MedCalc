@@ -337,31 +337,6 @@ export function parseKbMarkdown(content: string): MarkdownLine[] {
   return result;
 }
 
-export function extractToc(content: string): TocEntry[] {
-  const entries: TocEntry[] = [];
-  const lines = content.split('\n');
-  for (const line of lines) {
-    const h2Match = line.match(/^## (.+)$/);
-    if (h2Match !== null && h2Match.length > 1) {
-      const entry = new TocEntry();
-      entry.text = stripEmojiPrefix(h2Match[1].replace(/\*\*/g, '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, '$2' || '$1'));
-      entry.level = 2;
-      entry.anchor = h2Match[1].replace(/\s+/g, '_');
-      entries.push(entry);
-      continue;
-    }
-    const h3Match = line.match(/^### (.+)$/);
-    if (h3Match !== null && h3Match.length > 1) {
-      const entry = new TocEntry();
-      entry.text = stripEmojiPrefix(h3Match[1].replace(/\*\*/g, '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, '$2' || '$1'));
-      entry.level = 3;
-      entry.anchor = h3Match[1].replace(/\s+/g, '_');
-      entries.push(entry);
-    }
-  }
-  return entries;
-}
-
 export function extractTocFromLines(lines: MarkdownLine[]): TocEntry[] {
   const entries: TocEntry[] = [];
   let k = 0;

@@ -1,7 +1,7 @@
 import { KnowledgeService, SearchResult, KnowledgePage, KnowledgeDirEntry, GroupedPageEntry } from '../services/KnowledgeService';
 import {
   MarkdownLine, TocEntry, CalloutStyle, AnnotationBadge,
-  parseKbMarkdown, extractToc, extractTocFromLines, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
+  parseKbMarkdown, extractTocFromLines, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';

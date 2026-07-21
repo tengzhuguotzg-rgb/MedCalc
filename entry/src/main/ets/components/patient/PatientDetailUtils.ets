@@ -373,22 +373,6 @@ export function getCategoryBorderColor(cat: string): ResourceStr {
   return AppColors.textSecondary;
 }
 
-export function getCategoryLabel(cat: string): string {
-  if (cat === '病理生理') {
-    return '病理';
-  }
-  if (cat === '诊断要点') {
-    return '诊断';
-  }
-  if (cat === '监测评估') {
-    return '监测';
-  }
-  if (cat === '治疗建议') {
-    return '治疗';
-  }
-  return '其他';
-}
-
 export function getEvidenceColor(level: string): ResourceStr {
   if (level.indexOf('强') >= 0) {
     return AppColors.tierOk;
