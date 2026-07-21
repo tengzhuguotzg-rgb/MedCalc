@@ -432,7 +432,7 @@ export struct ImageEditor {
             .padding({ left: 16, top: 12, bottom: 12 })
             .onClick(() => {
               if (this.strokeCount > 0) {
-                showConfirmDialog('放弃编辑', '当前标注尚未保存，确定放弃吗？', () => { this.showEditor = false; });
+                showConfirmDialog($r('app.string.dialog_cancel_edit_title'), $r('app.string.dialog_cancel_edit_msg'), () => { this.showEditor = false; });
               } else {
                 this.showEditor = false;
               }
@@ -562,7 +562,7 @@ export struct ImageEditor {
             .enabled(this.undoCount > 0)
             .onClick(() => {
               if (this.strokeCount > 0) {
-                showConfirmDialog('清空标注', '确定要清空所有标注吗？此操作不可恢复。', () => { this.clearAllMosaic(); });
+                showConfirmDialog($r('app.string.dialog_clear_drawing_title'), $r('app.string.dialog_clear_drawing_msg'), () => { this.clearAllMosaic(); });
               } else {
                 this.clearAllMosaic();
               }

@@ -182,9 +182,9 @@ export struct ResultCard {
 
         Column() {
           Text(this.footnote)
-            .fontSize(10)
+            .fontSize(12)
             .fontColor(AppColors.textBody)
-            .lineHeight(22);
+            .lineHeight(18);
         }
         .layoutWeight(1)
         .alignItems(HorizontalAlign.Start);

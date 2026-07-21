@@ -287,7 +287,7 @@ export struct AssistantPage {
         backgroundColor: AppColors.card,
         onWillDismiss: (dismissAction: DismissSheetAction) => {
           if (this.expandedEditorText.length > 0) {
-            showConfirmDialog('放弃编辑', '当前文本尚未提交，确定放弃吗？', () => { dismissAction.dismiss(); });
+            showConfirmDialog($r('app.string.dialog_cancel_edit_title'), $r('app.string.dialog_cancel_edit_msg'), () => { dismissAction.dismiss(); });
           } else {
             dismissAction.dismiss();
           }
@@ -324,7 +324,7 @@ export struct AssistantPage {
       .height(AppDimens.touchTarget)
       .backgroundColor('transparent')
       .onClick(() => {
-        showConfirmDialog('清空会话', '确定要清空当前会话记录吗？此操作不可恢复。', () => { this.clearSession(); });
+        showConfirmDialog($r('app.string.dialog_clear_session_title'), $r('app.string.dialog_clear_session_msg'), () => { this.clearSession(); });
       })
     }
     .width('100%')

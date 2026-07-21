@@ -178,7 +178,7 @@ export struct DiagnosisDetailPageView {
             .fontColor(AppColors.textSecondary)
             .margin({ left: 4 })
             .onClick(() => {
-              showConfirmDialog('删除诊断', '确定要删除此诊断项吗？', () => { this.onDeleteUserDiagnosis(diag); });
+              showConfirmDialog($r('app.string.dialog_delete_diagnosis_title'), $r('app.string.dialog_delete_diagnosis_msg'), () => { this.onDeleteUserDiagnosis(diag); });
             })
         }
       }
@@ -296,9 +296,9 @@ export struct DiagnosisDetailPageView {
             .onClick(() => { this.onToggleAddDiagnosis(); })
           Text('⟳')
             .fontSize(16)
-            .fontColor(AppColors.tierOk)
+            .fontColor(AppColors.warning)
             .margin({ left: 8 })
-            .onClick(() => { showConfirmDialog('重新诊断', '重新诊断将覆盖当前诊断结果，确定继续吗？', () => { this.onReDiagnose(); }); })
+            .onClick(() => { showConfirmDialog($r('app.string.dialog_rediagnose_title'), $r('app.string.dialog_rediagnose_msg'), () => { this.onReDiagnose(); }); })
         }
       }
       .width('100%')
@@ -718,12 +718,12 @@ export struct RecordsDetailPageView {
                     .layoutWeight(1)
                    Text($r('app.string.common_delete'))
                     .fontSize(12)
-                    .fontColor(AppColors.warning)
-                    .margin({ right: 8 })
-                    .onClick(() => {
-                      this.deleteRecordId = record.id;
-                      this.showDeleteConfirm = true;
-                    })
+                     .fontColor(AppColors.danger)
+                     .margin({ right: 8 })
+                     .onClick(() => {
+                       this.deleteRecordId = record.id;
+                       this.showDeleteConfirm = true;
+                     })
                   Text(formatTime(record.timestamp))
                     .fontSize(12)
                     .fontColor(AppColors.textSecondary)

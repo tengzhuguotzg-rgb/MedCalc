@@ -42,6 +42,8 @@
     { "name": "app_color_domain_cardiac_marker", "value": "#F06060" },
     { "name": "app_color_domain_neuro", "value": "#8A6AC0" },
     { "name": "app_color_domain_endocrine", "value": "#B07ACA" },
-    { "name": "app_color_domain_muscle", "value": "#F09040" }
+    { "name": "app_color_domain_muscle", "value": "#F09040" },
+    { "name": "app_color_dialog_cancel", "value": "#8A8E84" },
+    { "name": "app_color_dialog_confirm", "value": "#D45A3A" }
   ]
 }

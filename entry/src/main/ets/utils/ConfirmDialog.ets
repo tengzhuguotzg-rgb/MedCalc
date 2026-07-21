@@ -2,14 +2,14 @@ import { promptAction } from '@kit.ArkUI';
 import { BusinessError } from '@kit.BasicServicesKit';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 
-export function showConfirmDialog(title: string, message: string, onConfirm: () => void): void {
+export function showConfirmDialog(title: ResourceStr, message: ResourceStr, onConfirm: () => void): void {
   try {
     promptAction.showDialog({
       title: title,
       message: message,
       buttons: [
-        { text: '取消', color: '#888888' },
-        { text: '确定', color: '#CC3333' }
+        { text: '取消', color: $r('app.color.app_color_dialog_cancel') },
+        { text: '确定', color: $r('app.color.app_color_dialog_confirm') }
       ]
     }, (err, data) => {
       if (err) {
