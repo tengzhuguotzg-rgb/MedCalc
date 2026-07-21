@@ -1,10 +1,12 @@
 import { KnowledgeService, SearchResult, KnowledgePage, KnowledgeDirEntry, GroupedPageEntry } from '../services/KnowledgeService';
 import {
   MarkdownLine, TocEntry, CalloutStyle, AnnotationBadge,
-  parseKbMarkdown, extractToc, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
+  parseKbMarkdown, extractToc, extractTocFromLines, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
+import { componentUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 interface CrumbItem {
   label: string;
@@ -161,7 +163,7 @@ export struct KnowledgeSearchPage {
       this.readingPath = path;
       this.markdownLines = parseKbMarkdown(page.content);
       this.wikilinks = this.kbService.extractWikilinks(page.content);
-      this.tocEntries = extractToc(page.content);
+      this.tocEntries = extractTocFromLines(this.markdownLines);
       this.showToc = false;
       this.relatedPages = await this.kbService.getRelatedPages(path, 5);
     }
@@ -178,7 +180,7 @@ export struct KnowledgeSearchPage {
           this.readingPath = prevPath;
           this.markdownLines = parseKbMarkdown(p.content);
           this.wikilinks = this.kbService.extractWikilinks(p.content);
-          this.tocEntries = extractToc(p.content);
+          this.tocEntries = extractTocFromLines(this.markdownLines);
         }
       });
     } else {
@@ -785,7 +787,23 @@ export struct KnowledgeSearchPage {
           }
           .width('100%')
           .padding({ top: 4, bottom: 4 })
-          .onClick(() => { this.showToc = false; });
+          .onClick(() => {
+            this.showToc = false;
+            const targetId = entry.anchor;
+            setTimeout(() => {
+              try {
+                const scrollRect = componentUtils.getRectangleById('kb_scroll');
+                const targetRect = componentUtils.getRectangleById(targetId);
+                const cur = this.pageScroller.currentOffset();
+                this.pageScroller.scrollTo({
+                  xOffset: 0,
+                  yOffset: cur.yOffset + targetRect.windowOffset.y - scrollRect.windowOffset.y,
+                });
+              } catch (e) {
+                hilog.warn(0x0001, 'KB', `TOC scroll failed for ${targetId}`);
+              }
+            }, 100);
+          });
         }, (entry: TocEntry) => entry.anchor);
       }
       .padding({ left: 12, right: 12, top: 4, bottom: 8 });
@@ -821,7 +839,15 @@ export struct KnowledgeSearchPage {
           }
 
           ForEach(this.markdownLines, (ml: MarkdownLine) => {
-            this.MarkdownLineView(ml);
+            if (ml.anchorId.length > 0) {
+              Column() {
+                this.MarkdownLineView(ml);
+              }
+              .width('100%')
+              .id(ml.anchorId);
+            } else {
+              this.MarkdownLineView(ml);
+            }
           }, (ml: MarkdownLine, index: number) => index.toString());
 
           if (this.wikilinks.length > 0 || this.relatedPages.length > 0) {
@@ -830,7 +856,8 @@ export struct KnowledgeSearchPage {
         }
         .padding(12);
       }
-      .layoutWeight(1);
+      .layoutWeight(1)
+      .id('kb_scroll');
     }
   }
 

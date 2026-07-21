@@ -138,6 +138,10 @@ export struct PatientDetailPage {
   }
 
   navigateBack(): boolean {
+    if (this.showKbReader) {
+      this.showKbReader = false;
+      return true;
+    }
     if (this.showRecommendationsDetail) {
       this.showRecommendationsDetail = false;
       this.activeAdviceRuleId = '';
@@ -566,14 +570,6 @@ export struct PatientDetailPage {
             .layoutWeight(1)
             .margin({ left: 8 })
             .onClick(() => { this.pickPdf(); })
-           Button($r('app.string.detail_input_text'))
-            .fontSize(12)
-            .fontColor(AppColors.primary)
-            .backgroundColor(AppColors.fillBeige)
-            .borderRadius(8)
-            .height(40)
-            .layoutWeight(1)
-            .margin({ left: 8 })
            Button($r('app.string.detail_manual_input'))
             .fontSize(12)
             .fontColor(AppColors.primary)

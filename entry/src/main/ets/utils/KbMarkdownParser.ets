@@ -11,6 +11,7 @@ export class MarkdownLine {
   codeLang: string = '';
   cells: string[] = [];
   tableRowIndex: number = -1;
+  anchorId: string = '';
 }
 
 function isTableSepLine(text: string): boolean {
@@ -356,6 +357,23 @@ export function extractToc(content: string): TocEntry[] {
       entry.level = 3;
       entry.anchor = h3Match[1].replace(/\s+/g, '_');
       entries.push(entry);
+    }
+  }
+  return entries;
+}
+
+export function extractTocFromLines(lines: MarkdownLine[]): TocEntry[] {
+  const entries: TocEntry[] = [];
+  let k = 0;
+  for (const ml of lines) {
+    if (ml.type === 'h2' || ml.type === 'h3') {
+      ml.anchorId = 'kb_toc_' + k.toString();
+      const entry = new TocEntry();
+      entry.text = stripMarkdownInline(ml.text);
+      entry.level = ml.type === 'h2' ? 2 : 3;
+      entry.anchor = ml.anchorId;
+      entries.push(entry);
+      k++;
     }
   }
   return entries;
