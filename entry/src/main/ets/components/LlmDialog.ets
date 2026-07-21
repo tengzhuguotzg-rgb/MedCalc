@@ -2,6 +2,7 @@ import { CALCULATORS } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 import { ApiServiceConfig, LlmRecommendation, sendLlmRequest } from '../services/LlmService';
 import { AppColors } from '../utils/AppColors';
+import { display } from '@kit.ArkUI';
 
 @Component
 export struct LlmDialog {
@@ -13,6 +14,18 @@ export struct LlmDialog {
   @State errorMsg: string = '';
   @State fabRight: number = 24;
   @State fabBottom: number = 24;
+  private fabSize: number = 48;
+  private maxRight: number = 400;
+  private maxBottom: number = 800;
+
+  aboutToAppear() {
+    try {
+      const d = display.getDefaultDisplaySync();
+      this.maxRight = Math.max(100, d.width / 160 - this.fabSize);
+      this.maxBottom = Math.max(100, d.height / 160 - this.fabSize);
+    } catch (e) {
+    }
+  }
   private touchDownX: number = 0;
   private touchDownY: number = 0;
   private isMoving: boolean = false;
@@ -127,8 +140,8 @@ export struct LlmDialog {
             this.isMoving = true;
           }
           if (this.isMoving) {
-            this.fabRight = Math.max(0, this.fabRight - dx);
-            this.fabBottom = Math.max(0, this.fabBottom - dy);
+            this.fabRight = Math.max(0, Math.min(this.maxRight, this.fabRight - dx));
+            this.fabBottom = Math.max(0, Math.min(this.maxBottom, this.fabBottom - dy));
             this.touchDownX = event.touches[0].x;
             this.touchDownY = event.touches[0].y;
           }

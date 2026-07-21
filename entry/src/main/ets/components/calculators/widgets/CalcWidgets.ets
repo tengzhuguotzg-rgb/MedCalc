@@ -122,7 +122,7 @@ export struct ResultCard {
   /** 数值上边距（默认 8；个别计算器为 4） */
   valueMarginTop: number = 8;
   /** tier 胶囊字号（默认 13；个别计算器为 12） */
-  tierFontSize: number = 13;
+  tierFontSize: number = 12;
   /** tier 胶囊上边距（默认 8；个别计算器为 4） */
   tierMarginTop: number = 8;
   /** 单位是否内联在数值后（默认 true；false 时单位独占一行小字） */
@@ -165,7 +165,7 @@ export struct ResultCard {
             .margin({ top: this.valueMarginTop });
           if (!this.unitInline) {
             Text(this.value !== null ? this.unit : '')
-              .fontSize(12)
+              .fontSize(10)
               .fontColor(AppColors.textSecondary);
           }
           Text(this.tier)
@@ -182,7 +182,7 @@ export struct ResultCard {
 
         Column() {
           Text(this.footnote)
-            .fontSize(14)
+            .fontSize(10)
             .fontColor(AppColors.textBody)
             .lineHeight(22);
         }

@@ -68,7 +68,7 @@ export struct TimelineDialog {
                    Text($r('app.string.dialog_manual_submit'))
                     .fontSize(10)
 .fontColor(AppColors.onPrimary)
-                     .backgroundColor(AppColors.tierOk)
+             .backgroundColor(AppColors.primary)
                     .borderRadius(3)
                     .padding({ left: 3, right: 3, top: 1, bottom: 1 })
                     .margin({ left: 4 })

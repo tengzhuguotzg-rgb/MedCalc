@@ -8,8 +8,8 @@ export function showConfirmDialog(title: string, message: string, onConfirm: () 
       title: title,
       message: message,
       buttons: [
-        { text: '取消', color: '#999999' },
-        { text: '确定', color: '#E84040' }
+        { text: '取消', color: '#888888' },
+        { text: '确定', color: '#CC3333' }
       ]
     }, (err, data) => {
       if (err) {
