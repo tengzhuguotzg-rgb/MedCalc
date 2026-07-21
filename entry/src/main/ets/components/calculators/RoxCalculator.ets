@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateRox } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct RoxCalculator {
@@ -39,7 +39,7 @@ export struct RoxCalculator {
       Column() { Text('用于预测高流量氧疗(HFNC)失败风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('ROX = SpO₂/(FiO₂×RR)，Roca 2016').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() {
             Text('SpO₂ (%)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });

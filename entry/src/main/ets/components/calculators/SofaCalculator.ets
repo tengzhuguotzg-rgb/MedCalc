@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateSofa } from '../../engine/SofaCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct SofaCalculator {
@@ -55,7 +55,7 @@ export struct SofaCalculator {
       Column() { Text('用于评估器官功能障碍程度，Sepsis-3诊断').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('6系统：呼吸+凝血+肝+循环+神经+肾，0-24分').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 呼吸').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 呼吸').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
         Row() {
           InputRow({ label: 'PaO₂ (mmHg)', placeholder: '请输入PaO2', onTextChange: (value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
           InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });

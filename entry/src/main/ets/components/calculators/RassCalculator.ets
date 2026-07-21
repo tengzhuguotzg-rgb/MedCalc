@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateRass } from '../../engine/RassCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 interface RassLevel {
   score: number;
@@ -54,7 +54,7 @@ export struct RassCalculator {
       Column() { Text('用于评估ICU患者镇静深度及躁动状态').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('+4(攻击)至-5(昏迷)，目标-2至0').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 选择评分').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 选择评分').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([4, 3, 2, 1, 0, -1, -2, -3, -4, -5], (item: number) => {
             OptionChip({ label: `${item >= 0 ? '+' : ''}${item}`, selected: this.score === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.score = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });

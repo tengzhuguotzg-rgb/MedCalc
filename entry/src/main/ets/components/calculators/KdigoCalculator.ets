@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateKdigo } from '../../engine/KdigoCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct KdigoCalculator {
@@ -59,7 +59,7 @@ export struct KdigoCalculator {
         Row() {
           Text('— 基础 Cr (如未知填 0)').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
-          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+          ResetButton({ onReset: () => { this.reset(); } })
         }.width('100%').margin({ bottom: 12 });
         Row() {
           Column() {

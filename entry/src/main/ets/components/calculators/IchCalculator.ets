@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateIch } from '../../engine/IchCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct IchCalculator {
@@ -45,7 +45,7 @@ export struct IchCalculator {
       Column() { Text('用于自发性脑出血30天死亡率预测').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项：GCS+年龄+幕下+出血量+脑室出血，总分0-6').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         InputRow({ label: '血肿体积 (mL)', placeholder: '请输入体积', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.vol = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
 

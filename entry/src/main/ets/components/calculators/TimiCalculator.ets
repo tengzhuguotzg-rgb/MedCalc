@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateTimiStemi, calculateTimiNstemi } from '../../engine/TimiCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct TimiStemiCalculator {
@@ -84,7 +84,7 @@ export struct TimiStemiCalculator {
         Row() {
           Text('— 患者因素').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
-          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+          ResetButton({ onReset: () => { this.reset(); } })
         }.width('100%').margin({ bottom: 10 });
         Column() {
           Text('年龄').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
@@ -298,7 +298,7 @@ export struct TimiNstemiCalculator {
         Row() {
           Text('— 患者因素').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
-          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+          ResetButton({ onReset: () => { this.reset(); } })
         }.width('100%').margin({ bottom: 10 });
         Row() {
           Column() {

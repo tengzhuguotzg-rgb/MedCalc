@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateHasbled } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct HasbledCalculator {
@@ -55,7 +55,7 @@ export struct HasbledCalculator {
       Column() { Text('用于评估房颤患者抗凝治疗出血风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('7项：高血压+肾肝+卒中+出血+INR+年龄+药物/酒精，0-9分').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('H 高血压').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
           Row() { OptionChip({ label: '无', selected: this.htn === 0, fontSize: 14, bold: true, onChipClick: () => { this.htn = 0; this.calculate(); } }).layoutWeight(1);

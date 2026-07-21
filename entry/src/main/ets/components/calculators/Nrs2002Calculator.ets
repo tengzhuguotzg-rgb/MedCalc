@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct Nrs2002Calculator {
@@ -85,7 +85,7 @@ export struct Nrs2002Calculator {
         .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        ; Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
       Row() {
         InputRow({ label: '身高 (cm)', placeholder: '请输入身高', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.patientHeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

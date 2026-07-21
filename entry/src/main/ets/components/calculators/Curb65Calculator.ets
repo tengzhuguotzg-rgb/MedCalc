@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCurb65 } from '../../engine/CommonCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct Curb65Calculator {
@@ -51,7 +51,7 @@ export struct Curb65Calculator {
       Column() { Text('用于评估社区获得性肺炎严重程度及住院决策').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项：意识+BUN+呼吸+血压+年龄≥65，0-5分').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Text('C 意识混乱').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);

@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateAbcd2 } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct Abcd2Calculator {
@@ -46,7 +46,7 @@ export struct Abcd2Calculator {
     Column() {
       Column() { Text('用于评估TIA后短期脑卒中风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项：年龄+血压+临床表现+持续时间+糖尿病，总分0-7').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
         OptRow({ label: 'A 年龄 ≥ 60 岁', value: this.age, onChange: (v: number) => { this.age = v; this.calculate(); } });
         OptRow({ label: 'B 血压 ≥ 140/90', value: this.bp, onChange: (v: number) => { this.bp = v; this.calculate(); } });
         Column() {

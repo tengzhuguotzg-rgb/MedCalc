@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCamicu } from '../../engine/CamicuCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct CamicuCalculator {
@@ -48,7 +48,7 @@ export struct CamicuCalculator {
         Row() {
           Text('— 评估特征').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
-          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+          ResetButton({ onReset: () => { this.reset(); } })
         }.width('100%').margin({ bottom: 12 });
 
         Column() {

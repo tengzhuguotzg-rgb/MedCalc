@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateFssicu } from '../../engine/FssicuCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct FssicuCalculator {
@@ -51,7 +51,7 @@ export struct FssicuCalculator {
           Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立')
             .fontSize(12).fontColor(AppColors.textSecondary);
           Blank();
-          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+          ResetButton({ onReset: () => { this.reset(); } })
         }.width('100%').margin({ bottom: 12 });
 
         FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });

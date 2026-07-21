@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateMap } from '../../engine/MapCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct MapCalculator {
@@ -35,7 +35,7 @@ export struct MapCalculator {
       Column() { Text('用于计算平均动脉压，指导休克复苏').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('MAP = 舒张压 + 1/3脉压差，SSC目标≥65mmHg').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
         Row() {
           InputRow({ label: '收缩压 SBP (mmHg)', placeholder: '请输入SBP', onTextChange: (value: string) => { this.sbp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
           InputRow({ label: '舒张压 DBP (mmHg)', placeholder: '请输入DBP', onTextChange: (value: string) => { this.dbp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });

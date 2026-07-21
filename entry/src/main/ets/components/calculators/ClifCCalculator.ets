@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateClifC } from '../../engine/ClifCCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct ClifCCalculator {
@@ -66,7 +66,7 @@ export struct ClifCCalculator {
         Row() {
           Text('— 肝功能').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
-          Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
+          ResetButton({ onReset: () => { this.reset(); } })
         }.width('100%').margin({ bottom: 12 });
 
         Column() {

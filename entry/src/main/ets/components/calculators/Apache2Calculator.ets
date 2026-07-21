@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct Apache2Calculator {
@@ -129,7 +129,7 @@ export struct Apache2Calculator {
         .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        ; Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
       Row() {
         InputRow({ label: '体温 (°C)', placeholder: '37.0', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

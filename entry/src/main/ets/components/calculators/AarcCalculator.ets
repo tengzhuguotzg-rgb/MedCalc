@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateAarc } from '../../engine/AarcCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct AarcCalculator {
@@ -51,7 +51,7 @@ export struct AarcCalculator {
       Column() { Text('用于评估慢加急性肝衰竭严重程度及预后').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项指标：胆红素 + INR + 乳酸 + 肝性脑病 + 年龄 + AKI').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         InputRow({ label: '胆红素', placeholder: '请输入', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 6 });
         Row() { OptionChip({ label: 'µmol/L', selected: this.bilUnit === 'umol', fontSize: 12, bold: true, chipHeight: 32, onChipClick: () => { this.bilUnit = 'umol'; this.calculate(); } }).layoutWeight(1);
