@@ -254,3 +254,17 @@ export struct OptionChip {
     }
   }
 }
+
+@Component
+export struct ResetButton {
+  onReset: () => void = () => {};
+
+  build() {
+    Text('重置')
+      .fontSize(12)
+      .fontColor(AppColors.textSecondary)
+      .padding({ left: 12, right: 12, top: 10, bottom: 10 })
+      .borderRadius(8)
+      .onClick(() => { this.onReset(); })
+  }
+}

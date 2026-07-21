@@ -284,7 +284,14 @@ export struct AssistantPage {
         height: SheetSize.LARGE,
         dragBar: false,
         showClose: false,
-        backgroundColor: AppColors.card
+        backgroundColor: AppColors.card,
+        onWillDismiss: (dismissAction: DismissSheetAction) => {
+          if (this.expandedEditorText.length > 0) {
+            showConfirmDialog('放弃编辑', '当前文本尚未提交，确定放弃吗？', () => { dismissAction.dismiss(); });
+          } else {
+            dismissAction.dismiss();
+          }
+        }
       })
      } else {
       ImageEditor({
