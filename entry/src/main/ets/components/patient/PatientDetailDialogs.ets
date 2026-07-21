@@ -28,7 +28,9 @@ export struct TimelineDialog {
             .fontSize(13)
             .fontColor(AppColors.textSecondary)
         } else {
-          ForEach(this.timelineData, (dp: PatientDataPoint) => {
+          Scroll() {
+            Column() {
+              ForEach(this.timelineData, (dp: PatientDataPoint) => {
             Column() {
               Row() {
                 Text(dp.value + ' ' + getFieldUnit(this.timelineField, this.dataFieldSpecs))
@@ -95,7 +97,11 @@ export struct TimelineDialog {
             .backgroundColor(AppColors.surfaceSubtle)
             .padding({ left: 8, right: 8, top: 8, bottom: 8 })
             .margin({ bottom: 6 })
-          }, (dp: PatientDataPoint) => dp.id.toString())
+           }, (dp: PatientDataPoint) => dp.id.toString())
+            }
+          }
+          .constraintSize({ maxHeight: 360 })
+          .width('100%')
         }
 
           Button($r('app.string.common_close'))

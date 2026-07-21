@@ -117,53 +117,69 @@ export struct KbMarkdownRenderer {
       Row();
     } else if (ml.type === 'tableHeader') {
       if (ml.cells.length > 0) {
-        Row() {
-          ForEach(ml.cells, (cell: string, idx: number) => {
-            Text(cell)
-              .fontSize(11)
-              .fontColor(AppColors.primary)
-              .fontWeight(FontWeight.Bold)
-              .layoutWeight(1)
-              .padding({ left: 4, right: 4, top: 3, bottom: 3 });
-          }, (cell: string, idx: number) => idx.toString());
-        }
-        .width('100%')
-        .backgroundColor(AppColors.fillBeige)
-        .borderRadius(2);
-      } else {
-        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
-          .fontSize(11)
-          .fontColor(AppColors.primary)
-          .fontWeight(FontWeight.Bold)
-          .fontFamily('monospace')
-          .width('100%')
-          .padding({ left: 6, right: 6, top: 3, bottom: 3 })
+        Scroll() {
+          Row() {
+            ForEach(ml.cells, (cell: string, idx: number) => {
+              Text(cell)
+                .fontSize(11)
+                .fontColor(AppColors.primary)
+                .fontWeight(FontWeight.Bold)
+                .layoutWeight(1)
+                .padding({ left: 4, right: 4, top: 3, bottom: 3 });
+            }, (cell: string, idx: number) => idx.toString());
+          }
           .backgroundColor(AppColors.fillBeige)
           .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
+      } else {
+        Scroll() {
+          Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+            .fontSize(11)
+            .fontColor(AppColors.primary)
+            .fontWeight(FontWeight.Bold)
+            .fontFamily('monospace')
+            .padding({ left: 6, right: 6, top: 3, bottom: 3 })
+            .backgroundColor(AppColors.fillBeige)
+            .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
       }
     } else if (ml.type === 'table') {
       if (ml.cells.length > 0) {
-        Row() {
-          ForEach(ml.cells, (cell: string, idx: number) => {
-            Text(cell)
-              .fontSize(11)
-              .fontColor(AppColors.textBody)
-              .layoutWeight(1)
-              .padding({ left: 4, right: 4, top: 2, bottom: 2 });
-          }, (cell: string, idx: number) => idx.toString());
-        }
-        .width('100%')
-        .backgroundColor(AppColors.surfaceSubtle)
-        .borderRadius(2);
-      } else {
-        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
-          .fontSize(11)
-          .fontColor(AppColors.textBody)
-          .fontFamily('monospace')
-          .width('100%')
-          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+        Scroll() {
+          Row() {
+            ForEach(ml.cells, (cell: string, idx: number) => {
+              Text(cell)
+                .fontSize(11)
+                .fontColor(AppColors.textBody)
+                .layoutWeight(1)
+                .padding({ left: 4, right: 4, top: 2, bottom: 2 });
+            }, (cell: string, idx: number) => idx.toString());
+          }
           .backgroundColor(AppColors.surfaceSubtle)
           .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
+      } else {
+        Scroll() {
+          Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+            .fontSize(11)
+            .fontColor(AppColors.textBody)
+            .fontFamily('monospace')
+            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+            .backgroundColor(AppColors.surfaceSubtle)
+            .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
       }
     } else if (ml.type === 'tagLine') {
       Row() {
