@@ -51,23 +51,28 @@ export struct VasopressorCalculator {
   onMlhChange(value: string): void {
     this.mlhText = value;
     this.inputMode = 'mlh';
+    this.calculated = false;
   }
 
   onDoseChange(value: string): void {
     this.doseText = value;
     this.inputMode = 'dose';
+    this.calculated = false;
   }
 
   onWeightChange(value: string): void {
     this.weight = parseFloat(value) || 0;
+    this.calculated = false;
   }
 
   onConcAChange(value: string): void {
     this.concA = parseFloat(value) || 0;
+    this.calculated = false;
   }
 
   onConcBChange(value: string): void {
     this.concB = parseFloat(value) || 0;
+    this.calculated = false;
   }
 
   onCalculate(): void {
@@ -177,7 +182,7 @@ export struct VasopressorCalculator {
               .backgroundColor(this.drug === d[0] ? AppColors.primary : AppColors.fillNeutral)
               .border({ width: 1, color: this.drug === d[0] ? AppColors.primary : AppColors.border })
               .borderRadius(8).height(32).margin({ right: 6, bottom: 6 })
-              .onClick(() => { this.drug = d[0]; });
+              .onClick(() => { this.drug = d[0]; this.calculated = false; });
           }, (d: string[]) => d[0]);
         }.width('100%').margin({ bottom: 12 });
 
@@ -239,7 +244,10 @@ export struct VasopressorCalculator {
             Column() {
               Text('换算结果').fontSize(12).fontColor(AppColors.textSecondary).letterSpacing(1.5);
               Text(this.getDrugName()).fontSize(22).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 4 });
-              Text(`${this.resultMlh.toFixed(2)} mL/h  =  ${this.resultDose.toFixed(4)} ${this.resultUnit}`).fontSize(15).fontColor(AppColors.textBody).margin({ top: 4 });
+              Text(`${this.resultMlh.toFixed(2)} mL/h  =  ${this.resultDose.toFixed(4)} ${this.resultUnit}`)
+                .fontSize(20).fontWeight(FontWeight.Bold).fontColor(AppColors.primary).margin({ top: 6 });
+              Text(this.inputMode === 'mlh' ? 'mL/h → ' + this.resultUnit : this.resultUnit + ' → mL/h')
+                .fontSize(11).fontColor(AppColors.textSecondary).margin({ top: 2 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
           }.width('100%');
         }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');

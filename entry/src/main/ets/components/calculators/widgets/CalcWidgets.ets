@@ -161,7 +161,7 @@ export struct ResultCard {
           Text(this.mainText())
             .fontSize(this.valueFontSize)
             .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
+            .fontColor(this.tierClass.length > 0 ? getTierColor(this.tierClass) : AppColors.primary)
             .margin({ top: this.valueMarginTop });
           if (!this.unitInline) {
             Text(this.value !== null ? this.unit : '')
