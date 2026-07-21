@@ -838,7 +838,7 @@ export struct BloodGasCalculator {
           Row() {
             Text(this.result.ab.tierText)
               .fontSize(12)
-              .fontColor(AppColors.card)
+              .fontColor(AppColors.onPrimary)
               .padding({ left: 8, right: 8, top: 2, bottom: 2 })
               .borderRadius(4)
               .backgroundColor(this.getTierColor(this.result.ab.tierCls));
@@ -905,7 +905,7 @@ export struct BloodGasCalculator {
             Row() {
               Text(this.hypoxiaTierText)
                 .fontSize(12)
-                .fontColor(AppColors.card)
+                .fontColor(AppColors.onPrimary)
                 .padding({ left: 8, right: 8, top: 2, bottom: 2 })
                 .borderRadius(4)
                 .backgroundColor(this.getTierColor(this.hypoxiaCls));
@@ -946,7 +946,7 @@ export struct BloodGasCalculator {
             Row() {
               Text(this.rTierText)
                 .fontSize(12)
-                .fontColor(AppColors.card)
+                .fontColor(AppColors.onPrimary)
                 .padding({ left: 8, right: 8, top: 2, bottom: 2 })
                 .borderRadius(4)
                 .backgroundColor(this.getTierColor(this.rCls));

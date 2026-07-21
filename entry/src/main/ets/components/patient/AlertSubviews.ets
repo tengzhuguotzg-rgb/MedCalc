@@ -46,7 +46,7 @@ export struct LabAlertCard {
         .alignItems(HorizontalAlign.Start)
         Text(getLabAlertUrgencyLabel(this.la.urgency))
           .fontSize(10)
-          .fontColor(AppColors.card)
+          .fontColor(AppColors.onPrimary)
           .backgroundColor(getLabAlertUrgencyColor(this.la.urgency))
           .borderRadius(4)
           .padding({ left: 4, right: 4, top: 1, bottom: 1 })

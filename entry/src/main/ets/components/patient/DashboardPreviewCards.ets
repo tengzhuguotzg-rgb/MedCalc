@@ -24,7 +24,7 @@ export struct AlertPreviewCard {
         if (getWarningAlerts(this.dashboard.alerts).length + this.dashboard.labAlerts.length > 0) {
           Text((getWarningAlerts(this.dashboard.alerts).length + this.dashboard.labAlerts.length).toString())
             .fontSize(12)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .backgroundColor(AppColors.danger)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
@@ -138,7 +138,7 @@ export struct DiagnosisPreviewCard {
         if (this.dashboard.diagnosisCount > 0) {
           Text(this.dashboard.diagnosisCount.toString())
             .fontSize(12)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .backgroundColor(AppColors.primary)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
@@ -226,7 +226,7 @@ export struct DataPreviewCard {
         if (this.dataFieldCount > 0) {
           Text(this.dataFieldCount.toString())
             .fontSize(12)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .backgroundColor(AppColors.tierOk)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
@@ -308,7 +308,7 @@ export struct RecordsPreviewCard {
         if (this.dashboard.records.length > 0) {
           Text(this.dashboard.records.length.toString())
             .fontSize(12)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .backgroundColor(AppColors.textSecondary)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })

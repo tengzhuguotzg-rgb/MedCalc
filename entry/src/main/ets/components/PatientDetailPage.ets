@@ -551,8 +551,8 @@ export struct PatientDetailPage {
         Row() {
            Button($r('app.string.detail_upload_image'))
             .fontSize(12)
-            .fontColor(AppColors.card)
-            .backgroundColor(AppColors.primary)
+             .fontColor(AppColors.onPrimary)
+             .backgroundColor(AppColors.primary)
             .borderRadius(8)
             .height(40)
             .layoutWeight(1)

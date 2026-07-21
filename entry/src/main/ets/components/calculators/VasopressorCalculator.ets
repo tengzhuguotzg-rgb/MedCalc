@@ -223,7 +223,7 @@ export struct VasopressorCalculator {
 
         Button('计算')
           .fontSize(14)
-          .fontColor(AppColors.card)
+          .fontColor(AppColors.onPrimary)
           .backgroundColor(AppColors.primary)
           .borderRadius(8)
           .height(AppDimens.inputHeight)

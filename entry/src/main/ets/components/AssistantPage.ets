@@ -364,7 +364,7 @@ export struct AssistantPage {
           if (msg.text.length > 0) {
             Text(msg.text)
               .fontSize(14)
-              .fontColor(AppColors.card)
+              .fontColor(AppColors.onPrimary)
               .width('100%')
           }
         }
@@ -596,7 +596,7 @@ export struct AssistantPage {
 
       Button('计算')
         .fontSize(12)
-        .fontColor(AppColors.card)
+        .fontColor(AppColors.onPrimary)
         .backgroundColor(AppColors.primary)
         .borderRadius(6)
         .height(28)
@@ -984,11 +984,11 @@ export struct AssistantPage {
             LoadingProgress()
               .width(18)
               .height(18)
-              .color(AppColors.card)
+              .color(AppColors.onPrimary)
           } else {
             Text('➤')
               .fontSize(18)
-              .fontColor(AppColors.card)
+              .fontColor(AppColors.onPrimary)
           }
         }
         .width(40)

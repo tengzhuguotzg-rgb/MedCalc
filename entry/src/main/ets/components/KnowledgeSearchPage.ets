@@ -436,7 +436,7 @@ export struct KnowledgeSearchPage {
       Row() {
         Text(this.getPathCategory(sr.path))
           .fontSize(10)
-          .fontColor(AppColors.card)
+          .fontColor(AppColors.onPrimary)
           .backgroundColor(AppColors.textSecondary)
           .borderRadius(3)
           .padding({ left: 5, right: 5, top: 1, bottom: 1 });
@@ -616,7 +616,7 @@ export struct KnowledgeSearchPage {
           Text(groupName)
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
             .borderRadius(4)
             .backgroundColor(this.getCategoryColor(this.currentCategoryName + '/' + groupName));
@@ -631,7 +631,7 @@ export struct KnowledgeSearchPage {
           Text(this.currentCategoryName)
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
             .borderRadius(4)
             .backgroundColor(this.getCategoryColor(this.currentCategoryName));
@@ -1051,7 +1051,7 @@ export struct KnowledgeSearchPage {
     Row() {
       Text(getAnnotationBadgeInfo(ml.text).keyword)
         .fontSize(11)
-        .fontColor(AppColors.card)
+        .fontColor(AppColors.onPrimary)
         .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
         .borderRadius(3)
         .padding({ left: 6, right: 6, top: 1, bottom: 1 });

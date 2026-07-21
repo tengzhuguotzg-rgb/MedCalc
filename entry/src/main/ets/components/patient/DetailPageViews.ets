@@ -48,7 +48,7 @@ export struct AlertDetailPageView {
         if (this.getWarningAlerts().length + this.dashboard.labAlerts.length > 0) {
           Text((this.getWarningAlerts().length + this.dashboard.labAlerts.length).toString())
             .fontSize(12)
-            .fontColor(AppColors.card)
+            .fontColor(AppColors.onPrimary)
             .backgroundColor(AppColors.danger)
             .borderRadius(10)
             .padding({ left: 6, right: 6, top: 1, bottom: 1 })
@@ -585,7 +585,7 @@ export struct DataDetailPageView {
                     .layoutWeight(1)
                   Text(getDomainDataCount(entry.keys, this.dashboard, this.dataFieldSpecs) + '项')
                     .fontSize(10)
-                    .fontColor(AppColors.card)
+                    .fontColor(AppColors.onPrimary)
                     .backgroundColor(getDomainColor(entry.name))
                     .borderRadius(8)
                     .padding({ left: 5, right: 5, top: 1, bottom: 1 })

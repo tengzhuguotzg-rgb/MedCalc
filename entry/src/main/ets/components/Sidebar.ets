@@ -28,7 +28,7 @@ export struct Sidebar {
         .height(28)
         .borderRadius(14)
         .backgroundColor(AppColors.primary)
-        .fontColor(AppColors.card)
+        .fontColor(AppColors.onPrimary)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);
@@ -125,7 +125,7 @@ export struct Sidebar {
         .height(28)
         .borderRadius(14)
         .backgroundColor(AppColors.primary)
-        .fontColor(AppColors.card)
+        .fontColor(AppColors.onPrimary)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);

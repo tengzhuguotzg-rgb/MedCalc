@@ -193,9 +193,9 @@ export struct LlmDialog {
           LoadingProgress()
             .width(18)
             .height(18)
-            .color(AppColors.card)
+            .color(AppColors.onPrimary)
         } else {
-          Text('发送').fontSize(14).fontColor(AppColors.card)
+          Text('发送').fontSize(14).fontColor(AppColors.onPrimary)
         }
       }
       .width('100%')
@@ -257,7 +257,7 @@ export struct LlmDialog {
         Text(`${rank}`)
           .fontSize(12)
           .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.card)
+          .fontColor(AppColors.onPrimary)
           .width(20)
           .height(20)
           .borderRadius(10)

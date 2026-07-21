@@ -46,7 +46,7 @@ export struct KbMarkdownRenderer {
       Row() {
         Text(getAnnotationBadgeInfo(ml.text).keyword)
           .fontSize(11)
-          .fontColor(AppColors.card)
+          .fontColor(AppColors.onPrimary)
           .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
           .borderRadius(3)
           .padding({ left: 6, right: 6, top: 1, bottom: 1 });
