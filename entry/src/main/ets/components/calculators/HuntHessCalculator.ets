@@ -65,7 +65,7 @@ export struct HuntHessCalculator {
       Column() { Text('用于蛛网膜下腔出血手术风险分层').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('0-5级，基于临床症状严重程度').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([0, 1, 2, 3, 4, 5], (item: number) => {
             OptionChip({ label: `${item}`, selected: this.grade === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.grade = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });
@@ -115,7 +115,7 @@ export struct WfnsCalculator {
       Column() { Text('用于蛛网膜下腔出血临床分级及预后评估').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('I-V级，基于GCS和局灶体征').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4, 5], (item: number) => {
             OptionChip({ label: `${item}`, selected: this.grade === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.grade = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });
@@ -165,7 +165,7 @@ export struct FisherCalculator {
       Column() { Text('用于预测蛛网膜下腔出血后脑血管痉挛风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('1-4级，基于CT出血量').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 选择分级').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach([1, 2, 3, 4], (item: number) => {
             OptionChip({ label: `${item}`, selected: this.grade === item, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.grade = item; this.calculate(); } }).width(60).margin({ right: 8, bottom: 8 });

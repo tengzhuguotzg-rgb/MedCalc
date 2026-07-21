@@ -12,6 +12,7 @@ import { ImageStore } from '../services/ImageStore';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
+import { showConfirmDialog } from '../utils/ConfirmDialog';
 
 class DataDisplayItem {
   key: string = '';
@@ -316,7 +317,7 @@ export struct AssistantPage {
       .height(AppDimens.touchTarget)
       .backgroundColor('transparent')
       .onClick(() => {
-        this.clearSession();
+        showConfirmDialog('清空会话', '确定要清空当前会话记录吗？此操作不可恢复。', () => { this.clearSession(); });
       })
     }
     .width('100%')
@@ -1054,9 +1055,9 @@ export struct AssistantPage {
         .onChange((v: string) => {
           this.expandedEditorText = v;
         })
-    }
+     }
     .width('100%')
     .height('100%')
     .backgroundColor(AppColors.surfaceSubtle)
+   }
   }
-}

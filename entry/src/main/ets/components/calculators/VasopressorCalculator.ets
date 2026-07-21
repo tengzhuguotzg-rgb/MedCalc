@@ -166,7 +166,7 @@ export struct VasopressorCalculator {
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       Column() {
-        Row() { Text('— 患者参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 患者参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         if (!this.isVp()) {
           Column() {
             Text('体重 (kg)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
@@ -175,7 +175,7 @@ export struct VasopressorCalculator {
           }.width('100%').margin({ bottom: 12 });
         }
 
-        Text('— 药物选择').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 药物选择').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Flex({ wrap: FlexWrap.Wrap }) {
           ForEach(VP_DRUGS, (d: string[]) => {
             Button(d[1]).fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.drug === d[0] ? AppColors.card : AppColors.textOption)
@@ -186,7 +186,7 @@ export struct VasopressorCalculator {
           }, (d: string[]) => d[0]);
         }.width('100%').margin({ bottom: 12 });
 
-        Text(`— 配药浓度`).fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text(`— 配药浓度`).fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text(this.getConcLabel()).fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
@@ -208,7 +208,7 @@ export struct VasopressorCalculator {
           Text(this.getConcValue()).fontSize(12).fontColor(AppColors.textSecondary).margin({ bottom: 8 });
         }
 
-        Text('— 双向换算').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 双向换算').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text('速度 (mL/h)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });

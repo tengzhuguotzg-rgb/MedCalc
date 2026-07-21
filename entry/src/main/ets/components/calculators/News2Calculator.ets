@@ -45,7 +45,7 @@ export struct News2Calculator {
       Column() { Text('用于早期识别危重患者病情恶化').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('7参数：RR+SpO₂+体温+收缩压+心率+意识+吸氧，0-20分').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           InputRow({ label: '呼吸频率 (次/分)', placeholder: '呼吸频率', onTextChange: (value: string) => { this.resp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

@@ -55,7 +55,7 @@ export struct SofaCalculator {
       Column() { Text('用于评估器官功能障碍程度，Sepsis-3诊断').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('6系统：呼吸+凝血+肝+循环+神经+肾，0-24分').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 呼吸').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 呼吸').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           InputRow({ label: 'PaO₂ (mmHg)', placeholder: '请输入PaO2', onTextChange: (value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
           InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
@@ -67,7 +67,7 @@ export struct SofaCalculator {
       }
 
       CalcCard() {
-        Text('— 凝血 / 肝脏').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 凝血 / 肝脏').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           InputRow({ label: '血小板 PLT (×10⁹/L)', placeholder: '请输入PLT', onTextChange: (value: string) => { this.platelet = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
           InputRow({ label: '胆红素 (µmol/L)', placeholder: '请输入胆红素', onTextChange: (value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
@@ -75,7 +75,7 @@ export struct SofaCalculator {
       }
 
       CalcCard() {
-        Text('— 心血管 / 神经').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 心血管 / 神经').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Column() {
           Text('升压药').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
           Flex({ wrap: FlexWrap.Wrap }) {
@@ -94,7 +94,7 @@ export struct SofaCalculator {
       }
 
       CalcCard() {
-        Text('— 肾脏').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 肾脏').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           InputRow({ label: '血肌酐 (µmol/L)', placeholder: '请输入肌酐', onTextChange: (value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
           InputRow({ label: '尿量 (mL/d)', placeholder: '请输入尿量', onTextChange: (value: string) => { this.urineOutput = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 12 });

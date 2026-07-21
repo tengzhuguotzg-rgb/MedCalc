@@ -57,7 +57,7 @@ export struct KdigoCalculator {
 
       CalcCard() {
         Row() {
-          Text('— 基础 Cr (如未知填 0)').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5);
+          Text('— 基础 Cr (如未知填 0)').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
           Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
         }.width('100%').margin({ bottom: 12 });
@@ -94,7 +94,7 @@ export struct KdigoCalculator {
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
 
-        Text('— 当前 Cr (7 天内)').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 当前 Cr (7 天内)').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text('当前 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });

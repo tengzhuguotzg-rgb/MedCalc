@@ -60,7 +60,7 @@ export struct PesiCalculator {
 
       CalcCard() {
         Row() {
-          Text('— PESI 参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5);
+          Text('— PESI 参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
           Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
         }.width('100%').margin({ bottom: 12 });

@@ -43,7 +43,7 @@ export struct SirsCalculator {
       Column() { Text('用于筛查全身炎症反应综合征/脓毒症').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('4项：体温+心率+呼吸+WBC，≥2项阳性').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {

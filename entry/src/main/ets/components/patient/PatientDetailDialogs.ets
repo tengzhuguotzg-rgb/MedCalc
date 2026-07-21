@@ -329,9 +329,9 @@ export struct DeleteConfirmDialog {
               this.deleteRecordId = '';
             })
            Button($r('app.string.common_delete'))
-             .fontSize(14)
-             .fontColor(AppColors.onPrimary)
-             .backgroundColor(AppColors.warning)
+              .fontSize(14)
+              .fontColor(AppColors.onPrimary)
+              .backgroundColor(AppColors.danger)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)

@@ -3,6 +3,7 @@ import { fileIo } from '@kit.CoreFileKit';
 import { util } from '@kit.ArkTS';
 import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppColors } from '../utils/AppColors';
+import { showConfirmDialog } from '../utils/ConfirmDialog';
 
 class MosaicRect {
   x: number = 0;
@@ -35,6 +36,7 @@ export struct ImageEditor {
   @State isTouching: boolean = false;
   @State magPosX: number = -200;
   @State magPosY: number = -200;
+  @State strokeCount: number = 0;
 
   private pixelMap: image.PixelMap | null = null;
   private originalBuffer: ArrayBuffer | null = null;
@@ -242,6 +244,7 @@ export struct ImageEditor {
     }
     this.strokes = this.strokes.slice(0, this.strokes.length - 1);
     this.undoCount = this.strokes.length;
+    this.strokeCount = this.strokes.length;
     await this.applyMosaicToPixelMap();
     this.redrawCanvas();
   }
@@ -250,6 +253,7 @@ export struct ImageEditor {
     this.strokes = [];
     this.currentStroke = null;
     this.undoCount = 0;
+    this.strokeCount = 0;
     await this.restoreOriginal();
     this.redrawCanvas();
   }
@@ -328,6 +332,7 @@ export struct ImageEditor {
       this.strokes = [...this.strokes, this.currentStroke];
       this.currentStroke = null;
       this.undoCount = this.strokes.length;
+      this.strokeCount = this.strokes.length;
       await this.applyMosaicToPixelMap();
       this.redrawCanvas();
     }
@@ -426,7 +431,11 @@ export struct ImageEditor {
             .fontColor(AppColors.textSecondary)
             .padding({ left: 16, top: 12, bottom: 12 })
             .onClick(() => {
-              this.showEditor = false;
+              if (this.strokeCount > 0) {
+                showConfirmDialog('放弃编辑', '当前标注尚未保存，确定放弃吗？', () => { this.showEditor = false; });
+              } else {
+                this.showEditor = false;
+              }
             })
           Text('图片脱敏')
             .fontSize(16)
@@ -552,18 +561,22 @@ export struct ImageEditor {
             .margin({ left: 8 })
             .enabled(this.undoCount > 0)
             .onClick(() => {
-              this.clearAllMosaic();
+              if (this.strokeCount > 0) {
+                showConfirmDialog('清空标注', '确定要清空所有标注吗？此操作不可恢复。', () => { this.clearAllMosaic(); });
+              } else {
+                this.clearAllMosaic();
+              }
             })
         }
         .width('100%')
         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
         .backgroundColor(AppColors.card)
       }
-      .width('100%')
-      .height('100%')
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor('#2A2A2A')
+       .width('100%')
+       .height('100%')
+     }
+     .width('100%')
+     .height('100%')
+     .backgroundColor('#2A2A2A')
   }
 }

@@ -7,6 +7,7 @@ import { parseAlertResult, formatTime, getRecordIcon, getRecordLabel, getDataFie
 import { AlertCardView, LabAlertCard } from './AlertSubviews';
 import { KbMarkdownRenderer } from './KbMarkdownRenderer';
 import { DiagnosisKbSection as DiagnosisKbSectionView } from './DiagnosisKbSection';
+import { showConfirmDialog } from '../../utils/ConfirmDialog';
 
 @Component
 export struct AlertDetailPageView {
@@ -177,7 +178,7 @@ export struct DiagnosisDetailPageView {
             .fontColor(AppColors.textSecondary)
             .margin({ left: 4 })
             .onClick(() => {
-              this.onDeleteUserDiagnosis(diag);
+              showConfirmDialog('删除诊断', '确定要删除此诊断项吗？', () => { this.onDeleteUserDiagnosis(diag); });
             })
         }
       }
@@ -297,7 +298,7 @@ export struct DiagnosisDetailPageView {
             .fontSize(16)
             .fontColor(AppColors.tierOk)
             .margin({ left: 8 })
-            .onClick(() => { this.onReDiagnose(); })
+            .onClick(() => { showConfirmDialog('重新诊断', '重新诊断将覆盖当前诊断结果，确定继续吗？', () => { this.onReDiagnose(); }); })
         }
       }
       .width('100%')
@@ -332,14 +333,14 @@ export struct DiagnosisDetailPageView {
         .padding({ left: 16, right: 16, top: 8, bottom: 16 })
         .alignItems(HorizontalAlign.Start)
       }
-      .layoutWeight(1)
-      .align(Alignment.Top)
-    }
-    .width('100%')
-    .height('100%')
-    .backgroundColor(AppColors.surfaceMuted)
-  }
-}
+       .layoutWeight(1)
+       .align(Alignment.Top)
+     }
+     .width('100%')
+     .height('100%')
+     .backgroundColor(AppColors.surfaceMuted)
+   }
+ }
 
 @Component
 export struct RecommendationsDetailPageView {

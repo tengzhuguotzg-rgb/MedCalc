@@ -53,7 +53,7 @@ export struct ChadsvascCalculator {
       Column() { Text('用于评估房颤患者脑卒中风险，指导抗凝决策').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('8项：心衰+高血压+年龄+糖尿病+卒中+血管病+性别，总分0-9').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('C 心衰').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
           Row() { OptionChip({ label: '无', selected: this.chf === 0, fontSize: 14, bold: true, onChipClick: () => { this.chf = 0; this.calculate(); } }).layoutWeight(1);

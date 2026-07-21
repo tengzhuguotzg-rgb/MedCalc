@@ -56,7 +56,7 @@ export struct NihssCalculator {
     Column() {
       Column() { Text('用于评估脑卒中神经功能缺损严重程度').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('11项评估，总分0-42，≥6分考虑溶栓/取栓').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
         Row() {
           InputRow({ label: '1a 意识水平', placeholder: '0-3', onTextChange: (value: string) => { this.ia = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
           InputRow({ label: '1b 提问', placeholder: '0-2', onTextChange: (value: string) => { this.ib = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });

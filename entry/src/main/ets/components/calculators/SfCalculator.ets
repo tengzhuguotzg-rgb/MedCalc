@@ -37,7 +37,7 @@ export struct SfCalculator {
       Column() { Text('用于无动脉血气时床旁ARDS筛查').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('SpO₂/FiO₂比值替代P/F，无需动脉血气').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           InputRow({ label: 'SpO₂ (%)', placeholder: '请输入SpO2', onTextChange: (value: string) => { this.spo2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

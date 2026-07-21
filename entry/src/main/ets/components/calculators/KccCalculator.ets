@@ -47,7 +47,7 @@ export struct KccCalculator {
       Column() { Text('用于急性肝衰竭紧急肝移植决策').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('对乙酰氨基酚/非对乙酰氨基酚两种标准评估').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() {
           InputRow({ label: 'INR', placeholder: '请输入INR', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

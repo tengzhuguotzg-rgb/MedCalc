@@ -64,7 +64,7 @@ export struct ClifCCalculator {
 
       CalcCard() {
         Row() {
-          Text('— 肝功能').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5);
+          Text('— 肝功能').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
           Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
         }.width('100%').margin({ bottom: 12 });
@@ -104,7 +104,7 @@ export struct ClifCCalculator {
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
 
-        Text('— 肾功能').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 肾功能').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Column() {
           Text('肌酐').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
           TextInput({ placeholder: '肌酐' })
@@ -120,7 +120,7 @@ export struct ClifCCalculator {
           OptionChip({ label: 'mg/dL', selected: this.crUnit === 'mgdl', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, horizontalPadding: 6, onChipClick: () => { this.crUnit = 'mgdl'; this.calculate(); } }).margin({ bottom: 4 });
         }.width('100%').margin({ bottom: 16 });
 
-        Text('— 循环').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 循环').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
 
         Column() {
           Text('MAP (mmHg)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
@@ -142,7 +142,7 @@ export struct ClifCCalculator {
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
 
-        Text('— 呼吸').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 呼吸').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text('PaO₂ (mmHg)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
@@ -171,7 +171,7 @@ export struct ClifCCalculator {
           OptionChip({ label: '百分比', selected: this.fio2Mode === 'pct', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.fio2Mode = 'pct'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
         }.width('100%').margin({ bottom: 16 });
 
-        Text('— 患者参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        Text('— 患者参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
         Row() {
           Column() {
             Text('年龄 (岁)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });

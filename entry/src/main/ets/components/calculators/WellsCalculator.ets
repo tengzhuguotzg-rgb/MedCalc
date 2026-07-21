@@ -47,7 +47,7 @@ export struct WellsCalculator {
       Column() { Text('用于评估肺栓塞临床概率，指导D-二聚体解读').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('7项：DVT症状+PE主诊断+心率+制动+咯血+肿瘤+其他').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('深静脉血栓临床表现').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
           Row() { OptionChip({ label: '无', selected: this.clinical === 0, fontSize: 14, bold: true, onChipClick: () => { this.clinical = 0; this.calculate(); } }).layoutWeight(1);

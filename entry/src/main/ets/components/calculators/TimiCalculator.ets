@@ -82,7 +82,7 @@ export struct TimiStemiCalculator {
 
       CalcCard() {
         Row() {
-          Text('— 患者因素').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5);
+          Text('— 患者因素').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
           Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
         }.width('100%').margin({ bottom: 10 });
@@ -129,7 +129,7 @@ export struct TimiStemiCalculator {
           this.YesNoBtn(this.dmHtnAngina, (v) => { this.dmHtnAngina = v; this.calculate(); });
         }.width('100%').margin({ bottom: 14 });
 
-        Text('— 生命体征').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
+        Text('— 生命体征').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
         Row() {
           Column() {
             Text('SBP < 100 mmHg').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
@@ -147,7 +147,7 @@ export struct TimiStemiCalculator {
           }.layoutWeight(1);
         }.width('100%').margin({ bottom: 14 });
 
-        Text('— 临床特征').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
+        Text('— 临床特征').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
         Column() {
           Text('Killip 分级').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
           Flex({ wrap: FlexWrap.Wrap }) {
@@ -296,7 +296,7 @@ export struct TimiNstemiCalculator {
 
       CalcCard() {
         Row() {
-          Text('— 患者因素').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5);
+          Text('— 患者因素').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
           Blank();
           Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); });
         }.width('100%').margin({ bottom: 10 });
@@ -311,7 +311,7 @@ export struct TimiNstemiCalculator {
           }.layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 14 });
 
-        Text('— 临床特征').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
+        Text('— 临床特征').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
         Row() {
           Column() {
             Text('24h ≥ 2次心绞痛').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
@@ -370,7 +370,7 @@ export struct TimiNstemiCalculator {
           Text(`已选 ${this.getRiskFactorCount()}/5 · ≥ 3 项阳性`).fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
         }.width('100%').margin({ bottom: 14 });
 
-        Text('— 检查').fontSize(12).fontColor(AppColors.warning).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
+        Text('— 检查').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 10 });
         Row() {
           Column() {
             Text('ST段偏移 ≥ 0.5mm').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
