@@ -928,6 +928,7 @@ export struct AssistantPage {
             Text('+')
               .fontSize(22)
               .fontWeight(FontWeight.Bold)
+              .fontColor(AppColors.primary)
           }
           .width(44)
           .height(AppDimens.touchTarget)
