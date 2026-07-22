@@ -61,6 +61,21 @@ node "/d/Program Files/DevEco Studio/tools/hvigor/bin/hvigorw.js" assembleApp
 ```
 （`docs/UI优化交接.md` §1.2 的 `hvigorw assembleApp` 写法在本机不适用，建议更正交接文档）
 
+## 返修复核（2026-07-22，commit `66e3beb`）
+
+P1–P4 已全部返修，复核通过，构建 `BUILD SUCCESSFUL in 12s`（审核人亲自运行）：
+
+| 项 | 复核结果 |
+|---|---|
+| P1 死资源 | ✅ 6 处 showConfirmDialog 硬编码字面量零残留，全部 `$r` 接线 |
+| P2 footnote | ✅ 12pt + lineHeight 18（在建议的 12–14 可接受区间）；共识 M6 患者页部分推第三轮 |
+| P3 危险色 | ✅ records 删除 warning→danger；⟳ tierOk→warning。未做"loading 禁用 ⟳"，小项不阻塞 |
+| P4 硬编码色 | ✅ 签名改 ResourceStr，新增 dialog_cancel/dialog_confirm token（base `#5F6654/#B1452A`，dark 有映射） |
+
+**遗留疑点已修复（2026-07-22 晚）**：H5 动画原为 `animateTo` 包裹命令式 scrollTo（对非属性动画无效）。已改为 scrollTo 自带参数 `animation: { duration: 300, curve: Curve.EaseInOut }`（`KnowledgeSearchPage.ets:798-802`），构建通过。修复人：审核方 AI。
+
+**最终结论：第二轮 20 项 + 返修全部验收通过。** 剩余门槛只有真机走查（暗色观感/TOC 定位/FAB 手感/表格滑动），通过后可合 main。
+
 ## 未覆盖项声明
 
 以下为真机才能验证的，本次审核未覆盖：暗色模式徽章实际观感（H1）、TOC 跳转定位精度（H5）、FAB 拖动边界手感（M11）、表格横向滑动手感（M15）。建议装机走查后再合 main。

@@ -795,11 +795,10 @@ export struct KnowledgeSearchPage {
                 const scrollRect = componentUtils.getRectangleById('kb_scroll');
                 const targetRect = componentUtils.getRectangleById(targetId);
                 const cur = this.pageScroller.currentOffset();
-                animateTo({ duration: 300, curve: Curve.EaseInOut }, () => {
-                  this.pageScroller.scrollTo({
-                    xOffset: 0,
-                    yOffset: cur.yOffset + targetRect.windowOffset.y - scrollRect.windowOffset.y,
-                  });
+                this.pageScroller.scrollTo({
+                  xOffset: 0,
+                  yOffset: cur.yOffset + targetRect.windowOffset.y - scrollRect.windowOffset.y,
+                  animation: { duration: 300, curve: Curve.EaseInOut }
                 });
               } catch (e) {
                 hilog.warn(0x0001, 'KB', `TOC scroll failed for ${targetId}`);
