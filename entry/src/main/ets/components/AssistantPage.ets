@@ -668,6 +668,7 @@ export struct AssistantPage {
         .backgroundColor(AppColors.card)
         .borderRadius(6)
         .padding({ left: 8 })
+        .type(this.getFieldType(fieldKey) === 'number' ? InputType.NUMBER_DECIMAL : InputType.Normal)
         .onChange((value: string) => {
           const updated: Record<string, string> = {};
           const existingKeys = Object.keys(this.supplementFields);
@@ -683,6 +684,11 @@ export struct AssistantPage {
   isSelectField(fieldKey: string): boolean {
     const spec = this.assistantService.getFieldSpec(fieldKey);
     return spec !== null && spec.type === 'select' && spec.options !== undefined && spec.options.length > 0;
+  }
+
+  getFieldType(fieldKey: string): string {
+    const spec = this.assistantService.getFieldSpec(fieldKey);
+    return spec !== null ? spec.type : 'text';
   }
 
   getFieldOptions(fieldKey: string): string[] {
