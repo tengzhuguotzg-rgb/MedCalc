@@ -103,13 +103,21 @@ entry/src/main/ets/
 │   └── Index.ets                        # 4-Tab 主框架 + onBackPress
 ├── components/
 │   ├── Sidebar.ets                      # 抽屉侧边栏
-│   ├── LlmDialog.ets                    # AI推荐计算器对话框
-│   ├── AssistantPage.ets                # AI助手（上传/提取/补充）
+│   ├── LlmDialog.ets                    # AI推荐计算器对话框 + FAB
+│   ├── AssistantPage.ets                # AI助手（上传/提取/补充）+ bindSheet 编辑器
 │   ├── ImageEditor.ets                  # 图片脱敏编辑器
 │   ├── PatientListPage.ets              # 患者列表
-│   ├── PatientDetailPage.ets            # 患者详情（4预览卡+4详情页）
-│   ├── SettingsPage.ets                 # 设置页（LLM配置管理）
-│   └── calculators/                     # 41个计算器UI组件
+│   ├── PatientDetailPage.ets            # 患者详情（导航入口+状态分发）
+│   ├── KnowledgeSearchPage.ets          # 知识库搜索+阅读器+TOC跳转
+│   ├── SettingsPage.ets                 # 设置页（LLM配置+外观切换）
+│   ├── calculators/                     # 41个计算器UI组件
+│   │   └── widgets/CalcWidgets.ets      # 共享组件(CalcCard/InputRow/ResultCard/OptionChip/ResetButton)
+│   └── patient/                         # 患者详情子组件
+│       ├── DetailPageViews.ets          # 预警/诊断/数据/记录4详情页
+│       ├── PatientDetailDialogs.ets     # 对话框(数据录入/时间编辑/时间线)
+│       ├── PatientDetailUtils.ets       # 纯函数(格式化/翻译/色映射)
+│       ├── KbMarkdownRenderer.ets       # Markdown渲染(表格横滑/callout/标注)
+│       └── ...
 ├── engine/                              # 计算引擎
 │   ├── CalcEngine.ets                   # CalcResult + tier分级 + 工具函数
 │   └── ...（各计算器引擎）
@@ -117,6 +125,11 @@ entry/src/main/ets/
 │   ├── CalculatorRegistry.ets           # 计算器注册表
 │   ├── Patient.ets                      # 患者数据模型（6类 + DATA_DOMAINS）
 │   └── DiagnosisRules.ets               # 诊断规则库（58条 + 工厂函数）
+├── utils/
+│   ├── AppColors.ets                    # 40+ 语义色彩 token（$r 双主题）
+│   ├── AppDimens.ets                    # 高频尺寸 token
+│   ├── ConfirmDialog.ets                # showConfirmDialog 工具函数
+│   └── KbMarkdownParser.ets            # Markdown 解析+TOC提取+callout/标注
 └── services/
     ├── PreferencesService.ets           # 偏好持久化
     ├── LlmService.ets                   # LLM API（文本+视觉）
@@ -135,15 +148,54 @@ entry/src/main/ets/
 - **数据存储**：RDB（relationalStore）+ 应用沙箱文件
 - **IDE**：DevEco Studio 5.0+
 
+## 已完成 UI 优化
+
+### 第一轮（23 项）
+- 计算器空态模式（必填未录完不出分）
+- 底部 Tab 品牌绿选中态
+- 内部 DSL/字段 key 泄露清理
+- 数值输入框全量数字键盘 + 安全区适配
+- 知识库视觉统一品牌色系
+- 患者详情严重度竖条+文字标签统一
+- 热区/字号/对比度达标（选项 44、输入 48、辅助≥12pt）
+- 41 个计算器重置按钮
+- 色彩 token 化（3300+ 处→AppColors 40+ 语义 token，仅 11 行白名单）
+- 共享组件（CalcCard/InputRow/ResultCard/OptionChip，38/40 计算器迁移）
+- PatientDetailPage 拆分（4166→1367 行，67%↓）
+- 暗黑模式（color.json 双主题 + 设置页切换）
+- 返回栈重构（Navigation+NavPathStack 替代 AppStorage flag）
+- 字符串资源化（string.json 3→~250 条）
+- 代码风格（87 处 300+ 字符长行折行）
+
+### 第二轮（20 项）
+- H1 暗色对比度修复（onPrimary 全局替换 36 处）
+- H2 升压药换算旧结果作废（参数变更后需重新计算）
+- H3 不可逆操作加确认弹窗（清会话/删诊断/重诊断/编辑器取消+清空）
+- H4 死按钮删除
+- H5 知识库 TOC 点击跳转（解析期盖章+条件包裹方案，平滑动画）
+- H6 TimelineDialog 溢出滚动
+- M1 ResultCard 数值色随 tier 联动
+- M2 重置按钮热区扩大（30 计算器→ResetButton 组件）
+- M3 Vasopressor mL/h 20pt+换算方向标注
+- M5 分节标题 warning 橙→textSecondary（54 处）
+- M9 KB 阅读器返回键拦截
+- M11 FAB 拖动屏幕边界钳制
+- M13 bindSheet 关闭确认（onWillDismiss）
+- M15 表格横向滚动
+- M6 ResultCard 辅助字号降档（tier 12/单位 10/footnote 12）
+- L3 死代码删除（extractToc/getCategoryLabel）
+- L4/L5/L6 小瑕疵修复
+
 ## 待完善功能
 
 - [ ] 检查时间（examTime）提取与显示，替代上传时间
-- [ ] 主题切换（暗色模式）
+- [x] 主题切换（暗色模式）
+- [x] 返回栈重构（Navigation 替代 AppStorage flag）
 - [ ] PDF导出
 - [ ] 诊断编辑/覆盖/治疗建议
 - [ ] LLM 推荐结果带原因
 
-**当前进度：41/41 计算器 + 患者病历系统 + ICU诊断引擎**
+**当前进度：41/41 计算器 + 患者病历系统 + ICU诊断引擎 + 两轮 UI 优化（43 项）**
 
 ## 许可
 

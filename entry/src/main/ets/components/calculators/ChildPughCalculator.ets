@@ -1,5 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateChildPugh } from '../../engine/ChildPughCalculator';
+import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct ChildPughCalculator {
@@ -39,61 +42,52 @@ export struct ChildPughCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于评估肝硬化患者肝功能储备及手术风险').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('5项：胆红素+白蛋白+INR+腹水+肝性脑病，A/B/C三级').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估肝硬化患者肝功能储备及手术风险').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('5项：胆红素+白蛋白+INR+腹水+肝性脑病，A/B/C三级').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+      CalcCard() {
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         Row() {
-          Column() { Text(this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入胆红素' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1);
-          Column() { Text(this.albUnit === 'gl' ? '白蛋白 (g/L)' : '白蛋白 (g/dL)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入白蛋白' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.albumin = parseFloat(value) || 0; this.calculate(); }); }.layoutWeight(1).margin({ left: 12 });
+          InputRow({ label: this.bilirubinUnit === 'umol' ? '胆红素 (µmol/L)' : '胆红素 (mg/dL)', placeholder: '请输入胆红素', onTextChange: (value: string) => { this.bilirubin = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: this.albUnit === 'gl' ? '白蛋白 (g/L)' : '白蛋白 (g/dL)', placeholder: '请输入白蛋白', onTextChange: (value: string) => { this.albumin = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 8 });
 
         Row() {
-          Text('胆红素单位').fontSize(12).fontColor('#5F6654').layoutWeight(1);
-          Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.bilirubinUnit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.bilirubinUnit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).onClick(() => { this.bilirubinUnit = 'umol'; this.calculate(); });
-          Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.bilirubinUnit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.bilirubinUnit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.bilirubinUnit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).margin({ left: 6 }).onClick(() => { this.bilirubinUnit = 'mgdl'; this.calculate(); });
+          Text('胆红素单位').fontSize(12).fontColor(AppColors.textSecondary).layoutWeight(1);
+          OptionChip({ label: 'µmol/L', selected: this.bilirubinUnit === 'umol', fontSize: 12, bold: true, onChipClick: () => { this.bilirubinUnit = 'umol'; this.calculate(); } });
+          OptionChip({ label: 'mg/dL', selected: this.bilirubinUnit === 'mgdl', fontSize: 12, bold: true, onChipClick: () => { this.bilirubinUnit = 'mgdl'; this.calculate(); } }).margin({ left: 6 });
         }.width('100%').margin({ bottom: 8 });
 
         Row() {
-          Text('白蛋白单位').fontSize(12).fontColor('#5F6654').layoutWeight(1);
-          Button('g/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.albUnit === 'gl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.albUnit === 'gl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).onClick(() => { this.albUnit = 'gl'; this.calculate(); });
-          Button('g/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.albUnit === 'gdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.albUnit === 'gdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.albUnit === 'gdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).margin({ left: 6 }).onClick(() => { this.albUnit = 'gdl'; this.calculate(); });
+          Text('白蛋白单位').fontSize(12).fontColor(AppColors.textSecondary).layoutWeight(1);
+          OptionChip({ label: 'g/L', selected: this.albUnit === 'gl', fontSize: 12, bold: true, onChipClick: () => { this.albUnit = 'gl'; this.calculate(); } });
+          OptionChip({ label: 'g/dL', selected: this.albUnit === 'gdl', fontSize: 12, bold: true, onChipClick: () => { this.albUnit = 'gdl'; this.calculate(); } }).margin({ left: 6 });
         }.width('100%').margin({ bottom: 8 });
 
-        Column() { Text('INR').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 }); TextInput({ placeholder: '请输入INR' }).type(InputType.NUMBER_DECIMAL).height(48).fontSize(16).fontColor('#1F2421').placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' }).padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); }); }.width('100%').margin({ bottom: 16 });
+        InputRow({ label: 'INR', placeholder: '请输入INR', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.inr = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
 
         Column() {
-          Text('腹水').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 8 });
+          Text('腹水').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
           Row() {
-            Button('无').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.ascites === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.ascites === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ascites === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.ascites = 1; this.calculate(); });
-            Button('轻度').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.ascites === 2 ? '#FFFFFF' : '#2D5440').backgroundColor(this.ascites === 2 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ascites === 2 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 6 }).onClick(() => { this.ascites = 2; this.calculate(); });
-            Button('中重度').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.ascites === 3 ? '#FFFFFF' : '#2D5440').backgroundColor(this.ascites === 3 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.ascites === 3 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 6 }).onClick(() => { this.ascites = 3; this.calculate(); });
+            OptionChip({ label: '无', selected: this.ascites === 1, fontSize: 12, bold: true, onChipClick: () => { this.ascites = 1; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: '轻度', selected: this.ascites === 2, fontSize: 12, bold: true, onChipClick: () => { this.ascites = 2; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
+            OptionChip({ label: '中重度', selected: this.ascites === 3, fontSize: 12, bold: true, onChipClick: () => { this.ascites = 3; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
           }.width('100%');
         }.width('100%').margin({ bottom: 16 });
 
         Column() {
-          Text('肝性脑病').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 8 });
+          Text('肝性脑病').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
           Row() {
-            Button('无').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.encephalopathy === 1 ? '#FFFFFF' : '#2D5440').backgroundColor(this.encephalopathy === 1 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.encephalopathy === 1 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).onClick(() => { this.encephalopathy = 1; this.calculate(); });
-            Button('I-II期').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.encephalopathy === 2 ? '#FFFFFF' : '#2D5440').backgroundColor(this.encephalopathy === 2 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.encephalopathy === 2 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 6 }).onClick(() => { this.encephalopathy = 2; this.calculate(); });
-            Button('III-IV期').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.encephalopathy === 3 ? '#FFFFFF' : '#2D5440').backgroundColor(this.encephalopathy === 3 ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.encephalopathy === 3 ? '#1F3D2F' : '#E0E0E0' }).borderRadius(8).height(44).layoutWeight(1).margin({ left: 6 }).onClick(() => { this.encephalopathy = 3; this.calculate(); });
+            OptionChip({ label: '无', selected: this.encephalopathy === 1, fontSize: 12, bold: true, onChipClick: () => { this.encephalopathy = 1; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: 'I-II期', selected: this.encephalopathy === 2, fontSize: 12, bold: true, onChipClick: () => { this.encephalopathy = 2; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
+            OptionChip({ label: 'III-IV期', selected: this.encephalopathy === 3, fontSize: 12, bold: true, onChipClick: () => { this.encephalopathy = 3; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
           }.width('100%');
         }.width('100%');
-      }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() { Text('Child-Pugh').fontSize(12).fontColor('#5F6654').letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—').fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 8 });
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold).fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass)).borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 8 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
+        ResultCard({ title: 'Child-Pugh', value: this.result!.value, unit: this.result!.unit, decimals: 0, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -1,4 +1,6 @@
 import { CALCULATORS, GROUP_ORDER, Calculator } from '../model/CalculatorRegistry';
+import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 @Component
 export struct Sidebar {
@@ -14,8 +16,8 @@ export struct Sidebar {
     }
     .width(220)
     .height('100%')
-    .backgroundColor('#F4F1EA')
-    .border({ width: { right: 1 }, color: '#E0DCC8' });
+    .backgroundColor(AppColors.background)
+    .border({ width: { right: 1 }, color: AppColors.divider });
   }
 
   @Builder
@@ -25,8 +27,8 @@ export struct Sidebar {
         .width(28)
         .height(28)
         .borderRadius(14)
-        .backgroundColor('#1F3D2F')
-        .fontColor('#FFFFFF')
+        .backgroundColor(AppColors.primary)
+        .fontColor(AppColors.onPrimary)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);
@@ -34,10 +36,10 @@ export struct Sidebar {
         Text('医学计算器')
           .fontSize(12.5)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F');
+          .fontColor(AppColors.primary);
         Text('Teng.ZG')
           .fontSize(12)
-          .fontColor('#5F6654');
+          .fontColor(AppColors.textSecondary);
       }
       .alignItems(HorizontalAlign.Start)
       .margin({ left: 8 });
@@ -52,7 +54,7 @@ export struct Sidebar {
       Column() {
         Text('★ 收藏')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .letterSpacing(1.5)
           .margin({ bottom: 4 });
         ForEach(this.favorites, (favId: string) => {
@@ -86,7 +88,7 @@ export struct Sidebar {
   GroupHeader(groupName: string) {
     Text(groupName)
       .fontSize(12)
-      .fontColor('#5F6654')
+      .fontColor(AppColors.textSecondary)
       .letterSpacing(1.5)
       .padding({ left: 12, right: 12, top: 8, bottom: 4 });
   }
@@ -100,14 +102,14 @@ export struct Sidebar {
       if (!this.sidebarCollapsed) {
         Text(calc.name)
           .fontSize(12.5)
-          .fontColor(calc.id === this.currentCalc ? '#1F3D2F' : '#1F2421')
+          .fontColor(calc.id === this.currentCalc ? AppColors.primary : AppColors.textPrimary)
           .fontWeight(calc.id === this.currentCalc ? FontWeight.Bold : FontWeight.Normal)
           .layoutWeight(1);
       }
     }
     .width('100%')
     .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-    .backgroundColor(calc.id === this.currentCalc ? '#FFFFFF' : 'transparent')
+    .backgroundColor(calc.id === this.currentCalc ? AppColors.card : 'transparent')
     .borderRadius(4)
     .onClick(() => {
       this.currentCalc = calc.id;
@@ -122,8 +124,8 @@ export struct Sidebar {
         .width(28)
         .height(28)
         .borderRadius(14)
-        .backgroundColor('#1F3D2F')
-        .fontColor('#FFFFFF')
+        .backgroundColor(AppColors.primary)
+        .fontColor(AppColors.onPrimary)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);
@@ -133,10 +135,10 @@ export struct Sidebar {
             Text(calc.icon)
               .fontSize(18)
               .width(40)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .textAlign(TextAlign.Center)
               .borderRadius(4)
-              .backgroundColor(calc.id === this.currentCalc ? '#FFFFFF' : 'transparent')
+              .backgroundColor(calc.id === this.currentCalc ? AppColors.card : 'transparent')
               .onClick(() => {
                 this.currentCalc = calc.id;
               });

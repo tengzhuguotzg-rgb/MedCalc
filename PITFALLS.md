@@ -152,6 +152,28 @@ Every time a non-trivial UI/ArkTS bug is found and fixed, add it here. Consult t
 
 ---
 
+## 2026-07-20 ResourceStr 拼接 alpha 字符串产生无效色值
+
+**Symptom**: 徽章背景色 `backgroundColor(getUrgencyColor(urgency) + '20')` 在暗色模式下不显示背景色，浅色模式也非预期色。
+
+**Root cause**: `getUrgencyColor()` 返回 `ResourceStr`（即 `$r('app.color.xxx')` 返回的 `Resource` 对象）。ArkTS 中 `Resource + '20'` 会隐式转为字符串 `"[object Object]20"` 或其他非色值字符串，完全不是有效的颜色。这个 bug 在 AppColors 是硬编码 `string` 时不明显（`'#B1452A' + '20'` = `'#B1452A20'` 合法），但迁移到 `$r()` 后 ResourceStr+string 拼接就彻底坏了。
+
+**Fix**: 新增 `getUrgencyBgColor()`/`getLlmConfirmBgColor()` 函数，返回专门的浅色背景 token（`AppColors.tierDangerBg`/`tierWarnBg`/`tierOkBg`/`fillNeutral`），已在 color.json base+dark 中定义好暗色映射。
+
+**Rule**: `ResourceStr`（`$r()` 返回值）不可拼接字符串生成带 alpha 的颜色。需要浅色背景时，必须定义独立的色值 token（base 放浅色、dark 放暗色调），不能靠 alpha 拼接。同一条也适用于 `AppColors.xxx + 'XX'` 的任何写法——只要 AppColors 值是 `Resource`，拼接即坏。
+
+---
+
+## 2026-07-20 @Watch 不触发初始值 — backFlag 计数器依赖此语义
+
+**Symptom**: NavDestination.onBackPressed 递增 `patientBackFlag`（@State=0→1→2…），PatientDetailPage 用 `@Prop backFlag` + `@Watch('onBackFlagChanged')` 监听。首次进入详情页时 backFlag=0，@Watch 不触发（ArkTS @Watch 不因初始赋值触发），onBackPressed 递增到 1 时才触发——这正是期望行为。但如果未来有人把初始值改为非 0 或改用 @StorageLink，行为可能变化。
+
+**Root cause**: ArkTS `@Watch` 装饰器在属性首次赋值（含 @State/@Prop 初始值）时不触发回调，仅在后续变更时触发。backFlag 计数器模式故意利用这一点：初始值 0 不触发，increment 到 1 才触发 navigateBack()。
+
+**Rule**: 使用递增计数器（counter）作为跨组件信号时，必须确保初始值和首次变更之间的差值 ≥ 1，且接收方 @Watch 依赖"初始值不触发"语义。不要把计数器初始值设为非零，也不要换用 @StorageLink（其首次同步行为不同）。如果未来需要"首次 mount 即执行"，不要依赖 @Watch，改用 `aboutToAppear()`。
+
+---
+
 ## Todos
 
 1. **PDF上传扩展名硬编码** — `ImageStore.getExtFromUri()` 不认识 `.pdf`，返回 `jpg`，虽然后续 `copyFileSync` 能复制但扩展名不对，需加 `.pdf` 识别

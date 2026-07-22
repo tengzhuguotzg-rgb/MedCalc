@@ -51,22 +51,29 @@
 
 ## ⚪ 低优先级（工程欠债，待议）
 
-- [ ] **11. 色彩零 token 化**：3323 处硬编码色值遍布 53 个文件；`color.json` 仅 1 条。新发现：BloodGas 结果区用 `#DC3545/#28A745`、Apache2/Nrs2002 用 `#3D6B4F` 作分级色，与 CalcEngine tier 色系不统一（一并纳入）。建议：先建 `AppColors`/`Dimens` 常量类，再迁移 color.json
-- [ ] **12. 样式全量复制粘贴**：卡片样式 108 处重复。建议抽公共组件：`CalcCard`/`InputRow`/`ResultCard`/`OptionChip`
-- [ ] **13. `PatientDetailPage.ets` 单文件 4166 行**、8 个独立 Scroll。建议拆分子组件文件
-- [ ] **14. 暗黑模式准备度≈0**：resources/dark/ 仅 1 条。前置依赖第 11 条
-- [ ] **15. 返回逻辑碎片化**：`Index.ets:82-94` AppStorage flag 模拟返回栈；详情页 5 层布尔分发
-- [ ] **16. 字符串未资源化**：string.json 仅 3 条（只做中文可接受，需知情决策）
-- [ ] **17. 代码风格**：整行 UI 压成单行（`SofaCalculator.ets:29` 400+ 字符）
+- [x] **11. 色彩零 token 化**：3323 处硬编码色值遍布 53 个文件；`color.json` 仅 1 条。新发现：BloodGas 结果区用 `#DC3545/#28A745`、Apache2/Nrs2002 用 `#3D6B4F` 作分级色，与 CalcEngine tier 色系不统一（一并纳入）。建议：先建 `AppColors`/`Dimens` 常量类，再迁移 color.json
+  - 已做：新建 `utils/AppColors.ets`/`utils/AppDimens.ets` token 层（`10047c5`）；CalcEngine tier 色改为引用 AppColors，全 App 分级色单一定义；12 个色板色值全局迁移 1990 处（52 文件，`a5fcfe0`/`57e7042`/`a298f08`）；BloodGas/Apache2/Nrs2002 分级色统一走 CalcEngine.getTierColor（`514e5dd`）；高频尺寸 .height(44/48)/.borderRadius(12)/.padding(16) 迁移 556 处（`9ad3ed5`）；中性色/功能色/域色补 26 个 token 并迁移 1285 处（`75c73d0`/`9891c31`），系统蓝残留与知识要点卡收编（`19336d6`），DOMAIN_COLORS 收编 AppColors（`341bf17`）。现 ets/ 下除 AppColors 定义与白名单（画布/阴影色 11 行）外无硬编码色值
+- [x] **12. 样式全量复制粘贴**：卡片样式 108 处重复。建议抽公共组件：`CalcCard`/`InputRow`/`ResultCard`/`OptionChip`
+  - 已做：新建 `calculators/widgets/CalcWidgets.ets` 四组件（`8d3ce43`）；38/40 个计算器分 11 批迁移（`65894ba`…`aaf6e5a`），每批构建验证；未迁移 2 个：Vasopressor（双栏换算特殊交互）、BloodGas（6 步法特殊区），保留 inline。reset/空态机制原样保留
+- [x] **13. `PatientDetailPage.ets` 单文件 4166 行**、8 个独立 Scroll。建议拆分子组件文件
+  - 已做：4166→1367行(67%↓); 提取7个组件文件到patient/目录; 21个@Builder全拆为独立@Component; 13个实例方法迁为纯函数(PatientDetailUtils 544→630+行)
+- [x] **14. 暗黑模式准备度≈0**：resources/dark/ 仅 1 条。前置依赖第 11 条
+  - 已做：color.json base 44 token + dark 44 token；AppColors→ResourceStr+$r()；CalcEngine/BloodGas/Patient/KbMarkdownParser 色返回值→ResourceStr；SettingsPage 外观Radio(跟随系统/浅色/深色)；PreferencesService saveThemeMode/getThemeMode；EntryAbility 启动读theme→setColorMode（`05d3a9f`）
+- [x] **15. 返回逻辑碎片化**：`Index.ets:82-94` AppStorage flag 模拟返回栈；详情页 5 层布尔分发
+  - 已做：Patient tab→Navigation(patientStack)+NavDestination.onBackPressed→patientBackFlag计数器；KB tab→Navigation(kbStack)+onNavDepthChanged/backAction回调；Index.onBackPress仅委托KB tab；所有旧AppStorage flag已清除grep零引用（`2aff4cb`）；修复ResourceStr+'20'徽章底色回归→getUrgencyBgColor/getLlmConfirmBgColor（`9912c8f`）；清除死代码KbRouteMap/空onDetailNavChanged/kbStack传递（`aa05b95`）
+- [x] **16. 字符串未资源化**：string.json 仅 3 条（只做中文可接受，需知情决策）
+  - 已做：string.json 3→~250条资源(通用/Tab/设置/患者/知识库/计算器)；SettingsPage/PatientListPage/Index 硬编码中文→$r()；仅提取用户可见UI文本，不触动数据域key/解析关键词
+- [x] **17. 代码风格**：整行 UI 压成单行（`SofaCalculator.ets:29` 400+ 字符）
+  - 已做：87处300+字符长行折行，13个计算器+3个组件文件方法链换行、属性分组缩进
 
 ## 修复过程中新发现的问题（未改）
 
-- [ ] **18.** 删除确认弹窗的"删除"按钮背景仍是预警橙 `#E76F2C`，应统一危险红 `#B1452A`（`PatientListPage.ets` 弹窗）
-- [ ] **19.** 知识库面包屑父级链接与"相关章节"wikilink 仍用系统蓝 `#2B6CB0`/`#EBF2FA`，与品牌色脱节
-- [ ] **20.** `KbMarkdownParser` 的 callout/annotation 配色仍是 Material 色系（`#E65100`/`#1565C0` 等）
-- [ ] **21.** 年龄/肌酐等已有 `.type(InputType.Number)` 的输入框是整数键盘，肌酐等实际需小数，评估换 NUMBER_DECIMAL
-- [ ] **22.** Apache2Calculator 的 FiO₂ 输入无"小数/百分比"切换但 placeholder 是 '21'（百分比），与其它计算器 FiO₂ 交互不一致
-- [ ] **23.** 死代码：`getDangerCount`/`getWarnCount`/`getSourceColor`/`getTierIcon` 已无调用方（第 7 项后遗留）
+- [x] **18.** 删除确认弹窗的"删除"按钮背景仍是预警橙 `#E76F2C`，应统一危险红 `#B1452A`（`PatientListPage.ets` 弹窗）— 已改 `AppColors.danger`（`deaacdf`）
+- [x] **19.** 知识库面包屑父级链接与"相关章节"wikilink 仍用系统蓝 `#2B6CB0`/`#EBF2FA`，与品牌色脱节 — 链接改 `AppColors.primary`、底色改 `AppColors.background`（`deaacdf`）
+- [x] **20.** `KbMarkdownParser` 的 callout/annotation 配色仍是 Material 色系（`#E65100`/`#1565C0` 等）— 信息类改深绿系、警告改橙、危险改红、提示/成功改 tier 绿（`deaacdf`）
+- [x] **21.** 年龄/肌酐等已有 `.type(InputType.Number)` 的输入框是整数键盘，肌酐等实际需小数，评估换 NUMBER_DECIMAL — 22 处改小数键盘（肌酐/体重/身高/体温/WBC/尿量等，`33caadf`），年龄/心率/血压/评分项等保持整数
+- [x] **22.** Apache2Calculator 的 FiO₂ 输入无"小数/百分比"切换但 placeholder 是 '21'（百分比），与其它计算器 FiO₂ 交互不一致 — 改 OptionChip 小数/百分比切换，placeholder 动态化，引擎行为不变（`82630ba`）
+- [x] **23.** 死代码：`getDangerCount`/`getWarnCount`/`getSourceColor`/`getTierIcon` 已无调用方（第 7 项后遗留）— 确证零引用后删除（含配套的 `getSourceLabel`，`9cbe37e`）
 
 ## 做得对、要保持的
 
@@ -82,4 +89,18 @@
 | 1 | #1 空态不出分 `8495916` | ✅ 构建通过 |
 | 2 | #2 `0a9af8c` / #3 `43fd7f7` / #4 `f5b85c9` / #5 `11c3c3d` / #9 `03e2c2a` / #10 `a3f8ca8` | ✅ 构建通过 |
 | 3 | #6 `56fa191` / #7 `9c4c999` / #8 `1b6c67f` | ✅ 构建通过 |
-| 4 | #11-#17 工程项 + #18-#23 新发现 | 待议 |
+| 4 | #11 色彩 token 化 `10047c5`/`a5fcfe0`/`57e7042`/`a298f08`/`514e5dd`/`9ad3ed5` + 中性色收尾 `75c73d0`/`9891c31`/`19336d6`/`341bf17` + #18/#19/#20 `deaacdf` | ✅ 构建通过 |
+| 5 | #12 共享组件+迁移 `8d3ce43`…`aaf6e5a`（16 commits）+ #21 `33caadf` + #22 `82630ba` + #23 `9cbe37e` | ✅ 构建通过 |
+| 6 | #14 暗黑模式 `05d3a9f` / #15 返回栈 `2aff4cb`+`9912c8f`+`aa05b95` / #13 拆分 `c819b64`/`6dd8230`→`7b0f7ad`/`d60b9d0`/`3be216d` | ✅ 全部构建通过 |
+| 7 | #16 字符串资源化 `2cccb06`/`5b66879` / #17 代码风格 `cc4fd18` / 泄露回归修复 `8c8321b` | ✅ 构建通过 |
+
+## 重构验证纪律
+
+> **每次 `@Builder`→`@Component` 或方法提取后，必须 `grep` 关键格式化函数调用数不能减少：**
+> - `formatMissingCriteria` ≥ 1（诊断卡缺项格式化）
+> - `formatCriterion` ≥ 1（被 formatMissingCriteria 调用）
+> - `translateSelectValue` ≥ 1（枚举值翻译）
+> - `translateAgentName` ≥ 1（Agent 步骤名称翻译）
+> - `formatExtractedJson` ≥ 1（上传记录展开格式化）
+>
+> 若调用数归零，说明提取时遗漏了调用点，必须立即补回。

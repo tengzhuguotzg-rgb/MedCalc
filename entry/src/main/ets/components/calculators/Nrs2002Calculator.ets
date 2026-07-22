@@ -1,5 +1,8 @@
 import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNrs2002 } from '../../engine/Nrs2002Calculator';
+import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct Nrs2002Calculator {
@@ -49,12 +52,12 @@ export struct Nrs2002Calculator {
       this.Header();
       this.InputForm();
       if (this.result) {
-        this.ResultCard();
+        ResultCard({ title: 'NRS-2002', value: this.result!.value, unit: this.result!.unit, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 
   @Builder
@@ -62,11 +65,11 @@ export struct Nrs2002Calculator {
     Column() {
       Text('用于住院患者营养风险筛查')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('4项：BMI+体重下降+摄食减少+疾病严重度，≥3有营养风险')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
     .alignItems(HorizontalAlign.Start)
@@ -76,62 +79,17 @@ export struct Nrs2002Calculator {
 
   @Builder
   InputForm() {
-    Column() {
+    CalcCard() {
       Row() { Text('— 输入参数')
         .fontSize(12)
-        .fontColor('#E76F2C')
+        .fontColor(AppColors.warning)
         .fontWeight(FontWeight.Bold)
         .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+        ; Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
       Row() {
-        Column() {
-          Text('身高 (cm)')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '请输入身高' })
-            .type(InputType.Number)
-            .height(48)
-            .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
-            .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.patientHeight = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1);
-        Column() {
-          Text('体重 (kg)')
-            .fontSize(14)
-            .fontColor('#1F2421')
-            .fontWeight(FontWeight.Medium)
-            .margin({ bottom: 6 });
-          TextInput({ placeholder: '请输入体重' })
-            .type(InputType.Number)
-            .height(48)
-            .fontSize(16)
-            .fontColor('#1F2421')
-            .placeholderColor('#999999')
-            .backgroundColor('#FFFFFF')
-            .borderRadius(8)
-            .border({ width: 1, color: '#E0E0E0' })
-            .padding({ left: 12, right: 12 })
-            .width('100%')
-            .onChange((value: string) => {
-              this.patientWeight = parseFloat(value) || 0;
-              this.calculate();
-            });
-        }
-        .layoutWeight(1)
-        .margin({ left: 12 });
+        InputRow({ label: '身高 (cm)', placeholder: '请输入身高', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.patientHeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+        InputRow({ label: '体重 (kg)', placeholder: '请输入体重', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.patientWeight = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
       }
       .width('100%')
       .margin({ bottom: 16 });
@@ -139,65 +97,14 @@ export struct Nrs2002Calculator {
       Column() {
         Text('体重下降程度')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          Button('无')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'none' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'none' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'none' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.weightLoss = 'none';
-              this.calculate();
-            });
-          Button('>5%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'mild' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'mild' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'mild' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.weightLoss = 'mild';
-              this.calculate();
-            });
-          Button('>10%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'mod' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'mod' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'mod' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.weightLoss = 'mod';
-              this.calculate();
-            });
-          Button('>15%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.weightLoss === 'severe' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.weightLoss === 'severe' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.weightLoss === 'severe' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.weightLoss = 'severe';
-              this.calculate();
-            });
+          OptionChip({ label: '无', selected: this.weightLoss === 'none', fontSize: 12, bold: true, onChipClick: () => { this.weightLoss = 'none'; this.calculate(); } }).layoutWeight(1);
+          OptionChip({ label: '>5%', selected: this.weightLoss === 'mild', fontSize: 12, bold: true, onChipClick: () => { this.weightLoss = 'mild'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+          OptionChip({ label: '>10%', selected: this.weightLoss === 'mod', fontSize: 12, bold: true, onChipClick: () => { this.weightLoss = 'mod'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+          OptionChip({ label: '>15%', selected: this.weightLoss === 'severe', fontSize: 12, bold: true, onChipClick: () => { this.weightLoss = 'severe'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
         }
         .width('100%');
       }
@@ -207,65 +114,14 @@ export struct Nrs2002Calculator {
       Column() {
         Text('进食量 (占正常饮食比例)')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          Button('正常')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'none' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'none' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'none' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.intake = 'none';
-              this.calculate();
-            });
-          Button('>50%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'mild' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'mild' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'mild' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.intake = 'mild';
-              this.calculate();
-            });
-          Button('25-50%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'mod' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'mod' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'mod' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.intake = 'mod';
-              this.calculate();
-            });
-          Button('<25%')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.intake === 'severe' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.intake === 'severe' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.intake === 'severe' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 4 })
-            .onClick(() => {
-              this.intake = 'severe';
-              this.calculate();
-            });
+          OptionChip({ label: '正常', selected: this.intake === 'none', fontSize: 12, bold: true, onChipClick: () => { this.intake = 'none'; this.calculate(); } }).layoutWeight(1);
+          OptionChip({ label: '>50%', selected: this.intake === 'mild', fontSize: 12, bold: true, onChipClick: () => { this.intake = 'mild'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+          OptionChip({ label: '25-50%', selected: this.intake === 'mod', fontSize: 12, bold: true, onChipClick: () => { this.intake = 'mod'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+          OptionChip({ label: '<25%', selected: this.intake === 'severe', fontSize: 12, bold: true, onChipClick: () => { this.intake = 'severe'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
         }
         .width('100%');
       }
@@ -275,51 +131,13 @@ export struct Nrs2002Calculator {
       Column() {
         Text('疾病严重度')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          Button('无/轻')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.disease === 'none' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.disease === 'none' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.disease === 'none' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.disease = 'none';
-              this.calculate();
-            });
-          Button('中度')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.disease === 'moderate' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.disease === 'moderate' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.disease === 'moderate' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 6 })
-            .onClick(() => {
-              this.disease = 'moderate';
-              this.calculate();
-            });
-          Button('重度')
-            .fontSize(12)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.disease === 'severe' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.disease === 'severe' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.disease === 'severe' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(44)
-            .layoutWeight(1)
-            .margin({ left: 6 })
-            .onClick(() => {
-              this.disease = 'severe';
-              this.calculate();
-            });
+          OptionChip({ label: '无/轻', selected: this.disease === 'none', fontSize: 12, bold: true, onChipClick: () => { this.disease = 'none'; this.calculate(); } }).layoutWeight(1);
+          OptionChip({ label: '中度', selected: this.disease === 'moderate', fontSize: 12, bold: true, onChipClick: () => { this.disease = 'moderate'; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
+          OptionChip({ label: '重度', selected: this.disease === 'severe', fontSize: 12, bold: true, onChipClick: () => { this.disease = 'severe'; this.calculate(); } }).layoutWeight(1).margin({ left: 6 });
         }
         .width('100%');
       }
@@ -329,118 +147,17 @@ export struct Nrs2002Calculator {
       Column() {
         Text('年龄 ≥ 70 岁')
           .fontSize(14)
-          .fontColor('#1F2421')
+          .fontColor(AppColors.textPrimary)
           .fontWeight(FontWeight.Medium)
           .margin({ bottom: 6 });
         Row() {
-          Button('否')
-            .fontSize(15)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.ageAdj === 0 ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.ageAdj === 0 ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.ageAdj === 0 ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(48)
-            .layoutWeight(1)
-            .onClick(() => {
-              this.ageAdj = 0;
-              this.calculate();
-            });
-          Button('是')
-            .fontSize(15)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.ageAdj === 1 ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.ageAdj === 1 ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.ageAdj === 1 ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8)
-            .height(48)
-            .layoutWeight(1)
-            .margin({ left: 12 })
-            .onClick(() => {
-              this.ageAdj = 1;
-              this.calculate();
-            });
+          OptionChip({ label: '否', selected: this.ageAdj === 0, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.ageAdj = 0; this.calculate(); } }).layoutWeight(1);
+          OptionChip({ label: '是', selected: this.ageAdj === 1, fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.ageAdj = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }
         .width('100%');
       }
       .width('100%')
       .margin({ bottom: 16 });
-    }
-    .padding(16)
-    .backgroundColor('#FFFFFF')
-    .borderRadius(12)
-    .width('100%')
-    .margin({ bottom: 16 });
-  }
-
-  @Builder
-  ResultCard() {
-    Column() {
-      Row() {
-        Column() {
-          Text('NRS-2002')
-            .fontSize(12)
-            .fontColor('#5F6654')
-            .letterSpacing(1.5)
-            .fontWeight(FontWeight.Medium);
-          Text(this.result!.value !== null ? 
-            `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
-            .fontSize(32)
-            .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
-            .margin({ top: 8 });
-          Text(this.result!.tier)
-            .fontSize(13)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(this.getTierTextColor(this.result!.tierClass))
-            .backgroundColor(this.getTierBgColor(this.result!.tierClass))
-            .borderRadius(20)
-            .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-            .margin({ top: 8 });
-        }
-        .alignItems(HorizontalAlign.Start)
-        .layoutWeight(1);
-
-        Column() {
-          Text(this.result!.footnote)
-            .fontSize(14)
-            .fontColor('#4A5247')
-            .lineHeight(22);
-        }
-        .layoutWeight(1)
-        .alignItems(HorizontalAlign.Start);
-      }
-      .width('100%');
-    }
-    .padding(16)
-    .backgroundColor('#FFFFFF')
-    .borderRadius(12)
-    .width('100%');
-  }
-
-  private getTierTextColor(tierClass: string): ResourceColor {
-    switch (tierClass) {
-      case 'tier-ok':
-        return '#3D6B4F';
-      case 'tier-warn':
-        return '#C8881A';
-      case 'tier-danger':
-        return '#B1452A';
-      default:
-        return '#5F6654';
-    }
-  }
-
-  private getTierBgColor(tierClass: string): ResourceColor {
-    switch (tierClass) {
-      case 'tier-ok':
-        return '#3D6B4F';
-      case 'tier-warn':
-        return '#C8881A';
-      case 'tier-danger':
-        return '#B1452A';
-      default:
-        return '#F5F5F5';
     }
   }
 }

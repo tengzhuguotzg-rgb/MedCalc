@@ -94,6 +94,9 @@ export class ImageStore {
     if (uri.indexOf('.jpeg') >= 0 || uri.indexOf('.jpg') >= 0) {
       return 'jpg';
     }
+    if (uri.indexOf('.pdf') >= 0) {
+      return 'pdf';
+    }
     return 'jpg';
   }
 

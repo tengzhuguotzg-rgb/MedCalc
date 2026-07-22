@@ -7,6 +7,7 @@ const KEY_FAVORITES: string = 'favorites';
 const KEY_LAST_CALC: string = 'lastCalculator';
 const KEY_LLM_MODELS: string = 'llmModels';
 const KEY_SELECTED_LLM_ID: string = 'selectedLlmId';
+const KEY_THEME_MODE: string = 'themeMode';
 
 class LlmModelRecord {
   id: string = '';
@@ -189,5 +190,13 @@ export class PreferencesService {
 
   getDiagnosisKbData(patientId: string, ruleId: string): string {
     return this.getSync('kb_' + patientId + '_' + ruleId, '');
+  }
+
+  saveThemeMode(mode: string): void {
+    this.putSync(KEY_THEME_MODE, mode);
+  }
+
+  getThemeMode(): string {
+    return this.getSync(KEY_THEME_MODE, 'system');
   }
 }

@@ -1,3 +1,5 @@
+import { AppColors } from '../utils/AppColors';
+
 export interface CalcResult {
   value: number | null;
   unit: string;
@@ -28,28 +30,28 @@ export function getTierClass(tier: string): string {
   return 'tier-info';
 }
 
-export function getTierColor(tierClass: string): string {
+export function getTierColor(tierClass: string): ResourceStr {
   if (tierClass === 'tier-ok') {
-    return '#3D6B4F';
+    return AppColors.tierOk;
   }
   if (tierClass === 'tier-warn') {
-    return '#C8881A';
+    return AppColors.tierWarn;
   }
   if (tierClass === 'tier-danger') {
-    return '#B1452A';
+    return AppColors.tierDanger;
   }
-  return '#5F6654';
+  return AppColors.tierInfo;
 }
 
-export function getTierBgColor(tierClass: string): string {
+export function getTierBgColor(tierClass: string): ResourceStr {
   if (tierClass === 'tier-ok') {
-    return '#E8F5E9';
+    return AppColors.tierOkBg;
   }
   if (tierClass === 'tier-warn') {
-    return '#FFF8E1';
+    return AppColors.tierWarnBg;
   }
   if (tierClass === 'tier-danger') {
-    return '#FFEBEE';
+    return AppColors.tierDangerBg;
   }
-  return '#F5F5F5';
+  return AppColors.tierInfoBg;
 }

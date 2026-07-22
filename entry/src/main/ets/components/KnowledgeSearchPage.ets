@@ -1,8 +1,12 @@
 import { KnowledgeService, SearchResult, KnowledgePage, KnowledgeDirEntry, GroupedPageEntry } from '../services/KnowledgeService';
 import {
   MarkdownLine, TocEntry, CalloutStyle, AnnotationBadge,
-  parseKbMarkdown, extractToc, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
+  parseKbMarkdown, extractTocFromLines, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
+import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
+import { componentUtils } from '@kit.ArkUI';
+import { hilog } from '@kit.PerformanceAnalysisKit';
 
 interface CrumbItem {
   label: string;
@@ -12,12 +16,16 @@ interface CrumbItem {
 
 @Component
 export struct KnowledgeSearchPage {
+  onNavDepthChanged: (depth: number) => void = () => {};
+  @Watch('onBackAction') @Prop backAction: number = 0;
+  private lastBackAction: number = 0;
+  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
   @State searchKeyword: string = '';
   @State searchResults: SearchResult[] = [];
   @State dirEntries: KnowledgeDirEntry[] = [];
   @State groupedPages: GroupedPageEntry[] = [];
   @State currentCategoryName: string = '';
-  @Watch('syncNavDepth') @State readingPage: KnowledgePage | null = null;
+  @Watch('notifyNavDepth') @State readingPage: KnowledgePage | null = null;
   @State readingPath: string = '';
   @State pageNavStack: string[] = [];
   @State relatedPages: SearchResult[] = [];
@@ -25,14 +33,11 @@ export struct KnowledgeSearchPage {
   @State isPageLoading: boolean = false;
   @State isLoadingCategory: boolean = false;
   @State isKbIniting: boolean = true;
-  @Watch('syncNavDepth') @State browseMode: string = 'root';
+  @Watch('notifyNavDepth') @State browseMode: string = 'root';
   @State markdownLines: MarkdownLine[] = [];
   @State wikilinks: string[] = [];
   @State tocEntries: TocEntry[] = [];
   @State showToc: boolean = false;
-  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
-  @Watch('onKbBackFlagChanged') @StorageLink('kbBackFlag') kbBackFlag: number = 0;
-  private lastKbBackFlag: number = 0;
 
   private kbService: KnowledgeService = KnowledgeService.getInstance();
   private pageScroller: Scroller = new Scroller();
@@ -41,7 +46,7 @@ export struct KnowledgeSearchPage {
     this.waitForInit();
   }
 
-  syncNavDepth() {
+  getNavDepth(): number {
     let depth = 0;
     if (this.browseMode === 'category') {
       depth = 1;
@@ -49,30 +54,18 @@ export struct KnowledgeSearchPage {
     if (this.readingPage !== null) {
       depth = 2;
     }
-    AppStorage.setOrCreate<number>('kbNavDepth', depth);
+    return depth;
   }
 
-  onKbBackFlagChanged() {
-    if (this.kbBackFlag !== this.lastKbBackFlag) {
-      this.lastKbBackFlag = this.kbBackFlag;
+  notifyNavDepth() {
+    this.onNavDepthChanged(this.getNavDepth());
+  }
+
+  onBackAction() {
+    if (this.backAction !== this.lastBackAction) {
+      this.lastBackAction = this.backAction;
       this.navigateBack();
     }
-  }
-
-  navigateBack(): boolean {
-    if (this.readingPage !== null) {
-      this.closeReader();
-      this.syncNavDepth();
-      return true;
-    }
-    if (this.browseMode === 'category') {
-      this.browseMode = 'root';
-      this.groupedPages = [];
-      this.currentCategoryName = '';
-      this.syncNavDepth();
-      return true;
-    }
-    return false;
   }
 
   onKbNavigate() {
@@ -81,6 +74,22 @@ export struct KnowledgeSearchPage {
       AppStorage.setOrCreate<string>('kbNavigatePath', '');
       this.openPage(path);
     }
+  }
+
+  navigateBack(): boolean {
+    if (this.readingPage !== null) {
+      this.closeReader();
+      this.notifyNavDepth();
+      return true;
+    }
+    if (this.browseMode === 'category') {
+      this.browseMode = 'root';
+      this.groupedPages = [];
+      this.currentCategoryName = '';
+      this.notifyNavDepth();
+      return true;
+    }
+    return false;
   }
 
   async waitForInit() {
@@ -139,7 +148,7 @@ export struct KnowledgeSearchPage {
     this.relatedPages = [];
     this.showToc = false;
     this.searchKeyword = tag;
-    this.syncNavDepth();
+    this.notifyNavDepth();
     this.doSearch();
   }
 
@@ -154,7 +163,7 @@ export struct KnowledgeSearchPage {
       this.readingPath = path;
       this.markdownLines = parseKbMarkdown(page.content);
       this.wikilinks = this.kbService.extractWikilinks(page.content);
-      this.tocEntries = extractToc(page.content);
+      this.tocEntries = extractTocFromLines(this.markdownLines);
       this.showToc = false;
       this.relatedPages = await this.kbService.getRelatedPages(path, 5);
     }
@@ -171,7 +180,7 @@ export struct KnowledgeSearchPage {
           this.readingPath = prevPath;
           this.markdownLines = parseKbMarkdown(p.content);
           this.wikilinks = this.kbService.extractWikilinks(p.content);
-          this.tocEntries = extractToc(p.content);
+          this.tocEntries = extractTocFromLines(this.markdownLines);
         }
       });
     } else {
@@ -204,9 +213,8 @@ export struct KnowledgeSearchPage {
     this.openPage(resolvedPath);
   }
 
-  getCategoryColor(name: string): string {
-    // 品牌大地色系：深绿 / 墨绿 / 灰绿 / 暖棕
-    const colors: string[] = ['#1F3D2F', '#3A5F4F', '#5F6654', '#8B6B4A'];
+  getCategoryColor(name: string): ResourceStr {
+    const colors: ResourceStr[] = [AppColors.primary, AppColors.kbDeepGreen, AppColors.textSecondary, AppColors.kbWarmBrown];
     let hash = 0;
     for (let i = 0; i < name.length; i++) {
       hash = (hash * 31 + name.charCodeAt(i)) % colors.length;
@@ -336,7 +344,7 @@ export struct KnowledgeSearchPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F4F1EA');
+    .backgroundColor(AppColors.background);
   }
 
   @Builder
@@ -359,9 +367,9 @@ export struct KnowledgeSearchPage {
   @Builder
   SearchBar() {
     Row() {
-      Search({ value: this.searchKeyword, placeholder: '搜索疾病、指南、关键词...' })
+      Search({ value: this.searchKeyword, placeholder: $r('app.string.kb_search_placeholder') })
         .width('100%')
-        .searchButton('搜索')
+        .searchButton($r('app.string.kb_search_btn'))
         .onChange((value: string) => {
           this.searchKeyword = value;
           if (value.trim().length === 0) {
@@ -373,17 +381,17 @@ export struct KnowledgeSearchPage {
     }
     .width('100%')
     .padding({ left: 12, right: 12, top: 8, bottom: 4 })
-    .backgroundColor('#FFFFFF');
+    .backgroundColor(AppColors.card);
   }
 
   @Builder
   SearchResultsView() {
     if (this.isSearching) {
       Column() {
-        LoadingProgress().width(36).height(36).color('#5F6654');
-        Text('搜索中...')
+        LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
+        Text($r('app.string.kb_searching_status'))
           .fontSize(13)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 8 });
       }
       .width('100%')
@@ -391,12 +399,12 @@ export struct KnowledgeSearchPage {
       .justifyContent(FlexAlign.Center);
     } else if (this.searchResults.length === 0) {
       Column() {
-        Text('未找到相关内容')
+         Text($r('app.string.kb_no_results'))
           .fontSize(15)
-          .fontColor('#5F6654');
-        Text('试试其他关键词，如"脓毒症""ARDS""镇静"')
+          .fontColor(AppColors.textSecondary);
+         Text($r('app.string.kb_no_results_hint'))
           .fontSize(12)
-          .fontColor('#B0B0A8')
+          .fontColor(AppColors.textFaint)
           .margin({ top: 6 });
       }
       .width('100%')
@@ -406,7 +414,7 @@ export struct KnowledgeSearchPage {
       Column() {
         Text('找到 ' + this.searchResults.length + ' 条结果')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .width('100%')
           .padding({ left: 16, top: 8, bottom: 4 });
 
@@ -430,14 +438,14 @@ export struct KnowledgeSearchPage {
       Row() {
         Text(this.getPathCategory(sr.path))
           .fontSize(10)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#5F6654')
+          .fontColor(AppColors.onPrimary)
+          .backgroundColor(AppColors.textSecondary)
           .borderRadius(3)
           .padding({ left: 5, right: 5, top: 1, bottom: 1 });
         if (sr.sourceInfo.length > 0) {
           Text(sr.sourceInfo)
             .fontSize(10)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .maxLines(1)
             .margin({ left: 6 })
             .layoutWeight(1);
@@ -450,7 +458,7 @@ export struct KnowledgeSearchPage {
       Text(this.getSearchResultTitle(sr))
         .fontSize(15)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .maxLines(2)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .width('100%');
@@ -458,7 +466,7 @@ export struct KnowledgeSearchPage {
       if (sr.snippet.length > 0) {
         Text(stripMarkdownInline(sr.snippet))
           .fontSize(12)
-          .fontColor('#6B6F5E')
+          .fontColor(AppColors.textSecondary)
           .maxLines(3)
           .margin({ top: 4 })
           .width('100%');
@@ -466,7 +474,7 @@ export struct KnowledgeSearchPage {
     }
     .width('100%')
     .padding(12)
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(10)
     .margin({ bottom: 8 })
     .shadow({ radius: 1, color: '#1A000000', offsetY: 1 })
@@ -482,10 +490,10 @@ export struct KnowledgeSearchPage {
   RootBrowseView() {
     if (this.isKbIniting) {
       Column() {
-        LoadingProgress().width(36).height(36).color('#5F6654');
-        Text('知识库加载中...')
+        LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
+        Text($r('app.string.kb_initing'))
           .fontSize(13)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 8 });
       }
       .width('100%')
@@ -493,12 +501,12 @@ export struct KnowledgeSearchPage {
       .justifyContent(FlexAlign.Center);
     } else if (this.dirEntries.length === 0) {
       Column() {
-        Text('知识库为空')
+         Text($r('app.string.kb_empty'))
           .fontSize(15)
-          .fontColor('#5F6654');
-        Text('请检查知识库数据是否已正确部署')
+          .fontColor(AppColors.textSecondary);
+         Text($r('app.string.kb_empty_hint'))
           .fontSize(12)
-          .fontColor('#B0B0A8')
+          .fontColor(AppColors.textFaint)
           .margin({ top: 6 });
       }
       .width('100%')
@@ -530,16 +538,16 @@ export struct KnowledgeSearchPage {
     Column() {
       Text(this.getEntryLabel(entry))
         .fontSize(this.getEntryLabel(entry).length > 1 ? 16 : 22)
-        .fontColor('#F4F1EA')
+        .fontColor(AppColors.background)
         .fontWeight(FontWeight.Bold)
         .width(44)
-        .height(44)
+        .height(AppDimens.touchTarget)
         .borderRadius(10)
         .backgroundColor(this.getCategoryColor(entry.name))
         .textAlign(TextAlign.Center);
       Text(entry.name)
         .fontSize(12)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .maxLines(2)
         .textOverflow({ overflow: TextOverflow.Ellipsis })
         .margin({ top: 6 })
@@ -559,7 +567,7 @@ export struct KnowledgeSearchPage {
       Row() {
         Text('\u2190')
           .fontSize(20)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .padding({ right: 12 })
           .onClick(() => {
             this.browseMode = 'root';
@@ -569,19 +577,19 @@ export struct KnowledgeSearchPage {
         Text(this.currentCategoryName)
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1);
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 10, bottom: 10 })
-      .backgroundColor('#FFFFFF');
+      .backgroundColor(AppColors.card);
 
       if (this.isLoadingCategory) {
         Column() {
-          LoadingProgress().width(36).height(36).color('#5F6654');
-          Text('加载中...')
+          LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
+           Text($r('app.string.kb_loading'))
             .fontSize(13)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ top: 8 });
         }
         .width('100%')
@@ -610,14 +618,14 @@ export struct KnowledgeSearchPage {
           Text(groupName)
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#FFFFFF')
+            .fontColor(AppColors.onPrimary)
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
             .borderRadius(4)
             .backgroundColor(this.getCategoryColor(this.currentCategoryName + '/' + groupName));
           if (this.getGroupSourceInfo(groupName).length > 0) {
             Text(this.getGroupSourceInfo(groupName))
               .fontSize(11)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ left: 8 })
               .layoutWeight(1);
           }
@@ -625,7 +633,7 @@ export struct KnowledgeSearchPage {
           Text(this.currentCategoryName)
             .fontSize(14)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#FFFFFF')
+            .fontColor(AppColors.onPrimary)
             .padding({ left: 10, right: 10, top: 4, bottom: 4 })
             .borderRadius(4)
             .backgroundColor(this.getCategoryColor(this.currentCategoryName));
@@ -649,7 +657,7 @@ export struct KnowledgeSearchPage {
       Column() {
         Text(stripMarkdownInline(page.title))
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium)
           .maxLines(2)
           .textOverflow({ overflow: TextOverflow.Ellipsis })
@@ -657,7 +665,7 @@ export struct KnowledgeSearchPage {
         if (page.summary.length > 0) {
           Text(page.summary)
             .fontSize(11)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .maxLines(2)
             .margin({ top: 2 })
             .width('100%');
@@ -665,7 +673,7 @@ export struct KnowledgeSearchPage {
         if (page.sourceInfo.length > 0 && page.groupName.length > 0) {
           Text(page.sourceInfo)
             .fontSize(10)
-            .fontColor('#9B9E8E')
+            .fontColor(AppColors.textFaint)
             .maxLines(1)
             .margin({ top: 1 })
             .width('100%');
@@ -675,11 +683,11 @@ export struct KnowledgeSearchPage {
 
       Text('\u203A')
         .fontSize(18)
-        .fontColor('#B0B0A8');
+        .fontColor(AppColors.textFaint);
     }
     .width('100%')
     .padding({ left: 12, right: 12, top: 10, bottom: 10 })
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .borderRadius(8)
     .margin({ bottom: 4 })
     .onClick(() => { this.openPage(page.path); });
@@ -701,7 +709,7 @@ export struct KnowledgeSearchPage {
       Row() {
         Text('\u2190')
           .fontSize(20)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .padding({ right: 8 })
           .onClick(() => { this.closeReader(); });
 
@@ -709,7 +717,7 @@ export struct KnowledgeSearchPage {
           Text(this.getPageTitle())
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis });
           Scroll() {
@@ -718,11 +726,11 @@ export struct KnowledgeSearchPage {
                 if (index > 0) {
                   Text(' \u203A ')
                     .fontSize(10)
-                    .fontColor('#B0B0A8');
+                    .fontColor(AppColors.textFaint);
                 }
                 Text(item.label)
                   .fontSize(10)
-                  .fontColor(item.clickable ? '#2B6CB0' : '#5F6654')
+                  .fontColor(item.clickable ? AppColors.primary : AppColors.textSecondary)
                   .onClick(() => {
                     if (item.clickable) {
                       this.openPage(item.targetPath.endsWith('.md') ? item.targetPath : item.targetPath + '/index.md');
@@ -740,20 +748,20 @@ export struct KnowledgeSearchPage {
         if (this.tocEntries.length > 0) {
           Text('\u2630')
             .fontSize(18)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .padding({ left: 8 })
             .onClick(() => { this.showToc = !this.showToc; });
         }
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF');
+      .backgroundColor(AppColors.card);
 
       if (this.showToc && this.tocEntries.length > 0) {
         this.TocDropdown();
       }
     }
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
     .shadow({ radius: 2, color: '#0A000000', offsetY: 1 });
   }
 
@@ -768,18 +776,35 @@ export struct KnowledgeSearchPage {
             }
             Text('\u2022')
               .fontSize(10)
-              .fontColor('#5F6654')
+              .fontColor(AppColors.textSecondary)
               .margin({ right: 6 });
             Text(entry.text)
               .fontSize(12)
-              .fontColor('#3A3F35')
+              .fontColor(AppColors.textBody)
               .maxLines(1)
               .textOverflow({ overflow: TextOverflow.Ellipsis })
               .layoutWeight(1);
           }
           .width('100%')
           .padding({ top: 4, bottom: 4 })
-          .onClick(() => { this.showToc = false; });
+          .onClick(() => {
+            this.showToc = false;
+            const targetId = entry.anchor;
+            setTimeout(() => {
+              try {
+                const scrollRect = componentUtils.getRectangleById('kb_scroll');
+                const targetRect = componentUtils.getRectangleById(targetId);
+                const cur = this.pageScroller.currentOffset();
+                this.pageScroller.scrollTo({
+                  xOffset: 0,
+                  yOffset: cur.yOffset + targetRect.windowOffset.y - scrollRect.windowOffset.y,
+                  animation: { duration: 300, curve: Curve.EaseInOut }
+                });
+              } catch (e) {
+                hilog.warn(0x0001, 'KB', `TOC scroll failed for ${targetId}`);
+              }
+            }, 100);
+          });
         }, (entry: TocEntry) => entry.anchor);
       }
       .padding({ left: 12, right: 12, top: 4, bottom: 8 });
@@ -791,7 +816,7 @@ export struct KnowledgeSearchPage {
   ReaderContent() {
     if (this.isPageLoading) {
       Column() {
-        LoadingProgress().width(36).height(36).color('#5F6654');
+        LoadingProgress().width(36).height(36).color(AppColors.textSecondary);
       }
       .width('100%')
       .layoutWeight(1)
@@ -803,19 +828,27 @@ export struct KnowledgeSearchPage {
             Row() {
               Text(this.readingPage.sourceInfo)
                 .fontSize(11)
-                .fontColor('#5F6654')
+                .fontColor(AppColors.textSecondary)
                 .layoutWeight(1)
                 .maxLines(2);
             }
             .width('100%')
             .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-            .backgroundColor('#FFF8E1')
+            .backgroundColor(AppColors.tierWarnBg)
             .borderRadius(6)
             .margin({ bottom: 8 });
           }
 
           ForEach(this.markdownLines, (ml: MarkdownLine) => {
-            this.MarkdownLineView(ml);
+            if (ml.anchorId.length > 0) {
+              Column() {
+                this.MarkdownLineView(ml);
+              }
+              .width('100%')
+              .id(ml.anchorId);
+            } else {
+              this.MarkdownLineView(ml);
+            }
           }, (ml: MarkdownLine, index: number) => index.toString());
 
           if (this.wikilinks.length > 0 || this.relatedPages.length > 0) {
@@ -824,7 +857,8 @@ export struct KnowledgeSearchPage {
         }
         .padding(12);
       }
-      .layoutWeight(1);
+      .layoutWeight(1)
+      .id('kb_scroll');
     }
   }
 
@@ -835,12 +869,12 @@ export struct KnowledgeSearchPage {
         Text(stripMarkdownInline(ml.text))
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .width('100%');
         Row()
           .width(40)
           .height(3)
-          .backgroundColor('#C8881A')
+          .backgroundColor(AppColors.tierWarn)
           .borderRadius(2)
           .margin({ top: 4 });
       }
@@ -850,23 +884,23 @@ export struct KnowledgeSearchPage {
       Text(stripMarkdownInline(ml.text))
         .fontSize(17)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .width('100%')
         .margin({ top: 14, bottom: 6 })
         .padding({ bottom: 4, left: 8 })
-        .border({ width: { left: 3, right: 0, top: 0, bottom: 0 }, color: '#4A7C6F' });
+        .border({ width: { left: 3, right: 0, top: 0, bottom: 0 }, color: AppColors.kbAccent });
     } else if (ml.type === 'h3') {
       Text(stripMarkdownInline(ml.text))
         .fontSize(15)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#3A5F4F')
+        .fontColor(AppColors.kbDeepGreen)
         .width('100%')
         .margin({ top: 10, bottom: 4 });
     } else if (ml.type === 'h4') {
       Text(stripMarkdownInline(ml.text))
         .fontSize(14)
         .fontWeight(FontWeight.Medium)
-        .fontColor('#4A6B5A')
+        .fontColor(AppColors.kbAccent)
         .width('100%')
         .margin({ top: 8, bottom: 3 });
     } else if (ml.type === 'callout') {
@@ -881,11 +915,11 @@ export struct KnowledgeSearchPage {
       Row() {
         Text('\u2022')
           .fontSize(10)
-          .fontColor('#4A7C6F')
+          .fontColor(AppColors.kbAccent)
           .margin({ right: 6, top: 2 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(13)
-          .fontColor('#3A3F35')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1);
       }
       .width('100%')
@@ -895,12 +929,12 @@ export struct KnowledgeSearchPage {
         Row()
           .width(3)
           .height(14)
-          .backgroundColor('#C8881A')
+          .backgroundColor(AppColors.tierWarn)
           .borderRadius(2)
           .margin({ top: 4, bottom: 4 });
         Text(stripMarkdownInline(ml.text))
           .fontSize(12)
-          .fontColor('#5A5F4E')
+          .fontColor(AppColors.textBody)
           .layoutWeight(1)
           .padding({ left: 8 });
       }
@@ -910,7 +944,7 @@ export struct KnowledgeSearchPage {
       Row()
         .width('100%')
         .height(1)
-        .backgroundColor('#E0DCC8')
+        .backgroundColor(AppColors.divider)
         .margin({ top: 10, bottom: 10 });
     } else if (ml.type === 'blank') {
       Row().height(4);
@@ -918,63 +952,79 @@ export struct KnowledgeSearchPage {
       Row();
     } else if (ml.type === 'tableHeader') {
       if (ml.cells.length > 0) {
-        Row() {
-          ForEach(ml.cells, (cell: string, idx: number) => {
-            Text(cell)
-              .fontSize(11)
-              .fontColor('#1F3D2F')
-              .fontWeight(FontWeight.Bold)
-              .layoutWeight(1)
-              .padding({ left: 4, right: 4, top: 3, bottom: 3 });
-          }, (cell: string, idx: number) => idx.toString());
-        }
-        .width('100%')
-        .backgroundColor('#E8E6DA')
-        .borderRadius(2);
-      } else {
-        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
-          .fontSize(11)
-          .fontColor('#1F3D2F')
-          .fontWeight(FontWeight.Bold)
-          .fontFamily('monospace')
-          .width('100%')
-          .padding({ left: 6, right: 6, top: 3, bottom: 3 })
-          .backgroundColor('#E8E6DA')
+        Scroll() {
+          Row() {
+            ForEach(ml.cells, (cell: string, idx: number) => {
+              Text(cell)
+                .fontSize(11)
+                .fontColor(AppColors.primary)
+                .fontWeight(FontWeight.Bold)
+                .layoutWeight(1)
+                .padding({ left: 4, right: 4, top: 3, bottom: 3 });
+            }, (cell: string, idx: number) => idx.toString());
+          }
+          .backgroundColor(AppColors.fillBeige)
           .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
+      } else {
+        Scroll() {
+          Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+            .fontSize(11)
+            .fontColor(AppColors.primary)
+            .fontWeight(FontWeight.Bold)
+            .fontFamily('monospace')
+            .padding({ left: 6, right: 6, top: 3, bottom: 3 })
+            .backgroundColor(AppColors.fillBeige)
+            .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
       }
     } else if (ml.type === 'table') {
       if (ml.cells.length > 0) {
-        Row() {
-          ForEach(ml.cells, (cell: string, idx: number) => {
-            Text(cell)
-              .fontSize(11)
-              .fontColor('#4A5247')
-              .layoutWeight(1)
-              .padding({ left: 4, right: 4, top: 2, bottom: 2 });
-          }, (cell: string, idx: number) => idx.toString());
-        }
-        .width('100%')
-        .backgroundColor(ml.tableRowIndex % 2 === 1 ? '#F1EEE2' : '#FAFAF5')
-        .borderRadius(2);
-      } else {
-        Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
-          .fontSize(11)
-          .fontColor('#4A5247')
-          .fontFamily('monospace')
-          .width('100%')
-          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          .backgroundColor('#FAFAF5')
+        Scroll() {
+          Row() {
+            ForEach(ml.cells, (cell: string, idx: number) => {
+              Text(cell)
+                .fontSize(11)
+                .fontColor(AppColors.textBody)
+                .layoutWeight(1)
+                .padding({ left: 4, right: 4, top: 2, bottom: 2 });
+            }, (cell: string, idx: number) => idx.toString());
+          }
+          .backgroundColor(ml.tableRowIndex % 2 === 1 ? AppColors.surfaceMuted : AppColors.surfaceSubtle)
           .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
+      } else {
+        Scroll() {
+          Text(stripTableMarkdown(stripMarkdownInline(ml.text)))
+            .fontSize(11)
+            .fontColor(AppColors.textBody)
+            .fontFamily('monospace')
+            .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+            .backgroundColor(AppColors.surfaceSubtle)
+            .borderRadius(2);
+        }
+        .scrollable(ScrollDirection.Horizontal)
+        .scrollBar(BarState.Off)
+        .width('100%');
       }
     } else if (ml.type === 'tagLine') {
       Flex({ wrap: FlexWrap.Wrap }) {
         ForEach(ml.text.split(/\s+/).filter((t: string): boolean => t.startsWith('#') && t.length > 1), (tag: string) => {
           Text(tag.substring(1))
             .fontSize(11)
-            .fontColor('#1F3D2F')
-            .backgroundColor('#F4F1EA')
-            .borderRadius(12)
-            .border({ width: 1, color: '#E0DCC8' })
+            .fontColor(AppColors.primary)
+            .backgroundColor(AppColors.background)
+            .borderRadius(AppDimens.cardRadius)
+            .border({ width: 1, color: AppColors.divider })
             .padding({ left: 8, right: 8, top: 3, bottom: 3 })
             .margin({ right: 6, bottom: 6 })
             .onClick(() => { this.searchByTag(tag.substring(1)); });
@@ -985,7 +1035,7 @@ export struct KnowledgeSearchPage {
     } else {
       Text(stripMarkdownInline(ml.text))
         .fontSize(13)
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .width('100%')
         .margin({ top: 1, bottom: 1 });
     }
@@ -1011,7 +1061,7 @@ export struct KnowledgeSearchPage {
       if (ml.calloutBody.length > 0) {
         Text(stripMarkdownInline(ml.calloutBody))
           .fontSize(12)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .width('100%')
           .padding({ left: 12, right: 10, top: ml.calloutTitle.length > 0 ? 0 : 8, bottom: 8 });
       }
@@ -1029,13 +1079,13 @@ export struct KnowledgeSearchPage {
       Text(ml.codeContent)
         .fontSize(11)
         .fontFamily('monospace')
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .width('100%');
     }
     .scrollable(ScrollDirection.Horizontal)
     .width('100%')
     .padding(10)
-    .backgroundColor('#F5F5F0')
+    .backgroundColor(AppColors.surfaceMuted)
     .borderRadius(6)
     .margin({ top: 6, bottom: 6 });
   }
@@ -1045,14 +1095,14 @@ export struct KnowledgeSearchPage {
     Row() {
       Text(getAnnotationBadgeInfo(ml.text).keyword)
         .fontSize(11)
-        .fontColor('#FFFFFF')
+        .fontColor(AppColors.onPrimary)
         .backgroundColor(getAnnotationBadgeInfo(ml.text).color)
         .borderRadius(3)
         .padding({ left: 6, right: 6, top: 1, bottom: 1 });
       if (getAnnotationBadgeInfo(ml.text).detail.length > 0) {
         Text(getAnnotationBadgeInfo(ml.text).detail)
           .fontSize(11)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ left: 6 });
       }
     }
@@ -1065,16 +1115,16 @@ export struct KnowledgeSearchPage {
       Row()
         .width(3)
         .height('100%')
-        .backgroundColor('#4A7C6F')
+        .backgroundColor(AppColors.kbAccent)
         .borderRadius(2);
       Text(stripMarkdownInline(ml.text))
         .fontSize(13)
-        .fontColor('#3A3F35')
+        .fontColor(AppColors.textBody)
         .layoutWeight(1)
         .padding({ left: 8, right: 8, top: 6, bottom: 6 });
     }
     .width('100%')
-    .backgroundColor('#EDF5F0')
+    .backgroundColor(AppColors.tierOkBg)
     .borderRadius({ topLeft: 0, bottomLeft: 0, topRight: 6, bottomRight: 6 })
     .margin({ top: 4, bottom: 4 });
   }
@@ -1085,14 +1135,14 @@ export struct KnowledgeSearchPage {
       Row()
         .width('100%')
         .height(1)
-        .backgroundColor('#E0DCC8')
+        .backgroundColor(AppColors.divider)
         .margin({ top: 16, bottom: 12 });
 
       if (this.wikilinks.length > 0) {
-        Text('相关章节')
+         Text($r('app.string.kb_related_sections'))
           .fontSize(13)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .width('100%')
           .margin({ bottom: 8 });
         Flex({ wrap: FlexWrap.Wrap }) {
@@ -1100,10 +1150,10 @@ export struct KnowledgeSearchPage {
             Row() {
               Text(this.getWikilinkDisplayName(link))
                 .fontSize(12)
-                .fontColor('#2B6CB0');
+                .fontColor(AppColors.primary);
             }
-            .backgroundColor('#EBF2FA')
-            .borderRadius(12)
+            .backgroundColor(AppColors.background)
+            .borderRadius(AppDimens.cardRadius)
             .padding({ left: 8, right: 10, top: 4, bottom: 4 })
             .margin({ right: 6, bottom: 6 })
             .onClick(() => { this.handleWikilinkClick(link); });
@@ -1112,10 +1162,10 @@ export struct KnowledgeSearchPage {
       }
 
       if (this.relatedPages.length > 0) {
-        Text('相关指南')
+         Text($r('app.string.kb_related_guidelines'))
           .fontSize(13)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .width('100%')
           .margin({ top: this.wikilinks.length > 0 ? 12 : 0, bottom: 8 });
         Column() {
@@ -1124,25 +1174,25 @@ export struct KnowledgeSearchPage {
               Column() {
                 Text(this.getSearchResultTitle(sr))
                   .fontSize(13)
-                  .fontColor('#1F3D2F')
+                  .fontColor(AppColors.primary)
                   .maxLines(1)
                   .textOverflow({ overflow: TextOverflow.Ellipsis });
                 Text(this.getPathCategory(sr.path) + (sr.sourceInfo.length > 0 ? ' \u00B7 ' + sr.sourceInfo : ''))
                   .fontSize(10)
-                  .fontColor('#5F6654')
+                  .fontColor(AppColors.textSecondary)
                   .maxLines(1)
                   .margin({ top: 1 });
               }
               .layoutWeight(1);
               Text('\u203A')
                 .fontSize(16)
-                .fontColor('#B0B0A8');
+                .fontColor(AppColors.textFaint);
             }
             .width('100%')
             .padding({ top: 8, bottom: 8, left: 8, right: 8 })
             .borderRadius(6)
             .margin({ bottom: 2 })
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .onClick(() => { this.openPage(sr.path); });
           }, (sr: SearchResult) => sr.path);
         }

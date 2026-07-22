@@ -1,5 +1,6 @@
 import { KnowledgeService, SearchResult } from '../services/KnowledgeService';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
+import { AppColors } from '../utils/AppColors';
 
 @Component
 export struct CalcKbLinks {
@@ -65,11 +66,11 @@ export struct CalcKbLinks {
           Text('指南参考')
             .fontSize(13)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F');
+            .fontColor(AppColors.primary);
           Blank();
           Text(this.expanded ? '收起' : '查看')
             .fontSize(12)
-            .fontColor('#2B6CB0')
+            .fontColor(AppColors.primary)
             .onClick(() => { this.expanded = !this.expanded; });
         }
         .width('100%');
@@ -81,20 +82,20 @@ export struct CalcKbLinks {
                 Column() {
                   Text(this.getResultTitle(sr))
                     .fontSize(12)
-                    .fontColor('#2B6CB0')
+                    .fontColor(AppColors.primary)
                     .maxLines(1)
                     .textOverflow({ overflow: TextOverflow.Ellipsis })
                     .layoutWeight(1);
                   Text(this.getResultCategory(sr) + (sr.sourceInfo.length > 0 ? ' \u00B7 ' + sr.sourceInfo : ''))
                     .fontSize(12)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                     .maxLines(1)
                     .margin({ top: 1 });
                 }
                 .layoutWeight(1);
                 Text('\u203A')
                   .fontSize(14)
-                  .fontColor('#B0B0A8');
+                  .fontColor(AppColors.textFaint);
               }
               .width('100%')
               .padding({ top: 6, bottom: 6, left: 4, right: 4 })
@@ -106,7 +107,7 @@ export struct CalcKbLinks {
         } else {
           Text(this.kbResults.map((sr: SearchResult): string => this.getResultTitle(sr)).join(' \u00B7 '))
             .fontSize(12)
-            .fontColor('#2B6CB0')
+            .fontColor(AppColors.primary)
             .maxLines(2)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
             .margin({ top: 4 })
@@ -115,7 +116,7 @@ export struct CalcKbLinks {
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(8)
       .margin({ top: 8 });
     }

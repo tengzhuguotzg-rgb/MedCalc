@@ -1,3 +1,5 @@
+import { AppColors } from '../utils/AppColors';
+
 export class Patient {
   id: string = '';
   name: string = '';
@@ -109,23 +111,23 @@ export const DATA_DOMAINS: Record<string, string[]> = {
   'ICU评分': ['apache2Score', 'sofaScore', 'icuDay', 'vaso', 'comorb'],
 };
 
-export const DOMAIN_COLORS: Record<string, string> = {
-  '人口学': '#5F6654',
-  '生命体征': '#C8881A',
-  '血气分析': '#2B6CB0',
-  '电解质': '#6B8E23',
-  '肾功能': '#D4760A',
-  '肝功能': '#8B6914',
-  '血液学': '#B1452A',
-  '凝血': '#B1452A',
-  '炎症标志物': '#C0392B',
-  '心肌标志物': '#E74C3C',
-  '神经': '#6B4FA0',
-  '心脏': '#B1452A',
-  '呼吸': '#2B6CB0',
-  '营养': '#3D6B4F',
-  '代谢': '#C8881A',
-  '内分泌': '#9B59B6',
-  '肌肉': '#E67E22',
-  'ICU评分': '#4A5247',
+export const DOMAIN_COLORS: Record<string, ResourceStr> = {
+  '人口学': AppColors.textSecondary,
+  '生命体征': AppColors.tierWarn,
+  '血气分析': AppColors.primary,
+  '电解质': AppColors.domainElectrolyte,
+  '肾功能': AppColors.domainKidney,
+  '肝功能': AppColors.domainLiver,
+  '血液学': AppColors.danger,
+  '凝血': AppColors.danger,
+  '炎症标志物': AppColors.domainInflammation,
+  '心肌标志物': AppColors.domainCardiacMarker,
+  '神经': AppColors.domainNeuro,
+  '心脏': AppColors.danger,
+  '呼吸': AppColors.primary,
+  '营养': AppColors.tierOk,
+  '代谢': AppColors.tierWarn,
+  '内分泌': AppColors.domainEndocrine,
+  '肌肉': AppColors.domainMuscle,
+  'ICU评分': AppColors.textBody,
 };

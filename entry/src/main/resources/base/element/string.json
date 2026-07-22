@@ -11,6 +11,550 @@
     {
       "name": "EntryAbility_label",
       "value": "重症智算"
+    },
+    {
+      "name": "common_cancel",
+      "value": "取消"
+    },
+    {
+      "name": "common_confirm",
+      "value": "确认"
+    },
+    {
+      "name": "common_delete",
+      "value": "删除"
+    },
+    {
+      "name": "common_close",
+      "value": "关闭"
+    },
+    {
+      "name": "common_back",
+      "value": "< 返回"
+    },
+    {
+      "name": "common_edit",
+      "value": "编辑"
+    },
+    {
+      "name": "common_save",
+      "value": "保存"
+    },
+    {
+      "name": "common_add",
+      "value": "添加"
+    },
+    {
+      "name": "common_test",
+      "value": "测试"
+    },
+    {
+      "name": "tab_calculator",
+      "value": "计算器"
+    },
+    {
+      "name": "tab_assistant",
+      "value": "助手"
+    },
+    {
+      "name": "tab_patient",
+      "value": "病历"
+    },
+    {
+      "name": "tab_knowledge",
+      "value": "知识库"
+    },
+    {
+      "name": "tab_settings",
+      "value": "设置"
+    },
+    {
+      "name": "settings_title",
+      "value": "设置"
+    },
+    {
+      "name": "settings_llm_config",
+      "value": "LLM 服务配置"
+    },
+    {
+      "name": "settings_llm_desc",
+      "value": "配置 AI 服务的 API 地址和密钥，计算器和智能助手共用"
+    },
+    {
+      "name": "settings_llm_empty",
+      "value": "暂无 LLM 服务"
+    },
+    {
+      "name": "settings_llm_empty_hint",
+      "value": "请点击下方按钮添加"
+    },
+    {
+      "name": "settings_add_provider",
+      "value": "+ 添加服务商"
+    },
+    {
+      "name": "settings_appearance",
+      "value": "外观"
+    },
+    {
+      "name": "settings_theme_system",
+      "value": "跟随系统"
+    },
+    {
+      "name": "settings_theme_light",
+      "value": "浅色模式"
+    },
+    {
+      "name": "settings_theme_dark",
+      "value": "深色模式"
+    },
+    {
+      "name": "settings_about",
+      "value": "关于"
+    },
+    {
+      "name": "settings_app_name_version",
+      "value": "重症智算 v1.0"
+    },
+    {
+      "name": "settings_app_subtitle",
+      "value": "智能医学评分计算器"
+    },
+    {
+      "name": "settings_model_name",
+      "value": "模型名称"
+    },
+    {
+      "name": "settings_provider",
+      "value": "服务商"
+    },
+    {
+      "name": "settings_api_format",
+      "value": "API 格式"
+    },
+    {
+      "name": "settings_api_key",
+      "value": "API Key"
+    },
+    {
+      "name": "settings_ph_provider",
+      "value": "如 DeepSeek、OpenAI、MiniMax"
+    },
+    {
+      "name": "settings_ph_model",
+      "value": "如 deepseek-chat"
+    },
+    {
+      "name": "settings_ph_api_key",
+      "value": "请输入 API Key"
+    },
+    {
+      "name": "settings_reuse_hint",
+      "value": "将复用该服务商下已有模型的 API 格式、URL 和 Key"
+    },
+    {
+      "name": "settings_model_name_multi",
+      "value": "模型名称（每行一个，可同时添加多个）"
+    },
+    {
+      "name": "patient_list_title",
+      "value": "病历管理"
+    },
+    {
+      "name": "patient_new_btn",
+      "value": "+ 新建"
+    },
+    {
+      "name": "patient_search_hint",
+      "value": "搜索姓名/床号..."
+    },
+    {
+      "name": "patient_empty",
+      "value": "还没有患者记录"
+    },
+    {
+      "name": "patient_empty_hint",
+      "value": "点击右上角新建患者开始"
+    },
+    {
+      "name": "patient_no_alert",
+      "value": "暂无预警"
+    },
+    {
+      "name": "patient_create_title",
+      "value": "新建患者"
+    },
+    {
+      "name": "patient_ph_name",
+      "value": "姓名*"
+    },
+    {
+      "name": "patient_ph_bedno",
+      "value": "床号"
+    },
+    {
+      "name": "patient_ph_age",
+      "value": "年龄"
+    },
+    {
+      "name": "patient_sex",
+      "value": "性别"
+    },
+    {
+      "name": "patient_sex_male",
+      "value": "男"
+    },
+    {
+      "name": "patient_sex_female",
+      "value": "女"
+    },
+    {
+      "name": "patient_create_btn",
+      "value": "创建"
+    },
+    {
+      "name": "patient_delete_confirm_title",
+      "value": "确认删除患者"
+    },
+    {
+      "name": "patient_delete_confirm_msg",
+      "value": "删除后该患者的所有数据、上传记录和预警将被永久清除，无法恢复。"
+    },
+    {
+      "name": "detail_upload_image",
+      "value": "上传图片"
+    },
+    {
+      "name": "detail_upload_pdf",
+      "value": "上传PDF"
+    },
+    {
+      "name": "detail_input_text",
+      "value": "输入文本"
+    },
+    {
+      "name": "detail_manual_input",
+      "value": "手动录入"
+    },
+    {
+      "name": "dashboard_alert",
+      "value": "预警"
+    },
+    {
+      "name": "dashboard_no_alert",
+      "value": "暂无异常预警"
+    },
+    {
+      "name": "dashboard_diagnosis",
+      "value": "诊断"
+    },
+    {
+      "name": "dashboard_no_diagnosis",
+      "value": "暂无诊断"
+    },
+    {
+      "name": "dashboard_data",
+      "value": "结构化数据"
+    },
+    {
+      "name": "dashboard_no_data",
+      "value": "暂无数据，上传报告或手动录入"
+    },
+    {
+      "name": "dashboard_records",
+      "value": "上传记录"
+    },
+    {
+      "name": "dashboard_no_records",
+      "value": "暂无上传记录"
+    },
+    {
+      "name": "dashboard_view_all",
+      "value": "查看全部"
+    },
+    {
+      "name": "alert_detail_title",
+      "value": "预警详情"
+    },
+    {
+      "name": "alert_no_warning",
+      "value": "当前无异常预警"
+    },
+    {
+      "name": "alert_score_warning",
+      "value": "评分预警"
+    },
+    {
+      "name": "alert_lab_warning",
+      "value": "检验预警"
+    },
+    {
+      "name": "diagnosis_detail_title",
+      "value": "诊断详情"
+    },
+    {
+      "name": "diagnosis_add_btn",
+      "value": "+ 添加诊断"
+    },
+    {
+      "name": "diagnosis_group_rule",
+      "value": "确定性"
+    },
+    {
+      "name": "diagnosis_group_user",
+      "value": "自添加"
+    },
+    {
+      "name": "diagnosis_group_partial",
+      "value": "可能性"
+    },
+    {
+      "name": "diagnosis_group_llm_hint",
+      "value": "LLM提示"
+    },
+    {
+      "name": "data_detail_title",
+      "value": "结构化数据"
+    },
+    {
+      "name": "records_detail_title",
+      "value": "上传记录"
+    },
+    {
+      "name": "timeline_title_suffix",
+      "value": "时间线"
+    },
+    {
+      "name": "timeline_no_history",
+      "value": "无历史记录"
+    },
+    {
+      "name": "timeline_report",
+      "value": "报告"
+    },
+    {
+      "name": "timeline_unlink_exam",
+      "value": "未设置"
+    },
+    {
+      "name": "timeline_upload",
+      "value": "上传"
+    },
+    {
+      "name": "dialog_exam_time_title",
+      "value": "设置报告时间"
+    },
+    {
+      "name": "dialog_manual_input_title",
+      "value": "手动录入"
+    },
+    {
+      "name": "dialog_manual_search_hint",
+      "value": "搜索字段名..."
+    },
+    {
+      "name": "dialog_manual_value_hint",
+      "value": "输入数值"
+    },
+    {
+      "name": "dialog_manual_submit",
+      "value": "录入"
+    },
+    {
+      "name": "dialog_delete_title",
+      "value": "确认删除"
+    },
+    {
+      "name": "dialog_delete_record_msg",
+      "value": "删除此记录后，由它提供的数据将被一并删除，预警也将重新计算。"
+    },
+    {
+      "name": "dialog_add_diagnosis_title",
+      "value": "添加诊断"
+    },
+    {
+      "name": "dialog_add_diag_ph_name",
+      "value": "诊断名称"
+    },
+    {
+      "name": "dialog_add_diag_category",
+      "value": "分类"
+    },
+    {
+      "name": "kb_guideline_reference",
+      "value": "指南参考"
+    },
+    {
+      "name": "kb_research",
+      "value": "重搜"
+    },
+    {
+      "name": "kb_collapse",
+      "value": "收起"
+    },
+    {
+      "name": "kb_expand",
+      "value": "展开"
+    },
+    {
+      "name": "kb_fragment",
+      "value": "片段"
+    },
+    {
+      "name": "kb_searching",
+      "value": "搜索指南中..."
+    },
+    {
+      "name": "kb_ready",
+      "value": "已就绪"
+    },
+    {
+      "name": "kb_view_gt",
+      "value": "查看 >"
+    },
+    {
+      "name": "kb_detail_gt",
+      "value": "详情 >"
+    },
+    {
+      "name": "kb_retry_advice",
+      "value": "重试建议"
+    },
+    {
+      "name": "kb_view_guideline_advice",
+      "value": "查看指南建议"
+    },
+    {
+      "name": "kb_no_guideline_advice",
+      "value": "暂无指南建议"
+    },
+    {
+      "name": "kb_low_rel_warning",
+      "value": "⚠️ 低相关性文献"
+    },
+    {
+      "name": "kb_low_rel_hint",
+      "value": "未找到高度相关文献，以下内容可能仅供参考"
+    },
+    {
+      "name": "kb_clinical_keypoints",
+      "value": "临床要点"
+    },
+    {
+      "name": "kb_ai_summary_disclaimer",
+      "value": "以下内容由AI根据指南和教材推荐意见归纳整理，仅供参考，详细内容请展开下方各分类查看原文。"
+    },
+    {
+      "name": "kb_collapse_label",
+      "value": "▲ 收起"
+    },
+    {
+      "name": "kb_expand_label",
+      "value": "▼ 展开"
+    },
+    {
+      "name": "kb_related_sections",
+      "value": "相关章节"
+    },
+    {
+      "name": "kb_related_guidelines",
+      "value": "相关指南"
+    },
+    {
+      "name": "kb_search_placeholder",
+      "value": "搜索疾病、指南、关键词..."
+    },
+    {
+      "name": "kb_search_btn",
+      "value": "搜索"
+    },
+    {
+      "name": "kb_searching_status",
+      "value": "搜索中..."
+    },
+    {
+      "name": "kb_no_results",
+      "value": "未找到相关内容"
+    },
+    {
+      "name": "kb_no_results_hint",
+      "value": "试试其他关键词，如\"脓毒症\"\"ARDS\"\"镇静\""
+    },
+    {
+      "name": "kb_initing",
+      "value": "知识库加载中..."
+    },
+    {
+      "name": "kb_empty",
+      "value": "知识库为空"
+    },
+    {
+      "name": "kb_empty_hint",
+      "value": "请检查知识库数据是否已正确部署"
+    },
+    {
+      "name": "kb_loading",
+      "value": "加载中..."
+    },
+    {
+      "name": "calc_placeholder",
+      "value": "开发中..."
+    },
+    {
+      "name": "calc_placeholder_hint",
+      "value": "此计算器正在移植中，敬请期待"
+    },
+    {
+      "name": "time_just_now",
+      "value": "刚刚"
+    },
+    {
+      "name": "dialog_clear_session_title",
+      "value": "清空会话"
+    },
+    {
+      "name": "dialog_clear_session_msg",
+      "value": "确定要清空当前会话记录吗？此操作不可恢复。"
+    },
+    {
+      "name": "dialog_delete_diagnosis_title",
+      "value": "删除诊断"
+    },
+    {
+      "name": "dialog_delete_diagnosis_msg",
+      "value": "确定要删除此诊断项吗？"
+    },
+    {
+      "name": "dialog_cancel_edit_title",
+      "value": "放弃编辑"
+    },
+    {
+      "name": "dialog_cancel_edit_msg",
+      "value": "当前标注尚未保存，确定放弃吗？"
+    },
+    {
+      "name": "dialog_clear_drawing_title",
+      "value": "清空标注"
+    },
+    {
+      "name": "dialog_clear_drawing_msg",
+      "value": "确定要清空所有标注吗？此操作不可恢复。"
+    },
+    {
+      "name": "dialog_reset_calc_title",
+      "value": "重置计算"
+    },
+    {
+      "name": "dialog_reset_calc_msg",
+      "value": "确定要重置所有输入项吗？"
+    },
+    {
+      "name": "dialog_rediagnose_title",
+      "value": "重新诊断"
+    },
+    {
+      "name": "dialog_rediagnose_msg",
+      "value": "重新诊断将覆盖当前诊断结果，确定继续吗？"
     }
   ]
 }

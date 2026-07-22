@@ -10,6 +10,9 @@ import { pdfService } from '@kit.PDFKit';
 import { ImageEditor } from './ImageEditor';
 import { ImageStore } from '../services/ImageStore';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
+import { showConfirmDialog } from '../utils/ConfirmDialog';
 
 class DataDisplayItem {
   key: string = '';
@@ -74,7 +77,7 @@ export struct AssistantPage {
       this.scroller.scrollToIndex(this.messages.length - 1);
     }).catch((err: Error) => {
       this.loading = false;
-      this.errorMsg = err.message;
+      this.errorMsg = '请求失败，请重试';
     });
   }
 
@@ -233,14 +236,14 @@ export struct AssistantPage {
         Row() {
           Text('⚠ ')
             .fontSize(12)
-            .fontColor('#E76F2C')
+            .fontColor(AppColors.warning)
           Text(this.errorMsg)
             .fontSize(12)
-            .fontColor('#E76F2C')
+            .fontColor(AppColors.warning)
         }
         .width('100%')
         .padding(8)
-        .backgroundColor('#FFF4E0')
+        .backgroundColor(AppColors.tierWarnBg)
       }
 
       List({ space: 12, scroller: this.scroller }) {
@@ -276,12 +279,19 @@ export struct AssistantPage {
      }
      .width('100%')
      .height('100%')
-      .backgroundColor('#F4F1EA')
+      .backgroundColor(AppColors.background)
       .bindSheet($$this.showExpandedEditor, this.ExpandedEditorBuilder(), {
         height: SheetSize.LARGE,
         dragBar: false,
         showClose: false,
-        backgroundColor: '#FFFFFF'
+        backgroundColor: AppColors.card,
+        onWillDismiss: (dismissAction: DismissSheetAction) => {
+          if (this.expandedEditorText.length > 0) {
+            showConfirmDialog($r('app.string.dialog_cancel_edit_title'), $r('app.string.dialog_cancel_edit_msg'), () => { dismissAction.dismiss(); });
+          } else {
+            dismissAction.dismiss();
+          }
+        }
       })
      } else {
       ImageEditor({
@@ -302,26 +312,26 @@ export struct AssistantPage {
       Text('智能助手')
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
         .layoutWeight(1)
 
       Button() {
         Text('🗑')
           .fontSize(16)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
       }
       .width(44)
-      .height(44)
+      .height(AppDimens.touchTarget)
       .backgroundColor('transparent')
       .onClick(() => {
-        this.clearSession();
+        showConfirmDialog($r('app.string.dialog_clear_session_title'), $r('app.string.dialog_clear_session_msg'), () => { this.clearSession(); });
       })
     }
     .width('100%')
-    .height(44)
+    .height(AppDimens.touchTarget)
     .padding({ left: 16, right: 16 })
-    .backgroundColor('#FFFFFF')
-    .border({ width: { bottom: 1 }, color: '#E0DCC8' })
+    .backgroundColor(AppColors.card)
+    .border({ width: { bottom: 1 }, color: AppColors.divider })
   }
 
   @Builder
@@ -330,28 +340,28 @@ export struct AssistantPage {
       Text('智能医学助手')
         .fontSize(16)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F')
+        .fontColor(AppColors.primary)
       Text('输入病情描述或上传检查报告图片，自动提取数据并计算相关评分')
         .fontSize(12)
-        .fontColor('#5F6654')
+        .fontColor(AppColors.textSecondary)
         .margin({ top: 4 })
         .textAlign(TextAlign.Center)
       Column() {
-        Text('示例输入：').fontSize(12).fontColor('#5F6654').margin({ bottom: 4 })
-        Text('• 65岁男性，肌酐200μmol/L，体重70kg').fontSize(12).fontColor('#4A5247')
-        Text('• 患者GCS 8分，收缩压90，心率110').fontSize(12).fontColor('#4A5247')
-        Text('• [上传血气分析报告图片]').fontSize(12).fontColor('#4A5247')
+        Text('示例输入：').fontSize(12).fontColor(AppColors.textSecondary).margin({ bottom: 4 })
+        Text('• 65岁男性，肌酐200μmol/L，体重70kg').fontSize(12).fontColor(AppColors.textBody)
+        Text('• 患者GCS 8分，收缩压90，心率110').fontSize(12).fontColor(AppColors.textBody)
+        Text('• [上传血气分析报告图片]').fontSize(12).fontColor(AppColors.textBody)
       }
       .margin({ top: 8 })
       .padding(8)
-      .backgroundColor('#F9F8F3')
+      .backgroundColor(AppColors.surfaceSubtle)
       .borderRadius(8)
     }
     .width('100%')
-    .padding(16)
+    .padding(AppDimens.cardPadding)
     .alignItems(HorizontalAlign.Center)
-    .backgroundColor('#FFFFFF')
-    .borderRadius(12)
+    .backgroundColor(AppColors.card)
+    .borderRadius(AppDimens.cardRadius)
   }
 
   @Builder
@@ -362,12 +372,12 @@ export struct AssistantPage {
           if (msg.text.length > 0) {
             Text(msg.text)
               .fontSize(14)
-              .fontColor('#FFFFFF')
+              .fontColor(AppColors.onPrimary)
               .width('100%')
           }
         }
         .padding(12)
-        .backgroundColor('#1F3D2F')
+        .backgroundColor(AppColors.primary)
         .borderRadius({ topLeft: 12, topRight: 12, bottomLeft: 4, bottomRight: 12 })
         .constraintSize({ maxWidth: '80%' })
         .alignItems(HorizontalAlign.Start)
@@ -385,7 +395,7 @@ export struct AssistantPage {
         if (msg.summaryText.length > 0) {
           Text(msg.summaryText)
             .fontSize(14)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .fontWeight(FontWeight.Medium)
             .width('100%')
             .margin({ bottom: 8 })
@@ -400,7 +410,7 @@ export struct AssistantPage {
         }
       }
       .padding(12)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius({ topLeft: 12, topRight: 12, bottomLeft: 12, bottomRight: 4 })
       .width('92%')
       .alignItems(HorizontalAlign.Start)
@@ -413,7 +423,7 @@ export struct AssistantPage {
     Column() {
       Text('提取数据')
         .fontSize(12)
-        .fontColor('#5F6654')
+        .fontColor(AppColors.textSecondary)
         .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
@@ -422,11 +432,11 @@ export struct AssistantPage {
         Row() {
           Text(item.label)
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .width('40%')
           Text(item.value)
             .fontSize(12)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
             .fontWeight(FontWeight.Medium)
             .layoutWeight(1)
         }
@@ -436,7 +446,7 @@ export struct AssistantPage {
     }
     .width('100%')
     .padding(8)
-    .backgroundColor('#F9F8F3')
+    .backgroundColor(AppColors.surfaceSubtle)
     .borderRadius(6)
     .margin({ bottom: 8 })
   }
@@ -446,7 +456,7 @@ export struct AssistantPage {
     Column() {
       Text('📊 计算结果')
         .fontSize(12)
-        .fontColor('#5F6654')
+        .fontColor(AppColors.textSecondary)
         .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
@@ -484,30 +494,30 @@ export struct AssistantPage {
         Text(match.calcName)
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
 
         if (match.completeness === 100) {
           Text('✓')
             .fontSize(14)
-            .fontColor('#3D6B4F')
+            .fontColor(AppColors.tierOk)
             .margin({ right: 8 })
         }
 
         Text(match.completeness + '%')
           .fontSize(12)
-          .fontColor(match.completeness === 100 ? '#3D6B4F' : '#C8881A')
+          .fontColor(match.completeness === 100 ? AppColors.tierOk : AppColors.tierWarn)
           .fontWeight(FontWeight.Bold)
 
         if (match.completeness < 100) {
           Text(' ' + match.availableFields.length + '/' + (match.availableFields.length + match.missingFields.length))
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
         }
 
         Text(this.isCalcExpanded(match) ? ' ▲' : ' ▼')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ left: 4 })
       }
       .width('100%')
@@ -525,7 +535,7 @@ export struct AssistantPage {
     }
     .width('100%')
     .padding(10)
-    .backgroundColor(match.completeness === 100 ? '#F9F8F3' : '#FFF8F0')
+    .backgroundColor(match.completeness === 100 ? AppColors.surfaceSubtle : AppColors.tierWarnBg)
     .borderRadius(8)
     .margin({ bottom: 6 })
   }
@@ -538,10 +548,10 @@ export struct AssistantPage {
           Text(match.result!.value !== null ? match.result!.value!.toFixed(1).replace(/\.0$/, '') : '—')
             .fontSize(28)
             .fontWeight(FontWeight.Bold)
-            .fontColor('#1F3D2F')
+            .fontColor(AppColors.primary)
           Text(match.result!.unit)
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ top: 2 })
           Text(match.result!.tier)
             .fontSize(12)
@@ -558,7 +568,7 @@ export struct AssistantPage {
         Column() {
           Text(match.result!.footnote)
             .fontSize(12)
-            .fontColor('#4A5247')
+            .fontColor(AppColors.textBody)
             .lineHeight(18)
         }
         .layoutWeight(1)
@@ -569,8 +579,8 @@ export struct AssistantPage {
 
       Button('查看详情 →')
         .fontSize(12)
-        .fontColor('#1F3D2F')
-        .backgroundColor('#E8E5D8')
+        .fontColor(AppColors.primary)
+        .backgroundColor(AppColors.fillBeige)
         .borderRadius(6)
         .height(28)
         .width('100%')
@@ -586,7 +596,7 @@ export struct AssistantPage {
     Column() {
       Text('还需: ' + match.missingFields.map((k: string) => this.assistantService.getFieldLabel(k)).join(', '))
         .fontSize(12)
-        .fontColor('#5F6654')
+        .fontColor(AppColors.textSecondary)
         .width('100%')
         .margin({ top: 6, bottom: 6 })
 
@@ -594,8 +604,8 @@ export struct AssistantPage {
 
       Button('计算')
         .fontSize(12)
-        .fontColor('#FFFFFF')
-        .backgroundColor('#1F3D2F')
+        .fontColor(AppColors.onPrimary)
+        .backgroundColor(AppColors.primary)
         .borderRadius(6)
         .height(28)
         .width('100%')
@@ -613,7 +623,7 @@ export struct AssistantPage {
         Row() {
           Text(this.assistantService.getFieldLabel(fieldKey))
             .fontSize(12)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .width('35%')
           this.FieldInput(fieldKey)
         }
@@ -631,9 +641,9 @@ export struct AssistantPage {
         ForEach(this.getFieldOptions(fieldKey), (opt: string) => {
           Button(this.getOptionLabel(fieldKey, opt))
             .fontSize(12)
-            .fontColor(this.supplementFields[fieldKey] === opt ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.supplementFields[fieldKey] === opt ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.supplementFields[fieldKey] === opt ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.supplementFields[fieldKey] === opt ? AppColors.card : AppColors.textOption)
+            .backgroundColor(this.supplementFields[fieldKey] === opt ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.supplementFields[fieldKey] === opt ? AppColors.primary : AppColors.border })
             .borderRadius(8)
             .height(30)
             .padding({ left: 8, right: 8 })
@@ -655,7 +665,7 @@ export struct AssistantPage {
         .height(32)
         .fontSize(12)
         .layoutWeight(1)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
         .borderRadius(6)
         .padding({ left: 8 })
         .onChange((value: string) => {
@@ -861,14 +871,14 @@ export struct AssistantPage {
         LoadingProgress()
           .width(18)
           .height(18)
-          .color('#5F6654')
+          .color(AppColors.textSecondary)
           .margin({ right: 8 })
         Text('分析中...')
           .fontSize(13)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
       }
       .padding(12)
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius({ topLeft: 12, topRight: 12, bottomLeft: 12, bottomRight: 4 })
     }
     .width('100%')
@@ -887,26 +897,26 @@ export struct AssistantPage {
             .flexShrink(0)
           Text('已选择图片')
             .fontSize(12)
-            .fontColor('#4A5247')
+            .fontColor(AppColors.textBody)
             .layoutWeight(1)
             .margin({ left: 6 })
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis })
           Text('×')
             .fontSize(16)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .width(24)
             .height(24)
             .textAlign(TextAlign.Center)
-            .borderRadius(12)
-            .backgroundColor('#E8E5D8')
+            .borderRadius(AppDimens.cardRadius)
+            .backgroundColor(AppColors.fillBeige)
             .onClick(() => {
               this.clearImage();
             })
             .flexShrink(0)
         }
         .width('100%')
-        .height(48)
+        .height(AppDimens.inputHeight)
         .padding({ left: 8, right: 8 })
         .alignItems(VerticalAlign.Center)
         .borderRadius({ topLeft: 8, topRight: 8 })
@@ -920,7 +930,7 @@ export struct AssistantPage {
               .fontWeight(FontWeight.Bold)
           }
           .width(44)
-          .height(44)
+          .height(AppDimens.touchTarget)
           .backgroundColor('transparent')
           .onClick(() => {
             this.showAttachMenu = !this.showAttachMenu;
@@ -930,7 +940,7 @@ export struct AssistantPage {
             Column() {
               Text('图片')
                 .fontSize(13)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .padding({ left: 16, right: 16, top: 8, bottom: 8 })
                 .onClick(() => {
                   this.showAttachMenu = false;
@@ -939,13 +949,13 @@ export struct AssistantPage {
               Divider().width('100%')
               Text('PDF')
                 .fontSize(13)
-                .fontColor('#1F3D2F')
+                .fontColor(AppColors.primary)
                 .padding({ left: 16, right: 16, top: 8, bottom: 8 })
                 .onClick(() => {
                   this.pickPdf();
                 })
             }
-            .backgroundColor('#FFFFFF')
+            .backgroundColor(AppColors.card)
             .borderRadius(8)
             .shadow({ radius: 4, color: '#40000000', offsetY: 2 })
             .position({ x: 0, y: -80 })
@@ -956,10 +966,10 @@ export struct AssistantPage {
 
         Stack({ alignContent: Alignment.TopEnd }) {
           TextArea({ text: this.userInput, placeholder: '描述病情或补充数据...' })
-            .height(48)
+            .height(AppDimens.inputHeight)
             .fontSize(14)
             .layoutWeight(1)
-            .backgroundColor('#F4F1EA')
+            .backgroundColor(AppColors.background)
             .borderRadius(8)
             .padding({ left: 10, right: 30, top: 8, bottom: 8 })
             .onChange((value: string) => {
@@ -968,7 +978,7 @@ export struct AssistantPage {
 
           Text('⤢')
             .fontSize(18)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .padding({ top: 4, right: 8 })
             .onClick(() => {
               this.expandedEditorText = this.userInput;
@@ -982,16 +992,16 @@ export struct AssistantPage {
             LoadingProgress()
               .width(18)
               .height(18)
-              .color('#FFFFFF')
+              .color(AppColors.onPrimary)
           } else {
             Text('➤')
               .fontSize(18)
-              .fontColor('#FFFFFF')
+              .fontColor(AppColors.onPrimary)
           }
         }
         .width(40)
-        .height(48)
-        .backgroundColor(this.loading ? '#5F6654' : '#1F3D2F')
+        .height(AppDimens.inputHeight)
+        .backgroundColor(this.loading ? AppColors.textSecondary : AppColors.primary)
         .borderRadius(20)
         .margin({ left: 8 })
         .enabled(!this.loading)
@@ -1001,12 +1011,12 @@ export struct AssistantPage {
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
       .borderRadius(this.selectedImageUri.length > 0 ? { bottomLeft: 8, bottomRight: 8 } : 8)
       .alignItems(VerticalAlign.Center)
     }
     .width('100%')
-    .backgroundColor('#FFFFFF')
+    .backgroundColor(AppColors.card)
   }
 
   @Builder
@@ -1015,7 +1025,7 @@ export struct AssistantPage {
       Row() {
         Text('取消')
           .fontSize(16)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .padding({ left: 16, top: 12, bottom: 12 })
           .onClick(() => {
             this.showExpandedEditor = false;
@@ -1023,12 +1033,12 @@ export struct AssistantPage {
         Text('编辑输入')
           .fontSize(16)
           .fontWeight(FontWeight.Medium)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
           .textAlign(TextAlign.Center)
         Text('确认')
           .fontSize(16)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium)
           .padding({ right: 16, top: 12, bottom: 12 })
           .onClick(() => {
@@ -1037,24 +1047,24 @@ export struct AssistantPage {
           })
       }
       .width('100%')
-      .backgroundColor('#FFFFFF')
+      .backgroundColor(AppColors.card)
 
-      Divider().color('#E0DCC8')
+      Divider().color(AppColors.divider)
 
       TextArea({ text: this.expandedEditorText })
         .fontSize(16)
-        .fontColor('#1F3D2F')
-        .backgroundColor('#FAFAFA')
+        .fontColor(AppColors.primary)
+        .backgroundColor(AppColors.surfaceSubtle)
         .borderRadius(0)
         .layoutWeight(1)
         .width('100%')
-        .padding(16)
+        .padding(AppDimens.cardPadding)
         .onChange((v: string) => {
           this.expandedEditorText = v;
         })
-    }
+     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#FAFAFA')
+    .backgroundColor(AppColors.surfaceSubtle)
+   }
   }
-}

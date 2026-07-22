@@ -1,5 +1,8 @@
-import { CalcResult, getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNaDeficit } from '../../engine/CommonCalculators';
+import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct NaDeficitCalculator {
@@ -46,36 +49,36 @@ export struct NaDeficitCalculator {
       Column() {
         Text('计算低钠血症的钠缺失量')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('Na缺失 = TBW因子 × 体重 × (目标Na - 实测Na)')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
       .width('100%')
       .margin({ bottom: 12 });
 
-      Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+      CalcCard() {
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
             Text('体重 (kg)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'kg' })
-              .type(InputType.Number)
-              .height(48)
+              .type(InputType.NUMBER_DECIMAL)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.weight = parseFloat(value) || 0;
                 this.calculate();
@@ -86,17 +89,17 @@ export struct NaDeficitCalculator {
             Text('实测 Na⁺ (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.na = parseFloat(value) || 0;
                 this.calculate();
@@ -112,17 +115,17 @@ export struct NaDeficitCalculator {
             Text('目标 Na⁺ (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: '140', text: this.targetNa > 0 ? this.targetNa.toString() : '' })
               .type(InputType.Number)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.targetNa = parseFloat(value) || 0;
                 this.calculate();
@@ -137,83 +140,45 @@ export struct NaDeficitCalculator {
           Text('TBW因子')
             .fontSize(14)
             .fontWeight(FontWeight.Medium)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .margin({ bottom: 8 });
           Row() {
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 0 })
-              .selectedColor('#1F3D2F')
+              .selectedColor(AppColors.primary)
               .onChange((isOn: boolean) => {
                 if (isOn) { this.tbwGroup = 0; this.calculate(); }
               })
               .width(48).height(32);
-            Text('男0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
+            Text('男0.6').fontSize(12).fontColor(AppColors.textBody).margin({ left: 4, right: 16 });
 
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 1 })
-              .selectedColor('#1F3D2F')
+              .selectedColor(AppColors.primary)
               .onChange((isOn: boolean) => {
                 if (isOn) { this.tbwGroup = 1; this.calculate(); }
               })
               .width(48).height(32);
-            Text('女0.5').fontSize(12).fontColor('#4A5247').margin({ left: 4, right: 16 });
+            Text('女0.5').fontSize(12).fontColor(AppColors.textBody).margin({ left: 4, right: 16 });
 
             Toggle({ type: ToggleType.Button, isOn: this.tbwGroup === 2 })
-              .selectedColor('#1F3D2F')
+              .selectedColor(AppColors.primary)
               .onChange((isOn: boolean) => {
                 if (isOn) { this.tbwGroup = 2; this.calculate(); }
               })
               .width(48).height(32);
-            Text('儿童0.6').fontSize(12).fontColor('#4A5247').margin({ left: 4 });
+            Text('儿童0.6').fontSize(12).fontColor(AppColors.textBody).margin({ left: 4 });
           }
         }
         .width('100%')
         .alignItems(HorizontalAlign.Start)
         .margin({ top: 8 });
       }
-      .padding(16)
-      .backgroundColor('#FFFFFF')
-      .borderRadius(12)
-      .width('100%')
-      .margin({ bottom: 16 });
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('Na⁺ 缺失量')
-                .fontSize(12)
-                .fontColor('#5F6654')
-                .letterSpacing(1.5);
-              Text(this.result!.value !== null ?
-                `${this.result!.value!.toFixed(0)} ${this.result!.unit}` : '—')
-                .fontSize(32)
-                .fontWeight(FontWeight.Bold)
-                .fontColor('#1F3D2F')
-                .margin({ top: 4 });
-              Text(this.result!.tier)
-                .fontSize(13)
-                .fontWeight(FontWeight.Bold)
-                .fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass))
-                .borderRadius(20)
-                .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-                .margin({ top: 4 });
-            }
-            .alignItems(HorizontalAlign.Start)
-            .layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }
-          .width('100%');
-        }
-        .padding(16)
-        .backgroundColor('#FFFFFF')
-        .borderRadius(12)
-        .width('100%');
+        ResultCard({ title: 'Na⁺ 缺失量', value: this.result!.value, unit: this.result!.unit, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -1,5 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateGfr } from '../../engine/GfrCalculator';
+import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct GfrCalculator {
@@ -33,57 +36,30 @@ export struct GfrCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于评估肾小球滤过率，CKD分期').fontSize(14).fontColor('#1F3D2F').fontWeight(FontWeight.Medium); Text('CKD-EPI 2021 race-free公式，需肌酐+年龄+性别').fontSize(12).fontColor('#5F6654').margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估肾小球滤过率，CKD分期').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('CKD-EPI 2021 race-free公式，需肌酐+年龄+性别').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
-      Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+      CalcCard() {
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         Row() {
-          Button('男').fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.sex === 'male' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.sex === 'male' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.sex === 'male' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8).height(48).layoutWeight(1).onClick(() => { this.sex = 'male'; this.calculate(); });
-          Button('女').fontSize(15).fontWeight(FontWeight.Bold).fontColor(this.sex === 'female' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.sex === 'female' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.sex === 'female' ? '#1F3D2F' : '#E0E0E0' })
-            .borderRadius(8).height(48).layoutWeight(1).onClick(() => { this.sex = 'female'; this.calculate(); });
+          OptionChip({ label: '男', selected: this.sex === 'male', fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.sex = 'male'; this.calculate(); } }).layoutWeight(1);
+          OptionChip({ label: '女', selected: this.sex === 'female', fontSize: 15, bold: true, chipHeight: AppDimens.inputHeight, onChipClick: () => { this.sex = 'female'; this.calculate(); } }).layoutWeight(1);
         }.width('100%').margin({ bottom: 16 });
 
-        Column() {
-          Text('年龄 (岁)').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-          TextInput({ placeholder: '请输入年龄' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
-            .placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' })
-            .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.age = parseFloat(value) || 0; this.calculate(); });
-        }.width('100%').margin({ bottom: 12 });
+        InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 12 });
 
         Column() {
-          Text('血肌酐').fontSize(14).fontColor('#1F2421').fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-          TextInput({ placeholder: '肌酐' }).type(InputType.Number).height(48).fontSize(16).fontColor('#1F2421')
-            .placeholderColor('#999999').backgroundColor('#FFFFFF').borderRadius(8).border({ width: 1, color: '#E0E0E0' })
-            .padding({ left: 12, right: 12 }).width('100%').onChange((value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); });
+          InputRow({ label: '血肌酐', placeholder: '肌酐', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.creatinine = parseFloat(value) || 0; this.calculate(); } });
           Flex({ wrap: FlexWrap.Wrap }) {
-            Button('µmol/L').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.crUnit === 'umol' ? '#FFFFFF' : '#2D5440').backgroundColor(this.crUnit === 'umol' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.crUnit === 'umol' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(28).padding({ left: 6, right: 6 }).margin({ right: 4, bottom: 4 }).onClick(() => { this.crUnit = 'umol'; this.calculate(); });
-            Button('mg/dL').fontSize(12).fontWeight(FontWeight.Bold).fontColor(this.crUnit === 'mgdl' ? '#FFFFFF' : '#2D5440').backgroundColor(this.crUnit === 'mgdl' ? '#1F3D2F' : '#F5F5F5').border({ width: 1, color: this.crUnit === 'mgdl' ? '#1F3D2F' : '#E0E0E0' }).borderRadius(6).height(28).padding({ left: 6, right: 6 }).margin({ bottom: 4 }).onClick(() => { this.crUnit = 'mgdl'; this.calculate(); });
+            OptionChip({ label: 'µmol/L', selected: this.crUnit === 'umol', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, horizontalPadding: 6, onChipClick: () => { this.crUnit = 'umol'; this.calculate(); } }).margin({ right: 4, bottom: 4 });
+            OptionChip({ label: 'mg/dL', selected: this.crUnit === 'mgdl', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, horizontalPadding: 6, onChipClick: () => { this.crUnit = 'mgdl'; this.calculate(); } }).margin({ bottom: 4 });
           }.width('100%').margin({ top: 4 });
         }.width('100%');
-      }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%').margin({ bottom: 16 });
+      }
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('eGFR').fontSize(12).fontColor('#5F6654').letterSpacing(1.5).fontWeight(FontWeight.Medium);
-              Text(this.result!.value !== null ? `${this.result!.value!.toFixed(1).replace(/\.0$/, '')}` : '—')
-                .fontSize(32).fontWeight(FontWeight.Bold).fontColor('#1F3D2F').margin({ top: 4 });
-              Text(this.result!.value !== null ? this.result!.unit : '')
-                .fontSize(12).fontColor('#5F6654');
-              Text(this.result!.tier).fontSize(13).fontWeight(FontWeight.Bold)
-                .fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass))
-                .borderRadius(20).padding({ left: 12, right: 12, top: 4, bottom: 4 }).margin({ top: 4 });
-            }.alignItems(HorizontalAlign.Start).layoutWeight(1);
-            Column() { Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22); }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }.width('100%');
-        }.padding(16).backgroundColor('#FFFFFF').borderRadius(12).width('100%');
+        ResultCard({ title: 'eGFR', value: this.result!.value, unit: this.result!.unit, decimals: 1, trimZero: true, valueMarginTop: 4, tierMarginTop: 4, unitInline: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

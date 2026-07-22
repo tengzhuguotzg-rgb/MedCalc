@@ -48,6 +48,7 @@ import { KnowledgeSearchPage } from '../components/KnowledgeSearchPage';
 import { CalcKbLinks } from '../components/CalcKbLinks';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
+import { AppColors } from '../utils/AppColors';
 
 @Entry
 @Component
@@ -56,38 +57,28 @@ struct Index {
   @State favorites: string[] = [];
   @State sidebarCollapsed: boolean = true;
   @State currentTab: number = 0;
-  @State currentPatientId: string = '';
-  @StorageLink('patientNavDepth') patientNavDepth: number = 0;
-  @StorageLink('patientBackFlag') patientBackFlag: number = 0;
-  @StorageLink('kbNavDepth') kbNavDepth: number = 0;
-  @Watch('onKbNav') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
+  @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
+  @State kbNavDepth: number = 0;
+  @State kbBackAction: number = 0;
+  @State patientBackFlag: number = 0;
+  patientStack: NavPathStack = new NavPathStack();
+  kbStack: NavPathStack = new NavPathStack();
 
   aboutToAppear() {
     const prefsService = PreferencesService.getInstance();
     this.favorites = prefsService.getFavorites();
     this.currentCalc = prefsService.getLastCalculator();
-    AppStorage.setOrCreate<number>('patientNavDepth', 0);
-    AppStorage.setOrCreate<number>('patientBackFlag', 0);
-    AppStorage.setOrCreate<number>('kbNavDepth', 0);
-    AppStorage.setOrCreate<number>('kbBackFlag', 0);
-    AppStorage.setOrCreate<string>('kbNavigatePath', '');
   }
 
-  onKbNav() {
+  onKbNavigate() {
     if (this.kbNavigatePath.length > 0) {
       this.currentTab = 3;
     }
   }
 
   onBackPress(): boolean | void {
-    if (this.kbNavDepth > 0) {
-      const flag = AppStorage.get<number>('kbBackFlag') || 0;
-      AppStorage.setOrCreate<number>('kbBackFlag', flag + 1);
-      return true;
-    }
-    if (this.patientNavDepth > 0) {
-      const flag = AppStorage.get<number>('patientBackFlag') || 0;
-      AppStorage.setOrCreate<number>('patientBackFlag', flag + 1);
+    if (this.currentTab === 3 && this.kbNavDepth > 0) {
+      this.kbBackAction++;
       return true;
     }
     return false;
@@ -104,33 +95,39 @@ struct Index {
       TabContent() {
         this.CalcModeView();
       }
-      .tabBar(this.TabBarBuilder('计算器', 0))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_calculator'), 0))
 
       TabContent() {
         AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab });
       }
-      .tabBar(this.TabBarBuilder('助手', 1))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_assistant'), 1))
 
       TabContent() {
-        if (this.currentPatientId.length > 0) {
-          PatientDetailPage({ currentPatientId: $currentPatientId });
-        } else {
-          PatientListPage({ currentPatientId: $currentPatientId });
+        Navigation(this.patientStack) {
+          PatientListPage({ patientStack: this.patientStack });
         }
+        .hideTitleBar(true)
+        .navDestination(this.PatientRouteMap)
       }
-      .tabBar(this.TabBarBuilder('病历', 2))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_patient'), 2))
 
       TabContent() {
-        KnowledgeSearchPage();
+        Navigation(this.kbStack) {
+          KnowledgeSearchPage({
+            onNavDepthChanged: (depth: number) => { this.kbNavDepth = depth; },
+            backAction: this.kbBackAction,
+          });
+        }
+        .hideTitleBar(true)
       }
-      .tabBar(this.TabBarBuilder('知识库', 3))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_knowledge'), 3))
 
       TabContent() {
         SettingsPage();
       }
-      .tabBar(this.TabBarBuilder('设置', 4))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_settings'), 4))
     }
-    .barBackgroundColor('#FFFFFF')
+    .barBackgroundColor(AppColors.card)
     .barMode(BarMode.Fixed)
     .scrollable(false)
     .onChange((index: number) => { this.currentTab = index; })
@@ -140,17 +137,31 @@ struct Index {
   }
 
   @Builder
-  TabBarBuilder(title: string, index: number) {
+  PatientRouteMap(name: string) {
+    if (name === 'PatientDetail') {
+      NavDestination() {
+        PatientDetailPage({ patientStack: this.patientStack, backFlag: this.patientBackFlag });
+      }
+      .hideTitleBar(true)
+      .onBackPressed(() => {
+        this.patientBackFlag++;
+        return true;
+      })
+    }
+  }
+
+  @Builder
+  TabBarBuilder(title: ResourceStr, index: number) {
     Column({ space: 4 }) {
       Text(title)
         .fontSize(14)
         .fontWeight(this.currentTab === index ? FontWeight.Medium : FontWeight.Normal)
-        .fontColor(this.currentTab === index ? '#1F3D2F' : '#5F6654')
+        .fontColor(this.currentTab === index ? AppColors.primary : AppColors.textSecondary)
       Row()
         .width(24)
         .height(2)
         .borderRadius(1)
-        .backgroundColor(this.currentTab === index ? '#1F3D2F' : 'transparent')
+        .backgroundColor(this.currentTab === index ? AppColors.primary : 'transparent')
     }
     .width('100%')
     .height('100%')
@@ -263,7 +274,7 @@ struct Index {
       }
       .width('100%')
       .height('100%')
-      .backgroundColor('#F4F1EA');
+      .backgroundColor(AppColors.background);
 
       if (!this.sidebarCollapsed) {
         Column()
@@ -302,7 +313,7 @@ struct Index {
         Text(this.getCurrentCalculatorName())
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F');
+          .fontColor(AppColors.primary);
       }
       .alignItems(HorizontalAlign.Start)
       .layoutWeight(1)
@@ -311,7 +322,7 @@ struct Index {
       Button() {
         Text(this.isFavorite() ? '★' : '☆')
           .fontSize(18)
-          .fontColor(this.isFavorite() ? '#E76F2C' : '#5F6654')
+          .fontColor(this.isFavorite() ? AppColors.warning : AppColors.textSecondary)
       }
       .width(44)
       .height(44)
@@ -323,16 +334,16 @@ struct Index {
     .width('100%')
     .height(44)
     .padding({ left: 12, right: 12 })
-    .backgroundColor('#FFFFFF')
-    .border({ width: { bottom: 1 }, color: '#E0DCC8' });
+    .backgroundColor(AppColors.card)
+    .border({ width: { bottom: 1 }, color: AppColors.divider });
   }
 
   @Builder
   MenuIcon() {
     Column({ space: 3.5 }) {
-      Row().width(18).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
-      Row().width(18).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
-      Row().width(12).height(1.5).backgroundColor('#1F3D2F').borderRadius(1)
+      Row().width(18).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
+      Row().width(18).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
+      Row().width(12).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
     }
     .width(24)
     .height(24)
@@ -343,13 +354,13 @@ struct Index {
   @Builder
   PlaceholderCalculator() {
     Column() {
-      Text('开发中...')
+      Text($r('app.string.calc_placeholder'))
         .fontSize(17)
         .fontWeight(FontWeight.Bold)
-        .fontColor('#1F3D2F');
-      Text('此计算器正在移植中，敬请期待')
+        .fontColor(AppColors.primary);
+      Text($r('app.string.calc_placeholder_hint'))
         .fontSize(11.5)
-        .fontColor('#4A5247')
+        .fontColor(AppColors.textBody)
         .margin({ top: 8 });
     }
     .width('100%')

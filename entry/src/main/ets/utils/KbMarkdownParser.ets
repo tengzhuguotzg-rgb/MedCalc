@@ -1,3 +1,5 @@
+import { AppColors } from './AppColors';
+
 export class MarkdownLine {
   text: string = '';
   type: string = 'text';
@@ -9,6 +11,7 @@ export class MarkdownLine {
   codeLang: string = '';
   cells: string[] = [];
   tableRowIndex: number = -1;
+  anchorId: string = '';
 }
 
 function isTableSepLine(text: string): boolean {
@@ -334,26 +337,18 @@ export function parseKbMarkdown(content: string): MarkdownLine[] {
   return result;
 }
 
-export function extractToc(content: string): TocEntry[] {
+export function extractTocFromLines(lines: MarkdownLine[]): TocEntry[] {
   const entries: TocEntry[] = [];
-  const lines = content.split('\n');
-  for (const line of lines) {
-    const h2Match = line.match(/^## (.+)$/);
-    if (h2Match !== null && h2Match.length > 1) {
+  let k = 0;
+  for (const ml of lines) {
+    if (ml.type === 'h2' || ml.type === 'h3') {
+      ml.anchorId = 'kb_toc_' + k.toString();
       const entry = new TocEntry();
-      entry.text = stripEmojiPrefix(h2Match[1].replace(/\*\*/g, '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, '$2' || '$1'));
-      entry.level = 2;
-      entry.anchor = h2Match[1].replace(/\s+/g, '_');
+      entry.text = stripMarkdownInline(ml.text);
+      entry.level = ml.type === 'h2' ? 2 : 3;
+      entry.anchor = ml.anchorId;
       entries.push(entry);
-      continue;
-    }
-    const h3Match = line.match(/^### (.+)$/);
-    if (h3Match !== null && h3Match.length > 1) {
-      const entry = new TocEntry();
-      entry.text = stripEmojiPrefix(h3Match[1].replace(/\*\*/g, '').replace(/\[\[([^\]|]+)\|?([^\]]*)\]\]/g, '$2' || '$1'));
-      entry.level = 3;
-      entry.anchor = h3Match[1].replace(/\s+/g, '_');
-      entries.push(entry);
+      k++;
     }
   }
   return entries;
@@ -393,13 +388,13 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
   const boldMatch = text.match(/^\*\*([^*]+)\*\*(.*)/);
   if (boldMatch !== null && boldMatch.length > 2) {
     const keyword = boldMatch[1];
-    let color = '#5F6654';
+    let color = AppColors.textSecondary;
     if (keyword.indexOf('新增') >= 0 || keyword.indexOf('New') >= 0) {
-      color = '#2E7D32';
+      color = AppColors.tierOk;
     } else if (keyword.indexOf('重新审视') >= 0 || keyword.indexOf('Revisited') >= 0) {
-      color = '#E65100';
+      color = AppColors.warning;
     } else if (keyword.indexOf('沿用') >= 0 || keyword.indexOf('Carryover') >= 0) {
-      color = '#1565C0';
+      color = AppColors.primary;
     }
     const badge = new AnnotationBadge();
     badge.keyword = keyword;
@@ -410,51 +405,51 @@ export function getAnnotationBadgeInfo(text: string): AnnotationBadge {
   const badge = new AnnotationBadge();
   badge.keyword = text.replace(/\*\*/g, '');
   badge.detail = '';
-  badge.color = '#5F6654';
+  badge.color = AppColors.textSecondary;
   return badge;
 }
 
 export class AnnotationBadge {
   keyword: string = '';
   detail: string = '';
-  color: string = '#5F6654';
+  color: ResourceStr = AppColors.textSecondary;
 }
 
 export function getCalloutStyle(calloutType: string): CalloutStyle {
   switch (calloutType) {
     case 'warning':
-      return new CalloutStyle('#E65100', '#FFF3E0', '\u26A0');
+      return new CalloutStyle(AppColors.warning, AppColors.tierWarnBg, '\u26A0');
     case 'danger':
-      return new CalloutStyle('#C62828', '#FFEBEE', '\u274C');
+      return new CalloutStyle(AppColors.danger, AppColors.tierDangerBg, '\u274C');
     case 'important':
-      return new CalloutStyle('#7B1FA2', '#F3E5F5', '\u2757');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\u2757');
     case 'tip':
-      return new CalloutStyle('#2E7D32', '#E8F5E9', '\uD83D\uDCA1');
+      return new CalloutStyle(AppColors.tierOk, AppColors.tierOkBg, '\uD83D\uDCA1');
     case 'note':
-      return new CalloutStyle('#1565C0', '#E3F2FD', '\uD83D\uDCDD');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\uD83D\uDCDD');
     case 'info':
-      return new CalloutStyle('#0277BD', '#E1F5FE', '\u2139');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\u2139');
     case 'abstract':
-      return new CalloutStyle('#00695C', '#E0F2F1', '\uD83D\uDCCB');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\uD83D\uDCCB');
     case 'example':
-      return new CalloutStyle('#F57F17', '#FFFDE7', '\uD83D\uDCD6');
+      return new CalloutStyle(AppColors.tierWarn, AppColors.tierWarnBg, '\uD83D\uDCD6');
     case 'success':
-      return new CalloutStyle('#1B5E20', '#E8F5E9', '\u2705');
+      return new CalloutStyle(AppColors.tierOk, AppColors.tierOkBg, '\u2705');
     case 'quote':
-      return new CalloutStyle('#C8881A', '#FFF8E1', '\uD83D\uDCAC');
+      return new CalloutStyle(AppColors.tierWarn, AppColors.tierWarnBg, '\uD83D\uDCAC');
     case 'faq':
-      return new CalloutStyle('#6A1B9A', '#F3E5F5', '\u2753');
+      return new CalloutStyle(AppColors.primary, AppColors.background, '\u2753');
     default:
-      return new CalloutStyle('#5F6654', '#F5F4EF', '\uD83D\uDCC4');
+      return new CalloutStyle(AppColors.textSecondary, AppColors.surfaceMuted, '\uD83D\uDCC4');
   }
 }
 
 export class CalloutStyle {
-  borderColor: string = '';
-  bgColor: string = '';
+  borderColor: ResourceStr = '';
+  bgColor: ResourceStr = '';
   icon: string = '';
 
-  constructor(borderColor: string, bgColor: string, icon: string) {
+  constructor(borderColor: ResourceStr, bgColor: ResourceStr, icon: string) {
     this.borderColor = borderColor;
     this.bgColor = bgColor;
     this.icon = icon;

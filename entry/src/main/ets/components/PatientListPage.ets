@@ -1,9 +1,11 @@
 import { Patient } from '../model/Patient';
 import { PatientService } from '../services/PatientService';
+import { AppColors } from '../utils/AppColors';
+import { AppDimens } from '../utils/AppDimens';
 
 @Component
 export struct PatientListPage {
-  @Link currentPatientId: string;
+  patientStack: NavPathStack = new NavPathStack();
   @State patients: Patient[] = [];
   @State searchKeyword: string = '';
   @State alertCounts: Map<string, number> = new Map();
@@ -48,15 +50,15 @@ export struct PatientListPage {
   build() {
     Column() {
       Row() {
-        Text('病历管理')
+        Text($r('app.string.patient_list_title'))
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .layoutWeight(1)
-        Button('+ 新建')
+        Button($r('app.string.patient_new_btn'))
           .fontSize(12)
-          .fontColor('#FFFFFF')
-          .backgroundColor('#1F3D2F')
+          .fontColor(AppColors.onPrimary)
+          .backgroundColor(AppColors.primary)
           .borderRadius(8)
           .height(32)
           .padding({ left: 12, right: 12 })
@@ -67,10 +69,10 @@ export struct PatientListPage {
       .width('100%')
       .padding({ left: 16, right: 16, top: 12, bottom: 12 })
 
-      TextInput({ placeholder: '搜索姓名/床号...' })
-        .height(48)
+      TextInput({ placeholder: $r('app.string.patient_search_hint') })
+        .height(AppDimens.inputHeight)
         .fontSize(14)
-        .backgroundColor('#FFFFFF')
+        .backgroundColor(AppColors.card)
         .borderRadius(8)
         .margin({ left: 16, right: 16, bottom: 12 })
         .onChange((value: string) => {
@@ -80,13 +82,13 @@ export struct PatientListPage {
 
       if (this.patients.length === 0) {
         Column() {
-          Text('还没有患者记录')
+          Text($r('app.string.patient_empty'))
             .fontSize(16)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
             .margin({ bottom: 8 })
-          Text('点击右上角新建患者开始')
+          Text($r('app.string.patient_empty_hint'))
             .fontSize(13)
-            .fontColor('#5F6654')
+            .fontColor(AppColors.textSecondary)
         }
         .width('100%')
         .layoutWeight(1)
@@ -102,13 +104,13 @@ export struct PatientListPage {
                     Text(patient.name)
                       .fontSize(16)
                       .fontWeight(FontWeight.Bold)
-                      .fontColor('#1F3D2F')
+                      .fontColor(AppColors.primary)
                       .margin({ right: 8 })
                     if (patient.bedNo.length > 0) {
                       Text(patient.bedNo + '床')
                         .fontSize(12)
-                        .fontColor('#5F6654')
-                        .backgroundColor('#E8E5D8')
+                        .fontColor(AppColors.textSecondary)
+                        .backgroundColor(AppColors.fillBeige)
                         .borderRadius(4)
                         .padding({ left: 6, right: 6, top: 2, bottom: 2 })
                     }
@@ -116,7 +118,7 @@ export struct PatientListPage {
                   .margin({ bottom: 4 })
                   Text(this.formatTime(patient.updatedAt))
                     .fontSize(12)
-                    .fontColor('#5F6654')
+                    .fontColor(AppColors.textSecondary)
                 }
                 .alignItems(HorizontalAlign.Start)
                 .layoutWeight(1)
@@ -125,16 +127,16 @@ export struct PatientListPage {
                   if (this.getAlertCount(patient.id) > 0) {
                     Text(this.getAlertCount(patient.id) + '条预警')
                       .fontSize(12)
-                      .fontColor('#E76F2C')
+                      .fontColor(AppColors.warning)
                       .fontWeight(FontWeight.Bold)
                   } else {
-                    Text('暂无预警')
+                     Text($r('app.string.patient_no_alert'))
                       .fontSize(12)
-                      .fontColor('#3D6B4F')
+                      .fontColor(AppColors.tierOk)
                   }
-                  Text('删除')
+                   Text($r('app.string.common_delete'))
                     .fontSize(12)
-                    .fontColor('#B1452A')
+                    .fontColor(AppColors.danger)
                     .padding({ left: 14, right: 14, top: 14, bottom: 14 })
                     .margin({ top: 4 })
                     .onClick(() => {
@@ -146,10 +148,10 @@ export struct PatientListPage {
               }
               .width('100%')
               .padding(12)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(10)
               .onClick(() => {
-                this.currentPatientId = patient.id;
+                this.patientStack.pushPath({ name: 'PatientDetail', param: patient.id });
               })
             }
           }, (patient: Patient) => patient.id)
@@ -167,61 +169,61 @@ export struct PatientListPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('#F5F4EF')
+    .backgroundColor(AppColors.surfaceMuted)
   }
 
   @Builder
   CreateDialog() {
     Column() {
       Column() {
-        Text('新建患者')
+        Text($r('app.string.patient_create_title'))
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 16 })
 
-        TextInput({ placeholder: '姓名*' })
-          .height(48)
+        TextInput({ placeholder: $r('app.string.patient_ph_name') })
+          .height(AppDimens.inputHeight)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newName = value; })
 
-        TextInput({ placeholder: '床号' })
-          .height(48)
+        TextInput({ placeholder: $r('app.string.patient_ph_bedno') })
+          .height(AppDimens.inputHeight)
           .fontSize(14)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newBedNo = value; })
 
-        TextInput({ placeholder: '年龄' })
-          .height(48)
+        TextInput({ placeholder: $r('app.string.patient_ph_age') })
+          .height(AppDimens.inputHeight)
           .fontSize(14)
           .type(InputType.Number)
           .margin({ bottom: 8 })
           .onChange((value: string) => { this.newAge = value; })
 
         Row() {
-          Text('性别')
+           Text($r('app.string.patient_sex'))
             .fontSize(14)
-            .fontColor('#1F2421')
+            .fontColor(AppColors.textPrimary)
             .layoutWeight(1)
-          Button('男')
+           Button($r('app.string.patient_sex_male'))
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.newSex === 'male' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.newSex === 'male' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.newSex === 'male' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.newSex === 'male' ? AppColors.card : AppColors.textOption)
+            .backgroundColor(this.newSex === 'male' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.newSex === 'male' ? AppColors.primary : AppColors.border })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .onClick(() => { this.newSex = 'male'; })
-          Button('女')
+           Button($r('app.string.patient_sex_female'))
             .fontSize(12)
             .fontWeight(FontWeight.Bold)
-            .fontColor(this.newSex === 'female' ? '#FFFFFF' : '#2D5440')
-            .backgroundColor(this.newSex === 'female' ? '#1F3D2F' : '#F5F5F5')
-            .border({ width: 1, color: this.newSex === 'female' ? '#1F3D2F' : '#E0E0E0' })
+            .fontColor(this.newSex === 'female' ? AppColors.card : AppColors.textOption)
+            .backgroundColor(this.newSex === 'female' ? AppColors.primary : AppColors.fillNeutral)
+            .border({ width: 1, color: this.newSex === 'female' ? AppColors.primary : AppColors.border })
             .borderRadius(8)
-            .height(44)
+            .height(AppDimens.touchTarget)
             .layoutWeight(1)
             .margin({ left: 6 })
             .onClick(() => { this.newSex = 'female'; })
@@ -230,12 +232,12 @@ export struct PatientListPage {
         .margin({ bottom: 16 })
 
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .onClick(() => {
               this.showCreateDialog = false;
@@ -244,12 +246,12 @@ export struct PatientListPage {
               this.newAge = '';
               this.newSex = 'male';
             })
-          Button('创建')
-            .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#1F3D2F')
+           Button($r('app.string.patient_create_btn'))
+             .fontSize(14)
+             .fontColor(AppColors.onPrimary)
+             .backgroundColor(AppColors.primary)
             .borderRadius(8)
-            .height(48)
+            .height(AppDimens.inputHeight)
             .layoutWeight(1)
             .margin({ left: 12 })
             .onClick(async () => {
@@ -272,8 +274,8 @@ export struct PatientListPage {
         .width('100%')
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
-      .borderRadius(12)
+      .backgroundColor(AppColors.card)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')
@@ -286,21 +288,21 @@ export struct PatientListPage {
   DeleteConfirmDialog() {
     Column() {
       Column() {
-        Text('确认删除患者')
+         Text($r('app.string.patient_delete_confirm_title'))
           .fontSize(16)
           .fontWeight(FontWeight.Bold)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .margin({ bottom: 8 })
-        Text('删除后该患者的所有数据、上传记录和预警将被永久清除，无法恢复。')
+         Text($r('app.string.patient_delete_confirm_msg'))
           .fontSize(13)
-          .fontColor('#4A5247')
+          .fontColor(AppColors.textBody)
           .lineHeight(20)
           .margin({ bottom: 16 })
         Row() {
-          Button('取消')
+           Button($r('app.string.common_cancel'))
             .fontSize(14)
-            .fontColor('#5F6654')
-            .backgroundColor('#F5F5F5')
+            .fontColor(AppColors.textSecondary)
+            .backgroundColor(AppColors.fillNeutral)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -308,10 +310,10 @@ export struct PatientListPage {
               this.showDeleteConfirm = false;
               this.deletePatientId = '';
             })
-          Button('删除')
-            .fontSize(14)
-            .fontColor('#FFFFFF')
-            .backgroundColor('#E76F2C')
+           Button($r('app.string.common_delete'))
+             .fontSize(14)
+             .fontColor(AppColors.onPrimary)
+             .backgroundColor(AppColors.danger)
             .borderRadius(8)
             .height(36)
             .layoutWeight(1)
@@ -328,8 +330,8 @@ export struct PatientListPage {
         .width('100%')
       }
       .padding(20)
-      .backgroundColor('#FFFFFF')
-      .borderRadius(12)
+      .backgroundColor(AppColors.card)
+      .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
     .width('100%')

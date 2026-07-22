@@ -24,17 +24,30 @@ import { KnowledgeService } from '../services/KnowledgeService';
 
 const DOMAIN = 0x0000;
 
+function themeModeToColorMode(mode: string): ConfigurationConstant.ColorMode {
+  if (mode === 'light') {
+    return ConfigurationConstant.ColorMode.COLOR_MODE_LIGHT;
+  }
+  if (mode === 'dark') {
+    return ConfigurationConstant.ColorMode.COLOR_MODE_DARK;
+  }
+  return ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET;
+}
+
 export default class EntryAbility extends UIAbility {
   onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
-    try {
-      this.context.getApplicationContext().setColorMode(ConfigurationConstant.ColorMode.COLOR_MODE_NOT_SET);
-    } catch (err) {
-      hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
-    }
     AppStorage.setOrCreate<common.UIAbilityContext>('context', this.context);
     PreferencesService.getInstance().init(this.context);
     PatientRepository.getInstance().init(this.context);
     KnowledgeService.getInstance().init(this.context);
+
+    const savedTheme = PreferencesService.getInstance().getThemeMode();
+    const colorMode = themeModeToColorMode(savedTheme);
+    try {
+      this.context.getApplicationContext().setColorMode(colorMode);
+    } catch (err) {
+      hilog.error(DOMAIN, 'testTag', 'Failed to set colorMode. Cause: %{public}s', JSON.stringify(err));
+    }
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onCreate');
   }
 
@@ -57,17 +70,14 @@ export default class EntryAbility extends UIAbility {
   }
 
   onWindowStageDestroy(): void {
-    // Main window is destroyed, release UI related resources
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onWindowStageDestroy');
   }
 
   onForeground(): void {
-    // Ability has brought to foreground
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onForeground');
   }
 
   onBackground(): void {
-    // Ability has back to background
     hilog.info(DOMAIN, 'testTag', '%{public}s', 'Ability onBackground');
   }
 }

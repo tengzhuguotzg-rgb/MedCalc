@@ -1,5 +1,8 @@
-import { CalcResult , getTierColor, getTierBgColor } from '../../engine/CalcEngine';
+import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNa } from '../../engine/CommonCalculators';
+import { AppColors } from '../../utils/AppColors';
+import { AppDimens } from '../../utils/AppDimens';
+import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
 
 @Component
 export struct NaCalculator {
@@ -37,36 +40,36 @@ export struct NaCalculator {
       Column() {
         Text('用于校正高血糖所致假性低钠血症')
           .fontSize(14)
-          .fontColor('#1F3D2F')
+          .fontColor(AppColors.primary)
           .fontWeight(FontWeight.Medium);
         Text('校正Na = 实测Na + 1.6×(Glu-5.6)/5.6')
           .fontSize(12)
-          .fontColor('#5F6654')
+          .fontColor(AppColors.textSecondary)
           .margin({ top: 2 });
       }
       .alignItems(HorizontalAlign.Start)
       .width('100%')
       .margin({ bottom: 12 });
 
-      Column() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor('#E76F2C').fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); Text('重置').fontSize(12).fontColor('#5F6654').onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+      CalcCard() {
+        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
 
         Row() {
           Column() {
             Text('实测血 Na⁺ (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Na' })
               .type(InputType.Number)
-              .height(48)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.na = parseFloat(value) || 0;
                 this.calculate();
@@ -77,17 +80,17 @@ export struct NaCalculator {
             Text('血糖 Glu (mmol/L)')
               .fontSize(14)
               .fontWeight(FontWeight.Medium)
-              .fontColor('#1F2421')
+              .fontColor(AppColors.textPrimary)
               .margin({ bottom: 6 });
             TextInput({ placeholder: 'Glu' })
-              .type(InputType.Number)
-              .height(48)
+              .type(InputType.NUMBER_DECIMAL)
+              .height(AppDimens.inputHeight)
               .fontSize(16)
-              .backgroundColor('#FFFFFF')
+              .backgroundColor(AppColors.card)
               .borderRadius(8)
-              .border({ width: 1, color: '#E0E0E0' })
+              .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 })
-              .placeholderColor('#999999')
+              .placeholderColor(AppColors.placeholder)
               .onChange((value: string) => {
                 this.glu = parseFloat(value) || 0;
                 this.calculate();
@@ -98,51 +101,13 @@ export struct NaCalculator {
         }
         .width('100%');
       }
-      .padding(16)
-      .backgroundColor('#FFFFFF')
-      .borderRadius(12)
-      .width('100%')
-      .margin({ bottom: 16 });
 
       if (this.result) {
-        Column() {
-          Row() {
-            Column() {
-              Text('校正 Na⁺')
-                .fontSize(12)
-                .fontColor('#5F6654')
-                .letterSpacing(1.5);
-              Text(this.result!.value !== null ? 
-                `${this.result!.value!.toFixed(1)} ${this.result!.unit}` : '—')
-                .fontSize(32)
-                .fontWeight(FontWeight.Bold)
-                .fontColor('#1F3D2F')
-                .margin({ top: 4 });
-              Text(this.result!.tier)
-                .fontSize(13)
-                .fontWeight(FontWeight.Bold)
-                .fontColor(getTierColor(this.result!.tierClass))
-                .backgroundColor(getTierBgColor(this.result!.tierClass))
-                .borderRadius(20)
-                .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-                .margin({ top: 4 });
-            }
-            .alignItems(HorizontalAlign.Start)
-            .layoutWeight(1);
-            Column() {
-              Text(this.result!.footnote).fontSize(14).fontColor('#4A5247').lineHeight(22);
-            }.layoutWeight(1).alignItems(HorizontalAlign.Start);
-          }
-          .width('100%');
-        }
-        .padding(16)
-        .backgroundColor('#FFFFFF')
-        .borderRadius(12)
-        .width('100%');
+        ResultCard({ title: '校正 Na⁺', value: this.result!.value, unit: this.result!.unit, decimals: 1, valueMarginTop: 4, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(16).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
