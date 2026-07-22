@@ -73,6 +73,7 @@ export struct PatientListPage {
         .height(AppDimens.inputHeight)
         .fontSize(14)
         .backgroundColor(AppColors.card)
+        .border({ width: 1, color: AppColors.border })
         .borderRadius(8)
         .margin({ left: 16, right: 16, bottom: 12 })
         .onChange((value: string) => {
@@ -149,6 +150,7 @@ export struct PatientListPage {
               .width('100%')
               .padding(12)
               .backgroundColor(AppColors.card)
+              .border({ width: 1, color: AppColors.border })
               .borderRadius(10)
               .onClick(() => {
                 this.patientStack.pushPath({ name: 'PatientDetail', param: patient.id });
@@ -275,6 +277,7 @@ export struct PatientListPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
@@ -331,6 +334,7 @@ export struct PatientListPage {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
