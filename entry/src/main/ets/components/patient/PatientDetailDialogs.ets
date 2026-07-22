@@ -116,6 +116,7 @@ export struct TimelineDialog {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
@@ -191,6 +192,7 @@ export struct ExamTimeEditorDialog {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
@@ -293,6 +295,7 @@ export struct ManualInputDialog {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
@@ -352,6 +355,7 @@ export struct DeleteConfirmDialog {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }
@@ -435,6 +439,7 @@ export struct AddDiagnosisDialog {
       }
       .padding(20)
       .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
       .borderRadius(AppDimens.cardRadius)
       .width('85%')
     }

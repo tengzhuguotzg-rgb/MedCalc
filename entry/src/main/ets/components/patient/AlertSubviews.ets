@@ -58,6 +58,7 @@ export struct LabAlertCard {
     .width('100%')
     .padding(10)
     .backgroundColor(AppColors.card)
+    .border({ width: 1, color: AppColors.border })
     .borderRadius(8)
     .margin({ bottom: 6 })
   }
@@ -150,6 +151,7 @@ export struct AlertCardView {
     .width('100%')
     .padding(10)
     .backgroundColor(AppColors.card)
+    .border({ width: 1, color: AppColors.border })
     .borderRadius(8)
     .margin({ bottom: 6 })
   }

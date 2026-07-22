@@ -46,7 +46,8 @@ export struct KbReaderOverlay {
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card);
+      .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border });
 
       Scroll() {
         Column() {
@@ -69,6 +70,7 @@ export struct KbReaderOverlay {
     .width('95%')
     .height('85%')
     .backgroundColor(AppColors.card)
+    .border({ width: 1, color: AppColors.border })
     .borderRadius(AppDimens.cardRadius);
   }
 }

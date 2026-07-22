@@ -58,7 +58,7 @@ export struct AlertDetailPageView {
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
       .backgroundColor(AppColors.card)
-
+      .border({ width: 1, color: AppColors.border })
       Scroll() {
         Column() {
           if (this.getWarningAlerts().length === 0 && this.dashboard.labAlerts.length === 0) {
@@ -304,7 +304,7 @@ export struct DiagnosisDetailPageView {
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
       .backgroundColor(AppColors.card)
-
+      .border({ width: 1, color: AppColors.border })
       Scroll() {
         Column() {
           if (this.dashboard.diagnoses.length === 0) {
@@ -464,7 +464,8 @@ export struct RecommendationsDetailPageView {
       }
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card);
+      .backgroundColor(AppColors.card)
+      .border({ width: 1, color: AppColors.border })
 
       Scroll() {
         Column() {
@@ -559,7 +560,7 @@ export struct DataDetailPageView {
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
       .backgroundColor(AppColors.card)
-
+      .border({ width: 1, color: AppColors.border })
       Scroll() {
         Column() {
           if (getDataFieldCount(this.dashboard, this.dataFieldSpecs) === 0) {
@@ -647,8 +648,9 @@ export struct DataDetailPageView {
               }
               .width('100%')
               .padding(10)
-              .backgroundColor(AppColors.card)
-              .borderRadius(8)
+.backgroundColor(AppColors.card)
+               .border({ width: 1, color: AppColors.border })
+               .borderRadius(8)
               .margin({ bottom: 6 })
             }, (entry: DomainEntry) => entry.name)
           }
@@ -695,7 +697,7 @@ export struct RecordsDetailPageView {
       .width('100%')
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
       .backgroundColor(AppColors.card)
-
+      .border({ width: 1, color: AppColors.border })
       Scroll() {
         Column() {
           if (this.dashboard.records.length === 0) {
@@ -756,8 +758,9 @@ export struct RecordsDetailPageView {
               }
               .width('100%')
               .padding(10)
-              .backgroundColor(AppColors.card)
-              .borderRadius(8)
+.backgroundColor(AppColors.card)
+               .border({ width: 1, color: AppColors.border })
+               .borderRadius(8)
               .margin({ bottom: 4 })
             }, (record: PatientRecord) => record.id)
           }

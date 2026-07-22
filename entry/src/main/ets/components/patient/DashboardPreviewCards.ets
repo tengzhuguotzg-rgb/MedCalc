@@ -117,6 +117,7 @@ export struct AlertPreviewCard {
     .width('100%')
     .padding(12)
     .backgroundColor(AppColors.card)
+    .border({ width: 1, color: AppColors.border })
     .borderRadius(10)
     .margin({ bottom: 8 })
     .onClick(() => { this.onTap(); })
@@ -194,18 +195,19 @@ export struct DiagnosisPreviewCard {
         .margin({ top: 8 })
       } else {
          Text($r('app.string.dashboard_no_diagnosis'))
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ top: 4 })
-      }
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor(AppColors.card)
-    .borderRadius(10)
-    .margin({ bottom: 12 })
-    .onClick(() => { this.onTap(); })
-  }
+           .fontSize(12)
+           .fontColor(AppColors.textSecondary)
+           .margin({ top: 4 })
+       }
+     }
+     .width('100%')
+     .padding(12)
+     .backgroundColor(AppColors.card)
+     .border({ width: 1, color: AppColors.border })
+     .borderRadius(10)
+     .margin({ bottom: 12 })
+     .onClick(() => { this.onTap(); })
+   }
 }
 
 @Component
@@ -286,6 +288,7 @@ export struct DataPreviewCard {
     .width('100%')
     .padding(12)
     .backgroundColor(AppColors.card)
+    .border({ width: 1, color: AppColors.border })
     .borderRadius(10)
     .margin({ bottom: 8 })
     .onClick(() => { this.onTap(); })
@@ -354,16 +357,17 @@ export struct RecordsPreviewCard {
         .margin({ top: 8 })
       } else {
          Text($r('app.string.dashboard_no_records'))
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .margin({ top: 4 })
-      }
-    }
-    .width('100%')
-    .padding(12)
-    .backgroundColor(AppColors.card)
-    .borderRadius(10)
-    .margin({ bottom: 12 })
-    .onClick(() => { this.onTap(); })
-  }
+           .fontSize(12)
+           .fontColor(AppColors.textSecondary)
+           .margin({ top: 4 })
+       }
+     }
+     .width('100%')
+     .padding(12)
+     .backgroundColor(AppColors.card)
+     .border({ width: 1, color: AppColors.border })
+     .borderRadius(10)
+     .margin({ bottom: 12 })
+     .onClick(() => { this.onTap(); })
+   }
 }
