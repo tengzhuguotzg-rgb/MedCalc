@@ -491,33 +491,34 @@ export struct PatientDetailPage {
              onBack: () => { this.showRecordsDetail = false; }
            });
         } else {
-        Row() {
-           Button($r('app.string.common_back'))
-            .fontSize(14)
-            .fontColor(AppColors.primary)
-            .backgroundColor(Color.Transparent)
-            .onClick(() => {
-              if (!this.navigateBack()) {
-                this.patientStack.pop();
-              }
-            })
-          Text(this.dashboard.patient.name)
-            .fontSize(18)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
-            .layoutWeight(1)
-            .margin({ left: 8 })
-          if (this.dashboard.patient.bedNo.length > 0) {
-            Text(this.dashboard.patient.bedNo + '床')
-              .fontSize(13)
-              .fontColor(AppColors.textSecondary)
-              .backgroundColor(AppColors.fillBeige)
-              .borderRadius(4)
-              .padding({ left: 6, right: 6, top: 2, bottom: 2 })
-          }
-        }
-        .width('100%')
-        .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+         Row() {
+            Button($r('app.string.common_back'))
+             .fontSize(14)
+             .fontColor(AppColors.headerText)
+             .backgroundColor(Color.Transparent)
+             .onClick(() => {
+               if (!this.navigateBack()) {
+                 this.patientStack.pop();
+               }
+             })
+           Text(this.dashboard.patient.name)
+             .fontSize(18)
+             .fontWeight(FontWeight.Bold)
+             .fontColor(AppColors.headerText)
+             .layoutWeight(1)
+             .margin({ left: 8 })
+           if (this.dashboard.patient.bedNo.length > 0) {
+             Text(this.dashboard.patient.bedNo + '床')
+               .fontSize(13)
+               .fontColor(AppColors.headerText)
+               .backgroundColor(AppColors.headerBg)
+               .borderRadius(4)
+               .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+           }
+         }
+         .width('100%')
+         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+         .backgroundColor(AppColors.headerBg)
 
         if (this.loading) {
           Column() {

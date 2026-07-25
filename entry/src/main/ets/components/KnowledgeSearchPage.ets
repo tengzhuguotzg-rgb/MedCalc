@@ -567,7 +567,7 @@ export struct KnowledgeSearchPage {
       Row() {
         Text('\u2190')
           .fontSize(20)
-          .fontColor(AppColors.primary)
+          .fontColor(AppColors.headerText)
           .padding({ right: 12 })
           .onClick(() => {
             this.browseMode = 'root';
@@ -577,12 +577,12 @@ export struct KnowledgeSearchPage {
         Text(this.currentCategoryName)
           .fontSize(18)
           .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
+          .fontColor(AppColors.headerText)
           .layoutWeight(1);
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 10, bottom: 10 })
-      .backgroundColor(AppColors.card);
+      .backgroundColor(AppColors.headerBg);
 
       if (this.isLoadingCategory) {
         Column() {
@@ -709,7 +709,7 @@ export struct KnowledgeSearchPage {
       Row() {
         Text('\u2190')
           .fontSize(20)
-          .fontColor(AppColors.primary)
+          .fontColor(AppColors.headerText)
           .padding({ right: 8 })
           .onClick(() => { this.closeReader(); });
 
@@ -717,7 +717,7 @@ export struct KnowledgeSearchPage {
           Text(this.getPageTitle())
             .fontSize(16)
             .fontWeight(FontWeight.Bold)
-            .fontColor(AppColors.primary)
+            .fontColor(AppColors.headerText)
             .maxLines(1)
             .textOverflow({ overflow: TextOverflow.Ellipsis });
           Scroll() {
@@ -726,11 +726,11 @@ export struct KnowledgeSearchPage {
                 if (index > 0) {
                   Text(' \u203A ')
                     .fontSize(10)
-                    .fontColor(AppColors.textFaint);
+                    .fontColor(AppColors.headerText);
                 }
                 Text(item.label)
                   .fontSize(10)
-                  .fontColor(item.clickable ? AppColors.primary : AppColors.textSecondary)
+                  .fontColor(AppColors.headerText)
                   .onClick(() => {
                     if (item.clickable) {
                       this.openPage(item.targetPath.endsWith('.md') ? item.targetPath : item.targetPath + '/index.md');
@@ -748,20 +748,20 @@ export struct KnowledgeSearchPage {
         if (this.tocEntries.length > 0) {
           Text('\u2630')
             .fontSize(18)
-            .fontColor(AppColors.textSecondary)
+            .fontColor(AppColors.headerText)
             .padding({ left: 8 })
             .onClick(() => { this.showToc = !this.showToc; });
         }
       }
       .width('100%')
       .padding({ left: 12, right: 12, top: 8, bottom: 8 })
-      .backgroundColor(AppColors.card);
+      .backgroundColor(AppColors.headerBg);
 
       if (this.showToc && this.tocEntries.length > 0) {
         this.TocDropdown();
       }
     }
-    .backgroundColor(AppColors.card)
+    .backgroundColor(AppColors.headerBg)
     .shadow({ radius: 2, color: '#0A000000', offsetY: 1 });
   }
 

@@ -27,8 +27,8 @@ export struct Sidebar {
         .width(28)
         .height(28)
         .borderRadius(14)
-        .backgroundColor(AppColors.primary)
-        .fontColor(AppColors.onPrimary)
+        .backgroundColor(AppColors.headerText)
+        .fontColor(AppColors.headerBg)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);
@@ -36,16 +36,17 @@ export struct Sidebar {
         Text('医学计算器')
           .fontSize(12.5)
           .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary);
+          .fontColor(AppColors.headerText);
         Text('Teng.ZG')
           .fontSize(12)
-          .fontColor(AppColors.textSecondary);
+          .fontColor(AppColors.headerText);
       }
       .alignItems(HorizontalAlign.Start)
       .margin({ left: 8 });
     }
     .padding({ left: 12, right: 12, top: 12, bottom: 8 })
-    .width('100%');
+    .width('100%')
+    .backgroundColor(AppColors.headerBg);
   }
 
   @Builder
@@ -56,7 +57,7 @@ export struct Sidebar {
           Image($r('app.media.ic_star_filled'))
             .width(12)
             .height(12)
-            .fillColor(AppColors.textSecondary)
+            .fillColor(AppColors.primary)
             .objectFit(ImageFit.Contain)
           Text('收藏')
             .fontSize(12)
@@ -92,17 +93,48 @@ export struct Sidebar {
 
   @Builder
   GroupHeader(groupName: string) {
-    Row({ space: 6 }) {
-      Image(this.groupIcon(groupName))
-        .width(14)
-        .height(14)
-        .fillColor(AppColors.textSecondary)
-        .objectFit(ImageFit.Contain)
-      Text(groupName)
-        .fontSize(12)
-        .fontColor(AppColors.textSecondary)
+    Column() {
+      Row({ space: 8 }) {
+        Row() {
+          Image(this.groupIcon(groupName))
+            .width(16)
+            .height(16)
+            .fillColor(AppColors.headerText)
+            .objectFit(ImageFit.Contain)
+        }
+        .width(24)
+        .height(24)
+        .borderRadius(7)
+        .backgroundColor(AppColors.primary)
+        .justifyContent(FlexAlign.Center)
+
+        Text(groupName)
+          .fontSize(14)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(AppColors.primary)
+          .layoutWeight(1)
+
+        Text(this.groupCount(groupName).toString())
+          .fontSize(12)
+          .fontColor(AppColors.textSecondary)
+          .padding({ left: 6, right: 6, top: 2, bottom: 2 })
+          .borderRadius(10)
+          .border({ width: 1, color: AppColors.border })
+          .backgroundColor(AppColors.card)
+      }
+      .width('100%')
+      .padding({ left: 12, right: 12, top: 8, bottom: 4 })
+
+      Row()
+        .width('100%')
+        .height(2)
+        .backgroundColor(AppColors.groupLine)
+        .margin({ left: 12, right: 12, top: 4 })
     }
-    .padding({ left: 12, right: 12, top: 8, bottom: 4 });
+  }
+
+  private groupCount(groupName: string): number {
+    return CALCULATORS.filter(c => c.group === groupName).length;
   }
 
   private groupIcon(groupName: string): Resource {
@@ -133,6 +165,12 @@ export struct Sidebar {
   @Builder
   CalculatorItem(calc: Calculator) {
     Row() {
+      if (calc.id === this.currentCalc) {
+        Row()
+          .width(3)
+          .height('100%')
+          .backgroundColor(AppColors.primary)
+      }
       Image(this.calcIcon(calc.id))
         .width(16)
         .height(16)
@@ -148,7 +186,8 @@ export struct Sidebar {
       }
     }
     .width('100%')
-    .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+    .height(40)
+    .padding({ left: 12, right: 12 })
     .backgroundColor(calc.id === this.currentCalc ? AppColors.card : 'transparent')
     .borderRadius(4)
     .onClick(() => {
@@ -199,8 +238,8 @@ export struct Sidebar {
         .width(28)
         .height(28)
         .borderRadius(14)
-        .backgroundColor(AppColors.primary)
-        .fontColor(AppColors.onPrimary)
+        .backgroundColor(AppColors.headerText)
+        .fontColor(AppColors.headerBg)
         .fontSize(13)
         .fontWeight(FontWeight.Bold)
         .textAlign(TextAlign.Center);

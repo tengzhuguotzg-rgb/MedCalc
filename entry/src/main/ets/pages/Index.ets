@@ -156,12 +156,12 @@ struct Index {
       Image(this.tabIcon(index))
         .width(22)
         .height(22)
-        .fillColor(this.currentTab === index ? AppColors.primary : AppColors.textSecondary)
+        .fillColor(this.currentTab === index ? AppColors.primary : AppColors.tabInactive)
         .objectFit(ImageFit.Contain)
       Text(title)
         .fontSize(11)
         .fontWeight(this.currentTab === index ? FontWeight.Medium : FontWeight.Normal)
-        .fontColor(this.currentTab === index ? AppColors.primary : AppColors.textSecondary)
+        .fontColor(this.currentTab === index ? AppColors.primary : AppColors.tabInactive)
     }
     .width('100%')
     .height('100%')
@@ -325,35 +325,34 @@ struct Index {
         this.sidebarCollapsed = false;
       });
 
-      Column() {
-        Text(this.getCurrentCalculatorName())
-          .fontSize(20)
-          .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary);
-      }
-      .alignItems(HorizontalAlign.Start)
-      .layoutWeight(1)
-      .margin({ left: 4 });
+       Column() {
+         Text(this.getCurrentCalculatorName())
+           .fontSize(20)
+           .fontWeight(FontWeight.Bold)
+           .fontColor(AppColors.headerText);
+       }
+       .alignItems(HorizontalAlign.Start)
+       .layoutWeight(1)
+       .margin({ left: 4 });
 
-      Button() {
-        Image(this.isFavorite() ? $r('app.media.ic_star_filled') : $r('app.media.ic_star'))
-          .width(20)
-          .height(20)
-          .fillColor(this.isFavorite() ? AppColors.primary : AppColors.textSecondary)
-          .objectFit(ImageFit.Contain)
-      }
-      .width(44)
-      .height(44)
-      .backgroundColor('transparent')
-      .onClick(() => {
-        this.toggleFavorite();
-      })
-    }
-    .width('100%')
-    .height(44)
-    .padding({ left: 12, right: 12 })
-    .backgroundColor(AppColors.card)
-    .border({ width: { bottom: 1 }, color: AppColors.divider });
+       Button() {
+         Image(this.isFavorite() ? $r('app.media.ic_star_filled') : $r('app.media.ic_star'))
+           .width(20)
+           .height(20)
+           .fillColor(AppColors.headerText)
+           .objectFit(ImageFit.Contain)
+       }
+       .width(44)
+       .height(44)
+       .backgroundColor('transparent')
+       .onClick(() => {
+         this.toggleFavorite();
+       })
+     }
+     .width('100%')
+     .height(44)
+     .padding({ left: 12, right: 12 })
+     .backgroundColor(AppColors.headerBg);
   }
 
   @Builder
@@ -361,7 +360,7 @@ struct Index {
     Image($r('app.media.ic_menu'))
       .width(22)
       .height(22)
-      .fillColor(AppColors.primary)
+      .fillColor(AppColors.headerText)
       .objectFit(ImageFit.Contain)
   }
 

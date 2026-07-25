@@ -230,13 +230,12 @@ export struct SettingsPage {
         Text($r('app.string.settings_title'))
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
+          .fontColor(AppColors.headerText)
       }
       .width('100%')
       .height(AppDimens.touchTarget)
       .padding({ left: 16, right: 16 })
-      .backgroundColor(AppColors.card)
-      .border({ width: { bottom: 1 }, color: AppColors.divider })
+      .backgroundColor(AppColors.headerBg)
 
       Scroll() {
         Column({ space: 16 }) {
