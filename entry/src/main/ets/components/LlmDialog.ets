@@ -120,7 +120,7 @@ export struct LlmDialog {
       .height('100%')
     } else {
       Button() {
-        Text('💬').fontSize(22)
+        Text('💬').fontSize(22).fontColor(AppColors.onPrimary)
       }
       .width(52)
       .height(52)
