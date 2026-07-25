@@ -95,7 +95,7 @@ export struct InputRow {
  * Hero 布局（V2）：
  *  - 左侧 4px tier 色竖条 + 卡底 tier 氛围色
  *  - 标题/数值/tier 胶囊 上方，footnote 下方通栏
- *  - 空态数值灰化
+ *  - 空态：紧凑 40px 提示条（替代灰化 Hero 卡）
  */
 @Component
 export struct ResultCard {
@@ -167,35 +167,38 @@ export struct ResultCard {
   }
 
   build() {
-    Row() {
-      Row()
-        .width(4)
-        .height('100%')
-        .backgroundColor(this.tierClass.length > 0 ? getTierColor(this.tierClass) : Color.Transparent)
-        .borderRadius({ topLeft: 12, bottomLeft: 12 })
-
-      Column() {
-        Text(this.title)
+    if (this.isEmpty()) {
+      Row({ space: 6 }) {
+        Image($r('app.media.ic_info'))
+          .width(16)
+          .height(16)
+          .fillColor(AppColors.textSecondary)
+          .objectFit(ImageFit.Contain)
+        Text(this.tier.length > 0 ? this.tier : '填写参数后自动出分')
           .fontSize(12)
           .fontColor(AppColors.textSecondary)
-          .fontWeight(this.titleMedium ? FontWeight.Medium : FontWeight.Regular);
-        if (this.isEmpty()) {
-          Row({ space: 8 }) {
-            Image($r('app.media.ic_inbox'))
-              .width(24)
-              .height(24)
-              .fillColor(AppColors.textFaint)
-              .objectFit(ImageFit.Contain)
-            Text('—')
-              .fontSize(this.valueFontSize)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(AppColors.textFaint)
-              .fontFeature('tnum')
-          }
-          .margin({ top: this.valueMarginTop })
-          .opacity(0.4)
-          .animation({ duration: 200, curve: Curve.EaseOut });
-        } else {
+      }
+      .height(40)
+      .width('100%')
+      .padding({ left: 12, right: 12 })
+      .backgroundColor(AppColors.card)
+      .borderRadius(AppDimens.cardRadius)
+      .border({ width: 1, color: AppColors.border })
+      .margin({ bottom: this.bottomMargin })
+      .animation({ duration: 200, curve: Curve.EaseOut });
+    } else {
+      Row() {
+        Row()
+          .width(4)
+          .height('100%')
+          .backgroundColor(this.tierClass.length > 0 ? getTierColor(this.tierClass) : Color.Transparent)
+          .borderRadius({ topLeft: 12, bottomLeft: 12 })
+
+        Column() {
+          Text(this.title)
+            .fontSize(12)
+            .fontColor(AppColors.textSecondary)
+            .fontWeight(this.titleMedium ? FontWeight.Medium : FontWeight.Regular);
           Text(this.mainText())
             .fontSize(this.valueFontSize)
             .fontWeight(FontWeight.Bold)
@@ -203,47 +206,47 @@ export struct ResultCard {
             .fontFeature('tnum')
             .margin({ top: this.valueMarginTop })
             .animation({ duration: 200, curve: Curve.EaseOut });
-        }
-        if (!this.unitInline) {
-          Text(this.value !== null ? this.unit : '')
-            .fontSize(10)
-            .fontColor(AppColors.textSecondary);
-        }
-        if (this.tier.length > 0) {
-          Row({ space: 4 }) {
-            Image(this.tierIcon())
-              .width(14)
-              .height(14)
-              .fillColor(getTierColor(this.tierClass))
-              .objectFit(ImageFit.Contain)
-            Text(this.tier)
-              .fontSize(this.tierFontSize)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(getTierColor(this.tierClass))
+          if (!this.unitInline) {
+            Text(this.value !== null ? this.unit : '')
+              .fontSize(10)
+              .fontColor(AppColors.textSecondary);
           }
-          .backgroundColor(getTierBgColor(this.tierClass))
-          .borderRadius(20)
-          .padding({ left: 10, right: 12, top: 4, bottom: 4 })
-          .margin({ top: this.tierMarginTop })
-          .animation({ duration: 200, curve: Curve.EaseOut });
+          if (this.tier.length > 0) {
+            Row({ space: 4 }) {
+              Image(this.tierIcon())
+                .width(14)
+                .height(14)
+                .fillColor(getTierColor(this.tierClass))
+                .objectFit(ImageFit.Contain)
+              Text(this.tier)
+                .fontSize(this.tierFontSize)
+                .fontWeight(FontWeight.Bold)
+                .fontColor(getTierColor(this.tierClass))
+            }
+            .backgroundColor(getTierBgColor(this.tierClass))
+            .borderRadius(20)
+            .padding({ left: 10, right: 12, top: 4, bottom: 4 })
+            .margin({ top: this.tierMarginTop })
+            .animation({ duration: 200, curve: Curve.EaseOut });
+          }
+          if (this.footnote.length > 0) {
+            Text(this.footnote)
+              .fontSize(12)
+              .fontColor(AppColors.textBody)
+              .lineHeight(18)
+              .margin({ top: 8 });
+          }
         }
-        if (this.footnote.length > 0) {
-          Text(this.footnote)
-            .fontSize(12)
-            .fontColor(AppColors.textBody)
-            .lineHeight(18)
-            .margin({ top: 8 });
-        }
+        .alignItems(HorizontalAlign.Start)
+        .layoutWeight(1)
+        .padding({ left: 12 })
       }
-      .alignItems(HorizontalAlign.Start)
-      .layoutWeight(1)
-      .padding({ left: 12 })
+      .width('100%')
+      .padding(AppDimens.cardPadding)
+      .backgroundColor(this.tierClass.length > 0 ? getTierBgColor(this.tierClass) : AppColors.card)
+      .borderRadius(AppDimens.cardRadius)
+      .margin({ bottom: this.bottomMargin });
     }
-    .width('100%')
-    .padding(AppDimens.cardPadding)
-    .backgroundColor(this.tierClass.length > 0 ? getTierBgColor(this.tierClass) : AppColors.card)
-    .borderRadius(AppDimens.cardRadius)
-    .margin({ bottom: this.bottomMargin });
   }
 }
 
