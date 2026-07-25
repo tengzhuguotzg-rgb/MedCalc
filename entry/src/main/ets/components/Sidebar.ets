@@ -52,11 +52,17 @@ export struct Sidebar {
   FavoritesSection() {
     if (this.favorites.length > 0) {
       Column() {
-        Text('★ 收藏')
-          .fontSize(12)
-          .fontColor(AppColors.textSecondary)
-          .letterSpacing(1.5)
-          .margin({ bottom: 4 });
+        Row({ space: 4 }) {
+          Image($r('app.media.ic_star_filled'))
+            .width(12)
+            .height(12)
+            .fillColor(AppColors.textSecondary)
+            .objectFit(ImageFit.Contain)
+          Text('收藏')
+            .fontSize(12)
+            .fontColor(AppColors.textSecondary)
+        }
+        .margin({ bottom: 4 });
         ForEach(this.favorites, (favId: string) => {
           this.CalculatorItem(CALCULATORS.find(c => c.id === favId)!);
         }, (favId: string) => favId);
@@ -86,25 +92,59 @@ export struct Sidebar {
 
   @Builder
   GroupHeader(groupName: string) {
-    Text(groupName)
-      .fontSize(12)
-      .fontColor(AppColors.textSecondary)
-      .letterSpacing(1.5)
-      .padding({ left: 12, right: 12, top: 8, bottom: 4 });
+    Row({ space: 6 }) {
+      Image(this.groupIcon(groupName))
+        .width(14)
+        .height(14)
+        .fillColor(AppColors.textSecondary)
+        .objectFit(ImageFit.Contain)
+      Text(groupName)
+        .fontSize(12)
+        .fontColor(AppColors.textSecondary)
+    }
+    .padding({ left: 12, right: 12, top: 8, bottom: 4 });
+  }
+
+  private groupIcon(groupName: string): Resource {
+    if (groupName === '呼吸') {
+      return $r('app.media.ic_lungs');
+    }
+    if (groupName === '心血管') {
+      return $r('app.media.ic_heart_pulse');
+    }
+    if (groupName === '肾') {
+      return $r('app.media.ic_kidney');
+    }
+    if (groupName === '肝') {
+      return $r('app.media.ic_liver');
+    }
+    if (groupName === '神经') {
+      return $r('app.media.ic_brain');
+    }
+    if (groupName === '代谢') {
+      return $r('app.media.ic_metabolism');
+    }
+    if (groupName === '感染') {
+      return $r('app.media.ic_infection');
+    }
+    return $r('app.media.ic_general');
   }
 
   @Builder
   CalculatorItem(calc: Calculator) {
     Row() {
-      Text(calc.icon)
-        .fontSize(14)
-        .width(18);
+      Image(this.calcIcon(calc.id))
+        .width(16)
+        .height(16)
+        .fillColor(calc.id === this.currentCalc ? AppColors.primary : AppColors.textSecondary)
+        .objectFit(ImageFit.Contain)
       if (!this.sidebarCollapsed) {
         Text(calc.name)
           .fontSize(12.5)
           .fontColor(calc.id === this.currentCalc ? AppColors.primary : AppColors.textPrimary)
           .fontWeight(calc.id === this.currentCalc ? FontWeight.Bold : FontWeight.Normal)
-          .layoutWeight(1);
+          .layoutWeight(1)
+          .margin({ left: 6 });
       }
     }
     .width('100%')
@@ -115,6 +155,41 @@ export struct Sidebar {
       this.currentCalc = calc.id;
       this.sidebarCollapsed = true;
     });
+  }
+
+  private calcIcon(calcId: string): Resource {
+    const groupMap: Record<string, string[]> = {
+      '呼吸': ['pf', 'rox', 'bg', 'news2', 'fssicu', 'camicu'],
+      '心血管': ['map', 'sf', 'sofa', 'chadsvasc', 'hasbled', 'curb65', 'scai', 'vasopressor', 'timi_stemi', 'timi_nstemi', 'wells', 'pesi'],
+      '肾': ['crcl', 'gfr', 'kdigo', 'na', 'na_deficit', 'na_correction'],
+      '肝': ['child_pugh', 'clif_c', 'meld'],
+      '神经': ['gcs', 'nihss', 'rass', 'hunt_hess', 'wfns', 'fisher', 'marshall', 'ich', 'abcd2'],
+      '代谢': ['cag', 'sirs', 'mehran', 'mnutric', 'nrs2002'],
+      '感染': ['sofa', 'sirs', 'curb65'],
+      '综合': [],
+    };
+    if (groupMap['呼吸'].includes(calcId)) {
+      return $r('app.media.ic_lungs');
+    }
+    if (groupMap['心血管'].includes(calcId)) {
+      return $r('app.media.ic_heart_pulse');
+    }
+    if (groupMap['肾'].includes(calcId)) {
+      return $r('app.media.ic_kidney');
+    }
+    if (groupMap['肝'].includes(calcId)) {
+      return $r('app.media.ic_liver');
+    }
+    if (groupMap['神经'].includes(calcId)) {
+      return $r('app.media.ic_brain');
+    }
+    if (groupMap['代谢'].includes(calcId)) {
+      return $r('app.media.ic_metabolism');
+    }
+    if (groupMap['感染'].includes(calcId)) {
+      return $r('app.media.ic_infection');
+    }
+    return $r('app.media.ic_general');
   }
 
   @Builder
@@ -132,16 +207,21 @@ export struct Sidebar {
       List() {
         ForEach(CALCULATORS, (calc: Calculator) => {
           ListItem() {
-            Text(calc.icon)
-              .fontSize(18)
-              .width(40)
-              .height(AppDimens.inputHeight)
-              .textAlign(TextAlign.Center)
-              .borderRadius(4)
-              .backgroundColor(calc.id === this.currentCalc ? AppColors.card : 'transparent')
-              .onClick(() => {
-                this.currentCalc = calc.id;
-              });
+            Row() {
+              Image(this.calcIcon(calc.id))
+                .width(20)
+                .height(20)
+                .fillColor(calc.id === this.currentCalc ? AppColors.primary : AppColors.textSecondary)
+                .objectFit(ImageFit.Contain)
+            }
+            .width(40)
+            .height(AppDimens.inputHeight)
+            .justifyContent(FlexAlign.Center)
+            .borderRadius(4)
+            .backgroundColor(calc.id === this.currentCalc ? AppColors.card : 'transparent')
+            .onClick(() => {
+              this.currentCalc = calc.id;
+            });
           };
         }, (calc: Calculator) => calc.id);
       }

@@ -1,5 +1,6 @@
 import { BgResult, BgInput, calculateBg } from '../../engine/BloodGasCalculator';
 import { getTierColor as calcTierColor } from '../../engine/CalcEngine';
+import { SectionTitle } from './widgets/CalcWidgets';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
 
@@ -279,12 +280,7 @@ export struct BloodGasCalculator {
   @Builder
   InputForm() {
     Column() {
-      Row() { Text('— 动脉血气 (必填)')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        ; Blank(); Text('重置').fontSize(12).fontColor(AppColors.textSecondary).onClick(() => { this.reset(); }); }.width('100%').margin({ bottom: 12 });
+      SectionTitle({ title: '动脉血气 (必填)', resetAction: () => { this.reset(); } })
 
       Row() {
         Button('急性')

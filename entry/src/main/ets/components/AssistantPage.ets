@@ -424,7 +424,6 @@ export struct AssistantPage {
       Text('提取数据')
         .fontSize(12)
         .fontColor(AppColors.textSecondary)
-        .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
 
@@ -457,7 +456,6 @@ export struct AssistantPage {
       Text('📊 计算结果')
         .fontSize(12)
         .fontColor(AppColors.textSecondary)
-        .letterSpacing(1)
         .width('100%')
         .margin({ bottom: 6 })
 

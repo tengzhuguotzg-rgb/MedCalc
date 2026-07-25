@@ -251,7 +251,6 @@ export struct LlmDialog {
         Text('✅ 推荐结果')
           .fontSize(11)
           .fontColor(AppColors.textSecondary)
-          .letterSpacing(1)
           .width('100%')
           .margin({ bottom: 8 })
 

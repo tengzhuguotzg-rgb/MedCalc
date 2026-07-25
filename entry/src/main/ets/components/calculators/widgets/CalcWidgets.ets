@@ -36,6 +36,7 @@ export struct CalcCard {
     .padding(AppDimens.cardPadding)
     .backgroundColor(AppColors.card)
     .borderRadius(AppDimens.cardRadius)
+    .border({ width: 1, color: AppColors.border })
     .width('100%')
     .margin({ bottom: this.bottomMargin });
   }
@@ -89,25 +90,24 @@ export struct InputRow {
 }
 
 /**
- * 结果卡：左列（标题 + 大数值 + tier 胶囊），右列 footnote。
+ * 结果卡（Hero 布局）：标题 + 大数值 + tier 胶囊 + footnote 通栏。
  *
- * 数值展示规则与原实现逐字一致：
- *  - value 为 null 时显示 '—'（空态）
- *  - 否则按 decimals 位小数格式化；trimZero 时再剥掉末尾 '.0'
- *  - unitInline 时数值后拼接 ' ' + unit；否则单位独占一行（12 号灰字）
- *  - valueText 非空时直接覆盖数值文案（用于 '阳性/阴性'、'Stage X' 等特殊格式）
+ * Hero 布局（V2）：
+ *  - 左侧 4px tier 色竖条 + 卡底 tier 氛围色
+ *  - 标题/数值/tier 胶囊 上方，footnote 下方通栏
+ *  - 空态数值灰化
  */
 @Component
 export struct ResultCard {
   /** 结果标题（如 'MAP'、'SOFA Total'） */
   title: string = '';
-  /** 原始数值；null 显示 '—' */
+  /** 原始数值；null 显示 '—'（空态） */
   @Prop value: number | null = null;
   /** 单位 */
   @Prop unit: string = '';
   /** 小数位数（toFixed 参数） */
   decimals: number = 0;
-  /** 是否剥掉格式化后末尾的 '.0'（对应原 toFixed(1).replace(/\.0$/, '')） */
+  /** 是否剥掉格式化后末尾的 '.0' */
   trimZero: boolean = false;
   /** 非空时直接作为数值文案，覆盖 value/unit 格式化 */
   @Prop valueText: string = '';
@@ -115,21 +115,21 @@ export struct ResultCard {
   @Prop tier: string = '';
   /** tier 分级 class（getTierColor/getTierBgColor 入参） */
   @Prop tierClass: string = '';
-  /** 右侧脚注 */
+  /** 脚注（通栏显示于数值下方） */
   @Prop footnote: string = '';
-  /** 数值字号（默认 32；个别计算器为 28） */
-  valueFontSize: number = 32;
-  /** 数值上边距（默认 8；个别计算器为 4） */
-  valueMarginTop: number = 8;
-  /** tier 胶囊字号（默认 13；个别计算器为 12） */
+  /** 数值字号（默认 Hero 40；SCAI 等传 28） */
+  valueFontSize: number = AppDimens.fontHero;
+  /** 数值上边距 */
+  valueMarginTop: number = 4;
+  /** tier 胶囊字号 */
   tierFontSize: number = 12;
-  /** tier 胶囊上边距（默认 8；个别计算器为 4） */
-  tierMarginTop: number = 8;
+  /** tier 胶囊上边距 */
+  tierMarginTop: number = 4;
   /** 单位是否内联在数值后（默认 true；false 时单位独占一行小字） */
   unitInline: boolean = true;
-  /** 标题是否 Medium 字重（默认 true；个别计算器标题无字重设置传 false） */
+  /** 标题是否 Medium 字重（默认 true） */
   titleMedium: boolean = true;
-  /** 结果卡底部外边距（默认 0；Hunt-Hess/WFNS/Fisher 为 16） */
+  /** 结果卡底部外边距（默认 0） */
   bottomMargin: number = 0;
 
   private mainText(): string {
@@ -149,52 +149,100 @@ export struct ResultCard {
     return txt;
   }
 
+  private isEmpty(): boolean {
+    return this.value === null && this.valueText === '';
+  }
+
+  private tierIcon(): Resource {
+    if (this.tierClass === 'ok') {
+      return $r('app.media.ic_check_circle');
+    }
+    if (this.tierClass === 'warn') {
+      return $r('app.media.ic_alert_triangle');
+    }
+    if (this.tierClass === 'danger') {
+      return $r('app.media.ic_alert_octagon');
+    }
+    return $r('app.media.ic_info');
+  }
+
   build() {
-    Column() {
-      Row() {
-        Column() {
-          Text(this.title)
-            .fontSize(12)
-            .fontColor(AppColors.textSecondary)
-            .letterSpacing(1.5)
-            .fontWeight(this.titleMedium ? FontWeight.Medium : FontWeight.Regular);
+    Row() {
+      Row()
+        .width(4)
+        .height('100%')
+        .backgroundColor(this.tierClass.length > 0 ? getTierColor(this.tierClass) : Color.Transparent)
+        .borderRadius({ topLeft: 12, bottomLeft: 12 })
+
+      Column() {
+        Text(this.title)
+          .fontSize(12)
+          .fontColor(AppColors.textSecondary)
+          .fontWeight(this.titleMedium ? FontWeight.Medium : FontWeight.Regular);
+        if (this.isEmpty()) {
+          Row({ space: 8 }) {
+            Image($r('app.media.ic_inbox'))
+              .width(24)
+              .height(24)
+              .fillColor(AppColors.textFaint)
+              .objectFit(ImageFit.Contain)
+            Text('—')
+              .fontSize(this.valueFontSize)
+              .fontWeight(FontWeight.Bold)
+              .fontColor(AppColors.textFaint)
+              .fontFeature('tnum')
+          }
+          .margin({ top: this.valueMarginTop })
+          .opacity(0.4)
+          .animation({ duration: 200, curve: Curve.EaseOut });
+        } else {
           Text(this.mainText())
             .fontSize(this.valueFontSize)
             .fontWeight(FontWeight.Bold)
             .fontColor(this.tierClass.length > 0 ? getTierColor(this.tierClass) : AppColors.primary)
-            .margin({ top: this.valueMarginTop });
-          if (!this.unitInline) {
-            Text(this.value !== null ? this.unit : '')
-              .fontSize(10)
-              .fontColor(AppColors.textSecondary);
-          }
-          Text(this.tier)
-            .fontSize(this.tierFontSize)
-            .fontWeight(FontWeight.Bold)
-            .fontColor(getTierColor(this.tierClass))
-            .backgroundColor(getTierBgColor(this.tierClass))
-            .borderRadius(20)
-            .padding({ left: 12, right: 12, top: 4, bottom: 4 })
-            .margin({ top: this.tierMarginTop });
+            .fontFeature('tnum')
+            .margin({ top: this.valueMarginTop })
+            .animation({ duration: 200, curve: Curve.EaseOut });
         }
-        .alignItems(HorizontalAlign.Start)
-        .layoutWeight(1);
-
-        Column() {
+        if (!this.unitInline) {
+          Text(this.value !== null ? this.unit : '')
+            .fontSize(10)
+            .fontColor(AppColors.textSecondary);
+        }
+        if (this.tier.length > 0) {
+          Row({ space: 4 }) {
+            Image(this.tierIcon())
+              .width(14)
+              .height(14)
+              .fillColor(getTierColor(this.tierClass))
+              .objectFit(ImageFit.Contain)
+            Text(this.tier)
+              .fontSize(this.tierFontSize)
+              .fontWeight(FontWeight.Bold)
+              .fontColor(getTierColor(this.tierClass))
+          }
+          .backgroundColor(getTierBgColor(this.tierClass))
+          .borderRadius(20)
+          .padding({ left: 10, right: 12, top: 4, bottom: 4 })
+          .margin({ top: this.tierMarginTop })
+          .animation({ duration: 200, curve: Curve.EaseOut });
+        }
+        if (this.footnote.length > 0) {
           Text(this.footnote)
             .fontSize(12)
             .fontColor(AppColors.textBody)
-            .lineHeight(18);
+            .lineHeight(18)
+            .margin({ top: 8 });
         }
-        .layoutWeight(1)
-        .alignItems(HorizontalAlign.Start);
       }
-      .width('100%');
+      .alignItems(HorizontalAlign.Start)
+      .layoutWeight(1)
+      .padding({ left: 12 })
     }
-    .padding(AppDimens.cardPadding)
-    .backgroundColor(AppColors.card)
-    .borderRadius(AppDimens.cardRadius)
     .width('100%')
+    .padding(AppDimens.cardPadding)
+    .backgroundColor(this.tierClass.length > 0 ? getTierBgColor(this.tierClass) : AppColors.card)
+    .borderRadius(AppDimens.cardRadius)
     .margin({ bottom: this.bottomMargin });
   }
 }
@@ -236,6 +284,7 @@ export struct OptionChip {
         .borderRadius(this.chipRadius)
         .height(this.chipHeight)
         .padding({ left: this.horizontalPadding, right: this.horizontalPadding })
+        .animation({ duration: 150, curve: Curve.EaseOut })
         .onClick(() => {
           this.onChipClick();
         });
@@ -248,6 +297,7 @@ export struct OptionChip {
         .border({ width: 1, color: this.selected ? AppColors.primary : AppColors.border })
         .borderRadius(this.chipRadius)
         .height(this.chipHeight)
+        .animation({ duration: 150, curve: Curve.EaseOut })
         .onClick(() => {
           this.onChipClick();
         });
@@ -266,5 +316,50 @@ export struct ResetButton {
       .padding({ left: 12, right: 12, top: 10, bottom: 10 })
       .borderRadius(8)
       .onClick(() => { this.onReset(); })
+  }
+}
+
+@Component
+export struct IconButton {
+  iconResource: Resource = $r('app.media.ic_menu');
+  iconColor: ResourceColor = AppColors.textSecondary;
+  iconSize: number = 22;
+  btnSize: number = AppDimens.touchTarget;
+  onIconClick?: () => void;
+
+  build() {
+    Row() {
+      Image(this.iconResource)
+        .width(this.iconSize)
+        .height(this.iconSize)
+        .fillColor(this.iconColor)
+        .objectFit(ImageFit.Contain)
+    }
+    .width(this.btnSize)
+    .height(this.btnSize)
+    .backgroundColor(Color.Transparent)
+    .justifyContent(FlexAlign.Center)
+    .onClick(() => { if (this.onIconClick) { this.onIconClick(); } })
+  }
+}
+
+@Component
+export struct SectionTitle {
+  title: string = '';
+  resetAction?: () => void;
+
+  build() {
+    Row() {
+      Text(this.title)
+        .fontSize(AppDimens.fontSectionTitle)
+        .fontColor(AppColors.textSecondary)
+        .fontWeight(FontWeight.Bold)
+      Blank()
+      if (this.resetAction) {
+        ResetButton({ onReset: this.resetAction })
+      }
+    }
+    .width('100%')
+    .margin({ bottom: AppDimens.spacing2 })
   }
 }

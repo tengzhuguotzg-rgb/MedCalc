@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateApache2 } from '../../engine/Apache2Calculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct Apache2Calculator {
@@ -124,12 +124,7 @@ export struct Apache2Calculator {
   @Builder
   InputForm() {
     CalcCard() {
-      Row() { Text('— 生命体征')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        ; Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
+      SectionTitle({ title: '生命体征', resetAction: () => { this.reset(); } })
 
       Row() {
         InputRow({ label: '体温 (°C)', placeholder: '37.0', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.temp = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
@@ -149,12 +144,7 @@ export struct Apache2Calculator {
         .width('100%')
         .margin({ bottom: 16 });
 
-      Text('— 氧合参数')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+      SectionTitle({ title: '氧合参数' })
 
       InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } })
         .width('100%')
@@ -174,12 +164,7 @@ export struct Apache2Calculator {
       .width('100%')
       .margin({ bottom: 16 });
 
-      Text('— 酸碱状态')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+      SectionTitle({ title: '酸碱状态' })
 
       Row() {
         OptionChip({ label: 'pH (首选)', selected: this.phFilled, fontSize: 13, bold: true, onChipClick: () => { this.phFilled = true; this.hco3Filled = false; this.calculate(); } }).layoutWeight(1).margin({ right: 4 });
@@ -193,12 +178,7 @@ export struct Apache2Calculator {
       .width('100%')
       .margin({ bottom: 16 });
 
-      Text('— 电解质与肾功能')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+      SectionTitle({ title: '电解质与肾功能' })
 
       Row() {
         InputRow({ label: 'Na⁺ (mmol/L)', placeholder: '140', onTextChange: (value: string) => { this.na = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
@@ -237,12 +217,7 @@ export struct Apache2Calculator {
       .width('100%')
       .margin({ bottom: 16 });
 
-      Text('— 血液学')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+      SectionTitle({ title: '血液学' })
 
       Row() {
         InputRow({ label: 'HCT (%)', placeholder: '40', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.hct = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
@@ -251,12 +226,7 @@ export struct Apache2Calculator {
       .width('100%')
       .margin({ bottom: 16 });
 
-      Text('— 神经与年龄')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+      SectionTitle({ title: '神经与年龄' })
 
       Row() {
         InputRow({ label: 'GCS (3-15)', placeholder: '15', onTextChange: (value: string) => { this.gcs = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
@@ -265,12 +235,7 @@ export struct Apache2Calculator {
       .width('100%')
       .margin({ bottom: 16 });
 
-      Text('— 慢性健康状态')
-        .fontSize(12)
-        .fontColor(AppColors.warning)
-        .fontWeight(FontWeight.Bold)
-        .letterSpacing(1.5)
-        .margin({ bottom: 12 });
+      SectionTitle({ title: '慢性健康状态' })
 
       Row() {
         OptionChip({ label: '无', selected: this.chronic === 'none', fontSize: 12, bold: true, onChipClick: () => { this.chronic = 'none'; this.calculate(); } }).layoutWeight(1);
