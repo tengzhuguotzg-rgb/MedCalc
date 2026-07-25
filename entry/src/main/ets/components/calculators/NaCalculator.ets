@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateNa } from '../../engine/CommonCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct NaCalculator {
@@ -52,7 +52,7 @@ export struct NaCalculator {
       .margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
+        SectionTitle({ title: '输入参数', resetAction: () => { this.reset(); } })
 
         Row() {
           Column() {

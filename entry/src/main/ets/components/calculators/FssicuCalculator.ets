@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateFssicu } from '../../engine/FssicuCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct FssicuCalculator {
@@ -47,16 +47,9 @@ export struct FssicuCalculator {
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Column() {
-          Text('— 评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立')
-            .fontSize(12).fontColor(AppColors.textSecondary);
-        }.width('100%').margin({ bottom: 4 });
+        SectionTitle({ title: '评分标准: 0=无法 · 1=完全帮助 · 2=最大帮助 · 3=中度帮助 · 4=最小帮助 · 5=监护 · 6=独立(需辅) · 7=完全独立' })
 
-        Row() {
-          Text('— 输入参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
-          Blank();
-          ResetButton({ onReset: () => { this.reset(); } })
-        }.width('100%').margin({ bottom: 12 });
+        SectionTitle({ title: '输入参数', resetAction: () => { this.reset(); } })
 
         FssRowComponent({ label: '① 翻身 (仰卧→侧卧)', value: this.roll, onChange: (v: number): void => { this.roll = v; this.calculate(); } });
         FssRowComponent({ label: '② 卧位→坐位', value: this.situp, onChange: (v: number): void => { this.situp = v; this.calculate(); } });

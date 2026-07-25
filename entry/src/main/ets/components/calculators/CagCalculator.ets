@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCag } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct CagCalculator {
@@ -46,7 +46,7 @@ export struct CagCalculator {
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() { Text('— 电解质').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5); Blank(); ResetButton({ onReset: () => { this.reset(); } }) }.width('100%').margin({ bottom: 12 });
+        SectionTitle({ title: '电解质', resetAction: () => { this.reset(); } })
         Row() {
           Column() {
             Text('Na⁺ (mmol/L)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });

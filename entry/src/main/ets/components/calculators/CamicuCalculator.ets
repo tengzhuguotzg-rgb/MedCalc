@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateCamicu } from '../../engine/CamicuCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct CamicuCalculator {
@@ -45,11 +45,7 @@ export struct CamicuCalculator {
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() {
-          Text('— 评估特征').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
-          Blank();
-          ResetButton({ onReset: () => { this.reset(); } })
-        }.width('100%').margin({ bottom: 12 });
+        SectionTitle({ title: '评估特征', resetAction: () => { this.reset(); } })
 
         Column() {
           Text('① 意识状态急性改变或波动').fontSize(13).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });

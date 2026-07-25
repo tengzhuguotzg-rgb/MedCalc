@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculatePesi } from '../../engine/PesiCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct PesiCalculator {
@@ -59,11 +59,7 @@ export struct PesiCalculator {
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() {
-          Text('— PESI 参数').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
-          Blank();
-          ResetButton({ onReset: () => { this.reset(); } })
-        }.width('100%').margin({ bottom: 12 });
+        SectionTitle({ title: 'PESI 参数', resetAction: () => { this.reset(); } })
 
         Row() {
           Column() {

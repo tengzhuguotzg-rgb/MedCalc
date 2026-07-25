@@ -2,7 +2,7 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateKdigo } from '../../engine/KdigoCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, ResetButton, ResultCard } from './widgets/CalcWidgets';
+import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct KdigoCalculator {
@@ -56,11 +56,7 @@ export struct KdigoCalculator {
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
-        Row() {
-          Text('— 基础 Cr (如未知填 0)').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5);
-          Blank();
-          ResetButton({ onReset: () => { this.reset(); } })
-        }.width('100%').margin({ bottom: 12 });
+        SectionTitle({ title: '基础 Cr (如未知填 0)', resetAction: () => { this.reset(); } })
         Row() {
           Column() {
             Text('基础 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
@@ -94,7 +90,7 @@ export struct KdigoCalculator {
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
 
-        Text('— 当前 Cr (7 天内)').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Bold).letterSpacing(1.5).margin({ bottom: 12 });
+        SectionTitle({ title: '当前 Cr (7 天内)' })
         Row() {
           Column() {
             Text('当前 Cr').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
