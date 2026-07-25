@@ -152,20 +152,36 @@ struct Index {
 
   @Builder
   TabBarBuilder(title: ResourceStr, index: number) {
-    Column({ space: 4 }) {
+    Column({ space: 2 }) {
+      Image(this.tabIcon(index))
+        .width(22)
+        .height(22)
+        .fillColor(this.currentTab === index ? AppColors.primary : AppColors.textSecondary)
+        .objectFit(ImageFit.Contain)
       Text(title)
-        .fontSize(14)
+        .fontSize(11)
         .fontWeight(this.currentTab === index ? FontWeight.Medium : FontWeight.Normal)
         .fontColor(this.currentTab === index ? AppColors.primary : AppColors.textSecondary)
-      Row()
-        .width(24)
-        .height(2)
-        .borderRadius(1)
-        .backgroundColor(this.currentTab === index ? AppColors.primary : 'transparent')
     }
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
+  }
+
+  private tabIcon(index: number): Resource {
+    if (index === 0) {
+      return $r('app.media.ic_calculator');
+    }
+    if (index === 1) {
+      return $r('app.media.ic_assistant');
+    }
+    if (index === 2) {
+      return $r('app.media.ic_patient');
+    }
+    if (index === 3) {
+      return $r('app.media.ic_knowledge');
+    }
+    return $r('app.media.ic_settings');
   }
 
   @Builder
@@ -320,9 +336,11 @@ struct Index {
       .margin({ left: 4 });
 
       Button() {
-        Text(this.isFavorite() ? '★' : '☆')
-          .fontSize(18)
-          .fontColor(this.isFavorite() ? AppColors.warning : AppColors.textSecondary)
+        Image(this.isFavorite() ? $r('app.media.ic_star_filled') : $r('app.media.ic_star'))
+          .width(20)
+          .height(20)
+          .fillColor(this.isFavorite() ? AppColors.primary : AppColors.textSecondary)
+          .objectFit(ImageFit.Contain)
       }
       .width(44)
       .height(44)
@@ -340,15 +358,11 @@ struct Index {
 
   @Builder
   MenuIcon() {
-    Column({ space: 3.5 }) {
-      Row().width(18).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
-      Row().width(18).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
-      Row().width(12).height(1.5).backgroundColor(AppColors.primary).borderRadius(1)
-    }
-    .width(24)
-    .height(24)
-    .justifyContent(FlexAlign.Center)
-    .alignItems(HorizontalAlign.Center)
+    Image($r('app.media.ic_menu'))
+      .width(22)
+      .height(22)
+      .fillColor(AppColors.primary)
+      .objectFit(ImageFit.Contain)
   }
 
   @Builder
