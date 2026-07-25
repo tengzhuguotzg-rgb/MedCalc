@@ -17,4 +17,16 @@ export class AppDimens {
   static readonly fontCaption: number = 12;
   /** 正文字号 14 */
   static readonly fontBody: number = 14;
+  /** 分节标题字号 13 Bold */
+  static readonly fontSectionTitle: number = 13;
+  /** 结果 Hero 字号 40 Bold */
+  static readonly fontHero: number = 40;
+  /** 页面描述字号 15 */
+  static readonly fontDescription: number = 15;
+  /** 行内间距 8 */
+  static readonly spacing1: number = 8;
+  /** 卡内间距 16 */
+  static readonly spacing2: number = 16;
+  /** 页面级段落间距 24 */
+  static readonly spacing3: number = 24;
 }
