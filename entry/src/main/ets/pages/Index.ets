@@ -326,10 +326,22 @@ struct Index {
       });
 
        Column() {
-         Text(this.getCurrentCalculatorName())
-           .fontSize(20)
-           .fontWeight(FontWeight.Bold)
-           .fontColor(AppColors.headerText);
+         Row({ space: 8 }) {
+           Text(this.getCurrentCalculatorName())
+             .fontSize(20)
+             .fontWeight(FontWeight.Bold)
+             .fontColor(AppColors.headerText);
+           if (this.getCurrentGroup().length > 0) {
+             Text(this.getCurrentGroup())
+               .fontSize(11)
+               .fontWeight(FontWeight.Bold)
+               .fontColor(AppColors.onPrimary)
+               .backgroundColor(AppColors.getCategoryColor(this.getCurrentGroup()))
+               .borderRadius(10)
+               .padding({ left: 10, right: 10, top: 3, bottom: 3 });
+           }
+         }
+         .alignItems(VerticalAlign.Center);
        }
        .alignItems(HorizontalAlign.Start)
        .layoutWeight(1)
@@ -384,6 +396,11 @@ struct Index {
   private getCurrentCalculatorName(): string {
     const calc = CALCULATORS.find(c => c.id === this.currentCalc);
     return calc ? calc.name : '未知计算器';
+  }
+
+  private getCurrentGroup(): string {
+    const calc = CALCULATORS.find(c => c.id === this.currentCalc);
+    return calc ? calc.group : '';
   }
 
   private getCurrentCalculatorDescription(): string {

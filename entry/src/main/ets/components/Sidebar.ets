@@ -99,19 +99,19 @@ export struct Sidebar {
           Image(this.groupIcon(groupName))
             .width(16)
             .height(16)
-            .fillColor(AppColors.headerText)
+            .fillColor(AppColors.onPrimary)
             .objectFit(ImageFit.Contain)
         }
         .width(24)
         .height(24)
         .borderRadius(7)
-        .backgroundColor(AppColors.primary)
+        .backgroundColor(AppColors.getCategoryColor(groupName))
         .justifyContent(FlexAlign.Center)
 
         Text(groupName)
           .fontSize(14)
           .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.primary)
+          .fontColor(AppColors.getCategoryColor(groupName))
           .layoutWeight(1)
 
         Text(this.groupCount(groupName).toString())
@@ -128,7 +128,8 @@ export struct Sidebar {
       Row()
         .width('100%')
         .height(2)
-        .backgroundColor(AppColors.groupLine)
+        .backgroundColor(AppColors.getCategoryColor(groupName))
+        .opacity(0.35)
         .margin({ left: 12, right: 12, top: 4 })
     }
   }
@@ -169,12 +170,12 @@ export struct Sidebar {
         Row()
           .width(3)
           .height('100%')
-          .backgroundColor(AppColors.primary)
+          .backgroundColor(AppColors.getCategoryColor(calc.group))
       }
       Image(this.calcIcon(calc.id))
         .width(16)
         .height(16)
-        .fillColor(calc.id === this.currentCalc ? AppColors.primary : AppColors.textSecondary)
+        .fillColor(calc.id === this.currentCalc ? AppColors.getCategoryColor(calc.group) : AppColors.textSecondary)
         .objectFit(ImageFit.Contain)
       if (!this.sidebarCollapsed) {
         Text(calc.name)

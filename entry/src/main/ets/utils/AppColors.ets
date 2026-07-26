@@ -117,4 +117,48 @@ export class AppColors {
   // ─── Sidebar ───
   /** 分组隔线：primary 低透明度独立 token */
   static readonly groupLine: ResourceStr = $r('app.color.app_color_group_line');
+
+  // ─── 计算器分类色（方向A·分类色相） ───
+  /** 呼吸 */
+  static readonly catResp: ResourceStr = $r('app.color.app_color_cat_resp');
+  /** 心血管 */
+  static readonly catCardio: ResourceStr = $r('app.color.app_color_cat_cardio');
+  /** 肾 */
+  static readonly catRenal: ResourceStr = $r('app.color.app_color_cat_renal');
+  /** 肝 */
+  static readonly catHepatic: ResourceStr = $r('app.color.app_color_cat_hepatic');
+  /** 神经 */
+  static readonly catNeuro: ResourceStr = $r('app.color.app_color_cat_neuro');
+  /** 感染 */
+  static readonly catInfect: ResourceStr = $r('app.color.app_color_cat_infect');
+  /** 代谢 */
+  static readonly catMetab: ResourceStr = $r('app.color.app_color_cat_metab');
+  /** 综合 */
+  static readonly catGeneral: ResourceStr = $r('app.color.app_color_cat_general');
+
+  /** 按 CalculatorRegistry 的 group 名取分类色 */
+  static getCategoryColor(group: string): ResourceStr {
+    if (group === '呼吸') {
+      return AppColors.catResp;
+    }
+    if (group === '心血管') {
+      return AppColors.catCardio;
+    }
+    if (group === '肾') {
+      return AppColors.catRenal;
+    }
+    if (group === '肝') {
+      return AppColors.catHepatic;
+    }
+    if (group === '神经') {
+      return AppColors.catNeuro;
+    }
+    if (group === '感染') {
+      return AppColors.catInfect;
+    }
+    if (group === '代谢') {
+      return AppColors.catMetab;
+    }
+    return AppColors.catGeneral;
+  }
 }
