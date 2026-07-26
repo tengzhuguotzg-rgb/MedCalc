@@ -1,8 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
-
-function emptyResult(unit: string): CalcResult {
-  return { value: null, unit, tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
-}
+import { CalcResult, emptyResult, getTierClass } from './CalcEngine';
 
 /**
  * Sgarbossa / Smith 改良 Sgarbossa（LBBB 或起搏心律下 AMI 判断）。

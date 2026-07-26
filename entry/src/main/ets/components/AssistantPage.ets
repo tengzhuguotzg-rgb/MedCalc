@@ -39,8 +39,6 @@ export struct AssistantPage {
   @State editorImageUri: string = '';
   @State editorResultBase64: string = '';
   @State editorResultMime: string = '';
-  @State showAttachMenu: boolean = false;
-
   private assistantService = AssistantService.getInstance();
   private prefsService = PreferencesService.getInstance();
   private scroller: Scroller = new Scroller();
@@ -64,16 +62,17 @@ export struct AssistantPage {
       return;
     }
 
+    const img64 = this.imageBase64;
+    const imgMime = this.imageMime;
     this.errorMsg = '';
     this.loading = true;
-
-    this.assistantService.sendMessage(trimmed, this.imageBase64, this.imageMime, config).then((msg: AssistantMessage) => {
+    this.userInput = '';
+    this.selectedImageUri = '';
+    this.assistantService.sendMessage(trimmed, img64, imgMime, config).then((msg: AssistantMessage) => {
       this.loading = false;
       this.messages = this.assistantService.getMessages();
-      this.userInput = '';
       this.imageBase64 = '';
       this.imageMime = '';
-      this.selectedImageUri = '';
       this.scroller.scrollToIndex(this.messages.length - 1);
     }).catch((err: Error) => {
       this.loading = false;
@@ -114,7 +113,6 @@ export struct AssistantPage {
   }
 
   async pickPdf() {
-    this.showAttachMenu = false;
     try {
       const documentSelectOptions = new picker.DocumentSelectOptions();
       documentSelectOptions.fileSuffixFilters = ['.pdf'];
@@ -226,6 +224,11 @@ export struct AssistantPage {
     this.currentTab = 0;
   }
 
+  private dismissKeyboard() {
+    // 把焦点从 TextArea 移到可聚焦的消息列表，软键盘随之收起（hideSoftKeyboard 需系统权限，普通应用不可用）
+    focusControl.requestFocus('assistantMsgList');
+  }
+
   build() {
      Stack() {
      if (!this.showImageEditor) {
@@ -272,8 +275,15 @@ export struct AssistantPage {
       }
       .layoutWeight(1)
       .width('100%')
+      .id('assistantMsgList')
+      .focusable(true)
       .padding({ left: 16, right: 16, top: 8, bottom: 8 })
       .divider({ strokeWidth: 0 })
+      .onTouch((event?: TouchEvent) => {
+        if (event !== undefined && event.type === TouchType.Down) {
+          this.dismissKeyboard();
+        }
+      })
 
        this.InputBar();
      }
@@ -927,47 +937,25 @@ export struct AssistantPage {
       }
 
       Row() {
-        Stack() {
-          Button() {
-            Text('+')
-              .fontSize(22)
-              .fontWeight(FontWeight.Bold)
-              .fontColor(AppColors.primary)
-          }
-          .width(44)
-          .height(AppDimens.touchTarget)
-          .backgroundColor('transparent')
-          .onClick(() => {
-            this.showAttachMenu = !this.showAttachMenu;
-          })
-
-          if (this.showAttachMenu) {
-            Column() {
-              Text('图片')
-                .fontSize(13)
-                .fontColor(AppColors.primary)
-                .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-                .onClick(() => {
-                  this.showAttachMenu = false;
-                  this.pickImage();
-                })
-              Divider().width('100%')
-              Text('PDF')
-                .fontSize(13)
-                .fontColor(AppColors.primary)
-                .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-                .onClick(() => {
-                  this.pickPdf();
-                })
-            }
-            .backgroundColor(AppColors.card)
-            .borderRadius(8)
-            .shadow({ radius: 4, color: '#40000000', offsetY: 2 })
-            .position({ x: 0, y: -80 })
-            .width(80)
-          }
+        Button() {
+          Text('+')
+            .fontSize(22)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(AppColors.primary)
         }
         .width(36)
+        .height(AppDimens.inputHeight)
+        .backgroundColor('transparent')
+        .bindMenu([
+          {
+            value: '图片',
+            action: () => { this.pickImage(); }
+          },
+          {
+            value: 'PDF',
+            action: () => { this.pickPdf(); }
+          }
+        ])
 
         Stack({ alignContent: Alignment.TopEnd }) {
           TextArea({ text: this.userInput, placeholder: '描述病情或补充数据...' })
@@ -977,6 +965,7 @@ export struct AssistantPage {
             .backgroundColor(AppColors.background)
             .borderRadius(8)
             .padding({ left: 10, right: 30, top: 8, bottom: 8 })
+            .id('assistantInput')
             .onChange((value: string) => {
               this.userInput = value;
             })

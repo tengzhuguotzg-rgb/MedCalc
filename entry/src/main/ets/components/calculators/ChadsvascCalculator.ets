@@ -2,37 +2,35 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateChadsvasc } from '../../engine/MoreCalculators';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, OptionChip, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
+import { CalcCard, OptionChip, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct ChadsvascCalculator {
   @State resetKey: number = 0;  @State chf: number = -1;
   @State htn: number = -1;
-  @State age75: number = -1;
+  @State ageGroup: number = -1;
   @State dm: number = -1;
   @State stroke: number = -1;
   @State vasc: number = -1;
-  @State age65: number = -1;
   @State female: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() {
-    if (this.chf < 0 || this.htn < 0 || this.age75 < 0 || this.dm < 0 || this.stroke < 0 || this.vasc < 0 || this.age65 < 0 || this.female < 0) {
+    if (this.chf < 0 || this.htn < 0 || this.ageGroup < 0 || this.dm < 0 || this.stroke < 0 || this.vasc < 0 || this.female < 0) {
       this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
       return;
     }
-    this.result = calculateChadsvasc(this.chf === 1, this.htn === 1, this.age75 === 1, this.dm === 1, this.stroke === 1, this.vasc === 1, this.age65 === 1, this.female === 1);
+    this.result = calculateChadsvasc(this.chf === 1, this.htn === 1, this.ageGroup === 2, this.dm === 1, this.stroke === 1, this.vasc === 1, this.ageGroup === 1, this.female === 1);
   }
 
   reset() {
     this.chf = -1;
     this.htn = -1;
-    this.age75 = -1;
+    this.ageGroup = -1;
     this.dm = -1;
     this.stroke = -1;
     this.vasc = -1;
-    this.age65 = -1;
     this.female = -1;
     this.result = null;
     this.resetKey = this.resetKey + 1;
@@ -67,10 +65,11 @@ export struct ChadsvascCalculator {
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 
-        Row() { Text('A₂ 年龄 ≥ 75 岁').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
-          Row() { OptionChip({ label: '无', selected: this.age75 === 0, fontSize: 14, bold: true, onChipClick: () => { this.age75 = 0; this.calculate(); } }).layoutWeight(1);
-            OptionChip({ label: '有', selected: this.age75 === 1, fontSize: 14, bold: true, onChipClick: () => { this.age75 = 1; this.calculate(); } }).layoutWeight(1);
-          }.width(100);
+        Text('A 年龄').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).width('100%').margin({ bottom: 6 });
+        Row() {
+          OptionChip({ label: '<65 岁', selected: this.ageGroup === 0, fontSize: 14, bold: true, onChipClick: () => { this.ageGroup = 0; this.calculate(); } }).layoutWeight(1)
+          OptionChip({ label: '65-74 岁', selected: this.ageGroup === 1, fontSize: 14, bold: true, onChipClick: () => { this.ageGroup = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 4 })
+          OptionChip({ label: '≥75 岁(+2)', selected: this.ageGroup === 2, fontSize: 14, bold: true, onChipClick: () => { this.ageGroup = 2; this.calculate(); } }).layoutWeight(1).margin({ left: 4 })
         }.width('100%').margin({ bottom: 12 });
 
         Row() { Text('D 糖尿病').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
@@ -88,12 +87,6 @@ export struct ChadsvascCalculator {
         Row() { Text('V 血管疾病').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
           Row() { OptionChip({ label: '无', selected: this.vasc === 0, fontSize: 14, bold: true, onChipClick: () => { this.vasc = 0; this.calculate(); } }).layoutWeight(1);
             OptionChip({ label: '有', selected: this.vasc === 1, fontSize: 14, bold: true, onChipClick: () => { this.vasc = 1; this.calculate(); } }).layoutWeight(1);
-          }.width(100);
-        }.width('100%').margin({ bottom: 12 });
-
-        Row() { Text('A 年龄 65-74 岁').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
-          Row() { OptionChip({ label: '无', selected: this.age65 === 0, fontSize: 14, bold: true, onChipClick: () => { this.age65 = 0; this.calculate(); } }).layoutWeight(1);
-            OptionChip({ label: '有', selected: this.age65 === 1, fontSize: 14, bold: true, onChipClick: () => { this.age65 = 1; this.calculate(); } }).layoutWeight(1);
           }.width(100);
         }.width('100%').margin({ bottom: 12 });
 

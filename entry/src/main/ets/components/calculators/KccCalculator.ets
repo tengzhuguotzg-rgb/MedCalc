@@ -11,6 +11,8 @@ export struct KccCalculator {
   @State bilirubinUnit: string = 'umol';
   @State age: number = 0;
   @State etiology: number = -1;
+  @State adverseEtiology: number = -1;
+  @State jaundiceDays: number = 0;
   @State ph: number = 0;
   @State crMgDl: number = 0;
   @State hepaticEnceph: number = -1;
@@ -22,7 +24,7 @@ export struct KccCalculator {
       this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
       return;
     }
-    this.result = calculateKcc(this.inr, this.bilirubin, this.bilirubinUnit, this.age, this.etiology === 1, this.ph, this.crMgDl, this.hepaticEnceph >= 0 ? this.hepaticEnceph : -1);
+    this.result = calculateKcc(this.inr, this.bilirubin, this.bilirubinUnit, this.age, this.etiology === 1, this.adverseEtiology === 1, this.jaundiceDays, this.ph, this.crMgDl, this.hepaticEnceph);
   }
 
   reset() {
@@ -31,6 +33,8 @@ export struct KccCalculator {
     this.bilirubinUnit = 'umol';
     this.age = 0;
     this.etiology = -1;
+    this.adverseEtiology = -1;
+    this.jaundiceDays = 0;
     this.ph = 0;
     this.crMgDl = 0;
     this.hepaticEnceph = -1;
@@ -68,11 +72,21 @@ export struct KccCalculator {
 
         InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
 
-        Row() { Text('病因：扑热息痛/不明原因').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
+        Row() { Text('病因：对乙酰氨基酚(APAP)中毒').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
           Row() { OptionChip({ label: '否', selected: this.etiology === 0, fontSize: 14, bold: true, onChipClick: () => { this.etiology = 0; this.calculate(); } }).layoutWeight(1);
             OptionChip({ label: '是', selected: this.etiology === 1, fontSize: 14, bold: true, onChipClick: () => { this.etiology = 1; this.calculate(); } }).layoutWeight(1);
           }.width(100);
         }.width('100%').margin({ bottom: 16 });
+
+        if (this.etiology === 0) {
+          Row() { Text('病因：非甲非乙/卤烷/特异质药物').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
+            Row() { OptionChip({ label: '否', selected: this.adverseEtiology === 0, fontSize: 14, bold: true, onChipClick: () => { this.adverseEtiology = 0; this.calculate(); } }).layoutWeight(1);
+              OptionChip({ label: '是', selected: this.adverseEtiology === 1, fontSize: 14, bold: true, onChipClick: () => { this.adverseEtiology = 1; this.calculate(); } }).layoutWeight(1);
+            }.width(100);
+          }.width('100%').margin({ bottom: 16 });
+
+          InputRow({ label: '黄疸至脑病天数', placeholder: '未知填 0', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.jaundiceDays = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
+        }
 
         Row() {
           InputRow({ label: 'pH', placeholder: '如 7.28', onTextChange: (value: string) => { this.ph = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

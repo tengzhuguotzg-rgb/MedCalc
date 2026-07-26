@@ -9,6 +9,7 @@ export interface Calculator {
   compute: string;
   description: string;
   whenToUse: string;
+  reference: string;
 }
 
 export const CALCULATORS: Calculator[] = [
@@ -23,6 +24,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'sofa',
     description: '6 系统器官功能评估, Sepsis-3 诊断标准',
     whenToUse: '脓毒症/感染性休克器官功能评估 / SSC复苏目标追踪 / ICU患者每日SOFA评分',
+    reference: 'Vincent JL. Intensive Care Med 1996;22:707（Sepsis-3: JAMA 2016;315:801）',
   },
   {
     id: 'map',
@@ -35,6 +37,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'map',
     description: 'Mean Arterial Pressure，计算平均动脉压，用于休克复苏目标评估(SSC≥65mmHg)',
     whenToUse: '休克复苏目标评估 (SSC目标≥65mmHg) / 高血压急症降压幅度 / 术中血压管理',
+    reference: '生理学定义 MAP = DBP + 脉压/3',
   },
   {
     id: 'bg',
@@ -47,6 +50,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'bg',
     description: '酸碱失衡6步判断 + 氧合 + 缺氧分型 + 呼吸商 + 危急值',
     whenToUse: '脓毒症复苏评估乳酸+酸碱 / ARDS 氧合指数 P/F / 休克类型鉴别 / DKA评估 / 酸碱失衡判断',
+    reference: '血气综合解读（Winter 公式/A-a 梯度/Berlin 定义等，详见 docs/calculator-references.md）',
   },
   {
     id: 'sf',
@@ -59,6 +63,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'sf',
     description: 'SpO₂/FiO₂, ARDS 床旁筛查',
     whenToUse: 'ARDS 氧合监测 / 呼吸支持滴定 / S/F比值筛查ARDS严重度 / 替代P/F (无需血气)',
+    reference: 'Rice TW, et al. Chest 2007;132(2):410-417. PMID 17573487（S/F 与 P/F 相关性）',
   },
   {
     id: 'pf',
@@ -71,6 +76,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'pf',
     description: 'PaO₂/FiO₂, ARDS 诊断金标准 (Berlin 2012)',
     whenToUse: 'ARDS诊断柏林分级 / 呼吸衰竭氧合评估 / 插管前评估ARDS严重度',
+    reference: 'Berlin Definition. JAMA 2012;307:2526-2533',
   },
   {
     id: 'gcs',
@@ -83,6 +89,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'gcs',
     description: '3 维度 E/V/M, 总分 3-15, ≤8 重度需插管',
     whenToUse: '脑外伤GCS评分 / 镇静深度评估 / ICU意识监测 / 麻醉苏醒评估',
+    reference: 'Teasdale G, Jennett B. Lancet 1974;2:81-84. PMID 4136544',
   },
   {
     id: 'nihss',
@@ -95,6 +102,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'nihss',
     description: '11 项, 总分 0-42, ≥6 考虑溶栓/取栓',
     whenToUse: '急性脑卒中NIHSS评分 / 溶栓决策评估 / 卒中严重度分层 / 预后评估',
+    reference: 'Brott T, et al. Stroke 1989;20:864-870. PMID 2749846',
   },
   {
     id: 'rox',
@@ -107,6 +115,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'rox',
     description: '预测 HFNC 失败风险, SpO2/(FiO2×RR)',
     whenToUse: '无创呼吸支持失败预测 / HFNC转气管插管决策 / ROX指数动态监测',
+    reference: 'Roca O, et al. JAMA 2016;315:1354-1361. PMID 27706469',
   },
   {
     id: 'curb65',
@@ -119,6 +128,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'curb65',
     description: '5 项, 0-5 分, 院外/住院/ICU 决策',
     whenToUse: '社区获得性肺炎住院决策 / 抗生素选择评估 / 出院标准评估 / 肺炎严重度分层',
+    reference: 'Lim WS, et al. Thorax 2003;58:377-382. PMID 12728155',
   },
   {
     id: 'sirs',
@@ -131,6 +141,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'sirs',
     description: '4 项 (T/HR/RR/WBC), >=2 阳性, 1991 标准',
     whenToUse: '脓毒症筛查早期识别 / 炎症反应评估 / ICU感染监测 / 急诊分诊',
+    reference: 'ACCP/SCCM Consensus. Chest 1992;101:1644-1655',
   },
   {
     id: 'abcd2',
@@ -143,6 +154,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'abcd2',
     description: '5 项, 总分 0-7, ≥6 高风险需住院',
     whenToUse: 'TIA短期卒中风险评估 / 急诊TIA分层 / 抗血小板决策 / 短期随访分层',
+    reference: 'Johnston SC, et al. Lancet 2007;369:283-292. PMID 17258668',
   },
   {
     id: 'news2',
@@ -155,6 +167,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'news2',
     description: '英国国家早期预警评分 2, 7 参数, 0-20 分',
     whenToUse: '病房早期预警评分 / 普通病房识别重症 / 转ICU决策 / 普通护士快速评估',
+    reference: 'Royal College of Physicians. NEWS2, 2017',
   },
   {
     id: 'cag',
@@ -167,6 +180,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'cag',
     description: '白蛋白校准阴离子间隙, 低蛋白时必校',
     whenToUse: '低白蛋白血症时阴离子间隙校正 / 酸碱平衡评估 / 代酸鉴别诊断',
+    reference: 'Figge J, et al.（白蛋白校正: 2.5×(4-alb)）',
   },
   {
     id: 'na',
@@ -179,6 +193,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'na',
     description: '高血糖时假性低钠校正 (1.6 mmol/L per 100 mg/dL Glu)',
     whenToUse: '低钠/高钠血症评估 / 容量状态评估 / 渗透压计算 / 钠紊乱纠正速度',
+    reference: 'Katz MA. NEJM 1973;289:843-844（1.6 校正）；Hillier TA. Am J Med 1999;106:399-403. PMID 10225241（2.4 校正）',
   },
   {
     id: 'crcl',
@@ -191,6 +206,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'crcl',
     description: 'Cockcroft-Gault公式评估肾功能（肌酐清除率），用于肾功能不全患者药物剂量调整',
     whenToUse: '肾功能不全药物剂量调整 / 造影剂前肾功能评估 / 抗肿瘤药物剂量 / 肾衰分期',
+    reference: 'Cockcroft DW, Gault MH. Nephron 1976;16:31-41',
   },
   {
     id: 'gfr',
@@ -203,6 +219,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'gfr',
     description: 'CKD-EPI 2021 race-free公式评估肾功能（肾小球滤过率），用于CKD分期(G1-G5)及慢病管理',
     whenToUse: 'CKD分期评估 / 慢病管理长期随访 / 药物剂量调整 / 老年肾功能评估',
+    reference: 'Inker LA, et al. NEJM 2021;385:1737-1749. PMID 34554658',
   },
   {
     id: 'chadsvasc',
@@ -215,6 +232,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'chadsvasc',
     description: '房颤卒中风险评分, 8 项, 总分 0-9 (ESC 2020)',
     whenToUse: '房颤卒中风险评估 / 抗凝决策 / 房颤患者分层 / 长期抗凝管理',
+    reference: 'Lip GY, et al. Chest 2010;137:263-272',
   },
   {
     id: 'hasbled',
@@ -227,6 +245,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'hasbled',
     description: '房颤抗凝出血风险评分, 7 项, 总分 0-9 (ESC 2020)',
     whenToUse: '房颤抗凝出血风险评估 / 华法林决策 / NOAC出血风险评估 / 高危患者监测',
+    reference: 'Pisters R, et al. Chest 2010;138:1093-1100',
   },
   {
     id: 'apache2',
@@ -239,6 +258,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'apache2',
     description: '急性生理与慢性健康评分 II, 14 参数, 总分 0-71 (Knaus 1985)',
     whenToUse: 'ICU患者严重度评分 / 预后预测 / 院内死亡率预测 / ICU质量控制',
+    reference: 'Knaus WA, et al. Crit Care Med 1985;13:818-829',
   },
   {
     id: 'rass',
@@ -251,6 +271,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'rass',
     description: 'Richmond躁动-镇静评分, +4至-5, 目标-2至0',
     whenToUse: 'ICU镇静深度评估 / 镇静药物调整 / 谵妄评估RASS-2~+4 / 护士交班评估',
+    reference: 'Sessler CN, et al. AJRCCM 2002;166:1338-1344. PMID 12421743',
   },
   {
     id: 'ich',
@@ -263,6 +284,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'ich',
     description: '自发性脑出血预后评分, 总分0-6, 30天死亡率预测',
     whenToUse: '脑出血量评估 / 出血扩大风险 / 血压管理目标 / 神经外科决策',
+    reference: 'Hemphill JC, et al. Stroke 2001;32:891-897. PMID 11283388',
   },
   {
     id: 'hunthess',
@@ -275,6 +297,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'hunthess',
     description: '脑动脉瘤破裂临床分级, 0-5级, 手术风险评估',
     whenToUse: '动脉瘤性SAH分级 / Hunt-Hess手术决策 / 神经介入评估 / 预后预测',
+    reference: 'Hunt WE, Hess RM. J Neurosurg 1968;28:14-20. PMID 5635959',
   },
   {
     id: 'wfns',
@@ -287,6 +310,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'wfns',
     description: 'WFNS SAH分级, I-V级, 基于GCS和局灶体征',
     whenToUse: '动脉瘤性SAH分级 / WFNS手术决策 / 神经介入评估 / 预后预测',
+    reference: 'WFNS Committee. J Neurosurg 1988;68:985-986. PMID 3131498',
   },
   {
     id: 'fisher',
@@ -299,18 +323,20 @@ export const CALCULATORS: Calculator[] = [
     compute: 'fisher',
     description: 'SAH的CT分级, 1-4级, 预测血管痉挛风险',
     whenToUse: '动脉瘤性SAH CT分级 / 脑血管痉挛预测 / 出血量评估 / SAH预后预测',
+    reference: 'Fisher CM, et al. Neurosurgery 1980;6:1-9. PMID 7354892；Frontera JA 2006. PMID 16823296',
   },
   {
     id: 'marshall',
-    name: 'Marshall 评分',
-    enName: 'Marshall Score',
-    group: '呼吸',
+    name: 'Marshall MODS 评分',
+    enName: 'Marshall MODS Score',
+    group: '综合',
     icon: '🫁',
     shortcut: '无',
-    kw: 'Marshall ARDS 严重程度 评分 氧合 PEEP',
+    kw: 'Marshall MODS 多器官功能障碍 评分 胰腺炎 Atlanta P/F PAR',
     compute: 'marshall',
-    description: 'ARDS严重程度评分, 基于P/F和PEEP',
+    description: '多器官功能障碍评分(MODS), 六器官各0-4分总分0-24',
     whenToUse: '重症急性胰腺炎器官功能障碍评估 / Atlanta 分级 / 胰腺炎严重度判断 / ICU 预后预测',
+    reference: 'Marshall JC, et al. Crit Care Med 1995;23(10):1638-1652',
   },
   {
     id: 'mehran',
@@ -323,6 +349,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'mehran',
     description: '造影剂肾病风险评分, 总分0-21, 预测CIN风险',
     whenToUse: 'PCI 术后对比剂肾病风险评估 / 造影前肾功能评估 / 高危患者造影剂用量决策',
+    reference: 'Mehran R, et al. JACC 2004;44:1393-1399. PMID 15450895',
   },
   {
     id: 'timistemi',
@@ -335,6 +362,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'timistemi',
     description: 'STEMI 30天死亡风险评分, 8项(年龄/合并症/SBP/心率/Killip/体重/前壁/就诊时间), 0-14分 (InTIME-II 2000)',
     whenToUse: 'STEMI 风险评分 / 早期溶栓决策 / 双抗选择评估 / STEMI短期死亡风险',
+    reference: 'Morrow DA, et al. Circulation 2000;102:2031-2037',
   },
   {
     id: 'timinstemi',
@@ -347,6 +375,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'timinstemi',
     description: 'NSTEMI/UA 14天死亡/MI风险评分, 7项各1分, 总分0-7 (Antman 2000)',
     whenToUse: 'NSTEMI短期死亡风险 / 早期介入决策 / 双抗评估 / NSTEMI危险分层',
+    reference: 'Antman EM, et al. JAMA 2000;284:835-842',
   },
   {
     id: 'wells',
@@ -359,6 +388,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'wells',
     description: '肺栓塞临床概率评分, 总分0-12.5, 低/中/高概率',
     whenToUse: '深静脉血栓DVT预测 / 肺栓塞PE可能性评估 / 急诊DVT筛查 / DVT/PE分层',
+    reference: 'Wells PS, et al. Thromb Haemost 2000;83:416-420',
   },
   {
     id: 'childpugh',
@@ -371,6 +401,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'childpugh',
     description: '肝功能储备分级, A/B/C级, 总分5-15',
     whenToUse: '肝硬化肝功能Child分级 / 肝移植决策 / 门脉高压评估 / 肝硬化预后',
+    reference: 'Pugh RN, et al. Br J Surg 1973;60:646-649',
   },
   {
     id: 'kcc',
@@ -383,6 +414,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'kcc',
     description: "King's College标准, 急性肝衰竭紧急肝移植指征",
     whenToUse: '急性肝衰竭紧急肝移植决策 / 对乙酰氨基酚中毒 / 非扑热息痛病因ALF / 肝硬化失代偿',
+    reference: "O'Grady JG, et al. Gastroenterology 1989;97:439-445",
   },
   {
     id: 'clifc',
@@ -395,6 +427,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'clifc',
     description: '慢加急性肝衰竭分级, ACLF 0-3级, 6器官评估',
     whenToUse: '慢加急性肝衰竭ACLF分级 / 短期预后预测 / 肝移植紧急评估 / 肝硬化急性失代偿评估',
+    reference: 'Jalan R, et al. J Hepatol 2014;61:1038-1047',
   },
   {
     id: 'aarc',
@@ -407,6 +440,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'aarc',
     description: '亚太急性肝衰竭研究组评分, 总分0-17, 预后评估',
     whenToUse: '慢加急性肝衰竭AARC分级 / 肝衰竭短期预后 / 肝移植决策辅助 / 肝硬化急性加重评估',
+    reference: 'Sarin SK, et al. Hepatol Int 2014;8:453-471（APASL 共识）；AARC 评分: Choudhury A, et al. Hepatol Int 2017;11:471-480',
   },
   {
     id: 'nrs2002',
@@ -419,6 +453,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'nrs2002',
     description: '营养风险筛查 2002, 4 项, 总分 0-7, ≥ 3 有营养风险',
     whenToUse: '住院患者营养风险筛查 / 围术期营养评估 / 营养支持决策 / 老年住院患者评估',
+    reference: 'Kondrup J, et al. Clin Nutr 2003;22:321-336',
   },
   {
     id: 'camicu',
@@ -431,6 +466,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'camicu',
     description: 'ICU 谵妄筛查, 4 步评估, 阳性/阴性 (Ely 2001)',
     whenToUse: 'ICU谵妄筛查 / 镇静评估 / 老年ICU患者评估 / 护士每班评估',
+    reference: 'Ely EW, et al. JAMA 2001;286:2703-2710. PMID 11730446',
   },
   {
     id: 'pesi',
@@ -443,6 +479,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'pesi',
     description: '肺栓塞 30 天死亡风险评分, 11 项, 总分 0-300+ 五级 (Aujesky 2005)',
     whenToUse: '肺栓塞严重度指数 / PESI分层 / 住院决策 / 短期死亡率预测',
+    reference: 'Aujesky D, et al. Am J Respir Crit Care Med 2005;172:1041',
   },
   {
     id: 'scai',
@@ -455,6 +492,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'scai',
     description: '心源性休克 SCAI 分级, A-E 五级 (2019/2024)',
     whenToUse: '急性冠脉综合征SCAI分级 / 心源性休克分层 / 介入决策 / ICU患者分层',
+    reference: 'Jentzer JC, et al. JACC 2019;74:2117. PMID 31548097',
   },
   {
     id: 'mnutric',
@@ -467,6 +505,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'mnutric',
     description: 'ICU 营养风险评分, 5 项, 总分 0-9, ≥5 高营养风险 (Heyland 2011)',
     whenToUse: 'ICU营养风险mNUTRIC评分 / 营养支持决策 / ICU患者预后 / 重症营养评估',
+    reference: 'Heyland DK, et al. Crit Care 2011;15:R268',
   },
   {
     id: 'fssicu',
@@ -479,6 +518,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'fssicu',
     description: 'ICU 功能状态评分, 5 项各 0-7, 总分 0-35 (Thrush 2012)',
     whenToUse: 'ICU肌力评估 / FSS-ICU评分 / 早期康复评估 / 机械通气撤机前评估',
+    reference: 'Thrush A, et al. Crit Care Med 2016;44:954-960（改编）',
   },
   {
     id: 'kdigo',
@@ -491,6 +531,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'kdigo',
     description: 'KDIGO 急性肾损伤 1-3 期分期 (2012)',
     whenToUse: '急性肾损伤AKI分期 / AKI严重度评估 / 透析决策 / ICU肾损伤监测',
+    reference: 'KDIGO AKI Work Group. Kidney Int Suppl 2012;2:1-138',
   },
   {
     id: 'vasopressor',
@@ -503,6 +544,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'vasopressor',
     description: '升压药 mL/h ↔ μg/kg/min 双向换算，垂体后叶素支持 U/min',
     whenToUse: 'ICU 血管活性药滴定 / mL/h ↔ μg/kg/min 双向换算 / 多药同表比较 / 升压素 U/min 换算',
+    reference: 'Kotani Y. Crit Care 2023;27:50（去甲肾上腺素等效剂量 NEE 共识换算）',
   },
   {
     id: 'nadeficit',
@@ -515,6 +557,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'nadeficit',
     description: '计算低钠血症的钠缺失量 (TBW因子×体重×ΔNa)',
     whenToUse: '低钠血症补钠量计算 / 补液方案制定 / 纠正速率规划',
+    reference: 'Adrogué HJ, Madias NE. NEJM 2000;342:1581-1589. PMID 10824078（公式变体）',
   },
   {
     id: 'nacorrection',
@@ -527,6 +570,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'nacorrection',
     description: 'Adrogué-Madias公式计算钠纠正速率/液体选择, 低钠≤8mmol/L/24h防脑桥脱髓鞘, 高钠≤10mmol/L/24h防脑水肿',
     whenToUse: '低钠/高钠血症纠正速率计算 / 补液类型选择(3%NaCl/0.9%NaCl/0.45%NaCl/D5W) / 自由水缺失计算 / 防纠正过速',
+    reference: 'Adrogué HJ, Madias NE. Intensive Care Med 1997;23:309. PMID 9083234',
   },
   {
     id: 'shocki',
@@ -539,6 +583,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'shocki',
     description: 'HR/SBP，≥0.9 提示循环代偿边缘，≥1.0 高危',
     whenToUse: '创伤/脓毒症/出血早期筛查 / 隐匿性休克识别 / MAP正常但灌注不足风险提示',
+    reference: 'Allgöwer M, Burri C. 1967（创伤文献）',
   },
   {
     id: 'qsofa',
@@ -551,6 +596,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'qsofa',
     description: 'RR≥22、SBP≤100、意识改变各1分，≥2分提示不良结局风险',
     whenToUse: '床旁脓毒症快速筛查 / 急诊或病房恶化识别 / 提醒进一步查乳酸和SOFA',
+    reference: 'Seymour CW, et al. JAMA 2016;315(8):762-774. PMID 26903337',
   },
   {
     id: 'rts',
@@ -563,6 +609,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'rts',
     description: 'GCS/SBP/RR coded 0-4，总分0-12，另显示加权RTS',
     whenToUse: '创伤分诊 / 创伤严重度评估 / 院前-急诊交接 / 创伤复苏触发',
+    reference: 'Champion HR, et al. Crit Care Med 1989;17:181-187',
   },
   {
     id: 'rsbi',
@@ -575,6 +622,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'rsbi',
     description: 'RR/VT(L)，>105 breaths/min/L 提示撤机失败风险高',
     whenToUse: '自主呼吸试验/SBT评估 / 撤机失败风险分层 / 机械通气撤机前核对',
+    reference: 'Yang KL, Tobin MJ. NEJM 1991;324:1445-1450',
   },
   {
     id: 'hellp',
@@ -587,6 +635,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'hellp',
     description: '溶血 + 肝酶升高 + 血小板减少三项核对，输出满足/部分/不支持',
     whenToUse: '妊娠或产后右上腹痛/高血压/溶血疑诊 / HELLP综合征标准核对 / 与TTP-HUS/aHUS/AFLP鉴别前分层',
+    reference: 'Sibai BM. AJOG 1993;169:1000-1004. PMID 8238683（Tennessee: AST/ALT≥70, LDH≥600, PLT<100k）',
   },
   {
     id: 'metab',
@@ -599,6 +648,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'metab',
     description: '白蛋白校正血钙；可选计算渗透压与渗透间隙',
     whenToUse: '低白蛋白时血钙校正 / 高渗状态核对 / 甲醇乙二醇等渗透活性物质筛查 / 与AG联合分析',
+    reference: '校正钙: Payne RB. BMJ 1973;4:589；阴离子间隙: Emmett M. Medicine 1977;56:38；渗透压: 经典公式',
   },
   {
     id: 'heart',
@@ -611,6 +661,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'heart',
     description: 'History/ECG/Age/Risk/Troponin 各0-2分，0-3低危、4-6中危、7-10高危',
     whenToUse: '急诊胸痛风险分层 / ACS 处置路径选择 / 肌钙蛋白结合临床综合评估',
+    reference: 'Six AJ, et al. Neth Heart J 2008;16:191-196',
   },
   {
     id: 'gbs',
@@ -623,6 +674,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'gbs',
     description: '上消化道出血风险分层，0分可门诊，≥7分需积极复苏+尽早内镜',
     whenToUse: '呕血/黑便就诊分层 / 决定是否收住与内镜时机 / 低危患者门诊处理筛选',
+    reference: 'Blatchford O, et al. Lancet 2000;356:1318-1321. PMID 11073021',
   },
   {
     id: 'bisap',
@@ -635,6 +687,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'bisap',
     description: 'BISAP 即时 5 项 + Ranson 入院/48h 评分，≥3 分提示重症倾向',
     whenToUse: '急性胰腺炎 48h 内严重度分层 / ICU 收治决策参考 / 与 APACHE II 互补',
+    reference: 'BISAP: Wu BU, et al. Gut 2008;57:1698-1703；Ranson: Ranson JH. Surg Gynecol Obstet 1974;139:69-81',
   },
   {
     id: 'tls',
@@ -647,6 +700,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'tls',
     description: '≥2项实验室异常=实验室TLS；叠加肌酐升高/心律失常/抽搐=临床TLS',
     whenToUse: '化疗或溶瘤治疗前后监测 / 高尿酸高钾高磷低钙核对 / TLS 预防与处置触发',
+    reference: 'Cairo MS, Bishop M. Br J Haematol 2004;127:3-11. PMID 15384972',
   },
   {
     id: 'bwps',
@@ -659,6 +713,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'bwps',
     description: '甲状腺危象临床评分，≥45高度提示，25-44危象前期',
     whenToUse: '甲亢患者高热/心动过速/意识改变 / 甲状腺危象识别与处置触发',
+    reference: 'Burch HB, Wartofsky L. Endocrinol Metab Clin 1993;22:263. PMID 8326281',
   },
   {
     id: 'wellsdvt',
@@ -671,6 +726,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'wellsdvt',
     description: '下肢 DVT 验前概率：9项各+1，替代诊断-2；≥2 likely',
     whenToUse: '单侧下肢肿痛 DVT 筛查 / 决定 D-二聚体或加压超声路径 / 与 Wells PE 区分使用',
+    reference: 'Wells PS, et al. NEJM 2003;349:1227-1235. PMID 14507948',
   },
   {
     id: 'cpis',
@@ -683,6 +739,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'cpis',
     description: 'VAP 辅助评分，≥6 分提示可能性高；辅助工具不单独诊断',
     whenToUse: '机械通气患者新发发热/分泌物增多 / VAP 初筛与抗菌方案评估前分层',
+    reference: 'Pugin J, et al. Am Rev Respir Dis 1991;143:1121-1129',
   },
   {
     id: 'anc',
@@ -695,6 +752,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'anc',
     description: 'ANC 计算/分层 + MASCC 粒缺发热风险指数，≥21 分低危',
     whenToUse: '化疗后粒细胞减少分层 / 粒缺发热住院 vs 门诊决策 / ANC 快速推算',
+    reference: 'Klastersky J. JCO 2000;18:3038. PMID 10944139',
   },
   {
     id: 'adhere',
@@ -707,6 +765,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'adhere',
     description: 'BUN≥43、SBP<115、Cr≥2.75 三因子，估计住院死亡率 2%-40%',
     whenToUse: '急性失代偿心衰入院风险粗分层 / 监护级别决策参考',
+    reference: 'Fonarow GC, et al. JAMA 2005;293:572-580. PMID 15687312',
   },
   {
     id: 'stess',
@@ -719,6 +778,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'stess',
     description: '意识/发作类型/年龄/癫痫史，0-6分，≤2分预后较好',
     whenToUse: '癫痫持续状态死亡风险分层 / ICU 收治与监护决策参考',
+    reference: 'Rossetti AO, et al. J Neurol 2008;255:1561-1566. PMID 18769858',
   },
   {
     id: 'rhabdo',
@@ -731,6 +791,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'rhabdo',
     description: '入院时预测 RRT/死亡风险，>10 分高危（>20%）',
     whenToUse: 'CK 显著升高患者的肾脏风险分层 / 补液强度与 RRT 评估时机',
+    reference: 'McMahon GM, et al. JAMA Intern Med 2013;173(19):1821-1828. PMID 24000014',
   },
   {
     id: 'isth',
@@ -743,6 +804,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'isth',
     description: '血小板/纤溶标志物/PT/纤维蛋白原，≥5 分符合显性 DIC',
     whenToUse: '脓毒症/创伤/产科等 DIC 疑似患者标准核对 / 动态复查评分',
+    reference: 'Taylor FB, et al. Thromb Haemost 2001;86:1327-1330. PMID 11816725',
   },
   {
     id: 'plasmic',
@@ -755,6 +817,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'plasmic',
     description: '7项各1分，6-7分提示 ADAMTS13 重度缺乏，立即血浆置换',
     whenToUse: '血小板减少+微血管病性溶血疑诊 TTP / 血浆置换启动决策参考',
+    reference: 'Bendapudi PK, et al. J Thromb Haemost 2017;15:118. PMID 27865016',
   },
   {
     id: 'vis',
@@ -767,6 +830,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'vis',
     description: '量化血管活性/正性肌力药物总负荷，>20 提示高负荷',
     whenToUse: '休克患者升压药负荷量化 / 病情动态比较 / 升级机械辅助评估参考',
+    reference: 'Gaies MG, et al. Crit Care Med 2010;38:2417-2422',
   },
   {
     id: 'lacclear',
@@ -779,6 +843,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'lacclear',
     description: '(初始-复查)/初始×100%，≥10%（常按6h）提示清除良好',
     whenToUse: '脓毒症/休克复苏反应评估 / 乳酸导向治疗达标核对',
+    reference: 'Jones AE. JAMA 2010;303:739-746（乳酸清除率 vs ScvO₂）',
   },
   {
     id: 'abc2',
@@ -791,6 +856,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'abc2',
     description: 'A×B×C/2 估算血肿体积，>60 mL 常需神经外科评估',
     whenToUse: '头颅 CT 血肿体积快速估算 / 手术指征与预后评估参考',
+    reference: 'Kothari RU, et al. Stroke 1996;27:1304. PMID 8711791',
   },
   {
     id: 'ddage',
@@ -803,6 +869,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'ddage',
     description: '年龄>50 阈值=年龄×10 ng/mL FEU，低/中验前概率下助排 VTE',
     whenToUse: '50 岁以上疑诊 VTE 的 D-二聚体阈值校正 / 减少不必要影像检查',
+    reference: 'Douma RA, et al. BMJ 2010;340:c1475（ADJUST-PE: Righini M, JAMA 2014;311:1117）',
   },
   {
     id: 'addrs',
@@ -815,6 +882,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'addrs',
     description: '三类高危特征各1分，≥2 分建议直接急诊影像',
     whenToUse: '急性胸背痛疑诊主动脉夹层 / 影像检查路径决策 / 结合 D-二聚体排除策略',
+    reference: 'Nazerian P, et al. Circulation 2018;137:250-258',
   },
   {
     id: 'asthma',
@@ -827,6 +895,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'asthma',
     description: 'PEF%预计值/说话能力/RR/HR/沉默胸，分轻中度/重度/危重',
     whenToUse: '哮喘急性发作急诊分级 / 初始治疗强度与收住决策 / SABA+激素反应复评',
+    reference: 'GINA Global Strategy Report（年度更新）',
   },
   {
     id: 'goldabe',
@@ -839,6 +908,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'goldabe',
     description: '症状(mMRC/CAT)×加重风险 → A/B/E 组，指导支扩剂与三联选择',
     whenToUse: '慢阻肺稳定期综合评估 / 初始与随访药物方案选择',
+    reference: 'GOLD Report 2023（GOLD Science Committee）',
   },
   {
     id: 'bap65',
@@ -851,6 +921,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'bap65',
     description: 'BUN>25/意识改变/脉搏>109/年龄>65，分 I-V 级',
     whenToUse: 'AECOPD 机械通气/死亡风险分层 / 收住与监护级别决策',
+    reference: 'Tabak YP, et al. Chest 2011;140:1177-1183',
   },
   {
     id: 'gcsp',
@@ -863,6 +934,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'gcsp',
     description: 'GCS-P = GCS - 瞳孔反应分(0-2)，比单独 GCS 更反映预后',
     whenToUse: '颅脑损伤/昏迷患者严重度评估 / 瞳孔变化趋势监测',
+    reference: 'Brennan PM, et al. J Neurosurg 2018. PMID 29631516',
   },
   {
     id: 'four',
@@ -875,6 +947,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'four',
     description: '眼/运动/脑干/呼吸各0-4，适用于插管不能言语患者',
     whenToUse: '气管插管患者意识评估 / 脑干反射动态监测 / 与 GCS 互补',
+    reference: 'Wijdicks EF, et al. Ann Neurol 2005;58:585-593. PMID 16178024',
   },
   {
     id: 'crusade',
@@ -887,6 +960,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'crusade',
     description: 'ACS 住院大出血风险，≤20 极低危至 >50 极高危(19.5%)',
     whenToUse: 'ACS 抗栓治疗前出血风险评估 / 出血高危者方案调整参考',
+    reference: 'Subherwal S, et al. Circulation 2009;119(14):1873-1882. PMID 19332461',
   },
   {
     id: 'rems',
@@ -899,6 +973,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'rems',
     description: '年龄/MAP/HR/RR/SpO₂/GCS 0-26分，急诊死亡风险分层',
     whenToUse: '急诊非手术患者危重程度评估 / 与 NEWS2 互补（含年龄与GCS）',
+    reference: 'Olsson T, et al. J Intern Med 2004;255:579-587. PMID 15078500',
   },
   {
     id: 'aspir',
@@ -911,6 +986,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'aspir',
     description: '6 项危险因素核对清单（非验证评分），≥4 项高风险',
     whenToUse: '卧床/鼻饲/镇静患者误吸风险核对 / 预防措施触发（床头抬高/吞咽评估）',
+    reference: '吸入性肺炎风险因素综合评估（文献综合，无单一原始出处）',
   },
   {
     id: 'parkland',
@@ -923,6 +999,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'parkland',
     description: '4mL×kg×%TBSA，前8h一半（自受伤起算），按尿量滴定',
     whenToUse: 'II°及以上烧伤初始复苏补液估算 / 尿量导向滴定起点',
+    reference: 'Baxter CR, Shires T. NY Acad Sci 1968;150:874-894',
   },
   {
     id: 'qtc',
@@ -935,6 +1012,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'qtc',
     description: 'Bazett 主算 + Fridericia/Framingham/Hodges，≥500ms 高危',
     whenToUse: '药物延长 QT 核对 / 电解质紊乱 QT 评估 / 晕厥病因筛查',
+    reference: 'Bazett/Fridericia/Framingham/Hodges（MDCalc 另含 Rautaharju）',
   },
   {
     id: 'alvarado',
@@ -947,6 +1025,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'alvarado',
     description: 'MANTRELS 10 分制，≥7 高概率，5-6 建议影像/留观',
     whenToUse: '急腹症阑尾炎筛查 / 影像与外科会诊决策参考',
+    reference: 'Alvarado A. Ann Emerg Med 1986;15:557-564',
   },
   {
     id: 'ripasa',
@@ -959,6 +1038,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'ripasa',
     description: '亚洲人群优化的阑尾炎评分，>12 高概率（满分15.5）',
     whenToUse: '疑似阑尾炎风险分层 / 与 Alvarado 互补使用',
+    reference: 'Chong CF, et al. World J Surg 2010;34:571-576',
   },
   {
     id: 'csf',
@@ -971,6 +1051,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'csf',
     description: '细菌性特征核对（WBC/中性粒/蛋白/糖比值），损伤穿刺可校正',
     whenToUse: '腰穿结果快速模式核对 / 细菌性脑膜炎警惕提示 / 与培养PCR互补',
+    reference: 'Spanos A, et al. JAMA 1989;262:2700-2707. PMID 2810603',
   },
   {
     id: 'padua',
@@ -983,6 +1064,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'padua',
     description: '内科住院 VTE 风险，≥4 分建议药物预防（结合出血风险）',
     whenToUse: '内科入院 VTE 常规评估 / 预防策略选择 / 与出血风险联合决策',
+    reference: 'Barbar S, et al. J Thromb Haemost 2010;8:2450-2457',
   },
   {
     id: 'mme',
@@ -995,6 +1077,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'mme',
     description: 'CDC 2022 因子合计日 MME，≥50 谨慎，≥90 高风险',
     whenToUse: '阿片类日剂量风险量化 / 过量风险评估与降阶梯参考',
+    reference: 'CDC Clinical Practice Guideline 2022. MMWR Recomm Rep 71(3):1-95',
   },
   {
     id: 'steroid',
@@ -1007,6 +1090,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'steroid',
     description: '抗炎效价等效换算：泼尼松5=甲泼尼龙4=地塞米松0.75=氢考20',
     whenToUse: '激素换药/剂量等效核对 / 冲击与口服方案换算参考',
+    reference: '经典等效剂量表（抗炎效价，文献共识）',
   },
   {
     id: 'fick',
@@ -1019,6 +1103,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'fick',
     description: 'CO=VO₂/(CaO₂-CvO₂)，VO₂ 可按 125×BSA 估计，附 CI',
     whenToUse: 'PAC 数据心排量核算 / 低心排与高动力状态鉴别',
+    reference: 'Fick A. 1870（经典原理）',
   },
   {
     id: 'apap',
@@ -1031,6 +1116,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'apap',
     description: '150 治疗线核对（4-24h 单次急性摄入），≥线立即 NAC',
     whenToUse: '对乙酰氨基酚急性过量 NAC 决策 / 摄入时间明确者快速核对',
+    reference: 'Rumack BH, Matthew H. Pediatrics 1975;55:871-876',
   },
   {
     id: 'sgarbossa',
@@ -1043,6 +1129,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'sgarbossa',
     description: 'LBBB/起搏心律下 AMI 判断：协调ST抬高5分/压低3分/不协调2分',
     whenToUse: 'LBBB 或起搏心律患者疑诊心梗 / STEMI 等效判读参考',
+    reference: 'Sgarbossa EB, et al. NEJM 1996;334:481. PMID 8559200；Smith SW 改良: Am Heart J 2012;164:457',
   },
   {
     id: 'duke',
@@ -1055,6 +1142,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'duke',
     description: '确诊=2主要/1主要+3次要/5次要；标准核对非最终诊断',
     whenToUse: '疑诊感染性心内膜炎标准核对 / 血培养与超声检查路径梳理',
+    reference: 'Durack DT, et al. Am J Med 1994;96:200-209；Li JS 改良: Clin Infect Dis 2000;30:633；Duke-2023: Fowler VG, Clin Infect Dis 2023;77:518',
   },
   {
     id: 'awol',
@@ -1067,6 +1155,7 @@ export const CALCULATORS: Calculator[] = [
     compute: 'awol',
     description: '年龄≥80/倒拼失败/定向障碍/病重各1分，≥2分启动预防',
     whenToUse: '老年急诊/住院患者谵妄风险快速筛查 / 预防措施触发 / 与 CAM-ICU 衔接',
+    reference: 'Douglas VC, et al. J Hosp Med 2013;8:193-199. PMID 23922253',
   },
 ];
 

@@ -1,8 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
-
-function emptyResult(unit: string): CalcResult {
-  return { value: null, unit, tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
-}
+import { CalcResult, emptyResult, getTierClass } from './CalcEngine';
 
 /**
  * ADHERE 急性心衰住院死亡风险树：BUN≥43 mg/dL、SBP<115、Cr≥2.75 mg/dL 三个高危因子。
@@ -86,7 +82,7 @@ export function calculateMcmahon(age: number, sex: string, ck: number, crUmol: n
   parts.push(`年龄 ${age}→${agePts}`);
   if (sex === 'female') { score += 1; parts.push('女性→1'); }
   let crPts = 0;
-  if (crMgDl > 2.2) crPts = 3; else if (crMgDl >= 1.5) crPts = 1.5;
+  if (crMgDl > 2.2) crPts = 3; else if (crMgDl >= 1.4) crPts = 1.5;
   score += crPts;
   parts.push(`Cr ${crMgDl.toFixed(2)} mg/dL→${crPts}`);
   if (ck > 40000) { score += 2; parts.push('CK>40000→2'); } else { parts.push(`CK ${ck}→0`); }
@@ -124,7 +120,7 @@ export function calculateIsth(platelet: number, ddimerGrade: number, ptProlong: 
     return emptyResult('');
   }
   let pltPts = 0;
-  if (platelet < 50) pltPts = 2; else if (platelet <= 100) pltPts = 1;
+  if (platelet < 50) pltPts = 2; else if (platelet < 100) pltPts = 1;
   const dPts = ddimerGrade < 0 ? 0 : ddimerGrade > 3 ? 3 : Math.round(ddimerGrade);
   const ptPts = ptProlong < 0 ? 0 : ptProlong > 2 ? 2 : Math.round(ptProlong);
   const fibPts = fib < 1.0 ? 1 : 0;

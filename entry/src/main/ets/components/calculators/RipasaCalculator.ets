@@ -21,11 +21,12 @@ export struct RipasaCalculator {
   @State rebound: boolean = false;
   @State rovsing: boolean = false;
   @State urineNeg: boolean = false;
+  @State foreignNational: boolean = false;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() {
-    this.result = calculateRipasa(this.age, this.sex, this.rlqPain, this.migratory, this.anorexia, this.nauseaVomit, this.durLt48h, this.rlqTender, this.guarding, this.rebound, this.rovsing, this.temp, this.wbc, this.urineNeg);
+    this.result = calculateRipasa(this.age, this.sex, this.rlqPain, this.migratory, this.anorexia, this.nauseaVomit, this.durLt48h, this.rlqTender, this.guarding, this.rebound, this.rovsing, this.temp, this.wbc, this.urineNeg, this.foreignNational);
   }
 
   reset() {
@@ -43,6 +44,7 @@ export struct RipasaCalculator {
     this.rebound = false;
     this.rovsing = false;
     this.urineNeg = false;
+    this.foreignNational = false;
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
@@ -61,7 +63,7 @@ export struct RipasaCalculator {
     Column() {
       Column() {
         Text('RIPASA 阑尾炎评分（亚洲人群优化）').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
-        Text('>12 高概率；8-12 中间区；满分 15.5（不含 NRIC 项）').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+        Text('≥12 高概率；7.5-<12 中间区；满分 17.5（含外籍 NRIC 项）').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
@@ -97,6 +99,7 @@ export struct RipasaCalculator {
           OptionChip({ label: '反跳痛', selected: this.rebound, onChipClick: () => { this.rebound = !this.rebound; this.calculate(); } });
           OptionChip({ label: 'Rovsing征 +2', selected: this.rovsing, onChipClick: () => { this.rovsing = !this.rovsing; this.calculate(); } });
           OptionChip({ label: '尿检阴性', selected: this.urineNeg, onChipClick: () => { this.urineNeg = !this.urineNeg; this.calculate(); } });
+          OptionChip({ label: '外籍(NRIC)', selected: this.foreignNational, onChipClick: () => { this.foreignNational = !this.foreignNational; this.calculate(); } });
         }.width('100%');
       }
 

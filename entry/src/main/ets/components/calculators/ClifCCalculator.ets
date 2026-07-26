@@ -17,13 +17,12 @@ export struct ClifCCalculator {
   @State crUnit: string = 'umol';
   @State pao2: number = 0;
   @State fio2: number = 0;
-  @State fio2Mode: string = 'dec';
   @State age: number = 0;
   @State wbc: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateClifC(this.bilirubin, this.bilUnit, this.creatinine, this.crUnit, this.inr, this.hepaticEnceph, this.map, this.vaso, this.pao2, this.fio2, this.fio2Mode, this.age, this.wbc); }
+  calculate() { this.result = calculateClifC(this.bilirubin, this.bilUnit, this.creatinine, this.crUnit, this.inr, this.hepaticEnceph, this.map, this.vaso, this.pao2, this.fio2, 'pct', this.age, this.wbc); }
 
   reset() {
     this.bilirubin = 0;
@@ -36,7 +35,6 @@ export struct ClifCCalculator {
     this.crUnit = 'umol';
     this.pao2 = 0;
     this.fio2 = 0;
-    this.fio2Mode = 'dec';
     this.age = 0;
     this.wbc = 0;
     this.result = null;
@@ -58,7 +56,7 @@ export struct ClifCCalculator {
       Column() {
         Text('用于慢加急性肝衰竭死亡率预测 (CLIF-C ACLF)')
           .fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
-        Text('6器官评估(0-3) + 年龄 + WBC，连续评分 (Jalan 2014)')
+        Text('6器官评估(各1-3分) + 年龄 + WBC，连续评分 (Jalan 2014)')
           .fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
@@ -151,20 +149,15 @@ export struct ClifCCalculator {
               .onChange((value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
-            Text('FiO₂').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
-            TextInput({ placeholder: '0.21' })
-              .type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16)
+            Text('FiO₂ (%)').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 6 });
+            TextInput({ placeholder: '21-100' })
+              .type(InputType.Number).height(AppDimens.inputHeight).fontSize(16)
               .backgroundColor(AppColors.card).borderRadius(8)
               .border({ width: 1, color: AppColors.border })
               .padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .width('100%')
               .onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
-        }.width('100%').margin({ bottom: 8 });
-
-        Row() {
-          OptionChip({ label: '小数', selected: this.fio2Mode === 'dec', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.fio2Mode = 'dec'; this.calculate(); } }).layoutWeight(1).margin({ right: 4 });
-          OptionChip({ label: '百分比', selected: this.fio2Mode === 'pct', fontSize: 12, bold: true, chipHeight: 28, chipRadius: 6, onChipClick: () => { this.fio2Mode = 'pct'; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
         }.width('100%').margin({ bottom: 16 });
 
         SectionTitle({ title: '患者参数' })

@@ -12,7 +12,6 @@ export struct Apache2Calculator {
   @State hr: number = 0;
   @State rr: number = 0;
   @State fio2: number = 0;
-  @State fio2Mode: string = 'pct';
   @State pao2: number = 0;
   @State paco2: number = 0;
   @State paco2Filled: boolean = true;
@@ -43,7 +42,7 @@ export struct Apache2Calculator {
     }
     this.result = calculateApache2(
       this.temp, this.sbp, this.dbp, this.hr, this.rr,
-      this.fio2, this.fio2Mode, this.pao2,
+      this.fio2, 'pct', this.pao2,
       this.paco2Filled && this.paco2 > 0 ? this.paco2 : null,
       this.phFilled && this.ph > 0 ? this.ph : null,
       this.hco3Filled && this.hco3 > 0 ? this.hco3 : null,
@@ -59,7 +58,6 @@ export struct Apache2Calculator {
     this.hr = 0;
     this.rr = 0;
     this.fio2 = 0;
-    this.fio2Mode = 'pct';
     this.pao2 = 0;
     this.paco2 = 0;
     this.paco2Filled = true;
@@ -146,16 +144,9 @@ export struct Apache2Calculator {
 
       SectionTitle({ title: '氧合参数' })
 
-      InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } })
+      InputRow({ label: 'FiO₂ (%)', placeholder: '21-100', inputType: InputType.Number, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } })
         .width('100%')
         .margin({ bottom: 16 });
-
-      Row() {
-        OptionChip({ label: '小数', selected: this.fio2Mode === 'dec', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'dec'; this.calculate(); } }).layoutWeight(1);
-        OptionChip({ label: '百分比', selected: this.fio2Mode === 'pct', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'pct'; this.calculate(); } }).layoutWeight(1);
-      }
-      .width('100%')
-      .margin({ bottom: 16 });
 
       Row() {
         InputRow({ label: 'PaO₂ (mmHg)', placeholder: '80', onTextChange: (value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);

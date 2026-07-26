@@ -17,38 +17,32 @@ export function calculateClifC(
   const fio2Val = fio2Mode === 'pct' ? fio2 / 100 : fio2;
   const pf = pao2 / fio2Val;
 
-  let bScore = 0;
+  // CLIF-OF 每器官 1-3 分（Jalan 2014 / MDCalc）
+  let bScore = 1;
   if (bilMg >= 12) bScore = 3;
   else if (bilMg >= 6) bScore = 2;
-  else if (bilMg >= 2) bScore = 1;
 
-  let cScore = 0;
+  let cScore = 1;
   if (crMg >= 3.5) cScore = 3;
   else if (crMg >= 2.0) cScore = 2;
-  else if (crMg >= 1.2) cScore = 1;
 
-  let hScore = 0;
-  if (hepaticEnceph >= 3) hScore = 2;
-  else if (hepaticEnceph >= 1) hScore = 1;
-  if (hScore > 2) hScore = 2;
+  // UI 编码：0=无, 1=I-II, 2=III-IV → 1/2/3 分
+  const hScore = hepaticEnceph + 1;
 
-  let iScore = 0;
+  let iScore = 1;
   if (inr >= 2.5) iScore = 3;
-  else if (inr >= 1.5) iScore = 2;
-  else if (inr >= 1.1) iScore = 1;
+  else if (inr >= 2.0) iScore = 2;
 
-  let vScore = 0;
-  if (vaso === 'high') vScore = 3;
-  else if (vaso === 'low') vScore = 2;
-  else if (map < 70) vScore = 1;
+  let vScore = 1;
+  if (vaso === 'low' || vaso === 'high') vScore = 3;
+  else if (map < 70) vScore = 2;
 
-  let rScore = 0;
-  if (pf < 100) rScore = 3;
-  else if (pf < 200) rScore = 2;
-  else if (pf < 300) rScore = 1;
+  let rScore = 1;
+  if (pf <= 200) rScore = 3;
+  else if (pf <= 300) rScore = 2;
 
   const clifOf = bScore + cScore + hScore + iScore + vScore + rScore;
-  const score = 10 * (0.33 * clifOf + 0.04 * age + 0.63 * Math.log(wbc + 1)) + 3;
+  const score = 10 * (0.33 * clifOf + 0.04 * age + 0.63 * Math.log(wbc) - 2);
   const scoreRounded = Math.round(score * 10) / 10;
 
   let tier: string;
@@ -77,7 +71,8 @@ export function calculateClifC(
     footnote = '> 60  28天死亡率 > 80%, 90天 > 90%。';
   }
 
-  const detail = `\n\n肝脏(胆红素 ${bilMg.toFixed(1)} mg/dL): ${bScore}\n肾脏(肌酐 ${crMg.toFixed(2)} mg/dL): ${cScore}\n脑(HE ${hepaticEnceph}级): ${hScore}\n凝血(INR ${inr}): ${iScore}\n循环(MAP ${map} ${vaso === 'none' ? '无血管活性药' : vaso === 'low' ? '低剂量血管活性药' : '高剂量血管活性药'}): ${vScore}\n呼吸(P/F ${pf.toFixed(0)}): ${rScore}\n\nCLIF-OF: ${clifOf}/18\n年龄: ${age}\nWBC: ${wbc} (×10⁹/L)`;
+  const heLabel = hepaticEnceph === 0 ? '无' : hepaticEnceph === 1 ? 'I-II' : 'III-IV';
+  const detail = `\n\n肝脏(胆红素 ${bilMg.toFixed(1)} mg/dL): ${bScore}\n肾脏(肌酐 ${crMg.toFixed(2)} mg/dL): ${cScore}\n脑(HE ${heLabel}): ${hScore}\n凝血(INR ${inr}): ${iScore}\n循环(MAP ${map} ${vaso === 'none' ? '无血管活性药' : vaso === 'low' ? '低剂量血管活性药' : '高剂量血管活性药'}): ${vScore}\n呼吸(P/F ${pf.toFixed(0)}): ${rScore}\n\nCLIF-OF: ${clifOf}/18（每器官1-3分）\n年龄: ${age}\nWBC: ${wbc} (×10⁹/L)\n注：因HE插管者脑项按3分计；P/F≤200或机械通气者呼吸项按3分计（本实现未单独采集插管状态）。`;
 
   return { value: scoreRounded, unit: '分', tier, tierClass, footnote: footnote + detail };
 }

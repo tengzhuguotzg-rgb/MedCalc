@@ -213,6 +213,25 @@ export struct ManualInputDialog {
   @Prop currentPatientId: string = '';
   onManualInputSave: (fieldKey: string, fieldValue: string) => void = () => {};
 
+  private isCurrentFieldSelect(): boolean {
+    if (this.manualFieldKey.length === 0) {
+      return false;
+    }
+    const spec = this.dataFieldSpecs.find((s: DataFieldSpec): boolean => s.key === this.manualFieldKey);
+    if (spec === undefined || spec === null || spec.options === undefined || spec.options === null) {
+      return false;
+    }
+    return spec.type === 'select';
+  }
+
+  private getCurrentOptions(): string[] {
+    const spec = this.dataFieldSpecs.find((s: DataFieldSpec): boolean => s.key === this.manualFieldKey);
+    if (spec === undefined || spec === null || spec.options === undefined || spec.options === null) {
+      return [];
+    }
+    return spec.options;
+  }
+
   build() {
     Column() {
       Column() {
@@ -222,7 +241,7 @@ export struct ManualInputDialog {
           .fontColor(AppColors.primary)
           .margin({ bottom: 12 })
 
-         TextInput({ placeholder: $r('app.string.dialog_manual_search_hint') })
+         TextInput({ placeholder: $r('app.string.dialog_manual_search_hint'), text: this.manualFilterKeyword })
           .height(40)
           .fontSize(14)
           .margin({ bottom: 8 })
@@ -230,7 +249,7 @@ export struct ManualInputDialog {
 
         List({ space: 4 }) {
           ForEach(this.dataFieldSpecs, (spec: DataFieldSpec) => {
-            if (spec.type === 'number') {
+            if (spec.type === 'number' || spec.type === 'select') {
               if (this.manualFilterKeyword.length === 0 || spec.label.indexOf(this.manualFilterKeyword) >= 0 || spec.key.indexOf(this.manualFilterKeyword) >= 0) {
                 ListItem() {
                   Row() {
@@ -248,7 +267,10 @@ export struct ManualInputDialog {
                   .padding(8)
                   .backgroundColor(this.manualFieldKey === spec.key ? AppColors.fillBeige : AppColors.surfaceSubtle)
                   .borderRadius(6)
-                  .onClick(() => { this.manualFieldKey = spec.key; })
+                  .onClick(() => {
+                    this.manualFieldKey = spec.key;
+                    this.manualFieldValue = '';
+                  })
                 }
               }
             }
@@ -257,12 +279,29 @@ export struct ManualInputDialog {
         .height(200)
         .margin({ bottom: 8 })
 
-         TextInput({ placeholder: $r('app.string.dialog_manual_value_hint') })
-          .height(40)
-          .fontSize(14)
-          .type(InputType.NUMBER_DECIMAL)
+        if (this.isCurrentFieldSelect()) {
+          Flex({ wrap: FlexWrap.Wrap, justifyContent: FlexAlign.Start }) {
+            ForEach(this.getCurrentOptions(), (option: string) => {
+              Text(option === '0' ? '无' : (option === '1' ? '有' : option))
+                .fontSize(13)
+                .fontColor(this.manualFieldValue === option ? AppColors.onPrimary : AppColors.textBody)
+                .backgroundColor(this.manualFieldValue === option ? AppColors.primary : AppColors.fillNeutral)
+                .borderRadius(6)
+                .padding({ left: 10, right: 10, top: 6, bottom: 6 })
+                .margin({ right: 6, bottom: 6 })
+                .onClick(() => { this.manualFieldValue = option; })
+            }, (option: string) => option)
+          }
+          .width('100%')
           .margin({ bottom: 12 })
-          .onChange((value: string) => { this.manualFieldValue = value; })
+        } else {
+           TextInput({ placeholder: $r('app.string.dialog_manual_value_hint') })
+            .height(40)
+            .fontSize(14)
+            .type(InputType.NUMBER_DECIMAL)
+            .margin({ bottom: 12 })
+            .onChange((value: string) => { this.manualFieldValue = value; })
+        }
 
         Row() {
            Button($r('app.string.common_cancel'))
@@ -276,6 +315,7 @@ export struct ManualInputDialog {
               this.showManualInput = false;
               this.manualFieldKey = '';
               this.manualFieldValue = '';
+              this.manualFilterKeyword = '';
             })
            Button($r('app.string.dialog_manual_submit'))
              .fontSize(14)

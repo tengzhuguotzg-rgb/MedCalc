@@ -1339,6 +1339,7 @@ export struct PatientDetailPage {
     this.showManualInput = false;
     this.manualFieldKey = '';
     this.manualFieldValue = '';
+    this.manualFilterKeyword = '';
     this.loadDashboard();
   }
 

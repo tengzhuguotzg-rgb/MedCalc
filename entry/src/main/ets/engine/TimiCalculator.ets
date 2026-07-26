@@ -2,9 +2,9 @@ import { CalcResult } from './CalcEngine';
 
 export function calculateTimiStemi(ageCat: number, dmHtnAngina: boolean, sbpLt100: boolean, hrGt100: boolean, killip: number, weightLt67: boolean, anteriorLbbb: boolean, timeToTreat: boolean): CalcResult {
   let score = 0;
+  // ageCat：0=<55, 1=55-64, 2=65-74, 3=≥75；MDCalc TIMI STEMI 仅 ≥75=+3 / 65-74=+2
   if (ageCat >= 3) score += 3;
   else if (ageCat >= 2) score += 2;
-  else if (ageCat >= 1) score += 1;
 
   if (dmHtnAngina) score += 1;
   if (sbpLt100) score += 3;

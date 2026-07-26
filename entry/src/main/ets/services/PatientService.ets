@@ -193,10 +193,7 @@ export class PatientService {
   }
 
   async addManualData(patientId: string, fieldKey: string, value: string, recordId: string): Promise<void> {
-    const existing = await this.repo.getLatestValue(patientId, fieldKey);
-    if (existing === value) {
-      return;
-    }
+    // 手动录入是用户的显式操作，即使数值与上次相同也按新测量点记录（不做静默去重）
     const dp = new PatientDataPoint();
     dp.patientId = patientId;
     dp.fieldKey = fieldKey;

@@ -1,4 +1,4 @@
-import { CalcResult, formatValue, getTierClass } from './CalcEngine';
+import { CalcResult, getTierClass } from './CalcEngine';
 
 export function calculateCrCl(sex: string, age: number, weight: number, creatinine: number, crUnit: string): CalcResult {
   if (sex === '' || age <= 0 || weight <= 0 || creatinine <= 0) {

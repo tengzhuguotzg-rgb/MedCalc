@@ -1,8 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
-
-function emptyResult(unit: string): CalcResult {
-  return { value: null, unit, tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
-}
+import { CalcResult, emptyResult, getTierClass } from './CalcEngine';
 
 /**
  * HEART Score：History / ECG / Age / Risk factors / Troponin 各 0-2 分。
@@ -177,7 +173,7 @@ export function calculateTls(uricAcidUmol: number, k: number, phosMmol: number, 
   if (caMmol <= 1.75) { labCount += 1; parts.push(`Ca ${caMmol}≤1.75✓`); } else { parts.push(`Ca ${caMmol}✗`); }
 
   const clinical: string[] = [];
-  if (crUlnRatio >= 1.5) clinical.push(`肌酐 ${crUlnRatio}×ULN≥1.5`);
+  if (crUlnRatio > 1.5) clinical.push(`肌酐 ${crUlnRatio}×ULN>1.5`);
   if (arrhythmia) clinical.push('心律失常');
   if (seizure) clinical.push('抽搐');
 
@@ -266,31 +262,33 @@ export function calculateWellsDvt(activeCancer: boolean, immobilization: boolean
 
 /**
  * CPIS 临床肺部感染评分（VAP 辅助）。secretions 0/1/2，culture 0/1/2，cxr 0/1/2。
+ * bandsAbs：杆状核粒细胞绝对计数 (cells/mm³)，≥500 时 WBC 项加至 2 分。
+ * ards：合并 ARDS 时 P/F≤240 不加 2 分。
  */
-export function calculateCpis(temp: number, wbc: number, bands: number, secretions: number, pfRatio: number, cxr: number, culture: number): CalcResult {
-  if (temp <= 0 || wbc <= 0) {
+export function calculateCpis(temp: number, wbc: number, bandsAbs: number, secretions: number, pfRatio: number, cxr: number, culture: number, ards: boolean): CalcResult {
+  if (temp <= 0 || wbc <= 0 || secretions < 0 || cxr < 0 || culture < 0 || (pfRatio <= 0 && !ards)) {
     return emptyResult('');
   }
   let tempScore = 0;
   if (temp >= 39 || temp <= 36) tempScore = 2; else if (temp >= 38.5) tempScore = 1;
   let wbcScore = 0;
   if (wbc < 4 || wbc > 11) wbcScore = 1;
-  if (wbcScore === 1 && bands >= 50) wbcScore = 2;
-  const oxyScore = pfRatio > 0 && pfRatio <= 240 ? 2 : 0;
+  if (wbcScore === 1 && bandsAbs >= 500) wbcScore = 2;
+  const oxyScore = pfRatio > 0 && pfRatio <= 240 && !ards ? 2 : 0;
   const total = tempScore + wbcScore + secretions + oxyScore + cxr + culture;
 
   let tier: string;
   let footnote: string;
-  if (total >= 6) {
+  if (total > 6) {
     tier = 'VAP 可能性高';
-    footnote = '≥6 分提示 VAP 可能性高，建议留取下呼吸道标本并评估抗菌方案。CPIS 为辅助工具，不能单独诊断 VAP。';
+    footnote = '>6 分提示 VAP 可能性高，建议留取下呼吸道标本并评估抗菌方案。CPIS 为辅助工具，不能单独诊断 VAP。';
   } else {
     tier = '低分';
-    footnote = '<6 分 VAP 可能性较低，但免疫抑制/早期病例可假阴性，需结合影像与培养动态评估。';
+    footnote = '≤6 分 VAP 可能性较低，但免疫抑制/早期病例可假阴性，需结合影像与培养动态评估。';
   }
-  footnote += `\n\n体温→${tempScore}，WBC→${wbcScore}，分泌物→${secretions}，氧合(P/F${pfRatio > 0 ? ' ' + pfRatio.toFixed(0) : ' 未填'})→${oxyScore}，胸片→${cxr}，培养→${culture} → ${total}/12`;
-  footnote += '\nCPIS 原始版本用于 VAP 初筛；未填项按 0 分计可能低估，培养/胸片项建议手动补录。';
-  return { value: total, unit: '/12', tier, tierClass: total >= 6 ? 'tier-danger' : getTierClass(tier), footnote };
+  footnote += `\n\n体温→${tempScore}，WBC→${wbcScore}，分泌物→${secretions}，氧合(P/F${pfRatio > 0 ? ' ' + pfRatio.toFixed(0) : ' 未填'}${ards ? '，ARDS' : ''})→${oxyScore}，胸片→${cxr}，培养→${culture} → ${total}/12`;
+  footnote += '\nCPIS 原始版本用于 VAP 初筛；未填项按 0 分计可能低估，培养/胸片项建议手动补录。P/F≤240 且合并 ARDS 时氧合项不计分。';
+  return { value: total, unit: '/12', tier, tierClass: total > 6 ? 'tier-danger' : getTierClass(tier), footnote };
 }
 
 /**

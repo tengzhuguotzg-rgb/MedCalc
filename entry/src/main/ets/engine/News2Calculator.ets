@@ -10,10 +10,13 @@ function news2ScoreResp(r: number): number {
 
 function news2ScoreSpo2(s: number, onO2: boolean): number {
   if (onO2) {
+    // Scale 2（高碳酸血症呼吸衰竭，COPD 等）：88-92 为目标区间
     if (s <= 83) return 3;
     if (s <= 85) return 2;
     if (s <= 87) return 1;
     if (s <= 92) return 0;
+    if (s <= 94) return 1;
+    if (s <= 96) return 2;
     return 3;
   }
   if (s <= 91) return 3;

@@ -1,8 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
-
-function emptyResult(unit: string): CalcResult {
-  return { value: null, unit, tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
-}
+import { CalcResult, emptyResult, getTierClass } from './CalcEngine';
 
 /**
  * 哮喘急性加重严重度分级（GINA 口径）。speech: ''/'sentences'/'phrases'/'words'。

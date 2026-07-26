@@ -8,7 +8,6 @@ import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard, SectionTitle }
 export struct SofaCalculator {
   @State resetKey: number = 0;  @State pao2: number = 0;
   @State fio2: number = 0;
-  @State fio2Mode: string = 'dec';
   @State platelet: number = 0;
   @State bilirubin: number = 0;
   @State bilirubinUnit: string = 'umol';
@@ -21,12 +20,11 @@ export struct SofaCalculator {
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateSofa(this.pao2, this.fio2, this.fio2Mode, this.platelet, this.bilirubin, this.bilirubinUnit, this.map, this.vaso, this.gcs, this.creatinine, this.creatinineUnit, this.urineOutput); }
+  calculate() { this.result = calculateSofa(this.pao2, this.fio2, 'pct', this.platelet, this.bilirubin, this.bilirubinUnit, this.map, this.vaso, this.gcs, this.creatinine, this.creatinineUnit, this.urineOutput); }
 
   reset() {
     this.pao2 = 0;
     this.fio2 = 0;
-    this.fio2Mode = 'dec';
     this.platelet = 0;
     this.bilirubin = 0;
     this.bilirubinUnit = 'umol';
@@ -58,11 +56,7 @@ export struct SofaCalculator {
         SectionTitle({ title: '呼吸', resetAction: () => { this.reset(); } })
         Row() {
           InputRow({ label: 'PaO₂ (mmHg)', placeholder: '请输入PaO2', onTextChange: (value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
-          InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
-        }.width('100%').margin({ bottom: 8 });
-        Row() {
-          OptionChip({ label: '小数', selected: this.fio2Mode === 'dec', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'dec'; this.calculate(); } }).layoutWeight(1);
-          OptionChip({ label: '百分比', selected: this.fio2Mode === 'pct', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'pct'; this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: 'FiO₂ (%)', placeholder: '21-100', inputType: InputType.Number, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 8 });
       }
 

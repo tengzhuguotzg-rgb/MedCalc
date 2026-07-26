@@ -8,12 +8,8 @@ export interface CalcResult {
   footnote: string;
 }
 
-export function formatValue(value: number | null, unit: string): string {
-  if (value === null || isNaN(value)) {
-    return '—';
-  }
-  const formatted = value.toFixed(1).replace(/\.0$/, '');
-  return unit ? `${formatted} ${unit}` : formatted;
+export function emptyResult(unit: string): CalcResult {
+  return { value: null, unit, tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
 }
 
 export function getTierClass(tier: string): string {

@@ -43,7 +43,7 @@ export struct MmeCalculator {
     Column() {
       Column() {
         Text('MME 口服吗啡当量（CDC 2022）').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
-        Text('日剂量 mg/日，未用药物留 0；≥90 MME 高风险').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+        Text('日剂量 mg/日，未用药物留 0；≥99 MME 高风险，≥50 需谨慎').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {

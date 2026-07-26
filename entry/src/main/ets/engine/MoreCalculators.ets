@@ -100,11 +100,3 @@ export function calculateNihss(ia: number, ib: number, ic: number, gaze: number,
   else { tier = '重度'; footnote = '21-42分 重度卒中。'; }
   return { value: total, unit: '/42', tier, tierClass: getTierClass(tier), footnote };
 }
-
-export function calculateNrs2002(bmi: number, wl: number, intake: number, severity: number): CalcResult {
-  const total = bmi + wl + intake + severity;
-  let tier: string, footnote: string;
-  if (total >= 3) { tier = '营养风险'; footnote = '≥3分 存在营养风险，需营养支持。'; }
-  else { tier = '无风险'; footnote = '<3分 暂无营养风险，1周后复评。'; }
-  return { value: total, unit: '', tier, tierClass: getTierClass(tier), footnote };
-}

@@ -1,8 +1,4 @@
-import { CalcResult, getTierClass } from './CalcEngine';
-
-function emptyResult(unit: string): CalcResult {
-  return { value: null, unit, tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
-}
+import { CalcResult, emptyResult, getTierClass } from './CalcEngine';
 
 /**
  * Parkland 烧伤补液公式：4 mL × kg × %TBSA，前 8h 输一半（自受伤时刻起算）。
@@ -92,46 +88,48 @@ export function calculateAlvarado(temp: number, wbc: number, neutPct: number, mi
 }
 
 /**
- * RIPASA 阑尾炎评分（亚洲人群优化，去 Foreign NRIC 项）。
+ * RIPASA 阑尾炎评分（Chong CF, et al. World J Surg 2010;34:571-576）。
+ * 满分 17.5（含外籍 NRIC 项）。
  */
-export function calculateRipasa(age: number, sex: string, rlqPain: boolean, migratory: boolean, anorexia: boolean, nauseaVomit: boolean, durLt48h: boolean, rlqTender: boolean, guarding: boolean, rebound: boolean, rovsing: boolean, temp: number, wbc: number, urineNeg: boolean): CalcResult {
+export function calculateRipasa(age: number, sex: string, rlqPain: boolean, migratory: boolean, anorexia: boolean, nauseaVomit: boolean, durLt48h: boolean, rlqTender: boolean, guarding: boolean, rebound: boolean, rovsing: boolean, temp: number, wbc: number, urineNeg: boolean, foreignNational: boolean): CalcResult {
   if (age <= 0 || temp <= 0 || wbc <= 0) {
     return emptyResult('');
   }
   let total = 0;
   const parts: string[] = [];
-  if (sex === 'male') { total += 1; parts.push('男性1'); }
-  if (age < 40) { total += 1; parts.push('年龄<40✓1'); } else { parts.push('年龄<40✗'); }
+  if (sex === 'male') { total += 1; parts.push('男性1'); } else { total += 0.5; parts.push('女性0.5'); }
+  if (age <= 40) { total += 1; parts.push('年龄≤40→1'); } else { total += 0.5; parts.push('年龄>40→0.5'); }
   if (rlqPain) { total += 0.5; parts.push('右下腹痛0.5'); }
   if (migratory) { total += 0.5; parts.push('转移痛0.5'); }
   if (anorexia) { total += 1; parts.push('厌食1'); }
   if (nauseaVomit) { total += 1; parts.push('恶心呕吐1'); }
-  if (durLt48h) { total += 1; parts.push('病程<48h1'); }
+  if (durLt48h) { total += 1; parts.push('病程≤48h→1'); } else { total += 0.5; parts.push('病程>48h→0.5'); }
   if (rlqTender) { total += 1; parts.push('右下腹压痛1'); }
   if (guarding) { total += 2; parts.push('肌紧张2'); }
   if (rebound) { total += 1; parts.push('反跳痛1'); }
   if (rovsing) { total += 2; parts.push('Rovsing征2'); }
-  if (temp >= 37.5) { total += 1; parts.push('发热1'); }
+  if (temp >= 37 && temp <= 39) { total += 2; parts.push('体温37-39°C→2'); }
   if (wbc > 10) { total += 1; parts.push('WBC升高✓1'); } else { parts.push('WBC升高✗'); }
   if (urineNeg) { total += 1; parts.push('尿检阴性1'); }
+  if (foreignNational) { total += 1; parts.push('外籍(NRIC)1'); }
 
   let tier: string;
   let footnote: string;
-  if (total > 12) {
+  if (total >= 12) {
     tier = '高概率';
-    footnote = '>12 分，阑尾炎高概率，外科会诊。';
-  } else if (total >= 8) {
+    footnote = '≥12 分，阑尾炎高概率，外科会诊。';
+  } else if (total >= 7.5) {
     tier = '中间区';
-    footnote = '8-12 分，中概率，建议影像或留观。';
+    footnote = '7.5-<12 分，中概率，建议影像或留观。';
   } else if (total >= 5) {
     tier = '低概率';
-    footnote = '5-7.5 分，低概率，结合影像。';
+    footnote = '5-<7.5 分，低概率，结合影像。';
   } else {
     tier = '不太可能';
     footnote = '<5 分，阑尾炎不太可能。';
   }
-  footnote += `\n\n${parts.length > 0 ? parts.join('，') : '无符合项'} → ${total.toFixed(1)}/15.5\nRIPASA 在亚洲人群验证优于 Alvarado；本实现不含新加坡 Foreign NRIC 项（满分 15.5）。`;
-  return { value: total, unit: '/15.5', tier, tierClass: total > 12 ? 'tier-danger' : getTierClass(tier), footnote };
+  footnote += `\n\n${parts.length > 0 ? parts.join('，') : '无符合项'} → ${total.toFixed(1)}/17.5\nRIPASA（Chong 2010）在亚洲人群验证优于 Alvarado。`;
+  return { value: total, unit: '/17.5', tier, tierClass: total >= 12 ? 'tier-danger' : getTierClass(tier), footnote };
 }
 
 /**
@@ -228,18 +226,18 @@ export function calculateMme(morphine: number, oxycodone: number, hydrocodone: n
 
   let tier: string;
   let footnote: string;
-  if (total >= 90) {
+  if (total >= 99) {
     tier = '高剂量';
-    footnote = '≥90 MME/日，过量/呼吸抑制风险高：尽量避免继续加量，评估纳洛酮备药与降阶梯方案。';
+    footnote = '≥99 MME/日，过量/呼吸抑制风险高：应避免继续加量，评估纳洛酮备药与降阶梯方案。';
   } else if (total >= 50) {
     tier = '需谨慎';
-    footnote = '50-89 MME/日，加量需谨慎并加强随访监测。';
+    footnote = '50-98 MME/日，加量需谨慎并加强随访监测。';
   } else {
     tier = '常规范围';
     footnote = '<50 MME/日，常规监测。';
   }
   footnote += `\n\n${parts.join(' + ')} = ${total.toFixed(0)} MME/日\n转换因子（CDC 2022）：吗啡1、氢可酮1、羟考酮1.5、氢吗啡酮5、曲马多0.2、芬太尼贴剂(mcg/hr)2.4。不同指南因子略有差异；美沙酮转换为非线性，未纳入。MME 用于风险量化，不用于患者间直接剂量转换（需减量 25-50% 交叉滴定）。`;
-  return { value: total, unit: 'MME/日', tier, tierClass: total >= 90 ? 'tier-danger' : getTierClass(tier), footnote };
+  return { value: total, unit: 'MME/日', tier, tierClass: total >= 99 ? 'tier-danger' : getTierClass(tier), footnote };
 }
 
 /**

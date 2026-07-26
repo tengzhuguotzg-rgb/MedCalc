@@ -10,28 +10,30 @@ export struct CpisCalculator {
   @State temp: number = 0;
   @State wbc: number = 0;
   @State bands: number = 0;
-  @State secretions: number = 0;
+  @State secretions: number = -1;
   @State pao2: number = 0;
   @State fio2Pct: number = 0;
-  @State cxr: number = 0;
-  @State culture: number = 0;
+  @State cxr: number = -1;
+  @State culture: number = -1;
+  @State ards: boolean = false;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() {
     const pf = this.pao2 > 0 && this.fio2Pct > 0 ? this.pao2 / (this.fio2Pct / 100) : 0;
-    this.result = calculateCpis(this.temp, this.wbc, this.bands, this.secretions, pf, this.cxr, this.culture);
+    this.result = calculateCpis(this.temp, this.wbc, this.bands, this.secretions, pf, this.cxr, this.culture, this.ards);
   }
 
   reset() {
     this.temp = 0;
     this.wbc = 0;
     this.bands = 0;
-    this.secretions = 0;
+    this.secretions = -1;
     this.pao2 = 0;
     this.fio2Pct = 0;
-    this.cxr = 0;
-    this.culture = 0;
+    this.cxr = -1;
+    this.culture = -1;
+    this.ards = false;
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
@@ -50,7 +52,7 @@ export struct CpisCalculator {
     Column() {
       Column() {
         Text('CPIS：呼吸机相关肺炎（VAP）辅助评分').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium);
-        Text('≥6 分提示 VAP 可能性高；辅助工具，不单独诊断').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
+        Text('>6 分提示 VAP 可能性高；辅助工具，不单独诊断').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 });
       }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
 
       CalcCard() {
@@ -60,10 +62,17 @@ export struct CpisCalculator {
           InputRow({ label: 'WBC (×10⁹/L)', placeholder: 'WBC', onTextChange: (value: string) => { this.wbc = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 8 });
         Row() {
-          InputRow({ label: '杆状核 (%)', placeholder: '≥50加1', onTextChange: (value: string) => { this.bands = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '杆状核绝对值 (/mm³)', placeholder: '≥500加1', onTextChange: (value: string) => { this.bands = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
           InputRow({ label: 'PaO₂ (mmHg)', placeholder: 'PaO2', onTextChange: (value: string) => { this.pao2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 8 });
-        InputRow({ label: 'FiO₂ (%)', placeholder: '21-100', onTextChange: (value: string) => { this.fio2Pct = parseFloat(value) || 0; this.calculate(); } }).margin({ bottom: 8 });
+        InputRow({ label: 'FiO₂ (%)', placeholder: '21-100', inputType: InputType.Number, onTextChange: (value: string) => { this.fio2Pct = parseFloat(value) || 0; this.calculate(); } }).margin({ bottom: 8 });
+        Row() {
+          Text('合并 ARDS').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
+          Row({ space: 8 }) {
+            OptionChip({ label: '否', selected: !this.ards, onChipClick: () => { this.ards = false; this.calculate(); } });
+            OptionChip({ label: '是', selected: this.ards, onChipClick: () => { this.ards = true; this.calculate(); } });
+          }
+        }.width('100%').margin({ bottom: 8 });
 
         Text('气道分泌物').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
         Row({ space: 8 }) {

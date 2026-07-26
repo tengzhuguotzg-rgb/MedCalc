@@ -112,3 +112,43 @@
 ## 修复后构建验证
 
 2026-07-26: `build_project` BUILD SUCCESSFUL，所有引擎+UI 组件+AssistantService 调用链更新完毕。
+
+---
+
+## 第二轮复核与修复（2026-07-26，基于 researcher 子智能体逐页核对 MDCalc）
+
+第一轮报告（上方）经审核后发现：KCC "已修复"为误报、CLIF-C 公式仍错、Marshall/Murray 未接线、
+Wells PE 自认未修，另有约 13 个计算器未覆盖。第二轮派 researcher 逐页核对 MDCalc 并收集原始出处，
+确认差异并全部修复如下：
+
+### 已修复（红）
+
+| 计算器 | 问题 | 修复 |
+|--------|------|------|
+| CLIF-C | 六器官分项用 0-3 分带、公式常数 +3 且 ln(wbc+1) | 改 1-3 分带（MDCalc CLIF-OF），公式改 `10×(0.33×CLIF-OF+0.04×age+0.63×ln(wbc)−2)` |
+| KCC | pH/Cr/HE/胆红素被当作独立阳性，无双路径逻辑 | 重写为真双路径：APAP（pH<7.3 或 INR>6.5+Cr>3.4+HE III-IV）；非APAP（INR>6.5 或 5选3）；UI 补不良病因+黄疸天数 |
+| Wells PE | 缺 PE最可能+3、既往VTE+1.5（满分应为 12.5） | 引擎+UI+助手补齐两项，补两分法脚注 |
+| Mehran | 年龄 60-75 多给 +2；eGFR/造影剂分带错误 | 年龄仅 >75=+4；eGFR ≥60/40-<60/20-<40/<20 = 0/2/4/6；造影剂每 100mL+1 |
+| RIPASA | 女性/年龄>40/病程>48h 未给 0.5；体温阈值错；缺外籍项；满分错 | 全部对齐 MDCalc，满分 17.5，分层改 ≥12/7.5-<12/5-<7.5/<5 |
+| CPIS | 杆状核阈值用 %（应为绝对值≥500）；P/F≤240 未排除 ARDS；阈值 ≥6 | bands 改绝对计数语义（助手新增 bandsAbs 字段）；加 ARDS 排除；阈值改 >6 |
+| McMahon | Cr 带下限 1.5 | 改 1.4（MDCalc: 1.4-2.2=+1.5） |
+| ISTH | PLT ≤100=+1 | 改 <100（≥100=0） |
+| Marshall | 假 Marshall（P/F+PEEP 简化），calculateMurray 未接线 | 按用户决定改真 Marshall MODS 六器官 0-4（P/F、Cr、胆红素、PAR=HR×CVP/MAP、PLT、GCS），删除 calculateMurray，UI/注册表/助手全量重写 |
+
+### 已修复（黄）
+
+| 计算器 | 修复 |
+|--------|------|
+| NEWS2 | SpO₂ Scale 2 补 93-94=1、95-96=2（原 ≥93 一律 3 分） |
+| TLS | crUlnRatio ≥1.5 → >1.5（Cairo-Bishop 原文） |
+| TIMI STEMI | 删 55-64=+1 错误分带（MDCalc 仅 ≥75=+3 / 65-74=+2） |
+| 助手链路 | NIHSS 补 nihss6a/6b 必填字段；ICH 补 gcs 必填；Wells/KCC/RIPASA/CPIS/Marshall spec 同步 |
+| MME | 阈值 ≥90 → 对齐 MDCalc ≥99 避免 + ≥50 谨慎（换算因子经 CDC 2022 原文核实无误：氢吗啡酮 5.0、曲马多 0.2） |
+
+### 误报澄清（第二轮审核确认为代码正确）
+
+- APAP 列线图 150/2^((h-4)/4) 与 MDCalc 锚点（150@4h、4.7@24h）完全一致
+- MME 换算因子与 CDC 2022 原文一致（第一轮审核代理误用 2016 旧值）
+- REMS 26 个分带、CRUSADE、BAP-65、Alvarado、GBS、MASCC、HEART、PESI、GFR、年龄校正D-二聚体 均与 MDCalc 一致
+
+原始出处引用汇总见 `docs/calculator-references.md`。

@@ -2,22 +2,20 @@ import { CalcResult } from '../../engine/CalcEngine';
 import { calculateSf } from '../../engine/SfCalculator';
 import { AppColors } from '../../utils/AppColors';
 import { AppDimens } from '../../utils/AppDimens';
-import { CalcCard, InputRow, OptionChip, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
+import { CalcCard, InputRow, ResetButton, ResultCard, SectionTitle } from './widgets/CalcWidgets';
 
 @Component
 export struct SfCalculator {
   @State resetKey: number = 0;  @State spo2: number = 0;
   @State fio2: number = 0;
-  @State fio2Mode: string = 'dec';
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateSf(this.spo2, this.fio2, this.fio2Mode); }
+  calculate() { this.result = calculateSf(this.spo2, this.fio2, 'pct'); }
 
   reset() {
     this.spo2 = 0;
     this.fio2 = 0;
-    this.fio2Mode = 'dec';
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
@@ -41,13 +39,8 @@ export struct SfCalculator {
 
         Row() {
           InputRow({ label: 'SpO₂ (%)', placeholder: '请输入SpO2', onTextChange: (value: string) => { this.spo2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
-          InputRow({ label: 'FiO₂', placeholder: this.fio2Mode === 'dec' ? '小数(0.21-1.0)' : '百分比(21-100)', inputType: InputType.NUMBER_DECIMAL, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
+          InputRow({ label: 'FiO₂ (%)', placeholder: '21-100', inputType: InputType.Number, onTextChange: (value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
         }.width('100%').margin({ bottom: 16 });
-
-        Row() {
-          OptionChip({ label: '小数', selected: this.fio2Mode === 'dec', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'dec'; this.calculate(); } }).layoutWeight(1);
-          OptionChip({ label: '百分比', selected: this.fio2Mode === 'pct', fontSize: 12, bold: true, onChipClick: () => { this.fio2Mode = 'pct'; this.calculate(); } }).layoutWeight(1);
-        }.width('100%');
       }
 
       if (this.result) {

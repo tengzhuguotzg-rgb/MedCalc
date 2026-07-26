@@ -8,17 +8,15 @@ import { CalcCard, ResetButton, ResultCard, SectionTitle } from './widgets/CalcW
 export struct RoxCalculator {
   @State resetKey: number = 0;  @State spo2: number = 0;
   @State fio2: number = 0;
-  @State fio2Mode: string = 'dec';
   @State rr: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateRox(this.spo2, this.fio2, this.fio2Mode, this.rr); }
+  calculate() { this.result = calculateRox(this.spo2, this.fio2, 'pct', this.rr); }
 
   reset() {
     this.spo2 = 0;
     this.fio2 = 0;
-    this.fio2Mode = 'dec';
     this.rr = 0;
     this.result = null;
     this.resetKey = this.resetKey + 1;
@@ -47,8 +45,8 @@ export struct RoxCalculator {
               .onChange((value: string) => { this.spo2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1);
           Column() {
-            Text('FiO₂').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
-            TextInput({ placeholder: 'FiO2' }).type(InputType.NUMBER_DECIMAL).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
+            Text('FiO₂ (%)').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).margin({ bottom: 6 });
+            TextInput({ placeholder: '21-100' }).type(InputType.Number).height(AppDimens.inputHeight).fontSize(16).backgroundColor(AppColors.card).borderRadius(8).border({ width: 1, color: AppColors.border }).padding({ left: 12, right: 12 }).placeholderColor(AppColors.placeholder)
               .onChange((value: string) => { this.fio2 = parseFloat(value) || 0; this.calculate(); });
           }.layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 8 });

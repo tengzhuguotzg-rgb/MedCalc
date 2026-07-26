@@ -13,20 +13,19 @@ export function calculateMehran(
   const parts: string[] = [];
 
   if (age > 75) { score += 4; parts.push('年龄>75→4'); }
-  else if (age >= 60) { score += 2; parts.push('年龄60-75→2'); }
-  else { parts.push('年龄<60→0'); }
+  else { parts.push('年龄≤75→0'); }
 
-  if (chf) { score += 5; parts.push('心衰→5'); } else { parts.push('心衰✗'); }
+  if (chf) { score += 5; parts.push('心衰(NYHA III/IV或肺水肿史)→5'); } else { parts.push('心衰✗'); }
   if (dm) { score += 3; parts.push('糖尿病→3'); } else { parts.push('糖尿病✗'); }
 
-  if (gfr < 30) { score += 6; parts.push(`eGFR ${gfr}<30→6`); }
-  else if (gfr < 45) { score += 4; parts.push(`eGFR ${gfr} 30-44→4`); }
-  else if (gfr < 60) { score += 2; parts.push(`eGFR ${gfr} 45-59→2`); }
+  if (gfr < 20) { score += 6; parts.push(`eGFR ${gfr}<20→6`); }
+  else if (gfr < 40) { score += 4; parts.push(`eGFR ${gfr} 20-<40→4`); }
+  else if (gfr < 60) { score += 2; parts.push(`eGFR ${gfr} 40-<60→2`); }
   else { parts.push(`eGFR ${gfr}≥60→0`); }
 
-  if (contrast > 100) { score += 6; parts.push(`造影剂 ${contrast}>100mL→6`); }
-  else if (contrast > 50) { score += 4; parts.push(`造影剂 ${contrast} 51-100mL→4`); }
-  else { score += 2; parts.push(`造影剂 ${contrast}≤50mL→2`); }
+  const contrastScore = Math.ceil(contrast / 100);
+  score += contrastScore;
+  parts.push(`造影剂 ${contrast}mL→${contrastScore}(每100mL+1)`);
 
   if (anemia) { score += 3; parts.push('贫血→3'); } else { parts.push('贫血✗'); }
   if (hypotension) { score += 5; parts.push('低血压→5'); } else { parts.push('低血压✗'); }
@@ -55,7 +54,7 @@ export function calculateMehran(
   }
 
   footnote += `\n\n${parts.join('，')} → ${score} 分`;
-  footnote += '\nMehran 造影剂肾病风险评分（JACC 2004）：年龄≥60=2/>75=4，心衰=5，糖尿病=3，eGFR<60=2/4/6，造影剂≤50mL=2/51-100=4/>100=6，贫血=3，低血压=5，IABP=5。';
+  footnote += '\nMehran 造影剂肾病风险评分（Mehran R, JACC 2004;44:1393）：低血压=5，IABP=5，心衰=5，年龄>75=4，贫血=3，糖尿病=3，造影剂每100mL=1，eGFR ≥60=0 / 40-<60=2 / 20-<40=4 / <20=6。≤5分：CIN 7.5%/透析0.04%；6-10：14%/0.12%；11-15：26.1%/1.09%；≥16：57.3%/12.6%。';
 
   return { value: score, unit: '分', tier, tierClass, footnote };
 }
