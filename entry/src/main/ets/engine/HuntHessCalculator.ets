@@ -24,7 +24,7 @@ export function calculateHuntHess(grade: number): CalcResult {
   } else if (grade === 4) {
     tier = 'IV 级';
     tierClass = 'tier-danger';
-    footnote = '昏迷，中重度偏瘫';
+    footnote = '昏睡，中重度偏瘫';
   } else if (grade === 5) {
     tier = 'V 级';
     tierClass = 'tier-danger';
@@ -76,11 +76,11 @@ export function calculateFisher(grade: number): CalcResult {
   if (grade === 1) {
     tier = 'I 级';
     tierClass = 'tier-ok';
-    footnote = '薄层出血，<1mm厚度';
+    footnote = '无蛛网膜下腔出血';
   } else if (grade === 2) {
     tier = 'II 级';
     tierClass = 'tier-warn';
-    footnote = '薄层出血，<1mm厚度，但范围较广';
+    footnote = '薄层出血，所有池厚度 <1mm';
   } else if (grade === 3) {
     tier = 'III 级';
     tierClass = 'tier-danger';

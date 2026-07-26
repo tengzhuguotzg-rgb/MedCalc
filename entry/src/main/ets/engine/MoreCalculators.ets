@@ -8,8 +8,8 @@ export function calculateRox(spo2: number, fio2: number, fio2Mode: string, rr: n
   const rox = spo2 / (fio2Value * rr);
   let tier: string, footnote: string;
   if (rox >= 4.88) { tier = '低风险'; footnote = '≥4.88 HFNC成功率高，可继续HFNC。'; }
-  else if (rox >= 2.85) { tier = '中风险'; footnote = '2.85-4.88 需密切监测，可能需升级呼吸支持。'; }
-  else { tier = '高风险'; footnote = '<2.85 HFNC失败风险高，建议评估插管。'; }
+  else if (rox >= 3.85) { tier = '中风险'; footnote = '3.85-4.88 需密切监测，可能需升级呼吸支持。'; }
+  else { tier = '高风险'; footnote = '<3.85 HFNC失败风险高，建议评估插管。'; }
   return { value: rox, unit: '', tier, tierClass: getTierClass(tier), footnote };
 }
 
@@ -40,9 +40,16 @@ export function calculateChadsvasc(chf: boolean, htn: boolean, age75: boolean, d
   if (female) total += 1;
   
   let tier: string, footnote: string;
-  if (total === 0) { tier = '低风险'; footnote = '0分 卒中风险低，可不予抗凝。'; }
-  else if (total === 1) { tier = '中低风险'; footnote = '1分 可考虑抗凝。'; }
-  else { tier = '高风险'; footnote = '≥2分 需抗凝治疗（NOAC或华法林）。'; }
+  if (female) {
+    if (total >= 3) { tier = '高风险'; footnote = `女性 ≥3分 需口服抗凝（NOAC或华法林）。`; }
+    else if (total === 2) { tier = '中风险'; footnote = `女性 2分 可考虑抗凝。`; }
+    else { tier = '低风险'; footnote = `女性 0-1分 暂不需抗凝。`; }
+  } else {
+    if (total >= 2) { tier = '高风险'; footnote = `男性 ≥2分 需口服抗凝（NOAC或华法林）。`; }
+    else if (total === 1) { tier = '中风险'; footnote = `男性 1分 可考虑抗凝。`; }
+    else { tier = '低风险'; footnote = `男性 0分 暂不需抗凝。`; }
+  }
+  footnote += `\nESC 2020 性别分层：男≥2/女≥3 分需抗凝；男1/女2 分考虑抗凝。`;
   return { value: total, unit: '', tier, tierClass: getTierClass(tier), footnote };
 }
 
@@ -80,18 +87,18 @@ export function calculateAbcd2(age: boolean, bp: boolean, clin: number, dur: num
   return { value: total, unit: '', tier, tierClass: getTierClass(tier), footnote };
 }
 
-export function calculateNihss(ia: number, ib: number, ic: number, gaze: number, vis: number, face: number, armA: number, armB: number, ata: number, sens: number, lang: number, dys: number, neg: number): CalcResult {
-  if (ia < 0 || ib < 0 || ic < 0 || gaze < 0 || vis < 0 || face < 0 || armA < 0 || armB < 0 || ata < 0 || sens < 0 || lang < 0 || dys < 0 || neg < 0) {
+export function calculateNihss(ia: number, ib: number, ic: number, gaze: number, vis: number, face: number, armA: number, armB: number, legA: number, legB: number, ata: number, sens: number, lang: number, dys: number, neg: number): CalcResult {
+  if (ia < 0 || ib < 0 || ic < 0 || gaze < 0 || vis < 0 || face < 0 || armA < 0 || armB < 0 || legA < 0 || legB < 0 || ata < 0 || sens < 0 || lang < 0 || dys < 0 || neg < 0) {
     return { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
   }
-  const total = ia + ib + ic + gaze + vis + face + armA + armB + ata + sens + lang + dys + neg;
+  const total = ia + ib + ic + gaze + vis + face + armA + armB + legA + legB + ata + sens + lang + dys + neg;
   let tier: string, footnote: string;
   if (total === 0) { tier = '正常'; footnote = '0分 无神经功能缺损。'; }
   else if (total <= 4) { tier = '轻度'; footnote = '1-4分 轻度卒中。'; }
   else if (total <= 15) { tier = '中度'; footnote = '5-15分 中度卒中。'; }
   else if (total <= 20) { tier = '中重度'; footnote = '16-20分 中重度卒中。'; }
   else { tier = '重度'; footnote = '21-42分 重度卒中。'; }
-  return { value: total, unit: '', tier, tierClass: getTierClass(tier), footnote };
+  return { value: total, unit: '/42', tier, tierClass: getTierClass(tier), footnote };
 }
 
 export function calculateNrs2002(bmi: number, wl: number, intake: number, severity: number): CalcResult {

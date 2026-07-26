@@ -10,6 +10,7 @@ export struct IchCalculator {
   @State location: number = -1;
   @State ivh: number = -1;
   @State age: number = 0;
+  @State gcs: number = 0;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -18,7 +19,7 @@ export struct IchCalculator {
       this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
       return;
     }
-    this.result = calculateIch(this.vol, this.location, this.ivh === 1, this.age);
+    this.result = calculateIch(this.vol, this.location, this.ivh === 1, this.age, this.gcs);
   }
 
   reset() {
@@ -26,6 +27,7 @@ export struct IchCalculator {
     this.location = -1;
     this.ivh = -1;
     this.age = 0;
+    this.gcs = 0;
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
@@ -63,7 +65,9 @@ export struct IchCalculator {
           }.width(100);
         }.width('100%').margin({ bottom: 16 });
 
-        InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%');
+        InputRow({ label: '年龄 (岁)', placeholder: '请输入年龄', onTextChange: (value: string) => { this.age = parseFloat(value) || 0; this.calculate(); } }).width('100%').margin({ bottom: 16 });
+
+        InputRow({ label: 'GCS', placeholder: '请输入GCS (3-15)', onTextChange: (value: string) => { this.gcs = parseFloat(value) || 0; this.calculate(); } }).width('100%');
       }
 
       if (this.result) {

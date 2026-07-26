@@ -14,6 +14,8 @@ export struct NihssCalculator {
   @State face: number = -1;
   @State armA: number = -1;
   @State armB: number = -1;
+  @State legA: number = -1;
+  @State legB: number = -1;
   @State ata: number = -1;
   @State sens: number = -1;
   @State lang: number = -1;
@@ -22,7 +24,7 @@ export struct NihssCalculator {
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
-  calculate() { this.result = calculateNihss(this.ia, this.ib, this.ic, this.gaze, this.vis, this.face, this.armA, this.armB, this.ata, this.sens, this.lang, this.dys, this.neg); }
+  calculate() { this.result = calculateNihss(this.ia, this.ib, this.ic, this.gaze, this.vis, this.face, this.armA, this.armB, this.legA, this.legB, this.ata, this.sens, this.lang, this.dys, this.neg); }
 
   reset() {
     this.ia = -1;
@@ -33,6 +35,8 @@ export struct NihssCalculator {
     this.face = -1;
     this.armA = -1;
     this.armB = -1;
+    this.legA = -1;
+    this.legB = -1;
     this.ata = -1;
     this.sens = -1;
     this.lang = -1;
@@ -54,7 +58,7 @@ export struct NihssCalculator {
   @Builder
   CalcContent() {
     Column() {
-      Column() { Text('用于评估脑卒中神经功能缺损严重程度').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('11项评估，总分0-42，≥6分考虑溶栓/取栓').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
+      Column() { Text('用于评估脑卒中神经功能缺损严重程度').fontSize(14).fontColor(AppColors.primary).fontWeight(FontWeight.Medium); Text('11项评估（含下肢6a/6b），总分0-42，≥6分考虑溶栓/取栓').fontSize(12).fontColor(AppColors.textSecondary).margin({ top: 2 }); }.alignItems(HorizontalAlign.Start).width('100%').margin({ bottom: 12 });
       CalcCard() {
         SectionTitle({ title: '输入参数', resetAction: () => { this.reset(); } })
         Row() {
@@ -70,6 +74,10 @@ export struct NihssCalculator {
         Row() {
           InputRow({ label: '5a 左上肢', placeholder: '0-4', onTextChange: (value: string) => { this.armA = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
           InputRow({ label: '5b 右上肢', placeholder: '0-4', onTextChange: (value: string) => { this.armB = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
+        }.width('100%').margin({ bottom: 12 });
+        Row() {
+          InputRow({ label: '6a 左下肢', placeholder: '0-4', onTextChange: (value: string) => { this.legA = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '6b 右下肢', placeholder: '0-4', onTextChange: (value: string) => { this.legB = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1).margin({ left: 8 });
         }.width('100%').margin({ bottom: 12 });
         Row() {
           InputRow({ label: '6 共济失调', placeholder: '0-2', onTextChange: (value: string) => { this.ata = value === '' ? -1 : (parseFloat(value) || 0); this.calculate(); } }).layoutWeight(1);

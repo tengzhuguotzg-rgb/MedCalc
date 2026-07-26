@@ -18,9 +18,9 @@ export function calculateSf(spo2: number, fio2: number, fio2Mode: string): CalcR
   let tier: string;
   let footnote: string;
 
-  if (spo2 >= 99) {
+  if (spo2 >= 97) {
     tier = 'SpO₂ 失真';
-    footnote = 'SpO₂ ≥ 99% 时公式出现"天花板"效应, 需参考 SpO₂ 100% 时 P/F 至少 200。';
+    footnote = 'SpO₂ ≥ 97% 时公式出现"天花板"效应, 需参考 SpO₂ 100% 时 P/F 至少 200。';
   } else if (ratio >= 315) {
     tier = '无 ARDS';
     footnote = '≥ 315 (≈ P/F ≥ 300) 氧合基本正常。';

@@ -68,11 +68,6 @@ export function calculateNews2(
 
   let total = rScore + sScore + o2Pts + tScore + sbpScore + hrScore + cScore;
 
-  const has3 = rScore === 3 || sScore === 3 || tScore === 3 || sbpScore === 3 || hrScore === 3 || cScore === 3;
-  if (has3 && total < 5) {
-    total = 5;
-  }
-
   let tier: string;
   let tierClass: string;
   let footnote: string;

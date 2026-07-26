@@ -24,10 +24,9 @@ export function calculateKdigo(
   if (cr0 !== null && cr0 > 0) {
     const delta = cr1 - cr0;
     const ratio = cr1 / cr0;
-    if (cr1 >= 4.0 || delta >= 0.3 || ratio >= 3) {
+    if (cr1 >= 4.0 || ratio >= 3) {
       stage = Math.max(stage, 3);
       if (cr1 >= 4.0) reasons.push('Cr ≥ 4.0 mg/dL');
-      if (delta >= 0.3) reasons.push('Cr 升高 ≥ 0.3 mg/dL (48h)');
       if (ratio >= 3) reasons.push('Cr 较基线升高 ≥ 3 倍');
     } else if (ratio >= 2) {
       stage = Math.max(stage, 2);
@@ -35,7 +34,7 @@ export function calculateKdigo(
     } else if (ratio >= 1.5 || delta >= 0.3) {
       stage = Math.max(stage, 1);
       if (ratio >= 1.5) reasons.push('Cr 升高 ≥ 1.5-1.9 倍');
-      if (delta >= 0.3) reasons.push('Cr 升高 ≥ 0.3 mg/dL (48h)');
+      if (delta >= 0.3) reasons.push('Cr 48h 升高 ≥ 0.3 mg/dL');
     }
   } else {
     if (cr1 >= 4.0) {

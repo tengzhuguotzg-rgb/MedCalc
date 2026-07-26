@@ -77,7 +77,7 @@ export function calculateApache2(
     oLabel = `A-aDO₂ ${aado2.toFixed(0)}`;
     if (aado2 >= 500) oScore = 4;
     else if (aado2 >= 350) oScore = 3;
-    else if (aado2 >= 200) oScore = 1;
+    else if (aado2 >= 200) oScore = 2;
     else oScore = 0;
   } else {
     oLabel = `PaO₂ ${pao2}`;

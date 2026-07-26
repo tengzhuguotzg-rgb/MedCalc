@@ -12,15 +12,17 @@ export struct MehranCalculator {
   @State gfr: number = 0;
   @State contrastVol: number = 0;
   @State anemia: number = -1;
+  @State hypotension: number = -1;
+  @State iabp: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
   calculate() {
-    if (this.chf < 0 || this.dm < 0 || this.anemia < 0) {
+    if (this.chf < 0 || this.dm < 0 || this.anemia < 0 || this.hypotension < 0 || this.iabp < 0) {
       this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
       return;
     }
-    this.result = calculateMehran(this.age, this.chf === 1, this.dm === 1, this.gfr, this.contrastVol, this.anemia === 1);
+    this.result = calculateMehran(this.age, this.chf === 1, this.dm === 1, this.gfr, this.contrastVol, this.anemia === 1, this.hypotension === 1, this.iabp === 1);
   }
 
   reset() {
@@ -30,6 +32,8 @@ export struct MehranCalculator {
     this.gfr = 0;
     this.contrastVol = 0;
     this.anemia = -1;
+    this.hypotension = -1;
+    this.iabp = -1;
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
@@ -73,6 +77,18 @@ export struct MehranCalculator {
         Row() { Text('贫血').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
           Row() { OptionChip({ label: '无', selected: this.anemia === 0, fontSize: 14, bold: true, onChipClick: () => { this.anemia = 0; this.calculate(); } }).layoutWeight(1);
             OptionChip({ label: '有', selected: this.anemia === 1, fontSize: 14, bold: true, onChipClick: () => { this.anemia = 1; this.calculate(); } }).layoutWeight(1);
+          }.width(100);
+        }.width('100%').margin({ bottom: 12 });
+
+        Row() { Text('低血压').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
+          Row() { OptionChip({ label: '无', selected: this.hypotension === 0, fontSize: 14, bold: true, onChipClick: () => { this.hypotension = 0; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: '有', selected: this.hypotension === 1, fontSize: 14, bold: true, onChipClick: () => { this.hypotension = 1; this.calculate(); } }).layoutWeight(1);
+          }.width(100);
+        }.width('100%').margin({ bottom: 12 });
+
+        Row() { Text('IABP').fontSize(14).fontWeight(FontWeight.Medium).fontColor(AppColors.textPrimary).layoutWeight(1);
+          Row() { OptionChip({ label: '无', selected: this.iabp === 0, fontSize: 14, bold: true, onChipClick: () => { this.iabp = 0; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: '有', selected: this.iabp === 1, fontSize: 14, bold: true, onChipClick: () => { this.iabp = 1; this.calculate(); } }).layoutWeight(1);
           }.width(100);
         }.width('100%');
       }

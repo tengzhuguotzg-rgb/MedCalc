@@ -39,6 +39,51 @@ import { KdigoCalculator } from '../components/calculators/KdigoCalculator';
 import { VasopressorCalculator } from '../components/calculators/VasopressorCalculator';
 import { NaDeficitCalculator } from '../components/calculators/NaDeficitCalculator';
 import { NaCorrectionRateCalculator } from '../components/calculators/NaCorrectionRateCalculator';
+import { ShockIndexCalculator } from '../components/calculators/ShockIndexCalculator';
+import { QsofaCalculator } from '../components/calculators/QsofaCalculator';
+import { RtsCalculator } from '../components/calculators/RtsCalculator';
+import { RsbiCalculator } from '../components/calculators/RsbiCalculator';
+import { HellpCalculator } from '../components/calculators/HellpCalculator';
+import { MetabolicCalculator } from '../components/calculators/MetabolicCalculator';
+import { HeartCalculator } from '../components/calculators/HeartCalculator';
+import { GbsCalculator } from '../components/calculators/GbsCalculator';
+import { BisapCalculator } from '../components/calculators/BisapCalculator';
+import { TlsCalculator } from '../components/calculators/TlsCalculator';
+import { BwpsCalculator } from '../components/calculators/BwpsCalculator';
+import { WellsDvtCalculator } from '../components/calculators/WellsDvtCalculator';
+import { CpisCalculator } from '../components/calculators/CpisCalculator';
+import { AncMasccCalculator } from '../components/calculators/AncMasccCalculator';
+import { AdhereCalculator } from '../components/calculators/AdhereCalculator';
+import { StessCalculator } from '../components/calculators/StessCalculator';
+import { McmahonCalculator } from '../components/calculators/McmahonCalculator';
+import { IsthCalculator } from '../components/calculators/IsthCalculator';
+import { PlasmicCalculator } from '../components/calculators/PlasmicCalculator';
+import { VisCalculator } from '../components/calculators/VisCalculator';
+import { LactateClearanceCalculator } from '../components/calculators/LactateClearanceCalculator';
+import { Abc2Calculator } from '../components/calculators/Abc2Calculator';
+import { DdimerAgeCalculator } from '../components/calculators/DdimerAgeCalculator';
+import { AddrsCalculator } from '../components/calculators/AddrsCalculator';
+import { AsthmaCalculator } from '../components/calculators/AsthmaCalculator';
+import { GoldAbeCalculator } from '../components/calculators/GoldAbeCalculator';
+import { Bap65Calculator } from '../components/calculators/Bap65Calculator';
+import { GcsPCalculator } from '../components/calculators/GcsPCalculator';
+import { FourCalculator } from '../components/calculators/FourCalculator';
+import { CrusadeCalculator } from '../components/calculators/CrusadeCalculator';
+import { RemsCalculator } from '../components/calculators/RemsCalculator';
+import { AspirationCalculator } from '../components/calculators/AspirationCalculator';
+import { ParklandCalculator } from '../components/calculators/ParklandCalculator';
+import { QtcCalculator } from '../components/calculators/QtcCalculator';
+import { AlvaradoCalculator } from '../components/calculators/AlvaradoCalculator';
+import { RipasaCalculator } from '../components/calculators/RipasaCalculator';
+import { CsfCalculator } from '../components/calculators/CsfCalculator';
+import { PaduaCalculator } from '../components/calculators/PaduaCalculator';
+import { MmeCalculator } from '../components/calculators/MmeCalculator';
+import { SteroidCalculator } from '../components/calculators/SteroidCalculator';
+import { FickCalculator } from '../components/calculators/FickCalculator';
+import { ApapCalculator } from '../components/calculators/ApapCalculator';
+import { SgarbossaCalculator } from '../components/calculators/SgarbossaCalculator';
+import { DukeCalculator } from '../components/calculators/DukeCalculator';
+import { AwolCalculator } from '../components/calculators/AwolCalculator';
 import { LlmDialog } from '../components/LlmDialog';
 import { AssistantPage } from '../components/AssistantPage';
 import { SettingsPage } from '../components/SettingsPage';
@@ -277,6 +322,96 @@ struct Index {
               NaDeficitCalculator();
             } else if (this.currentCalc === 'nacorrection') {
               NaCorrectionRateCalculator();
+            } else if (this.currentCalc === 'shocki') {
+              ShockIndexCalculator();
+            } else if (this.currentCalc === 'qsofa') {
+              QsofaCalculator();
+            } else if (this.currentCalc === 'rts') {
+              RtsCalculator();
+            } else if (this.currentCalc === 'rsbi') {
+              RsbiCalculator();
+            } else if (this.currentCalc === 'hellp') {
+              HellpCalculator();
+            } else if (this.currentCalc === 'metab') {
+              MetabolicCalculator();
+            } else if (this.currentCalc === 'heart') {
+              HeartCalculator();
+            } else if (this.currentCalc === 'gbs') {
+              GbsCalculator();
+            } else if (this.currentCalc === 'bisap') {
+              BisapCalculator();
+            } else if (this.currentCalc === 'tls') {
+              TlsCalculator();
+            } else if (this.currentCalc === 'bwps') {
+              BwpsCalculator();
+            } else if (this.currentCalc === 'wellsdvt') {
+              WellsDvtCalculator();
+            } else if (this.currentCalc === 'cpis') {
+              CpisCalculator();
+            } else if (this.currentCalc === 'anc') {
+              AncMasccCalculator();
+            } else if (this.currentCalc === 'adhere') {
+              AdhereCalculator();
+            } else if (this.currentCalc === 'stess') {
+              StessCalculator();
+            } else if (this.currentCalc === 'rhabdo') {
+              McmahonCalculator();
+            } else if (this.currentCalc === 'isth') {
+              IsthCalculator();
+            } else if (this.currentCalc === 'plasmic') {
+              PlasmicCalculator();
+            } else if (this.currentCalc === 'vis') {
+              VisCalculator();
+            } else if (this.currentCalc === 'lacclear') {
+              LactateClearanceCalculator();
+            } else if (this.currentCalc === 'abc2') {
+              Abc2Calculator();
+            } else if (this.currentCalc === 'ddage') {
+              DdimerAgeCalculator();
+            } else if (this.currentCalc === 'addrs') {
+              AddrsCalculator();
+            } else if (this.currentCalc === 'asthma') {
+              AsthmaCalculator();
+            } else if (this.currentCalc === 'goldabe') {
+              GoldAbeCalculator();
+            } else if (this.currentCalc === 'bap65') {
+              Bap65Calculator();
+            } else if (this.currentCalc === 'gcsp') {
+              GcsPCalculator();
+            } else if (this.currentCalc === 'four') {
+              FourCalculator();
+            } else if (this.currentCalc === 'crusade') {
+              CrusadeCalculator();
+            } else if (this.currentCalc === 'rems') {
+              RemsCalculator();
+            } else if (this.currentCalc === 'aspir') {
+              AspirationCalculator();
+            } else if (this.currentCalc === 'parkland') {
+              ParklandCalculator();
+            } else if (this.currentCalc === 'qtc') {
+              QtcCalculator();
+            } else if (this.currentCalc === 'alvarado') {
+              AlvaradoCalculator();
+            } else if (this.currentCalc === 'ripasa') {
+              RipasaCalculator();
+            } else if (this.currentCalc === 'csf') {
+              CsfCalculator();
+            } else if (this.currentCalc === 'padua') {
+              PaduaCalculator();
+            } else if (this.currentCalc === 'mme') {
+              MmeCalculator();
+            } else if (this.currentCalc === 'steroid') {
+              SteroidCalculator();
+            } else if (this.currentCalc === 'fick') {
+              FickCalculator();
+            } else if (this.currentCalc === 'apap') {
+              ApapCalculator();
+            } else if (this.currentCalc === 'sgarbossa') {
+              SgarbossaCalculator();
+            } else if (this.currentCalc === 'duke') {
+              DukeCalculator();
+            } else if (this.currentCalc === 'awol') {
+              AwolCalculator();
             } else {
               this.PlaceholderCalculator();
             }

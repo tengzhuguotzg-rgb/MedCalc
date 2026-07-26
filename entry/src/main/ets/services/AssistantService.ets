@@ -28,6 +28,11 @@ import { calculateScai } from '../engine/ScaiCalculator';
 import { calculateMnutric } from '../engine/MnutricCalculator';
 import { calculateFssicu } from '../engine/FssicuCalculator';
 import { calculateKdigo } from '../engine/KdigoCalculator';
+import { calculateShockIndex, calculateQsofa, calculateRts, calculateRsbi, calculateHellp, calculateMetabolic } from '../engine/Batch1aCalculators';
+import { calculateHeart, calculateGbs, calculateBisap, calculateTls, calculateBwps, calculateCpis, calculateAncMascc } from '../engine/Batch1bCalculators';
+import { calculateAdhere, calculateMcmahon, calculateIsth, calculatePlasmic, calculateLactateClearance, calculateAgeAdjustedDdimer } from '../engine/Batch2aCalculators';
+import { calculateAsthma, calculateGoldAbe, calculateBap65, calculateGcsP, calculateCrusade, calculateRems } from '../engine/Batch2bCalculators';
+import { calculateParkland, calculateQtc, calculateAlvarado, calculateRipasa, calculateCsf, calculatePadua, calculateFick } from '../engine/Batch3aCalculators';
 import { CALCULATORS } from '../model/CalculatorRegistry';
 import { ApiServiceConfig, sendVisionRequest } from './LlmService';
 
@@ -271,6 +276,75 @@ const DATA_FIELDS: DataFieldSpec[] = [
   { key: 'cortisol', label: '皮质醇', unit: 'nmol/L', type: 'number' },
   { key: 'ck', label: 'CK', unit: 'U/L', type: 'number', normalRange: '0-200' },
   { key: 'ldh', label: 'LDH', unit: 'U/L', type: 'number', normalRange: '120-250' },
+  { key: 'measuredOsm', label: '实测渗透压', unit: 'mOsm/kg', type: 'number', normalRange: '275-295' },
+  { key: 'vtMl', label: '潮气量', unit: 'mL', type: 'number', normalRange: '300-600' },
+  { key: 'sbtStatus', label: '呼吸状态', unit: '', type: 'select', options: ['vent', 'spont', 'sbt', 'unknown'] },
+  { key: 'hemolysis', label: '溶血证据', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'pregnancyStatus', label: '妊娠/产后状态', unit: '', type: 'select', options: ['unknown', 'pregnant', 'postpartum', 'no'] },
+  { key: 'tropUln', label: '肌钙蛋白ULN', unit: 'ng/mL', type: 'number' },
+  { key: 'heartHistory', label: 'HEART病史', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'heartEcg', label: 'HEART心电图', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'riskFactorCount', label: '危险因素个数', unit: '', type: 'number' },
+  { key: 'knownAthero', label: '已知动脉粥样硬化', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'melena', label: '黑便', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'syncope', label: '晕厥', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'liverDisease', label: '肝病史', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'heartFailure', label: '心衰史', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'sirsCount', label: 'SIRS项数', unit: '', type: 'number', normalRange: '0-4' },
+  { key: 'pleuralEffusion', label: '胸腔积液', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'uricAcid', label: '尿酸', unit: 'μmol/L', type: 'number', normalRange: '208-428' },
+  { key: 'crUlnRatio', label: '肌酐/ULN倍数', unit: '', type: 'number' },
+  { key: 'arrhythmia', label: '心律失常', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'seizure', label: '抽搐', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'cnsScore', label: 'CNS分值', unit: '', type: 'select', options: ['0', '10', '20', '30'] },
+  { key: 'giScore', label: 'GI分值', unit: '', type: 'select', options: ['0', '10', '20'] },
+  { key: 'chfScore', label: 'CHF分值', unit: '', type: 'select', options: ['0', '5', '10', '15'] },
+  { key: 'afib', label: '房颤', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'precipitant', label: '诱因', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'secretions', label: '气道分泌物', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'cxrInfiltrate', label: '胸片浸润影', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'culturePos', label: '气道培养', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'neutPct', label: '中性粒细胞', unit: '%', type: 'number', normalRange: '40-75' },
+  { key: 'lac0', label: '初始乳酸', unit: 'mmol/L', type: 'number' },
+  { key: 'lac1', label: '复查乳酸', unit: 'mmol/L', type: 'number' },
+  { key: 'transplant', label: '移植史', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'ptProlong', label: 'PT延长档位', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'pef', label: '呼气峰流速', unit: 'L/min', type: 'number' },
+  { key: 'pefPct', label: 'PEF占预计值', unit: '%', type: 'number' },
+  { key: 'speechAbility', label: '说话能力', unit: '', type: 'select', options: ['sentences', 'phrases', 'words'] },
+  { key: 'silentChest', label: '沉默胸', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'mmrc', label: 'mMRC呼吸困难', unit: '', type: 'number', normalRange: '0-4' },
+  { key: 'cat', label: 'CAT评分', unit: '', type: 'number', normalRange: '0-40' },
+  { key: 'exacCount', label: '年急性加重次数', unit: '', type: 'number' },
+  { key: 'exacHosp', label: '年住院加重次数', unit: '', type: 'number' },
+  { key: 'pupilReact', label: '瞳孔无反应侧数', unit: '', type: 'select', options: ['0', '1', '2'] },
+  { key: 'tbsa', label: '烧伤面积TBSA', unit: '%', type: 'number' },
+  { key: 'qtMs', label: 'QT间期', unit: 'ms', type: 'number', normalRange: '350-450' },
+  { key: 'migratoryPain', label: '转移性右下腹痛', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'anorexia', label: '厌食', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'nauseaVomit', label: '恶心呕吐', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'rlqTender', label: '右下腹压痛', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'reboundPain', label: '反跳痛', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'rlqPain', label: '右下腹痛', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'durLt48h', label: '病程<48h', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'guardingSign', label: '肌紧张', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'rovsingSign', label: 'Rovsing征', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'urineNeg', label: '尿检阴性', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'csfWbc', label: 'CSF白细胞', unit: '个/μL', type: 'number' },
+  { key: 'csfNeutPct', label: 'CSF中性粒细胞', unit: '%', type: 'number' },
+  { key: 'csfProtein', label: 'CSF蛋白', unit: 'g/L', type: 'number', normalRange: '0.15-0.45' },
+  { key: 'csfGlu', label: 'CSF糖', unit: 'mmol/L', type: 'number', normalRange: '2.2-3.9' },
+  { key: 'csfRbc', label: 'CSF红细胞', unit: '个/μL', type: 'number' },
+  { key: 'prevVte', label: '既往VTE', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'immobility3d', label: '制动≥3天', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'thrombophilia', label: '易栓症', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'traumaSurg1m', label: '近期创伤/手术', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'hfRespFail', label: '心衰/呼衰', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'acuteMiStroke', label: '急性心梗/卒中', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'acuteInfection', label: '急性感染/风湿', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'hormoneRx', label: '激素治疗', unit: '', type: 'select', options: ['0', '1'] },
+  { key: 'svo2', label: 'SvO₂', unit: '%', type: 'number', normalRange: '60-80' },
+  { key: 'vo2', label: '氧耗VO₂', unit: 'mL/min', type: 'number' },
 ];
 
 const CALC_ID_ALIASES: Record<string, string> = {
@@ -307,6 +381,101 @@ const CALC_ID_ALIASES: Record<string, string> = {
   'pf': 'pf',
   'timistemi': 'timistemi',
   'timinstemi': 'timinstemi',
+  'shock-index': 'shocki',
+  'shock index': 'shocki',
+  '休克指数': 'shocki',
+  'qsofa': 'qsofa',
+  'quick sofa': 'qsofa',
+  'rts': 'rts',
+  'revised trauma score': 'rts',
+  '修正创伤评分': 'rts',
+  'rsbi': 'rsbi',
+  '浅快呼吸指数': 'rsbi',
+  'hellp': 'hellp',
+  'hellp综合征': 'hellp',
+  'corrected calcium': 'metab',
+  '校正钙': 'metab',
+  'osmolal gap': 'metab',
+  '渗透间隙': 'metab',
+  'heart': 'heart',
+  'heart score': 'heart',
+  'heart评分': 'heart',
+  'gbs': 'gbs',
+  'glasgow-blatchford': 'gbs',
+  'bisap': 'bisap',
+  'ranson': 'bisap',
+  'tls': 'tls',
+  '肿瘤溶解': 'tls',
+  'cairo-bishop': 'tls',
+  'bwps': 'bwps',
+  '甲状腺危象': 'bwps',
+  'burch-wartofsky': 'bwps',
+  'wells dvt': 'wellsdvt',
+  'wells-dvt': 'wellsdvt',
+  'cpis': 'cpis',
+  'vap': 'cpis',
+  'anc': 'anc',
+  'mascc': 'anc',
+  '中性粒细胞绝对值': 'anc',
+  'adhere': 'adhere',
+  'stess': 'stess',
+  '癫痫持续状态': 'stess',
+  'mcmahon': 'rhabdo',
+  '横纹肌溶解': 'rhabdo',
+  'rhabdomyolysis': 'rhabdo',
+  'isth': 'isth',
+  'dic': 'isth',
+  'plasmic': 'plasmic',
+  'ttp': 'plasmic',
+  'vis': 'vis',
+  'vasoactive inotropic score': 'vis',
+  '乳酸清除率': 'lacclear',
+  'lactate clearance': 'lacclear',
+  'abc/2': 'abc2',
+  'abc2': 'abc2',
+  '脑出血体积': 'abc2',
+  'age-adjusted d-dimer': 'ddage',
+  '年龄校正d-二聚体': 'ddage',
+  'add-rs': 'addrs',
+  'addrs': 'addrs',
+  '主动脉夹层': 'addrs',
+  '哮喘': 'asthma',
+  'asthma': 'asthma',
+  'gold': 'goldabe',
+  'gold abe': 'goldabe',
+  '慢阻肺': 'goldabe',
+  'bap65': 'bap65',
+  'bap-65': 'bap65',
+  'aecopd': 'bap65',
+  'gcs-p': 'gcsp',
+  'gcsp': 'gcsp',
+  'gcs pupils': 'gcsp',
+  'four': 'four',
+  'four score': 'four',
+  'crusade': 'crusade',
+  'rems': 'rems',
+  'rapid emergency medicine score': 'rems',
+  '吸入性肺炎': 'aspir',
+  'aspiration': 'aspir',
+  'parkland': 'parkland',
+  '烧伤补液': 'parkland',
+  'qtc': 'qtc',
+  'qt间期': 'qtc',
+  'alvarado': 'alvarado',
+  '阑尾炎': 'alvarado',
+  'ripasa': 'ripasa',
+  'csf': 'csf',
+  '脑脊液': 'csf',
+  'padua': 'padua',
+  'mme': 'mme',
+  '吗啡当量': 'mme',
+  'steroid': 'steroid',
+  '激素换算': 'steroid',
+  'fick': 'fick',
+  '心排量': 'fick',
+  'apap': 'apap',
+  '对乙酰氨基酚': 'apap',
+  '扑热息痛': 'apap',
 };
 
 const FIELD_KEY_ALIASES: Record<string, string> = {
@@ -343,6 +512,13 @@ const FIELD_KEY_ALIASES: Record<string, string> = {
   'triglyceride': 'tg',
   'ferritin': 'tferritin',
   'pre-alb': 'prealbumin',
+  'uricacid': 'uricAcid',
+  'ua': 'uricAcid',
+  '尿酸': 'uricAcid',
+  'neut': 'neutPct',
+  'neutrophil': 'neutPct',
+  '中性粒细胞': 'neutPct',
+  'phosphate': 'p',
   'creactiveprotein': 'crp',
   'hscrp': 'hsCrp',
   'ddimer': 'dDimer',
@@ -355,6 +531,18 @@ const FIELD_KEY_ALIASES: Record<string, string> = {
   'phosphorus': 'p',
   'ammonia': 'ammonia',
   'nh3': 'ammonia',
+  'tidal-volume': 'vtMl',
+  'tidal volume': 'vtMl',
+  'vt': 'vtMl',
+  '潮气量': 'vtMl',
+  'sbt': 'sbtStatus',
+  '自主呼吸': 'sbtStatus',
+  '溶血': 'hemolysis',
+  '妊娠': 'pregnancyStatus',
+  '产后': 'pregnancyStatus',
+  'osm': 'measuredOsm',
+  'osmolality': 'measuredOsm',
+  '渗透压': 'measuredOsm',
 };
 
 function normalizeFieldKey(raw: string): string {
@@ -436,6 +624,38 @@ const CALC_INPUT_SPECS: CalcInputSpec[] = [
   { calcId: 'fssicu', requiredFields: ['roll', 'situp', 'sit', 'standup', 'stand'], optionalFields: [] },
   { calcId: 'kdigo', requiredFields: ['cr1', 'cr1Unit'], optionalFields: ['cr0', 'cr0Unit', 'urineOutput', 'rrt'] },
   { calcId: 'nrs2002', requiredFields: ['height', 'weight', 'weightLoss', 'intake', 'disease', 'ageAdj'], optionalFields: [] },
+  { calcId: 'shocki', requiredFields: ['hr', 'sbp'], optionalFields: [] },
+  { calcId: 'qsofa', requiredFields: ['rr', 'sbp', 'gcs'], optionalFields: ['consciousness'] },
+  { calcId: 'rts', requiredFields: ['gcs', 'sbp', 'rr'], optionalFields: ['gcsEye', 'gcsVerbal', 'gcsMotor'] },
+  { calcId: 'rsbi', requiredFields: ['rr', 'vtMl'], optionalFields: ['sbtStatus'] },
+  { calcId: 'hellp', requiredFields: ['platelet', 'ast', 'alt', 'ldh'], optionalFields: ['bilirubin', 'bilirubinUnit', 'hemolysis', 'pregnancyStatus'] },
+  { calcId: 'metab', requiredFields: ['ca', 'alb', 'albUnit'], optionalFields: ['na', 'glu', 'bun', 'measuredOsm'] },
+  { calcId: 'heart', requiredFields: ['ctni', 'tropUln', 'age'], optionalFields: ['heartHistory', 'heartEcg', 'riskFactorCount', 'knownAthero'] },
+  { calcId: 'gbs', requiredFields: ['hgb', 'bun', 'sbp', 'hr', 'sex'], optionalFields: ['melena', 'syncope', 'liverDisease', 'heartFailure'] },
+  { calcId: 'bisap', requiredFields: ['bun', 'age', 'gcs'], optionalFields: ['sirsCount', 'pleuralEffusion'] },
+  { calcId: 'tls', requiredFields: ['uricAcid', 'k', 'p', 'ca'], optionalFields: ['crUlnRatio', 'arrhythmia', 'seizure'] },
+  { calcId: 'bwps', requiredFields: ['temp', 'hr'], optionalFields: ['cnsScore', 'giScore', 'chfScore', 'afib', 'precipitant'] },
+  { calcId: 'cpis', requiredFields: ['temp', 'wbc'], optionalFields: ['bands', 'secretions', 'pao2', 'fio2', 'fio2Mode', 'cxrInfiltrate', 'culturePos'] },
+  { calcId: 'anc', requiredFields: ['wbc'], optionalFields: ['neutPct'] },
+  { calcId: 'adhere', requiredFields: ['bun', 'sbp', 'creatinine', 'crUnit'], optionalFields: [] },
+  { calcId: 'rhabdo', requiredFields: ['ck', 'creatinine', 'age'], optionalFields: ['sex', 'p', 'ca', 'hco3'] },
+  { calcId: 'isth', requiredFields: ['platelet', 'fib'], optionalFields: ['dDimer', 'ptProlong'] },
+  { calcId: 'plasmic', requiredFields: ['platelet', 'mcv', 'inr', 'creatinine'], optionalFields: ['hemolysis', 'retic', 'ibil', 'cancer', 'transplant'] },
+  { calcId: 'lacclear', requiredFields: ['lac0', 'lac1'], optionalFields: [] },
+  { calcId: 'ddage', requiredFields: ['age', 'dDimer'], optionalFields: [] },
+  { calcId: 'asthma', requiredFields: ['pefPct'], optionalFields: ['rr', 'hr', 'speechAbility', 'silentChest'] },
+  { calcId: 'goldabe', requiredFields: ['mmrc', 'exacCount'], optionalFields: ['cat', 'exacHosp'] },
+  { calcId: 'bap65', requiredFields: ['bun', 'hr', 'age'], optionalFields: ['gcs', 'confusion'] },
+  { calcId: 'gcsp', requiredFields: ['gcs'], optionalFields: ['pupilReact'] },
+  { calcId: 'crusade', requiredFields: ['hct', 'gfr', 'hr', 'sbp'], optionalFields: ['sex', 'chf', 'vasc', 'dm'] },
+  { calcId: 'rems', requiredFields: ['age', 'map', 'hr', 'rr', 'spo2', 'gcs'], optionalFields: [] },
+  { calcId: 'parkland', requiredFields: ['weight', 'tbsa'], optionalFields: [] },
+  { calcId: 'qtc', requiredFields: ['hr', 'qtMs'], optionalFields: [] },
+  { calcId: 'alvarado', requiredFields: ['temp', 'wbc'], optionalFields: ['neutPct', 'migratoryPain', 'anorexia', 'nauseaVomit', 'rlqTender', 'reboundPain'] },
+  { calcId: 'ripasa', requiredFields: ['temp', 'wbc', 'age'], optionalFields: ['sex', 'rlqPain', 'migratoryPain', 'anorexia', 'nauseaVomit', 'durLt48h', 'rlqTender', 'guardingSign', 'reboundPain', 'rovsingSign', 'urineNeg'] },
+  { calcId: 'csf', requiredFields: ['csfWbc'], optionalFields: ['csfNeutPct', 'csfProtein', 'csfGlu', 'glu', 'csfRbc'] },
+  { calcId: 'padua', requiredFields: ['age'], optionalFields: ['cancer', 'bmi', 'prevVte', 'immobility3d', 'thrombophilia', 'traumaSurg1m', 'hfRespFail', 'acuteMiStroke', 'acuteInfection', 'hormoneRx'] },
+  { calcId: 'fick', requiredFields: ['hgb'], optionalFields: ['spo2', 'svo2', 'vo2', 'height', 'weight'] },
 ];
 
 let msgIdCounter: number = 0;
@@ -1151,7 +1371,7 @@ export class AssistantService {
       return calculateAbcd2(b('age'), b('bpAbn'), n('clinSym', 0), n('dur', 0), b('dm'));
     }
     if (calcId === 'nihss') {
-      return calculateNihss(n('nihss1a', 0), n('nihss1b', 0), n('nihss1c', 0), n('nihss2', 0), n('nihss3', 0), n('nihss4', 0), n('nihss5a', 0), n('nihss5b', 0), n('nihss7', 0), n('nihss8', 0), n('nihss9', 0), n('nihss10', 0), n('nihss11', 0));
+      return calculateNihss(n('nihss1a', 0), n('nihss1b', 0), n('nihss1c', 0), n('nihss2', 0), n('nihss3', 0), n('nihss4', 0), n('nihss5a', 0), n('nihss5b', 0), n('nihss6a', 0), n('nihss6b', 0), n('nihss7', 0), n('nihss8', 0), n('nihss9', 0), n('nihss10', 0), n('nihss11', 0));
     }
     if (calcId === 'crcl') {
       return calculateCrCl(s('sex', 'male'), n('age', 0), n('weight', 0), n('creatinine', 0), s('crUnit', 'umol'));
@@ -1166,7 +1386,7 @@ export class AssistantService {
       return calculateRass(n('rassScore', 0));
     }
     if (calcId === 'ich') {
-      return calculateIch(n('ichVol', 0), n('ichLocation', 0), b('ichIvh'), n('age', 0));
+      return calculateIch(n('ichVol', 0), n('ichLocation', 0), b('ichIvh'), n('age', 0), n('gcs', 15));
     }
     if (calcId === 'hunthess') {
       return calculateHuntHess(n('huntHessGrade', 0));
@@ -1181,7 +1401,7 @@ export class AssistantService {
       return calculateMarshall(n('pao2', 0), n('fio2', 0), n('peep', 0));
     }
     if (calcId === 'mehran') {
-      return calculateMehran(n('age', 0), b('chf'), b('dm'), n('gfr', 0), n('contrast', 0), b('anemia'));
+      return calculateMehran(n('age', 0), b('chf'), b('dm'), n('gfr', 0), n('contrast', 0), b('anemia'), b('hypotension'), b('iabp'));
     }
     if (calcId === 'timistemi') {
       return calculateTimiStemi(n('ageCat', 0), b('dmHtnAngina'), b('sbpLt100'), b('hrGt100'), n('killip', 0), b('weightLt67'), b('anteriorLbbb'), b('timeToTreat'));
@@ -1196,7 +1416,7 @@ export class AssistantService {
       return calculateChildPugh(n('bilirubin', 0), s('bilirubinUnit', 'umol'), n('alb', 0), s('albUnit', 'gl'), n('inr', 0), n('ascites', 1), n('encephalopathy', 1));
     }
     if (calcId === 'kcc') {
-      return calculateKcc(n('inr', 0), n('bilirubin', 0), s('bilirubinUnit', 'umol'), n('age', 0), b('etiology'));
+      return calculateKcc(n('inr', 0), n('bilirubin', 0), s('bilirubinUnit', 'umol'), n('age', 0), b('etiology'), n('ph', 0), n('crMgDl', 0), n('hepaticEnceph', -1));
     }
     if (calcId === 'clifc') {
       return calculateClifC(n('bilirubin', 0), s('bilirubinUnit', 'umol'), n('creatinine', 0), s('crUnit', 'umol'), n('inr', 0), n('hepaticEnceph', 0), n('map', 0), s('vaso', 'none'), n('pao2', 0), n('fio2', 0), s('fio2Mode', 'dec'), n('age', 0), n('wbc', 0));
@@ -1225,6 +1445,117 @@ export class AssistantService {
     }
     if (calcId === 'nrs2002') {
       return calculateNrs2002(n('height', 0), n('weight', 0), s('weightLoss', 'none'), s('intake', 'normal'), s('disease', 'none'), b('ageAdj'));
+    }
+    if (calcId === 'shocki') {
+      return calculateShockIndex(n('hr', 0), n('sbp', 0));
+    }
+    if (calcId === 'qsofa') {
+      const qGcs = n('gcs', 0) > 0 ? n('gcs', 0) : n('gcsEye', 0) + n('gcsVerbal', 0) + n('gcsMotor', 0);
+      return calculateQsofa(n('rr', 0), n('sbp', 0), qGcs, s('consciousness', ''));
+    }
+    if (calcId === 'rts') {
+      const rtsGcs = n('gcs', 0) > 0 ? n('gcs', 0) : n('gcsEye', 0) + n('gcsVerbal', 0) + n('gcsMotor', 0);
+      return calculateRts(rtsGcs, n('sbp', 0), n('rr', 0));
+    }
+    if (calcId === 'rsbi') {
+      return calculateRsbi(n('rr', 0), n('vtMl', 0), s('sbtStatus', 'unknown'));
+    }
+    if (calcId === 'hellp') {
+      return calculateHellp(n('platelet', 0), n('ast', 0), n('alt', 0), n('ldh', 0), n('bilirubin', 0), s('bilirubinUnit', 'umol'), b('hemolysis'), s('pregnancyStatus', 'unknown'));
+    }
+    if (calcId === 'metab') {
+      return calculateMetabolic(n('ca', 0), n('alb', 0), s('albUnit', 'gl'), n('na', 0), n('glu', 0), n('bun', 0), n('measuredOsm', 0));
+    }
+    if (calcId === 'heart') {
+      const uln = n('tropUln', 0);
+      const ratio = uln > 0 ? n('ctni', 0) / uln : 0;
+      return calculateHeart(n('heartHistory', 0), n('heartEcg', 0), n('age', 0), n('riskFactorCount', 0), b('knownAthero'), ratio);
+    }
+    if (calcId === 'gbs') {
+      return calculateGbs(n('bun', 0) * 2.8, n('hgb', 0) / 10, s('sex', 'male'), n('sbp', 0), n('hr', 0), b('melena'), b('syncope'), b('liverDisease'), b('heartFailure'));
+    }
+    if (calcId === 'bisap') {
+      const bGcs = n('gcs', 0) > 0 ? n('gcs', 0) : n('gcsEye', 0) + n('gcsVerbal', 0) + n('gcsMotor', 0);
+      return calculateBisap(n('bun', 0) * 2.8, bGcs, n('sirsCount', 0), n('age', 0), b('pleuralEffusion'));
+    }
+    if (calcId === 'tls') {
+      return calculateTls(n('uricAcid', 0), n('k', 0), n('p', 0), n('ca', 0), n('crUlnRatio', 0), b('arrhythmia'), b('seizure'));
+    }
+    if (calcId === 'bwps') {
+      return calculateBwps(n('temp', 0), n('hr', 0), n('cnsScore', 0), n('giScore', 0), n('chfScore', 0), b('afib'), b('precipitant'));
+    }
+    if (calcId === 'cpis') {
+      const fio2Pct = s('fio2Mode', 'dec') === 'pct' ? n('fio2', 0) : n('fio2', 0) * 100;
+      const pf = n('pao2', 0) > 0 && fio2Pct > 0 ? n('pao2', 0) / (fio2Pct / 100) : 0;
+      return calculateCpis(n('temp', 0), n('wbc', 0), n('bands', 0), n('secretions', 0), pf, n('cxrInfiltrate', 0), n('culturePos', 0));
+    }
+    if (calcId === 'anc') {
+      return calculateAncMascc(0, n('wbc', 0), n('neutPct', 0), 0, false, false, false, false, false, n('age', 0));
+    }
+    if (calcId === 'adhere') {
+      const crMgDl = s('crUnit', 'umol') === 'mgdl' ? n('creatinine', 0) : n('creatinine', 0) / 88.4;
+      return calculateAdhere(n('bun', 0) * 2.8, n('sbp', 0), crMgDl);
+    }
+    if (calcId === 'rhabdo') {
+      const crUmol = s('crUnit', 'umol') === 'mgdl' ? n('creatinine', 0) * 88.4 : n('creatinine', 0);
+      return calculateMcmahon(n('age', 0), s('sex', 'male'), n('ck', 0), crUmol, n('p', 0), n('ca', 0), n('hco3', 0), false);
+    }
+    if (calcId === 'isth') {
+      const dd = n('dDimer', 0);
+      const ddGrade = dd > 5 ? 3 : dd >= 1 ? 2 : 0;
+      return calculateIsth(n('platelet', 0), ddGrade, n('ptProlong', 0), n('fib', 0));
+    }
+    if (calcId === 'plasmic') {
+      const crMgDl = s('crUnit', 'umol') === 'mgdl' ? n('creatinine', 0) : n('creatinine', 0) / 88.4;
+      const hemolysisEvidence = b('hemolysis') || n('retic', 0) > 2.5 || n('ibil', 0) > 34;
+      return calculatePlasmic(n('platelet', 0), hemolysisEvidence, b('cancer'), b('transplant'), n('mcv', 0), n('inr', 0), crMgDl);
+    }
+    if (calcId === 'lacclear') {
+      return calculateLactateClearance(n('lac0', 0), n('lac1', 0), 0);
+    }
+    if (calcId === 'ddage') {
+      return calculateAgeAdjustedDdimer(n('age', 0), n('dDimer', 0));
+    }
+    if (calcId === 'asthma') {
+      return calculateAsthma(n('pefPct', 0), n('rr', 0), n('hr', 0), s('speechAbility', ''), b('silentChest'));
+    }
+    if (calcId === 'goldabe') {
+      return calculateGoldAbe(n('mmrc', -1), n('cat', -1), n('exacCount', -1), n('exacHosp', 0));
+    }
+    if (calcId === 'bap65') {
+      const bGcs = n('gcs', 0);
+      const altered = (bGcs > 0 && bGcs < 15) || b('confusion');
+      return calculateBap65(n('bun', 0) * 2.8, n('hr', 0), n('age', 0), altered);
+    }
+    if (calcId === 'gcsp') {
+      return calculateGcsP(n('gcs', 0), n('pupilReact', 0));
+    }
+    if (calcId === 'crusade') {
+      return calculateCrusade(n('hct', 0), n('gfr', 0), n('hr', 0), s('sex', '') === 'female', b('chf'), b('vasc'), b('dm'), n('sbp', 0));
+    }
+    if (calcId === 'rems') {
+      return calculateRems(n('age', 0), n('map', 0), n('hr', 0), n('rr', 0), n('spo2', 0), n('gcs', 0));
+    }
+    if (calcId === 'parkland') {
+      return calculateParkland(n('weight', 0), n('tbsa', 0));
+    }
+    if (calcId === 'qtc') {
+      return calculateQtc(n('qtMs', 0), n('hr', 0));
+    }
+    if (calcId === 'alvarado') {
+      return calculateAlvarado(n('temp', 0), n('wbc', 0), n('neutPct', 0), b('migratoryPain'), b('anorexia'), b('nauseaVomit'), b('rlqTender'), b('reboundPain'));
+    }
+    if (calcId === 'ripasa') {
+      return calculateRipasa(n('age', 0), s('sex', 'male'), b('rlqPain'), b('migratoryPain'), b('anorexia'), b('nauseaVomit'), b('durLt48h'), b('rlqTender'), b('guardingSign'), b('reboundPain'), b('rovsingSign'), n('temp', 0), n('wbc', 0), b('urineNeg'));
+    }
+    if (calcId === 'csf') {
+      return calculateCsf(n('csfWbc', 0), n('csfNeutPct', 0), n('csfProtein', 0), n('csfGlu', 0), n('glu', 0), n('csfRbc', 0));
+    }
+    if (calcId === 'padua') {
+      return calculatePadua(n('age', 0), b('cancer'), b('prevVte'), b('immobility3d'), b('thrombophilia'), b('traumaSurg1m'), b('hfRespFail'), b('acuteMiStroke'), b('acuteInfection'), n('bmi', 0), b('hormoneRx'));
+    }
+    if (calcId === 'fick') {
+      return calculateFick(n('hgb', 0), n('spo2', 0), n('svo2', 0), n('vo2', 0), n('height', 0), n('weight', 0));
     }
     return null;
   }

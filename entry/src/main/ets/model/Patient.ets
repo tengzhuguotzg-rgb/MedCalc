@@ -91,24 +91,24 @@ export class PatientDiagnosis {
 }
 
 export const DATA_DOMAINS: Record<string, string[]> = {
-  '人口学': ['age', 'sex', 'weight', 'height', 'bmi'],
+  '人口学': ['age', 'sex', 'weight', 'height', 'bmi', 'pregnancyStatus', 'transplant'],
   '生命体征': ['sbp', 'dbp', 'map', 'hr', 'rr', 'temp', 'spo2'],
-  '血气分析': ['ph', 'paco2', 'paco2Unit', 'pao2', 'pao2Unit', 'hco3', 'be', 'fio2', 'fio2Mode', 'lac'],
+  '血气分析': ['ph', 'paco2', 'paco2Unit', 'pao2', 'pao2Unit', 'hco3', 'be', 'fio2', 'fio2Mode', 'lac', 'lac0', 'lac1', 'svo2', 'vo2'],
   '电解质': ['na', 'k', 'cl', 'ca', 'mg', 'p'],
-  '肾功能': ['creatinine', 'crUnit', 'bun', 'urea', 'ureaUnit', 'urineOutput', 'gfr', 'cr0', 'cr1', 'cr0Unit', 'cr1Unit', 'rrt'],
+  '肾功能': ['creatinine', 'crUnit', 'bun', 'urea', 'ureaUnit', 'urineOutput', 'gfr', 'cr0', 'cr1', 'cr0Unit', 'cr1Unit', 'rrt', 'crUlnRatio'],
   '肝功能': ['bilirubin', 'bilirubinUnit', 'alb', 'albUnit', 'alt', 'ast', 'alp', 'ggt', 'che', 'ammonia', 'inr', 'dbil', 'ibil', 'ascites', 'encephalopathy', 'hepaticEnceph'],
-  '血液学': ['hgb', 'hgbUnit', 'hct', 'rbc', 'mcv', 'mch', 'mchc', 'rdw', 'retic', 'platelet', 'wbc', 'bands'],
-  '凝血': ['inr', 'pt', 'pta', 'aptt', 'tt', 'fib', 'fdp', 'dDimer', 'atiii'],
+  '血液学': ['hgb', 'hgbUnit', 'hct', 'rbc', 'mcv', 'mch', 'mchc', 'rdw', 'retic', 'platelet', 'wbc', 'bands', 'neutPct', 'hemolysis'],
+  '凝血': ['inr', 'pt', 'ptProlong', 'pta', 'aptt', 'tt', 'fib', 'fdp', 'dDimer', 'atiii'],
   '炎症标志物': ['crp', 'hsCrp', 'pct', 'saa', 'esr', 'il6'],
-  '心肌标志物': ['ctni', 'ckmb', 'myo', 'bnp'],
-  '神经': ['gcs', 'gcsEye', 'gcsVerbal', 'gcsMotor', 'rassScore', 'consciousness', 'confusion', 'nihss1a', 'nihss1b', 'nihss1c', 'nihss2', 'nihss3', 'nihss4', 'nihss5a', 'nihss5b', 'nihss6a', 'nihss6b', 'nihss7', 'nihss8', 'nihss9', 'nihss10', 'nihss11'],
-  '心脏': ['killip', 'chf', 'htn', 'dm', 'stroke', 'vasc', 'age75', 'age65', 'female'],
-  '呼吸': ['peep', 'o2supplement', 'fio2Mode', 'pao2', 'paco2'],
+  '心肌标志物': ['ctni', 'tropUln', 'ckmb', 'myo', 'bnp'],
+  '神经': ['gcs', 'gcsEye', 'gcsVerbal', 'gcsMotor', 'pupilReact', 'rassScore', 'consciousness', 'confusion', 'csfWbc', 'csfNeutPct', 'csfProtein', 'csfGlu', 'csfRbc', 'nihss1a', 'nihss1b', 'nihss1c', 'nihss2', 'nihss3', 'nihss4', 'nihss5a', 'nihss5b', 'nihss6a', 'nihss6b', 'nihss7', 'nihss8', 'nihss9', 'nihss10', 'nihss11'],
+  '心脏': ['killip', 'chf', 'htn', 'dm', 'stroke', 'vasc', 'age75', 'age65', 'female', 'heartHistory', 'heartEcg', 'riskFactorCount', 'knownAthero', 'heartFailure', 'chfScore', 'afib', 'arrhythmia', 'qtMs'],
+  '呼吸': ['peep', 'o2supplement', 'fio2Mode', 'pao2', 'paco2', 'vtMl', 'sbtStatus', 'pleuralEffusion', 'secretions', 'cxrInfiltrate', 'culturePos', 'pef', 'pefPct', 'speechAbility', 'silentChest', 'mmrc', 'cat', 'exacCount', 'exacHosp'],
   '营养': ['weightLoss', 'intake', 'disease', 'ageAdj', 'prealbumin', 'tferritin', 'tg'],
-  '代谢': ['glu'],
+  '代谢': ['glu', 'measuredOsm', 'uricAcid'],
   '内分泌': ['tsh', 'ft3', 'ft4', 'cortisol'],
   '肌肉': ['ck', 'ldh'],
-  'ICU评分': ['apache2Score', 'sofaScore', 'icuDay', 'vaso', 'comorb'],
+  'ICU评分': ['apache2Score', 'sofaScore', 'icuDay', 'vaso', 'comorb', 'melena', 'syncope', 'liverDisease', 'sirsCount', 'cnsScore', 'giScore', 'precipitant', 'seizure', 'tbsa', 'migratoryPain', 'anorexia', 'nauseaVomit', 'rlqTender', 'reboundPain', 'rlqPain', 'durLt48h', 'guardingSign', 'rovsingSign', 'urineNeg', 'prevVte', 'immobility3d', 'thrombophilia', 'traumaSurg1m', 'hfRespFail', 'acuteMiStroke', 'acuteInfection', 'hormoneRx'],
 };
 
 export const DOMAIN_COLORS: Record<string, ResourceStr> = {

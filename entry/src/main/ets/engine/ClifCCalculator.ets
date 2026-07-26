@@ -27,8 +27,10 @@ export function calculateClifC(
   else if (crMg >= 2.0) cScore = 2;
   else if (crMg >= 1.2) cScore = 1;
 
-  let hScore = hepaticEnceph;
-  if (hScore > 3) hScore = 3;
+  let hScore = 0;
+  if (hepaticEnceph >= 3) hScore = 2;
+  else if (hepaticEnceph >= 1) hScore = 1;
+  if (hScore > 2) hScore = 2;
 
   let iScore = 0;
   if (inr >= 2.5) iScore = 3;

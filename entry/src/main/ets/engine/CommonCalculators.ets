@@ -309,9 +309,12 @@ export function calculateCurb65(confusion: boolean, urea: number, ureaUnit: stri
   if (total === 0) {
     tier = '低风险';
     footnote = '0分 死亡风险低, 可院外治疗。';
-  } else if (total <= 2) {
+  } else if (total === 1) {
+    tier = '低风险';
+    footnote = '1分 死亡风险低, 可院外治疗。';
+  } else if (total === 2) {
     tier = '中风险';
-    footnote = '1-2分 死亡风险中等, 建议住院。';
+    footnote = '2分 死亡风险中等, 建议住院。';
   } else {
     tier = '高风险';
     footnote = '≥3分 死亡风险高, 需住院甚至ICU。';

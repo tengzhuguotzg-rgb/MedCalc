@@ -11,6 +11,9 @@ export struct KccCalculator {
   @State bilirubinUnit: string = 'umol';
   @State age: number = 0;
   @State etiology: number = -1;
+  @State ph: number = 0;
+  @State crMgDl: number = 0;
+  @State hepaticEnceph: number = -1;
   @State result: CalcResult | null = null;
 
   aboutToAppear() { this.calculate(); }
@@ -19,7 +22,7 @@ export struct KccCalculator {
       this.result = { value: null, unit: '', tier: '请填写必填项', tierClass: 'tier-info', footnote: '' };
       return;
     }
-    this.result = calculateKcc(this.inr, this.bilirubin, this.bilirubinUnit, this.age, this.etiology === 1);
+    this.result = calculateKcc(this.inr, this.bilirubin, this.bilirubinUnit, this.age, this.etiology === 1, this.ph, this.crMgDl, this.hepaticEnceph >= 0 ? this.hepaticEnceph : -1);
   }
 
   reset() {
@@ -28,6 +31,9 @@ export struct KccCalculator {
     this.bilirubinUnit = 'umol';
     this.age = 0;
     this.etiology = -1;
+    this.ph = 0;
+    this.crMgDl = 0;
+    this.hepaticEnceph = -1;
     this.result = null;
     this.resetKey = this.resetKey + 1;
     this.calculate();
@@ -66,6 +72,20 @@ export struct KccCalculator {
           Row() { OptionChip({ label: '否', selected: this.etiology === 0, fontSize: 14, bold: true, onChipClick: () => { this.etiology = 0; this.calculate(); } }).layoutWeight(1);
             OptionChip({ label: '是', selected: this.etiology === 1, fontSize: 14, bold: true, onChipClick: () => { this.etiology = 1; this.calculate(); } }).layoutWeight(1);
           }.width(100);
+        }.width('100%').margin({ bottom: 16 });
+
+        Row() {
+          InputRow({ label: 'pH', placeholder: '如 7.28', onTextChange: (value: string) => { this.ph = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1);
+          InputRow({ label: '肌酐 (mg/dL)', placeholder: '如 3.5', onTextChange: (value: string) => { this.crMgDl = parseFloat(value) || 0; this.calculate(); } }).layoutWeight(1).margin({ left: 12 });
+        }.width('100%').margin({ bottom: 16 });
+
+        Column() {
+          Text('肝性脑病分级').fontSize(14).fontColor(AppColors.textPrimary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
+          Row() {
+            OptionChip({ label: '无', selected: this.hepaticEnceph === 0, fontSize: 13, bold: true, onChipClick: () => { this.hepaticEnceph = 0; this.calculate(); } }).layoutWeight(1);
+            OptionChip({ label: 'I-II', selected: this.hepaticEnceph === 1, fontSize: 13, bold: true, onChipClick: () => { this.hepaticEnceph = 1; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+            OptionChip({ label: 'III-IV', selected: this.hepaticEnceph === 2, fontSize: 13, bold: true, onChipClick: () => { this.hepaticEnceph = 2; this.calculate(); } }).layoutWeight(1).margin({ left: 4 });
+          }.width('100%');
         }.width('100%');
       }
 
