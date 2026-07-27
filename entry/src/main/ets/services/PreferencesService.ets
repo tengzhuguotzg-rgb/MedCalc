@@ -8,6 +8,7 @@ const KEY_LAST_CALC: string = 'lastCalculator';
 const KEY_LLM_MODELS: string = 'llmModels';
 const KEY_SELECTED_LLM_ID: string = 'selectedLlmId';
 const KEY_THEME_MODE: string = 'themeMode';
+const KEY_CALC_MODE: string = 'calcMode';
 
 class LlmModelRecord {
   id: string = '';
@@ -115,6 +116,14 @@ export class PreferencesService {
 
   getLastCalculator(): string {
     return this.getSync(KEY_LAST_CALC, 'crcl');
+  }
+
+  saveCalcMode(mode: string): void {
+    this.putSync(KEY_CALC_MODE, mode);
+  }
+
+  getCalcMode(): string {
+    return this.getSync(KEY_CALC_MODE, 'normal');
   }
 
   saveLlmModels(models: LlmModelConfig[], selectedId: string): void {

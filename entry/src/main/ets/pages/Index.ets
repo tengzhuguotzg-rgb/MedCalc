@@ -102,6 +102,7 @@ struct Index {
   @State favorites: string[] = [];
   @State sidebarCollapsed: boolean = true;
   @State currentTab: number = 0;
+  @State calcMode: string = 'normal';
   @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
   @State kbNavDepth: number = 0;
   @State kbBackAction: number = 0;
@@ -113,16 +114,17 @@ struct Index {
     const prefsService = PreferencesService.getInstance();
     this.favorites = prefsService.getFavorites();
     this.currentCalc = prefsService.getLastCalculator();
+    this.calcMode = prefsService.getCalcMode();
   }
 
   onKbNavigate() {
     if (this.kbNavigatePath.length > 0) {
-      this.currentTab = 3;
+      this.currentTab = 2;
     }
   }
 
   onBackPress(): boolean | void {
-    if (this.currentTab === 3 && this.kbNavDepth > 0) {
+    if (this.currentTab === 2 && this.kbNavDepth > 0) {
       this.kbBackAction++;
       return true;
     }
@@ -143,18 +145,13 @@ struct Index {
       .tabBar(this.TabBarBuilder($r('app.string.tab_calculator'), 0))
 
       TabContent() {
-        AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab });
-      }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_assistant'), 1))
-
-      TabContent() {
         Navigation(this.patientStack) {
           PatientListPage({ patientStack: this.patientStack });
         }
         .hideTitleBar(true)
         .navDestination(this.PatientRouteMap)
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_patient'), 2))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_patient'), 1))
 
       TabContent() {
         Navigation(this.kbStack) {
@@ -165,12 +162,12 @@ struct Index {
         }
         .hideTitleBar(true)
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_knowledge'), 3))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_knowledge'), 2))
 
       TabContent() {
         SettingsPage();
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_settings'), 4))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_settings'), 3))
     }
     .barBackgroundColor(AppColors.card)
     .barMode(BarMode.Fixed)
@@ -218,12 +215,9 @@ struct Index {
       return $r('app.media.ic_calculator');
     }
     if (index === 1) {
-      return $r('app.media.ic_assistant');
-    }
-    if (index === 2) {
       return $r('app.media.ic_patient');
     }
-    if (index === 3) {
+    if (index === 2) {
       return $r('app.media.ic_knowledge');
     }
     return $r('app.media.ic_settings');
@@ -231,12 +225,16 @@ struct Index {
 
   @Builder
   CalcModeView() {
-    Stack({ alignContent: Alignment.Start }) {
-      Column() {
-        this.Topbar();
-        Scroll() {
+    Column() {
+      this.Topbar();
+
+      if (this.calcMode === 'normal') {
+        Stack({ alignContent: Alignment.Start }) {
           Column() {
-            if (this.currentCalc === 'crcl') {
+            Scroll() {
+              Column() {
+                this.CalcContentHeader();
+                if (this.currentCalc === 'crcl') {
               CrClCalculator();
             } else if (this.currentCalc === 'gfr') {
               GfrCalculator();
@@ -444,62 +442,120 @@ struct Index {
       LlmDialog({ currentCalc: $currentCalc })
     }
     .width('100%')
+    .layoutWeight(1);
+      } else if (this.calcMode === 'recommend') {
+        LlmDialog({
+          currentCalc: $currentCalc,
+          pageMode: true,
+          onPickCalc: (id: string) => {
+            this.calcMode = 'normal';
+            PreferencesService.getInstance().saveCalcMode('normal');
+          }
+        })
+          .layoutWeight(1);
+      } else if (this.calcMode === 'recognize') {
+        this.RecognizeView();
+      }
+    }
+    .width('100%')
     .height('100%');
+  }
+
+  @Builder
+  RecognizeView() {
+    AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab })
+      .layoutWeight(1);
   }
 
   @Builder
   Topbar() {
     Row() {
+      // 左：菜单按钮（仅 normal 模式可点开侧栏；其他模式同尺寸透明占位保持布局）
       Button() {
         this.MenuIcon()
       }
       .width(44)
       .height(44)
       .backgroundColor('transparent')
+      .enabled(this.calcMode === 'normal')
       .onClick(() => {
-        this.sidebarCollapsed = false;
+        if (this.calcMode === 'normal') {
+          this.sidebarCollapsed = false;
+        }
       });
 
-       Column() {
-         Row({ space: 8 }) {
-           Text(this.getCurrentCalculatorName())
-             .fontSize(20)
-             .fontWeight(FontWeight.Bold)
-             .fontColor(AppColors.headerText);
-           if (this.getCurrentGroup().length > 0) {
-             Text(this.getCurrentGroup())
-               .fontSize(11)
-               .fontWeight(FontWeight.Bold)
-               .fontColor(AppColors.onPrimary)
-               .backgroundColor(AppColors.getCategoryColor(this.getCurrentGroup()))
-               .borderRadius(10)
-               .padding({ left: 10, right: 10, top: 3, bottom: 3 });
-           }
-         }
-         .alignItems(VerticalAlign.Center);
-       }
-       .alignItems(HorizontalAlign.Start)
-       .layoutWeight(1)
-       .margin({ left: 4 });
+      // 中：三模式分段切换
+      Row({ space: 4 }) {
+        this.ModeButton('常规模式', 'normal');
+        this.ModeButton('LLM推荐', 'recommend');
+        this.ModeButton('LLM识别', 'recognize');
+      }
+      .layoutWeight(1)
+      .justifyContent(FlexAlign.Center)
+      .padding({ left: 4, right: 4 });
 
-       Button() {
-         Image(this.isFavorite() ? $r('app.media.ic_star_filled') : $r('app.media.ic_star'))
-           .width(20)
-           .height(20)
-           .fillColor(AppColors.headerText)
-           .objectFit(ImageFit.Contain)
-       }
-       .width(44)
-       .height(44)
-       .backgroundColor('transparent')
-       .onClick(() => {
-         this.toggleFavorite();
-       })
-     }
-     .width('100%')
-     .height(44)
-     .padding({ left: 12, right: 12 })
-     .backgroundColor(AppColors.headerBg);
+      // 右：44 透明占位（清空会话入口留在 AssistantPage 自身 HeaderBar）
+      Column()
+        .width(44)
+        .height(44);
+    }
+    .width('100%')
+    .height(44)
+    .padding({ left: 12, right: 12 })
+    .backgroundColor(AppColors.headerBg);
+  }
+
+  @Builder
+  ModeButton(label: string, mode: string) {
+    Text(label)
+      .fontSize(13)
+      .padding({ left: 12, right: 12, top: 6, bottom: 6 })
+      .fontColor(this.calcMode === mode ? AppColors.onPrimary : AppColors.textBody)
+      .backgroundColor(this.calcMode === mode ? AppColors.primary : AppColors.fillNeutral)
+      .borderRadius(6)
+      .onClick(() => {
+        this.calcMode = mode;
+        PreferencesService.getInstance().saveCalcMode(mode);
+      });
+  }
+
+  @Builder
+  CalcContentHeader() {
+    Row() {
+      Row({ space: 8 }) {
+        Text(this.getCurrentCalculatorName())
+          .fontSize(20)
+          .fontWeight(FontWeight.Bold)
+          .fontColor(AppColors.headerText);
+        if (this.getCurrentGroup().length > 0) {
+          Text(this.getCurrentGroup())
+            .fontSize(11)
+            .fontWeight(FontWeight.Bold)
+            .fontColor(AppColors.onPrimary)
+            .backgroundColor(AppColors.getCategoryColor(this.getCurrentGroup()))
+            .borderRadius(10)
+            .padding({ left: 10, right: 10, top: 3, bottom: 3 });
+        }
+      }
+      .alignItems(VerticalAlign.Center)
+      .layoutWeight(1);
+
+      Button() {
+        Image(this.isFavorite() ? $r('app.media.ic_star_filled') : $r('app.media.ic_star'))
+          .width(20)
+          .height(20)
+          .fillColor(AppColors.headerText)
+          .objectFit(ImageFit.Contain)
+      }
+      .width(44)
+      .height(44)
+      .backgroundColor('transparent')
+      .onClick(() => {
+        this.toggleFavorite();
+      });
+    }
+    .width('100%')
+    .padding({ left: 16, right: 16, top: 8, bottom: 0 });
   }
 
   @Builder

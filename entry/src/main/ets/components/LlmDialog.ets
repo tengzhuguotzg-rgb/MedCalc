@@ -11,6 +11,8 @@ import { display } from '@kit.ArkUI';
 @Component
 export struct LlmDialog {
   @Link currentCalc: string;
+  @Prop pageMode: boolean = false;
+  onPickCalc: (calcId: string) => void = () => {};
   @State isOpen: boolean = false;
   @State userInput: string = '';
   @State errorMsg: string = '';
@@ -40,11 +42,13 @@ export struct LlmDialog {
   @State selectedLlmId: string = '';
 
   aboutToAppear() {
-    try {
-      const d = display.getDefaultDisplaySync();
-      this.maxRight = Math.max(100, d.width / 160 - this.fabSize);
-      this.maxBottom = Math.max(100, d.height / 160 - this.fabSize);
-    } catch (e) {
+    if (!this.pageMode) {
+      try {
+        const d = display.getDefaultDisplaySync();
+        this.maxRight = Math.max(100, d.width / 160 - this.fabSize);
+        this.maxBottom = Math.max(100, d.height / 160 - this.fabSize);
+      } catch (e) {
+      }
     }
     this.refreshLlmModels();
   }
@@ -316,12 +320,16 @@ export struct LlmDialog {
   jumpToCalculator(id: string): void {
     if (id) {
       this.currentCalc = id;
+      this.onPickCalc(id);
       this.closeDialog();
     }
   }
 
   closeDialog(): void {
-    this.isOpen = false;
+    // pageMode 下无弹层开合概念，仅重置问诊状态回到 input 阶段
+    if (!this.pageMode) {
+      this.isOpen = false;
+    }
     this.userInput = '';
     this.results = [];
     this.recommendSummary = '';
@@ -336,7 +344,39 @@ export struct LlmDialog {
   }
 
   build() {
-    if (this.isOpen) {
+    if (this.pageMode) {
+      // 页面模式：推荐流全宽全高内联渲染，无遮罩/无 FAB/无尺寸限制
+      Column() {
+        Scroll() {
+          Column() {
+            this.DialogHeader();
+            this.ActiveServiceBar();
+            this.InputArea();
+            if (this.phase === 'questionnaire') {
+              this.QuestionnaireArea();
+            }
+            if (this.phase === 'thinking') {
+              this.ThinkingArea();
+            }
+            if (this.phase === 'clarify') {
+              this.ClarifyArea();
+            }
+            this.StatusArea();
+            if (this.phase === 'result') {
+              this.ResultArea();
+            }
+          }
+          .width('100%')
+          .padding(20)
+        }
+        .width('100%')
+        .height('100%')
+        .align(Alignment.Top)
+      }
+      .width('100%')
+      .height('100%')
+      .backgroundColor(AppColors.background)
+    } else if (this.isOpen) {
       Stack() {
         Column()
           .width('100%')
@@ -426,17 +466,19 @@ export struct LlmDialog {
         .fontWeight(FontWeight.Bold)
         .fontColor(AppColors.primary)
       Blank()
-      Button() {
-        Text('✕')
-          .fontSize(16)
-          .fontColor(AppColors.textSecondary)
+      if (!this.pageMode) {
+        Button() {
+          Text('✕')
+            .fontSize(16)
+            .fontColor(AppColors.textSecondary)
+        }
+        .width(32)
+        .height(32)
+        .backgroundColor('transparent')
+        .onClick(() => {
+          this.closeDialog();
+        })
       }
-      .width(32)
-      .height(32)
-      .backgroundColor('transparent')
-      .onClick(() => {
-        this.closeDialog();
-      })
     }
     .width('100%')
     .padding({ bottom: 12 })
