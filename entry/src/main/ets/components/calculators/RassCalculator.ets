@@ -70,7 +70,7 @@ export struct RassCalculator {
         Text('完整评分参考').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         RassTable({ levels: RASS_LEVELS, current: this.score });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 

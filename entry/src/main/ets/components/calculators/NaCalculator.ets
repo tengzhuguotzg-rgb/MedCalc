@@ -108,6 +108,6 @@ export struct NaCalculator {
     }
     .width('100%')
     .constraintSize({ minHeight: '100%' })
-    .padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    .padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -237,7 +237,7 @@ export struct VasopressorCalculator {
           .margin({ top: 12 })
           .enabled(this.canCalculate())
           .onClick(() => { this.onCalculate(); })
-      }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
+      }.padding({ left: 16, right: 16, top: 8, bottom: 16 }).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%').margin({ bottom: 16 });
 
       if (this.calculated) {
         Column() {
@@ -251,8 +251,8 @@ export struct VasopressorCalculator {
                 .fontSize(11).fontColor(AppColors.textSecondary).margin({ top: 2 });
             }.alignItems(HorizontalAlign.Start).layoutWeight(1);
           }.width('100%');
-        }.padding(AppDimens.cardPadding).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
+        }.padding({ left: 16, right: 16, top: 8, bottom: 16 }).backgroundColor(AppColors.card).borderRadius(AppDimens.cardRadius).width('100%');
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

@@ -81,7 +81,7 @@ export struct HuntHessCalculator {
         Text('完整分级参考').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         GradeTable({ levels: HH_LEVELS, current: this.grade });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 
@@ -131,7 +131,7 @@ export struct WfnsCalculator {
         Text('完整分级参考').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         GradeTable({ levels: WFNS_LEVELS, current: this.grade });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 
@@ -181,7 +181,7 @@ export struct FisherCalculator {
         Text('完整分级参考').fontSize(12).fontColor(AppColors.textSecondary).fontWeight(FontWeight.Medium).margin({ bottom: 8 });
         GradeTable({ levels: FISHER_LEVELS, current: this.grade });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }
 

@@ -51,6 +51,53 @@ export struct LlmDialog {
       }
     }
     this.refreshLlmModels();
+    // pageMode 下恢复上次推荐结果（组件可能因切换模式被重建）
+    if (this.pageMode) {
+      this.restoreState();
+    }
+  }
+
+  // 保存推荐状态到 AppStorage（pageMode 跳转计算器前调用）
+  saveState(): void {
+    if (!this.pageMode) {
+      return;
+    }
+    try {
+      AppStorage.setOrCreate('llmRecPhase', this.phase);
+      AppStorage.setOrCreate('llmRecUserInput', this.userInput);
+      AppStorage.setOrCreate('llmRecSummary', this.recommendSummary);
+      // 序列化 results
+      const recsData: string[] = [];
+      for (let i = 0; i < this.results.length; i++) {
+        recsData.push(`${this.results[i].id}||${this.results[i].name}||${this.results[i].reason}`);
+      }
+      AppStorage.setOrCreate('llmRecResults', recsData);
+    } catch (e) {
+    }
+  }
+
+  // 从 AppStorage 恢复推荐状态
+  restoreState(): void {
+    try {
+      const savedPhase = AppStorage.get<string>('llmRecPhase');
+      if (savedPhase && savedPhase.length > 0) {
+        this.phase = savedPhase;
+        this.userInput = AppStorage.get<string>('llmRecUserInput') ?? '';
+        this.recommendSummary = AppStorage.get<string>('llmRecSummary') ?? '';
+        const recsData = AppStorage.get<string[]>('llmRecResults');
+        if (recsData && recsData.length > 0) {
+          const recs: LlmRecommendation[] = [];
+          for (let i = 0; i < recsData.length; i++) {
+            const parts = recsData[i].split('||');
+            if (parts.length >= 3) {
+              recs.push({ id: parts[0], name: parts[1], reason: parts[2] });
+            }
+          }
+          this.results = recs;
+        }
+      }
+    } catch (e) {
+    }
   }
   private touchDownX: number = 0;
   private touchDownY: number = 0;
@@ -320,8 +367,13 @@ export struct LlmDialog {
   jumpToCalculator(id: string): void {
     if (id) {
       this.currentCalc = id;
-      this.onPickCalc(id);
-      this.closeDialog();
+      // pageMode 下保存推荐状态，切回来时恢复
+      if (this.pageMode) {
+        this.saveState();
+        this.onPickCalc(id);
+      } else {
+        this.closeDialog();
+      }
     }
   }
 
@@ -343,15 +395,30 @@ export struct LlmDialog {
     this.chatMessages = [];
   }
 
+  // 重置：清空所有内容回到最初形态
+  resetAll(): void {
+    this.closeDialog();
+    // pageMode 下清除 AppStorage 保存的状态
+    if (this.pageMode) {
+      try {
+        AppStorage.setOrCreate('llmRecPhase', '');
+        AppStorage.setOrCreate('llmRecUserInput', '');
+        AppStorage.setOrCreate('llmRecSummary', '');
+        AppStorage.setOrCreate('llmRecResults', []);
+      } catch (e) {
+      }
+    }
+  }
+
   build() {
     if (this.pageMode) {
-      // 页面模式：推荐流全宽全高内联渲染，无遮罩/无 FAB/无尺寸限制
+      // 页面模式：HeaderBar固定 + 中间内容滚动 + 底部输入栏（对齐 AssistantPage 布局）
       Column() {
+        this.DialogHeader();
+
         Scroll() {
           Column() {
-            this.DialogHeader();
             this.ActiveServiceBar();
-            this.InputArea();
             if (this.phase === 'questionnaire') {
               this.QuestionnaireArea();
             }
@@ -365,13 +432,18 @@ export struct LlmDialog {
             if (this.phase === 'result') {
               this.ResultArea();
             }
+            if (this.phase === 'input') {
+              this.WelcomeCard();
+            }
           }
           .width('100%')
-          .padding(20)
+          .padding({ left: 16, right: 16, top: 8, bottom: 8 })
         }
         .width('100%')
-        .height('100%')
+        .layoutWeight(1)
         .align(Alignment.Top)
+
+        this.PageInputBar();
       }
       .width('100%')
       .height('100%')
@@ -461,12 +533,27 @@ export struct LlmDialog {
   @Builder
   DialogHeader() {
     Row() {
-      Text('AI 推荐计算器')
-        .fontSize(17)
+      Text('LLM 推荐计算器')
+        .fontSize(20)
         .fontWeight(FontWeight.Bold)
         .fontColor(AppColors.primary)
-      Blank()
-      if (!this.pageMode) {
+        .layoutWeight(1)
+
+      if (this.pageMode) {
+        // pageMode: 垃圾桶重置按钮
+        Button() {
+          Text('🗑')
+            .fontSize(16)
+            .fontColor(AppColors.textSecondary)
+        }
+        .width(44)
+        .height(44)
+        .backgroundColor('transparent')
+        .onClick(() => {
+          this.resetAll();
+        })
+      } else {
+        // 弹窗模式: ✕ 关闭按钮
         Button() {
           Text('✕')
             .fontSize(16)
@@ -481,7 +568,10 @@ export struct LlmDialog {
       }
     }
     .width('100%')
-    .padding({ bottom: 12 })
+    .height(44)
+    .padding({ left: 16, right: 16 })
+    .backgroundColor(AppColors.card)
+    .border({ width: { bottom: 1 }, color: AppColors.divider })
   }
 
   // 获取当前选中模型的显示名（含供应商）
@@ -562,6 +652,85 @@ export struct LlmDialog {
     }
     .width('100%')
     .margin({ bottom: 12 })
+  }
+
+  // pageMode 专用底部输入栏（对齐 AssistantPage InputBar 样式）
+  @Builder
+  PageInputBar() {
+    Column() {
+      Row() {
+        TextArea({ text: this.userInput, placeholder: '描述病情，如：评估脑出血病人的预后' })
+          .height(48)
+          .fontSize(14)
+          .layoutWeight(1)
+          .backgroundColor(AppColors.background)
+          .borderRadius(8)
+          .padding({ left: 10, right: 10, top: 8, bottom: 8 })
+          .onChange((value: string) => {
+            this.userInput = value;
+          })
+
+        Button() {
+          if (this.phase === 'thinking') {
+            LoadingProgress()
+              .width(18)
+              .height(18)
+              .color(AppColors.onPrimary)
+          } else {
+            Text('➤')
+              .fontSize(18)
+              .fontColor(AppColors.onPrimary)
+          }
+        }
+        .width(40)
+        .height(48)
+        .backgroundColor(this.phase === 'thinking' ? AppColors.textSecondary : AppColors.primary)
+        .borderRadius(20)
+        .margin({ left: 8 })
+        .enabled(this.userInput.trim().length > 0 && this.phase === 'input')
+        .onClick(() => {
+          this.sendQuery();
+        })
+      }
+      .width('100%')
+      .padding({ left: 12, right: 12, top: 8, bottom: 8 })
+      .backgroundColor(AppColors.card)
+      .alignItems(VerticalAlign.Center)
+    }
+    .width('100%')
+    .backgroundColor(AppColors.card)
+  }
+
+  // pageMode 专用欢迎卡（input 阶段显示，对齐 AssistantPage WelcomeCard 方框样式）
+  @Builder
+  WelcomeCard() {
+    Column() {
+      Text('LLM 推荐计算器')
+        .fontSize(16)
+        .fontWeight(FontWeight.Bold)
+        .fontColor(AppColors.primary)
+      Text('描述病情或临床问题，通过问诊推荐最匹配的计算器')
+        .fontSize(12)
+        .fontColor(AppColors.textSecondary)
+        .margin({ top: 4 })
+        .textAlign(TextAlign.Center)
+      Column() {
+        Text('示例输入：').fontSize(12).fontColor(AppColors.textSecondary).margin({ bottom: 4 })
+        Text('• 恶心呕吐').fontSize(12).fontColor(AppColors.textBody)
+        Text('• 评估脑出血病人预后').fontSize(12).fontColor(AppColors.textBody)
+        Text('• 胸痛').fontSize(12).fontColor(AppColors.textBody)
+      }
+      .margin({ top: 8 })
+      .padding(8)
+      .backgroundColor(AppColors.surfaceSubtle)
+      .borderRadius(8)
+    }
+    .width('100%')
+    .padding(16)
+    .alignItems(HorizontalAlign.Center)
+    .backgroundColor(AppColors.card)
+    .borderRadius(12)
+    .margin({ top: 24 })
   }
 
   @Builder

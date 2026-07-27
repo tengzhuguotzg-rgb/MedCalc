@@ -136,6 +136,6 @@ export struct BisapCalculator {
       if (this.ransonResult) {
         ResultCard({ title: 'Ranson', value: this.ransonResult!.value, unit: this.ransonResult!.unit, decimals: 0, tier: this.ransonResult!.tier, tierClass: this.ransonResult!.tierClass, footnote: this.ransonResult!.footnote });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

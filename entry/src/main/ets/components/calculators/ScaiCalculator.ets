@@ -123,6 +123,6 @@ export struct ScaiCalculator {
       if (this.result) {
         ResultCard({ title: 'SCAI 休克', value: this.result!.value, valueText: `Stage ${this.result!.unit}`, valueFontSize: 28, valueMarginTop: 4, tierFontSize: 12, tierMarginTop: 4, titleMedium: false, tier: this.result!.tier, tierClass: this.result!.tierClass, footnote: this.result!.footnote });
       }
-    }.width('100%').constraintSize({ minHeight: '100%' }).padding(AppDimens.cardPadding).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
+    }.width('100%').constraintSize({ minHeight: '100%' }).padding({ left: 16, right: 16, top: 8, bottom: 16 }).justifyContent(FlexAlign.Start).alignItems(HorizontalAlign.Start);
   }
 }

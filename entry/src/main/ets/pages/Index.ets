@@ -438,8 +438,6 @@ struct Index {
           sidebarCollapsed: $sidebarCollapsed
         });
       }
-
-      LlmDialog({ currentCalc: $currentCalc })
     }
     .width('100%')
     .layoutWeight(1);

@@ -319,7 +319,7 @@ export struct AssistantPage {
   @Builder
   HeaderBar() {
     Row() {
-      Text('智能助手')
+      Text('LLM 智能识别、调用')
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
         .fontColor(AppColors.primary)
@@ -347,7 +347,7 @@ export struct AssistantPage {
   @Builder
   WelcomeCard() {
     Column() {
-      Text('智能医学助手')
+      Text('LLM 智能识别、调用')
         .fontSize(16)
         .fontWeight(FontWeight.Bold)
         .fontColor(AppColors.primary)

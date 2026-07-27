@@ -33,7 +33,7 @@ export struct CalcCard {
     Column() {
       this.content();
     }
-    .padding(AppDimens.cardPadding)
+    .padding({ left: 16, right: 16, top: 8, bottom: 16 })
     .backgroundColor(AppColors.card)
     .borderRadius(AppDimens.cardRadius)
     .border({ width: 1, color: AppColors.border })
@@ -242,7 +242,7 @@ export struct ResultCard {
         .padding({ left: 12 })
       }
       .width('100%')
-      .padding(AppDimens.cardPadding)
+      .padding({ left: 16, right: 16, top: 8, bottom: 16 })
       .backgroundColor(this.tierClass.length > 0 ? getTierBgColor(this.tierClass) : AppColors.card)
       .borderRadius(AppDimens.cardRadius)
       .margin({ bottom: this.bottomMargin });
@@ -313,8 +313,8 @@ export struct ResetButton {
   onReset: () => void = () => {};
 
   build() {
-    Text('重置')
-      .fontSize(12)
+    Text('🗑')
+      .fontSize(16)
       .fontColor(AppColors.textSecondary)
       .padding({ left: 12, right: 12, top: 10, bottom: 10 })
       .borderRadius(8)
