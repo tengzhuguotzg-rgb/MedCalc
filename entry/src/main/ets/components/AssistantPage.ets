@@ -1,6 +1,6 @@
 import { AssistantService, AssistantMessage, CalcMatch } from '../services/AssistantService';
 import { PreferencesService } from '../services/PreferencesService';
-import { ApiServiceConfig, sendVisionRequest } from '../services/LlmService';
+import { ApiServiceConfig, sendVisionRequest, LlmModelConfig } from '../services/LlmService';
 import { CalcResult, getTierColor, getTierBgColor } from '../engine/CalcEngine';
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
 import { fileIo, picker } from '@kit.CoreFileKit';
@@ -39,12 +39,52 @@ export struct AssistantPage {
   @State editorImageUri: string = '';
   @State editorResultBase64: string = '';
   @State editorResultMime: string = '';
+  @State llmModels: LlmModelConfig[] = [];
+  @State selectedLlmId: string = '';
   private assistantService = AssistantService.getInstance();
   private prefsService = PreferencesService.getInstance();
   private scroller: Scroller = new Scroller();
 
   aboutToAppear() {
     this.messages = this.assistantService.getMessages();
+    this.refreshLlmModels();
+  }
+
+  refreshLlmModels(): void {
+    this.llmModels = this.prefsService.getLlmModels();
+    this.selectedLlmId = this.prefsService.getSelectedLlmId();
+  }
+
+  switchLlm(id: string): void {
+    this.prefsService.saveSelectedLlmId(id);
+    this.selectedLlmId = id;
+  }
+
+  getActiveDisplayName(): string {
+    for (let i = 0; i < this.llmModels.length; i++) {
+      if (this.llmModels[i].id === this.selectedLlmId) {
+        const m = this.llmModels[i];
+        const provider = m.provider.length > 0 ? m.provider : '默认';
+        return `${provider} - ${m.name}`;
+      }
+    }
+    return '未配置';
+  }
+
+  buildLlmMenuItems(): MenuElement[] {
+    const items: MenuElement[] = [];
+    for (let i = 0; i < this.llmModels.length; i++) {
+      const m = this.llmModels[i];
+      const provider = m.provider.length > 0 ? m.provider : '默认';
+      const prefix = m.id === this.selectedLlmId ? '✓ ' : '  ';
+      items.push({
+        value: `${prefix}${provider} - ${m.name}`,
+        action: () => {
+          this.switchLlm(m.id);
+        }
+      });
+    }
+    return items;
   }
 
   getActiveService(): ApiServiceConfig | null {
@@ -231,62 +271,53 @@ export struct AssistantPage {
 
   build() {
      Stack() {
-     if (!this.showImageEditor) {
-     Column() {
-      this.HeaderBar();
+      if (!this.showImageEditor) {
+      Column() {
+       this.HeaderBar();
 
-      if (this.errorMsg) {
-        Row() {
-          Text('⚠ ')
-            .fontSize(12)
-            .fontColor(AppColors.warning)
-          Text(this.errorMsg)
-            .fontSize(12)
-            .fontColor(AppColors.warning)
-        }
-        .width('100%')
-        .padding(8)
-        .backgroundColor(AppColors.tierWarnBg)
+       Scroll() {
+         Column() {
+           this.ActiveServiceBar();
+
+           if (this.errorMsg) {
+             Row() {
+               Text('⚠ ')
+                 .fontSize(12)
+                 .fontColor(AppColors.warning)
+               Text(this.errorMsg)
+                 .fontSize(12)
+                 .fontColor(AppColors.warning)
+             }
+             .width('100%')
+             .padding(8)
+             .backgroundColor(AppColors.tierWarnBg)
+           }
+
+           if (this.messages.length === 0) {
+             this.WelcomeCard();
+           }
+
+           ForEach(this.messages, (msg: AssistantMessage) => {
+             if (msg.role === 'user') {
+               this.UserBubble(msg);
+             } else {
+               this.AssistantBubble(msg);
+             }
+           }, (msg: AssistantMessage) => msg.id)
+
+           if (this.loading) {
+             this.LoadingBubble();
+           }
+         }
+         .width('100%')
+         .padding({ left: 16, right: 16, top: 8, bottom: 8 })
+       }
+       .width('100%')
+       .layoutWeight(1)
+       .align(Alignment.Top)
+
+        this.InputBar();
       }
-
-      List({ space: 12, scroller: this.scroller }) {
-        if (this.messages.length === 0) {
-          ListItem() {
-            this.WelcomeCard();
-          }
-          .margin({ top: 24 })
-        }
-
-        ForEach(this.messages, (msg: AssistantMessage) => {
-          ListItem() {
-            if (msg.role === 'user') {
-              this.UserBubble(msg);
-            } else {
-              this.AssistantBubble(msg);
-            }
-          }
-        }, (msg: AssistantMessage) => msg.id)
-
-        if (this.loading) {
-          ListItem() {
-            this.LoadingBubble();
-          }
-        }
-      }
-      .layoutWeight(1)
-      .width('100%')
-      .id('assistantMsgList')
-      .focusable(true)
-      .padding({ left: 16, right: 16, top: 8, bottom: 8 })
-      .divider({ strokeWidth: 0 })
-      .onTouch((event?: TouchEvent) => {
-        if (event !== undefined && event.type === TouchType.Down) {
-          this.dismissKeyboard();
-        }
-      })
-
-       this.InputBar();
-     }
      .width('100%')
      .height('100%')
       .backgroundColor(AppColors.background)
@@ -345,6 +376,28 @@ export struct AssistantPage {
   }
 
   @Builder
+  ActiveServiceBar() {
+    Row() {
+      Text('模型：')
+        .fontSize(11)
+        .fontColor(AppColors.textSecondary)
+      Text(this.getActiveDisplayName())
+        .fontSize(11)
+        .fontWeight(FontWeight.Medium)
+        .fontColor(AppColors.primary)
+      if (this.llmModels.length > 1) {
+        Text(' ▼')
+          .fontSize(11)
+          .fontColor(AppColors.primary)
+      }
+      Blank()
+    }
+    .width('100%')
+    .padding({ bottom: 8 })
+    .bindMenu(this.llmModels.length > 1 ? this.buildLlmMenuItems() : [])
+  }
+
+  @Builder
   WelcomeCard() {
     Column() {
       Text('LLM 智能识别、调用')
@@ -372,6 +425,7 @@ export struct AssistantPage {
     .alignItems(HorizontalAlign.Center)
     .backgroundColor(AppColors.card)
     .borderRadius(AppDimens.cardRadius)
+    .margin({ top: 24 })
   }
 
   @Builder

@@ -101,8 +101,8 @@ export struct InputRow {
 export struct ResultCard {
   /** 结果标题（如 'MAP'、'SOFA Total'） */
   title: string = '';
-  /** 原始数值；null 显示 '—'（空态） */
-  @Prop value: number | null = null;
+  /** 原始数值；null 显示 '-'（空态） */
+  @Prop @Watch('onResultChange') value: number | null = null;
   /** 单位 */
   @Prop unit: string = '';
   /** 小数位数（toFixed 参数） */
@@ -110,11 +110,11 @@ export struct ResultCard {
   /** 是否剥掉格式化后末尾的 '.0' */
   trimZero: boolean = false;
   /** 非空时直接作为数值文案，覆盖 value/unit 格式化 */
-  @Prop valueText: string = '';
+  @Prop @Watch('onResultChange') valueText: string = '';
   /** tier 文案 */
-  @Prop tier: string = '';
+  @Prop @Watch('onResultChange') tier: string = '';
   /** tier 分级 class（getTierColor/getTierBgColor 入参） */
-  @Prop tierClass: string = '';
+  @Prop @Watch('onResultChange') tierClass: string = '';
   /** 脚注（通栏显示于数值下方） */
   @Prop footnote: string = '';
   /** 数值字号（默认 Hero 40；SCAI 等传 28） */
@@ -131,6 +131,9 @@ export struct ResultCard {
   titleMedium: boolean = true;
   /** 结果卡底部外边距（默认 0） */
   bottomMargin: number = 0;
+
+  // 监听当前弹出的计算器 id（非空表示有计算器在 bindSheet 中被弹出）
+  @StorageProp('activeCalcId') activeCalcId: string = '';
 
   private mainText(): string {
     if (this.value === null) {
@@ -151,6 +154,24 @@ export struct ResultCard {
 
   private isEmpty(): boolean {
     return this.value === null && this.valueText === '';
+  }
+
+  // 当结果变化且当前有计算器在 bindSheet 中被弹出时，把结果写入 AppStorage
+  onResultChange(): void {
+    if (this.activeCalcId.length === 0) {
+      return;
+    }
+    const hasValue = this.value !== null || this.valueText.length > 0;
+    const isIncomplete = this.tier === '请填写必填项';
+    if (hasValue && !isIncomplete) {
+      AppStorage.setOrCreate('sheetCalcId', this.activeCalcId);
+      AppStorage.setOrCreate('sheetCalcValue', this.value);
+      AppStorage.setOrCreate('sheetCalcUnit', this.unit);
+      AppStorage.setOrCreate('sheetCalcTier', this.tier);
+      AppStorage.setOrCreate('sheetCalcTierClass', this.tierClass);
+      AppStorage.setOrCreate('sheetCalcValueText', this.valueText);
+      AppStorage.setOrCreate('sheetCalcTimestamp', Date.now());
+    }
   }
 
   private tierIcon(): Resource {
@@ -187,10 +208,9 @@ export struct ResultCard {
       .margin({ bottom: this.bottomMargin })
       .animation({ duration: 200, curve: Curve.EaseOut });
     } else {
-      Row() {
+      Flex({ alignItems: ItemAlign.Stretch }) {
         Row()
           .width(4)
-          .height('100%')
           .backgroundColor(this.tierClass.length > 0 ? getTierColor(this.tierClass) : Color.Transparent)
           .borderRadius({ topLeft: 12, bottomLeft: 12 })
 

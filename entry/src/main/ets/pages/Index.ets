@@ -103,6 +103,8 @@ struct Index {
   @State sidebarCollapsed: boolean = true;
   @State currentTab: number = 0;
   @State calcMode: string = 'normal';
+  @State showCalcSheet: boolean = false;
+  @State sheetCalcId: string = '';
   @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
   @State kbNavDepth: number = 0;
   @State kbBackAction: number = 0;
@@ -448,6 +450,11 @@ struct Index {
           onPickCalc: (id: string) => {
             this.calcMode = 'normal';
             PreferencesService.getInstance().saveCalcMode('normal');
+          },
+          onCalculate: (id: string) => {
+            this.sheetCalcId = id;
+            AppStorage.setOrCreate('activeCalcId', id);
+            this.showCalcSheet = true;
           }
         })
           .layoutWeight(1);
@@ -456,13 +463,216 @@ struct Index {
       }
     }
     .width('100%')
-    .height('100%');
+    .height('100%')
+    .bindSheet($$this.showCalcSheet, this.CalcSheetBuilder(), {
+      height: SheetSize.LARGE,
+      dragBar: true,
+      showClose: true,
+      backgroundColor: AppColors.background,
+      onWillDismiss: (dismissAction: DismissSheetAction) => {
+        AppStorage.setOrCreate('activeCalcId', '');
+        dismissAction.dismiss();
+      }
+    });
   }
 
   @Builder
   RecognizeView() {
     AssistantPage({ currentCalc: $currentCalc, currentTab: $currentTab })
       .layoutWeight(1);
+  }
+
+  @Builder
+  CalcSheetBuilder() {
+    Column() {
+      Scroll() {
+        Column() {
+                if (this.sheetCalcId === 'crcl') {
+              CrClCalculator();
+            } else if (this.sheetCalcId === 'gfr') {
+              GfrCalculator();
+            } else if (this.sheetCalcId === 'map') {
+              MapCalculator();
+            } else if (this.sheetCalcId === 'sf') {
+              SfCalculator();
+            } else if (this.sheetCalcId === 'gcs') {
+              GcsCalculator();
+            } else if (this.sheetCalcId === 'news2') {
+              News2Calculator();
+            } else if (this.sheetCalcId === 'sofa') {
+              SofaCalculator();
+            } else if (this.sheetCalcId === 'pf') {
+              PfCalculator();
+            } else if (this.sheetCalcId === 'na') {
+              NaCalculator();
+            } else if (this.sheetCalcId === 'rox') {
+              RoxCalculator();
+            } else if (this.sheetCalcId === 'cag') {
+              CagCalculator();
+            } else if (this.sheetCalcId === 'chadsvasc') {
+              ChadsvascCalculator();
+            } else if (this.sheetCalcId === 'hasbled') {
+              HasbledCalculator();
+            } else if (this.sheetCalcId === 'curb65') {
+              Curb65Calculator();
+            } else if (this.sheetCalcId === 'sirs') {
+              SirsCalculator();
+            } else if (this.sheetCalcId === 'abcd2') {
+              Abcd2Calculator();
+            } else if (this.sheetCalcId === 'nihss') {
+              NihssCalculator();
+            } else if (this.sheetCalcId === 'rass') {
+              RassCalculator();
+            } else if (this.sheetCalcId === 'ich') {
+              IchCalculator();
+            } else if (this.sheetCalcId === 'hunthess') {
+              HuntHessCalculator();
+            } else if (this.sheetCalcId === 'wfns') {
+              WfnsCalculator();
+            } else if (this.sheetCalcId === 'fisher') {
+              FisherCalculator();
+            } else if (this.sheetCalcId === 'marshall') {
+              MarshallCalculator();
+            } else if (this.sheetCalcId === 'mehran') {
+              MehranCalculator();
+            } else if (this.sheetCalcId === 'timistemi') {
+              TimiStemiCalculator();
+            } else if (this.sheetCalcId === 'timinstemi') {
+              TimiNstemiCalculator();
+            } else if (this.sheetCalcId === 'wells') {
+              WellsCalculator();
+            } else if (this.sheetCalcId === 'childpugh') {
+              ChildPughCalculator();
+            } else if (this.sheetCalcId === 'kcc') {
+              KccCalculator();
+            } else if (this.sheetCalcId === 'nrs2002') {
+              Nrs2002Calculator();
+            } else if (this.sheetCalcId === 'apache2') {
+              Apache2Calculator();
+            } else if (this.sheetCalcId === 'clifc') {
+              ClifCCalculator();
+            } else if (this.sheetCalcId === 'aarc') {
+              AarcCalculator();
+            } else if (this.sheetCalcId === 'bg') {
+              BloodGasCalculator();
+            } else if (this.sheetCalcId === 'camicu') {
+              CamicuCalculator();
+            } else if (this.sheetCalcId === 'pesi') {
+              PesiCalculator();
+            } else if (this.sheetCalcId === 'scai') {
+              ScaiCalculator();
+            } else if (this.sheetCalcId === 'mnutric') {
+              MnutricCalculator();
+            } else if (this.sheetCalcId === 'fssicu') {
+              FssicuCalculator();
+            } else if (this.sheetCalcId === 'kdigo') {
+              KdigoCalculator();
+            } else if (this.sheetCalcId === 'vasopressor') {
+              VasopressorCalculator();
+            } else if (this.sheetCalcId === 'nadeficit') {
+              NaDeficitCalculator();
+            } else if (this.sheetCalcId === 'nacorrection') {
+              NaCorrectionRateCalculator();
+            } else if (this.sheetCalcId === 'shocki') {
+              ShockIndexCalculator();
+            } else if (this.sheetCalcId === 'qsofa') {
+              QsofaCalculator();
+            } else if (this.sheetCalcId === 'rts') {
+              RtsCalculator();
+            } else if (this.sheetCalcId === 'rsbi') {
+              RsbiCalculator();
+            } else if (this.sheetCalcId === 'hellp') {
+              HellpCalculator();
+            } else if (this.sheetCalcId === 'metab') {
+              MetabolicCalculator();
+            } else if (this.sheetCalcId === 'heart') {
+              HeartCalculator();
+            } else if (this.sheetCalcId === 'gbs') {
+              GbsCalculator();
+            } else if (this.sheetCalcId === 'bisap') {
+              BisapCalculator();
+            } else if (this.sheetCalcId === 'tls') {
+              TlsCalculator();
+            } else if (this.sheetCalcId === 'bwps') {
+              BwpsCalculator();
+            } else if (this.sheetCalcId === 'wellsdvt') {
+              WellsDvtCalculator();
+            } else if (this.sheetCalcId === 'cpis') {
+              CpisCalculator();
+            } else if (this.sheetCalcId === 'anc') {
+              AncMasccCalculator();
+            } else if (this.sheetCalcId === 'adhere') {
+              AdhereCalculator();
+            } else if (this.sheetCalcId === 'stess') {
+              StessCalculator();
+            } else if (this.sheetCalcId === 'rhabdo') {
+              McmahonCalculator();
+            } else if (this.sheetCalcId === 'isth') {
+              IsthCalculator();
+            } else if (this.sheetCalcId === 'plasmic') {
+              PlasmicCalculator();
+            } else if (this.sheetCalcId === 'vis') {
+              VisCalculator();
+            } else if (this.sheetCalcId === 'lacclear') {
+              LactateClearanceCalculator();
+            } else if (this.sheetCalcId === 'abc2') {
+              Abc2Calculator();
+            } else if (this.sheetCalcId === 'ddage') {
+              DdimerAgeCalculator();
+            } else if (this.sheetCalcId === 'addrs') {
+              AddrsCalculator();
+            } else if (this.sheetCalcId === 'asthma') {
+              AsthmaCalculator();
+            } else if (this.sheetCalcId === 'goldabe') {
+              GoldAbeCalculator();
+            } else if (this.sheetCalcId === 'bap65') {
+              Bap65Calculator();
+            } else if (this.sheetCalcId === 'gcsp') {
+              GcsPCalculator();
+            } else if (this.sheetCalcId === 'four') {
+              FourCalculator();
+            } else if (this.sheetCalcId === 'crusade') {
+              CrusadeCalculator();
+            } else if (this.sheetCalcId === 'rems') {
+              RemsCalculator();
+            } else if (this.sheetCalcId === 'aspir') {
+              AspirationCalculator();
+            } else if (this.sheetCalcId === 'parkland') {
+              ParklandCalculator();
+            } else if (this.sheetCalcId === 'qtc') {
+              QtcCalculator();
+            } else if (this.sheetCalcId === 'alvarado') {
+              AlvaradoCalculator();
+            } else if (this.sheetCalcId === 'ripasa') {
+              RipasaCalculator();
+            } else if (this.sheetCalcId === 'csf') {
+              CsfCalculator();
+            } else if (this.sheetCalcId === 'padua') {
+              PaduaCalculator();
+            } else if (this.sheetCalcId === 'mme') {
+              MmeCalculator();
+            } else if (this.sheetCalcId === 'steroid') {
+              SteroidCalculator();
+            } else if (this.sheetCalcId === 'fick') {
+              FickCalculator();
+            } else if (this.sheetCalcId === 'apap') {
+              ApapCalculator();
+            } else if (this.sheetCalcId === 'sgarbossa') {
+              SgarbossaCalculator();
+            } else if (this.sheetCalcId === 'duke') {
+              DukeCalculator();
+            } else if (this.sheetCalcId === 'awol') {
+              AwolCalculator();
+            }
+        }
+        .width('100%')
+        .padding({ left: 16, right: 16, top: 8, bottom: 16 })
+      }
+      .width('100%')
+      .layoutWeight(1)
+    }
+    .width('100%')
+    .height('100%')
   }
 
   @Builder

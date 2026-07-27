@@ -13,6 +13,7 @@ export struct LlmDialog {
   @Link currentCalc: string;
   @Prop pageMode: boolean = false;
   onPickCalc: (calcId: string) => void = () => {};
+  onCalculate: (calcId: string) => void = () => {};
   @State isOpen: boolean = false;
   @State userInput: string = '';
   @State errorMsg: string = '';
@@ -41,6 +42,56 @@ export struct LlmDialog {
   @State llmModels: LlmModelConfig[] = [];
   @State selectedLlmId: string = '';
 
+  // 计算结果回填（监听 bindSheet 中计算器的结果）
+  @StorageProp('activeCalcId') activeCalcId: string = '';
+  @Watch('onSheetResultChange') @StorageLink('sheetCalcTimestamp') sheetCalcTimestamp: number = 0;
+  @StorageProp('sheetCalcId') sheetCalcId: string = '';
+  @StorageProp('sheetCalcValue') sheetCalcValue: number | null = null;
+  @StorageProp('sheetCalcTier') sheetCalcTier: string = '';
+  @StorageProp('sheetCalcTierClass') sheetCalcTierClass: string = '';
+  @StorageProp('sheetCalcValueText') sheetCalcValueText: string = '';
+  // 存储每个推荐计算器的计算结果 { calcId: "value||tier||tierClass||valueText" }
+  @State calcResults: Record<string, string> = {};
+
+  // bindSheet 中计算器结果变化时，存到 calcResults
+  onSheetResultChange(): void {
+    const calcId = this.sheetCalcId;
+    if (calcId.length > 0 && this.sheetCalcTimestamp > 0) {
+      const valStr = this.sheetCalcValueText.length > 0
+        ? this.sheetCalcValueText
+        : (this.sheetCalcValue !== null ? String(this.sheetCalcValue) : '');
+      const data = `${valStr}||${this.sheetCalcTier}||${this.sheetCalcTierClass}||${this.sheetCalcValueText}`;
+      const newResults: Record<string, string> = {};
+      const keys = Object.keys(this.calcResults);
+      for (let i = 0; i < keys.length; i++) {
+        newResults[keys[i]] = this.calcResults[keys[i]];
+      }
+      newResults[calcId] = data;
+      this.calcResults = newResults;
+    }
+  }
+
+  // 获取某计算器的计算结果，返回 {value, tier, tierClass} 或 null
+  getCalcResult(calcId: string): string {
+    const data = this.calcResults[calcId];
+    return data ? data : '';
+  }
+
+  // 格式化计算结果为紧凑显示文本
+  formatCalcResult(calcId: string): string {
+    const data = this.getCalcResult(calcId);
+    if (data.length === 0) {
+      return '';
+    }
+    const parts = data.split('||');
+    const valStr = parts[0] || '';
+    const tier = parts[1] || '';
+    if (valStr.length > 0 && tier.length > 0) {
+      return `${valStr} · ${tier}`;
+    }
+    return valStr.length > 0 ? valStr : tier;
+  }
+
   aboutToAppear() {
     if (!this.pageMode) {
       try {
@@ -51,9 +102,14 @@ export struct LlmDialog {
       }
     }
     this.refreshLlmModels();
-    // pageMode 下恢复上次推荐结果（组件可能因切换模式被重建）
     if (this.pageMode) {
       this.restoreState();
+    }
+  }
+
+  aboutToDisappear() {
+    if (this.pageMode) {
+      this.saveState();
     }
   }
 
@@ -72,6 +128,12 @@ export struct LlmDialog {
         recsData.push(`${this.results[i].id}||${this.results[i].name}||${this.results[i].reason}`);
       }
       AppStorage.setOrCreate('llmRecResults', recsData);
+      const crData: string[] = [];
+      const crKeys = Object.keys(this.calcResults);
+      for (let i = 0; i < crKeys.length; i++) {
+        crData.push(`${crKeys[i]}||${this.calcResults[crKeys[i]]}`);
+      }
+      AppStorage.setOrCreate('llmRecCalcResults', crData);
     } catch (e) {
     }
   }
@@ -94,6 +156,17 @@ export struct LlmDialog {
             }
           }
           this.results = recs;
+        }
+        const crData = AppStorage.get<string[]>('llmRecCalcResults');
+        if (crData && crData.length > 0) {
+          const cr: Record<string, string> = {};
+          for (let i = 0; i < crData.length; i++) {
+            const sepIdx = crData[i].indexOf('||');
+            if (sepIdx > 0) {
+              cr[crData[i].substring(0, sepIdx)] = crData[i].substring(sepIdx + 2);
+            }
+          }
+          this.calcResults = cr;
         }
       }
     } catch (e) {
@@ -393,6 +466,7 @@ export struct LlmDialog {
     this.r2Selections = {};
     this.r2SingleSelections = {};
     this.chatMessages = [];
+    this.calcResults = {};
   }
 
   // 重置：清空所有内容回到最初形态
@@ -1016,14 +1090,46 @@ export struct LlmDialog {
       }
       .width('100%')
 
+      // 计算按钮 + 结果显示框
+      Row() {
+        Button(this.getCalcResult(rec.id).length > 0 ? '重算' : '计算')
+          .fontSize(11)
+          .fontColor(this.getCalcResult(rec.id).length > 0 ? AppColors.primary : AppColors.onPrimary)
+          .backgroundColor(this.getCalcResult(rec.id).length > 0 ? AppColors.fillBeige : AppColors.primary)
+          .borderRadius(6)
+          .height(28)
+          .padding({ left: 10, right: 10 })
+          .onClick(() => {
+            this.onCalculate(rec.id);
+          })
+        Row() {
+          Text(this.getCalcResult(rec.id).length > 0 ? this.formatCalcResult(rec.id) : '')
+            .fontSize(12)
+            .fontWeight(FontWeight.Medium)
+            .fontColor(AppColors.primary)
+            .layoutWeight(1)
+        }
+        .height(28)
+        .layoutWeight(1)
+        .padding({ left: 10, right: 10 })
+        .margin({ left: 6 })
+        .backgroundColor(AppColors.card)
+        .borderRadius(6)
+        .border({ width: 1, color: AppColors.border })
+        .alignItems(VerticalAlign.Center)
+      }
+      .width('100%')
+      .margin({ top: 6 })
+
+      // 跳转按钮（保留，去常规模式看完整计算器）
       Button('跳转 ->')
         .fontSize(12)
         .fontColor(AppColors.primary)
         .backgroundColor(AppColors.fillBeige)
         .borderRadius(6)
-        .height(30)
+        .height(28)
         .width('100%')
-        .margin({ top: 6 })
+        .margin({ top: 4 })
         .onClick(() => {
           this.jumpToCalculator(rec.id);
         })
