@@ -1,201 +1,137 @@
-# MedCalc 鸿蒙版
+# MedCalc 重症智算
 
-ICU/重症医学智能计算器套件，基于ArkUI开发，支持鸿蒙手机直接安装使用。
+ICU/重症医学智能计算器套件，基于 ArkTS + ArkUI 开发，支持鸿蒙手机直接安装使用。
 
-## 已实现计算器（41个）
+## 已实现计算器（88 个）
 
-### 呼吸
-1. **血气分析** — 动脉+静脉血气, 酸碱失衡/氧合/缺氧分型/呼吸商/危急值
-2. **S/F 氧合指数** — SpO₂/FiO₂, ARDS 床旁筛查
-3. **P/F 氧合指数** — PaO₂/FiO₂, ARDS 诊断金标准 (Berlin 2012)
-4. **ROX 指数** — 预测 HFNC 失败风险
-5. **CURB-65** — 社区获得性肺炎严重度
-6. **Marshall 评分** — ARDS严重程度评分
-7. **PESI / sPESI** — 肺栓塞30天死亡风险, 总分0-300+ 五级
+| 分类 | 数量 | 代表计算器 |
+|------|------|-----------|
+| 心血管 | 21 | MAP、CHADS₂-VASc、HAS-BLED、TIMI STEMI/NSTEMI、Wells PE/DVT、SCAI 休克、Mehran、HEART、CRUSADE、Sgarbossa、QTc、Fick、VIS、ADD-RS 等 |
+| 综合 | 19 | APACHE II、Marshall MODS、RTS、Glasgow-Blatchford、BISAP/Ranson、BWPS、ISTH DIC、PLASMIC、Parkland、Alvarado、RIPASA、MME、激素等效、APAP 列线图、REMS、乳酸清除率等 |
+| 神经 | 15 | GCS、GCS-P、FOUR、NIHSS、ABCD²、ICH、Hunt-Hess、WFNS、Fisher、RASS、CAM-ICU、STESS、ABC/2、CSF 解读、AWOL 谵妄等 |
+| 呼吸 | 11 | 血气分析、S/F、P/F、ROX、CURB-65、RSBI、哮喘分级、GOLD ABE、BAP-65、CPIS、吸入性肺炎等 |
+| 感染 | 7 | SOFA、qSOFA、SIRS、NEWS2、ANC/MASCC、Duke IE 等 |
+| 代谢 | 6 | 校正 AG、校正血钠、钠缺失量、钠纠正速率、校正钙/渗透间隙、Cairo-Bishop TLS 等 |
+| 肝 | 5 | Child-Pugh、KCC、CLIF-C ACLF、AARC、HELLP 等 |
+| 肾 | 4 | CrCl、eGFR(CKD-EPI 2021)、KDIGO AKI、McMahon 横纹肌溶解 |
 
-### 心血管
-8. **MAP（平均动脉压）** — SSC 2021 复苏目标 ≥ 65 mmHg
-9. **CHADS₂-VASc** — 房颤卒中风险, 总分 0-9 (ESC 2020)
-10. **HAS-BLED** — 房颤抗凝出血风险, 总分 0-9 (ESC 2020)
-11. **Mehran 评分** — 造影剂肾病风险预测
-12. **TIMI STEMI** — STEMI 30天死亡风险, 8项, 0-14分
-13. **TIMI NSTEMI** — NSTEMI 14天复合终点, 总分 0-7
-14. **WELLS PE** — 肺栓塞临床概率, 总分 0-12.5
-15. **SCAI 休克分级** — 心源性休克 A-E 五级 (SCAI 2019/2024)
-16. **升压药剂量换算** — mL/h ↔ μg/kg/min, 垂体后叶素支持 U/min
-
-### 肾
-17. **CrCl（肌酐清除率）** — Cockcroft-Gault 公式
-18. **eGFR（CKD-EPI 2021）** — Race-free 公式, CKD 分期依据
-19. **KDIGO AKI 分期** — 急性肾损伤 1-3 期 (KDIGO 2012)
-
-### 肝
-20. **Child-Pugh 分级** — 肝硬化肝功能储备评估
-21. **KCC 标准** — 急性肝衰竭紧急肝移植决策
-22. **CLIF-C ACLF** — 慢加急性肝衰竭死亡率 (Jalan 2014)
-23. **AARC 评分** — 慢加急性肝衰竭严重度 (APASL 2017)
-
-### 神经
-24. **GCS 评分** — 3 维度 (E/V/M), 总分 3-15
-25. **NIHSS 卒中** — 11 项, 总分 0-42
-26. **ABCD² 评分** — TIA 后短期卒中风险, 0-7 分
-27. **RASS 镇静** — Richmond Agitation-Sedation Scale
-28. **ICH 评分** — 脑出血预后评分, 总分 0-6
-29. **Hunt-Hess 分级** — SAH 手术风险分层
-30. **WFNS 分级** — SAH 临床分级
-31. **Fisher 分级** — SAH 蛛血 CT 分级
-32. **CAM-ICU** — ICU 谵妄筛查 (Ely 2001)
-
-### 代谢
-33. **白蛋白校准 AG** — 低白蛋白时 AG 假性正常, 必须校正
-34. **校正血钠** — 高血糖时假性低钠校正
-
-### 感染
-35. **SOFA 评分** — 6 系统器官功能评估, Sepsis-3 诊断标准
-36. **NEWS2 评分** — 英国国家早期预警评分 2 (RCP 2017)
-37. **SIRS 评分** — 4 项, ≥2 = 阳性 (1991 ACCP/SCCM)
-
-### 综合
-38. **APACHE II** — 急性生理与慢性健康评分, 总分 0-71 (Knaus 1985)
-39. **NRS-2002** — 住院患者营养风险, 总分 0-7, ≥ 3 有营养风险
-40. **mNUTRIC** — ICU 营养风险评分, 0-9, ≥5 高营养风险 (Heyland 2011)
-41. **FSS-ICU** — ICU 功能状态评分, 5项各0-7, 总分 0-35 (Thrush 2012)
+全部 88 个计算器均已与 MDCalc 逐条交叉验证，详见 `docs/mdcalc-validation-report.md`。
 
 ## 核心功能
 
 ### 计算器
-- 侧边栏抽屉导航（适配移动端，默认折叠）
+- 侧边栏抽屉导航（8 分类，分类色图标，适配移动端）
 - 收藏功能（快速访问常用计算器）
 - 实时计算（输入即算，无多余操作）
 - 结果分级（正常/轻度/中度/重度，颜色区分）
-- 临床说明（每个结果附带临床意义解释）
+- 临床说明（每个结果附带临床意义解释与文献来源）
 - 数据持久化（收藏、上次使用计算器自动保存）
-- PEEP 可选影响 ARDS 诊断（P/F 计算器）
-- 血气分析 6 步判断法 + H-H 一致性校验 + 危急值提示
-- RASS/Hunt-Hess/WFNS/Fisher 完整参考表
-- 单位换算（SOFA FiO₂模式、Child-Pugh 胆红素/白蛋白单位、KCC 单位等）
+- 单位换算（Cr µmol↔mg/dL、Bili µmol↔mg/dL、BUN mmol↔mg/dL、FiO₂ %↔小数等）
+- 每个计算器底部附医学文献来源卡片（`docs/calculator-references.md`）
+
+### AI 推荐计算器（多轮问诊）
+- **第一轮：固定问卷**（代码控制，零幻觉）— 4 个维度一次性展示：
+  - 主诉（多选）：胸痛/呼吸困难/意识障碍/休克/下肢肿痛/腹痛恶心呕吐/出血/发热/电解质紊乱/药物中毒/无明显症状
+  - 器官系统（多选）：心血管/呼吸/神经/肝肾/消化腹部/血液凝血/感染脓毒症/代谢电解质
+  - 场景（单选）：ICU/急诊/病房/门诊
+  - 急慢性（单选）：急性发作/慢性持续/不确定
+- **第二轮：LLM 自由追问**（基于 R1 信息，LLM 自行设计 1-2 个追问问题进一步定位，支持多选）
+- 推荐结果含 summary 说明框（为什么推荐这几个）+ 每条 reason 推荐理由
+- 同类计算器（如 bg/sf/pf 氧合指数、crcl/gfr 肾功能）整体推荐不强行区分
+- 弹窗内可切换 LLM 模型（显示供应商-名称，bindMenu 下拉）
+- 三层 JSON 防护解析（`</think>` 截断 + 代码围栏 + 花括号兜底），兼容带思考过程的模型
 
 ### AI 助手
-- LLM 驱动计算器推荐（0-4 个推荐）
-- 上传检查报告图片 → AI 自动提取结构化数据
-- 上传 PDF 多页报告 → 逐页识别提取
-- 文本输入 → AI 提取医疗参数
+- LLM 驱动数据提取（上传检查报告图片/PDF/文本 -> AI 自动提取结构化数据）
+- PDF 多页报告逐页识别提取
 - 缺失字段补充表单（选择型字段按钮组 + 数值型输入框）
+- 72 个计算器接入助手自动计算管线（callEngine 统一路由 + 单位换算）
 - 图片编辑器（马赛克脱敏笔刷 + 放大镜 + 撤销 + base64 导出）
 
 ### 患者病历系统
 - 患者列表（搜索 + 新建 + 删除确认）
-- 每位患者独立数据空间（RDB 5表持久化）
+- 每位患者独立数据空间（RDB 持久化）
 - 结构化数据管理（按领域分组：血气/电解质/肝肾功能/凝血/感染指标/血流动力学/呼吸参数/神经/代谢/营养）
 - 数据时间线（点击数据卡片查看历史变化趋势）
 - 手动录入（搜索字段 + 数值输入）
-- 全量预警引擎（41 个计算器自动实时计算，仅显示异常项）
-- ICU 诊断引擎（58 条规则 / 9 分类：感染/呼吸/肾脏/心血管/神经/血液/肝/代谢/营养）
-- LLM 诊断确认（新匹配诊断自动发 LLM 确认/排除/待定，降低误报）
+- 全量预警引擎（88 个计算器自动实时计算，仅显示异常项）
+- ICU 诊断引擎（规则匹配 + LLM 确认，降低误报）
 - 预览卡 UI（预警/诊断/结构化数据/上传记录 四卡概览，点击展开全屏详情）
-- 侧滑返回拦截（详情页 → 患者页 → 列表页，不误退出应用）
+
+### 知识库
+- 本地 Markdown 知识库（rawfile 打包，离线可用）
+- SQLite FTS4 全文检索（icu zh_CN 分词）
+- 向量嵌入混合检索（EmbeddingService）
+- Markdown 渲染器（表格横滑/callout/标注/TOC 跳转）
+- 收录《实用重症医学》+ 多份国际指南/专家共识
 
 ## 项目结构
 
 ```
 entry/src/main/ets/
 ├── pages/
-│   └── Index.ets                        # 4-Tab 主框架 + onBackPress
+│   └── Index.ets                        # 5-Tab 主框架
 ├── components/
-│   ├── Sidebar.ets                      # 抽屉侧边栏
-│   ├── LlmDialog.ets                    # AI推荐计算器对话框 + FAB
-│   ├── AssistantPage.ets                # AI助手（上传/提取/补充）+ bindSheet 编辑器
+│   ├── Sidebar.ets                      # 抽屉侧边栏（分类色导航）
+│   ├── LlmDialog.ets                    # AI推荐计算器（多轮问诊+LLM切换+FAB）
+│   ├── AssistantPage.ets                # AI助手（上传/提取/补充）
 │   ├── ImageEditor.ets                  # 图片脱敏编辑器
 │   ├── PatientListPage.ets              # 患者列表
-│   ├── PatientDetailPage.ets            # 患者详情（导航入口+状态分发）
-│   ├── KnowledgeSearchPage.ets          # 知识库搜索+阅读器+TOC跳转
+│   ├── PatientDetailPage.ets            # 患者详情
+│   ├── KnowledgeSearchPage.ets          # 知识库搜索+阅读器
 │   ├── SettingsPage.ets                 # 设置页（LLM配置+外观切换）
-│   ├── calculators/                     # 41个计算器UI组件
-│   │   └── widgets/CalcWidgets.ets      # 共享组件(CalcCard/InputRow/ResultCard/OptionChip/ResetButton)
+│   ├── CalcKbLinks.ets                  # 计算器文献来源卡片
+│   ├── calculators/                     # 88个计算器UI组件
+│   │   └── widgets/CalcWidgets.ets      # 共享组件(CalcCard/InputRow/ResultCard/OptionChip)
 │   └── patient/                         # 患者详情子组件
-│       ├── DetailPageViews.ets          # 预警/诊断/数据/记录4详情页
-│       ├── PatientDetailDialogs.ets     # 对话框(数据录入/时间编辑/时间线)
-│       ├── PatientDetailUtils.ets       # 纯函数(格式化/翻译/色映射)
-│       ├── KbMarkdownRenderer.ets       # Markdown渲染(表格横滑/callout/标注)
-│       └── ...
-├── engine/                              # 计算引擎
-│   ├── CalcEngine.ets                   # CalcResult + tier分级 + 工具函数
-│   └── ...（各计算器引擎）
+├── engine/                              # 计算引擎（纯逻辑，无UI）
+│   ├── CalcEngine.ets                   # CalcResult + emptyResult + tier分级
+│   └── ...（37个引擎文件，含Batch聚合）
 ├── model/
-│   ├── CalculatorRegistry.ets           # 计算器注册表
-│   ├── Patient.ets                      # 患者数据模型（6类 + DATA_DOMAINS）
-│   └── DiagnosisRules.ets               # 诊断规则库（58条 + 工厂函数）
+│   ├── CalculatorRegistry.ets           # 88个计算器注册表 + 8分类
+│   ├── Patient.ets                      # 患者数据模型
+│   └── DiagnosisRules.ets               # 诊断规则库
 ├── utils/
-│   ├── AppColors.ets                    # 40+ 语义色彩 token（$r 双主题）
-│   ├── AppDimens.ets                    # 高频尺寸 token
-│   ├── ConfirmDialog.ets                # showConfirmDialog 工具函数
-│   └── KbMarkdownParser.ets            # Markdown 解析+TOC提取+callout/标注
+│   ├── AppColors.ets                    # 语义色彩 token（$r 双主题）
+│   ├── AppDimens.ets                    # 尺寸 token
+│   ├── ConfirmDialog.ets                # 确认弹窗
+│   └── KbMarkdownParser.ets            # Markdown 解析+TOC提取
 └── services/
-    ├── PreferencesService.ets           # 偏好持久化
-    ├── LlmService.ets                   # LLM API（文本+视觉）
-    ├── AssistantService.ets             # 助手逻辑（DATA_FIELDS+提取prompt+解析）
-    ├── PatientRepository.ets            # RDB层（5表+CRUD）
-    ├── PatientService.ets               # 业务逻辑（预警+诊断+数据合并）
+    ├── PreferencesService.ets           # 偏好持久化（收藏/LLM配置/主题）
+    ├── LlmService.ets                   # LLM API（多轮问诊+视觉+extractJsonPayload）
+    ├── AssistantService.ets             # 助手逻辑（提取+解析+引擎路由）
+    ├── PatientRepository.ets            # RDB 层
+    ├── PatientService.ets               # 业务逻辑（预警+诊断）
     ├── DiagnosisEngine.ets              # 诊断匹配引擎
-    └── ImageStore.ets                   # 图片存取（沙箱filesDir）
+    ├── KnowledgeService.ets             # 知识库全文检索
+    ├── EmbeddingService.ets             # 向量嵌入
+    └── ImageStore.ets                   # 图片存取
 ```
 
 ## 技术栈
 
 - **开发语言**：ArkTS
-- **UI框架**：ArkUI 声明式开发
-- **最低API**：API 12（HarmonyOS 5.0）
-- **数据存储**：RDB（relationalStore）+ 应用沙箱文件
-- **IDE**：DevEco Studio 5.0+
+- **UI 框架**：ArkUI 声明式开发
+- **目标 SDK**：HarmonyOS 6.0.2 (API 22)
+- **数据存储**：RDB（relationalStore）+ Preferences + 应用沙箱文件
+- **LLM 兼容**：OpenAI 兼容 / Anthropic / MiniMax（按域名自动识别）
+- **IDE**：DevEco Studio
 
-## 已完成 UI 优化
+## LLM 配置
 
-### 第一轮（23 项）
-- 计算器空态模式（必填未录完不出分）
-- 底部 Tab 品牌绿选中态
-- 内部 DSL/字段 key 泄露清理
-- 数值输入框全量数字键盘 + 安全区适配
-- 知识库视觉统一品牌色系
-- 患者详情严重度竖条+文字标签统一
-- 热区/字号/对比度达标（选项 44、输入 48、辅助≥12pt）
-- 41 个计算器重置按钮
-- 色彩 token 化（3300+ 处→AppColors 40+ 语义 token，仅 11 行白名单）
-- 共享组件（CalcCard/InputRow/ResultCard/OptionChip，38/40 计算器迁移）
-- PatientDetailPage 拆分（4166→1367 行，67%↓）
-- 暗黑模式（color.json 双主题 + 设置页切换）
-- 返回栈重构（Navigation+NavPathStack 替代 AppStorage flag）
-- 字符串资源化（string.json 3→~250 条）
-- 代码风格（87 处 300+ 字符长行折行）
+在设置页配置 LLM API：
+- 支持 OpenAI 兼容接口（`/v1/chat/completions`）
+- 支持 Anthropic（`/v1/messages`，x-api-key 鉴权）
+- 支持 MiniMax（`/v1/text/chatcompletion_v2`，按域名自动识别）
+- API Key 本地存储，不上云
+- 可配置多个模型，AI 推荐弹窗内可直接切换
 
-### 第二轮（20 项）
-- H1 暗色对比度修复（onPrimary 全局替换 36 处）
-- H2 升压药换算旧结果作废（参数变更后需重新计算）
-- H3 不可逆操作加确认弹窗（清会话/删诊断/重诊断/编辑器取消+清空）
-- H4 死按钮删除
-- H5 知识库 TOC 点击跳转（解析期盖章+条件包裹方案，平滑动画）
-- H6 TimelineDialog 溢出滚动
-- M1 ResultCard 数值色随 tier 联动
-- M2 重置按钮热区扩大（30 计算器→ResetButton 组件）
-- M3 Vasopressor mL/h 20pt+换算方向标注
-- M5 分节标题 warning 橙→textSecondary（54 处）
-- M9 KB 阅读器返回键拦截
-- M11 FAB 拖动屏幕边界钳制
-- M13 bindSheet 关闭确认（onWillDismiss）
-- M15 表格横向滚动
-- M6 ResultCard 辅助字号降档（tier 12/单位 10/footnote 12）
-- L3 死代码删除（extractToc/getCategoryLabel）
-- L4/L5/L6 小瑕疵修复
+## 质量保障
 
-## 待完善功能
-
-- [ ] 检查时间（examTime）提取与显示，替代上传时间
-- [x] 主题切换（暗色模式）
-- [x] 返回栈重构（Navigation 替代 AppStorage flag）
-- [ ] PDF导出
-- [ ] 诊断编辑/覆盖/治疗建议
-- [ ] LLM 推荐结果带原因
-
-**当前进度：41/41 计算器 + 患者病历系统 + ICU诊断引擎 + 两轮 UI 优化（43 项）**
+- 88 个计算器与 MDCalc 两轮交叉验证（`docs/mdcalc-validation-report.md`）
+- 每个计算器的原始文献（PMID + 期刊 + 年份）和 MDCalc 链接可溯源（`docs/calculator-references.md`）
+- 全量编译验证（devecocli build BUILD SUCCESSFUL）
+- 零 `any` 类型滥用
 
 ## 许可
 
