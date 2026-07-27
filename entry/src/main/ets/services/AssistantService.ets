@@ -35,7 +35,7 @@ import { calculateAsthma, calculateGoldAbe, calculateBap65, calculateGcsP, calcu
 import { calculateParkland, calculateQtc, calculateAlvarado, calculateRipasa, calculateCsf, calculatePadua, calculateFick } from '../engine/Batch3aCalculators';
 import { calculateSgarbossa, calculateDuke, calculateAwol } from '../engine/Batch3bCalculators';
 import { CALCULATORS } from '../model/CalculatorRegistry';
-import { ApiServiceConfig, sendVisionRequest } from './LlmService';
+import { ApiServiceConfig, sendVisionRequest, extractJsonPayload } from './LlmService';
 
 export interface DataFieldSpec {
   key: string;
@@ -934,26 +934,9 @@ export class AssistantService {
   private parseExtractionResponse(content: string): ExtractionResult {
     const result = new ExtractionResult();
 
-    let jsonStr = content.trim();
-
-    const thinkEndTag = '</think>';
-    const thinkEndIdx = jsonStr.indexOf(thinkEndTag);
-    if (thinkEndIdx !== -1) {
-      jsonStr = jsonStr.substring(thinkEndIdx + thinkEndTag.length).trim();
-    }
-
-    const fenceMatch = jsonStr.indexOf('```');
-    if (fenceMatch !== -1) {
-      const afterFence = jsonStr.substring(fenceMatch + 3);
-      const fenceEnd = afterFence.indexOf('```');
-      if (fenceEnd !== -1) {
-        jsonStr = afterFence.substring(0, fenceEnd).trim();
-      } else {
-        jsonStr = afterFence.trim();
-      }
-      if (jsonStr.startsWith('json')) {
-        jsonStr = jsonStr.substring(4).trim();
-      }
+    const jsonStr = extractJsonPayload(content);
+    if (jsonStr.length === 0) {
+      return this.fallbackParse(content);
     }
 
     try {
