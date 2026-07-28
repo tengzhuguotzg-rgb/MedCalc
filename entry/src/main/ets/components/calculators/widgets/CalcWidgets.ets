@@ -164,12 +164,14 @@ export struct ResultCard {
     const hasValue = this.value !== null || this.valueText.length > 0;
     const isIncomplete = this.tier === '请填写必填项';
     if (hasValue && !isIncomplete) {
+      // 写入格式化后的显示文本，而非原始浮点数
+      const displayText = this.valueText.length > 0 ? this.valueText : this.mainText();
       AppStorage.setOrCreate('sheetCalcId', this.activeCalcId);
       AppStorage.setOrCreate('sheetCalcValue', this.value);
       AppStorage.setOrCreate('sheetCalcUnit', this.unit);
       AppStorage.setOrCreate('sheetCalcTier', this.tier);
       AppStorage.setOrCreate('sheetCalcTierClass', this.tierClass);
-      AppStorage.setOrCreate('sheetCalcValueText', this.valueText);
+      AppStorage.setOrCreate('sheetCalcValueText', displayText);
       AppStorage.setOrCreate('sheetCalcTimestamp', Date.now());
     }
   }

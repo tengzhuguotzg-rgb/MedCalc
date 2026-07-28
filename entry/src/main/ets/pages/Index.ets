@@ -105,6 +105,8 @@ struct Index {
   @State calcMode: string = 'normal';
   @State showCalcSheet: boolean = false;
   @State sheetCalcId: string = '';
+  @StorageProp('sheetCalcValue') sheetCalcValue: number | null = null;
+  @StorageProp('sheetCalcValueText') sheetCalcValueText: string = '';
   @Watch('onKbNavigate') @StorageProp('kbNavigatePath') kbNavigatePath: string = '';
   @State kbNavDepth: number = 0;
   @State kbBackAction: number = 0;
@@ -670,9 +672,31 @@ struct Index {
       }
       .width('100%')
       .layoutWeight(1)
+
+      // 底部固定按钮：有结果时"完成，查看结果"，无结果时灰化提示
+      Button() {
+        Text(this.hasSheetResult() ? '✅ 完成，查看结果 ->' : '填写参数后自动出分')
+          .fontSize(14)
+          .fontColor(this.hasSheetResult() ? AppColors.onPrimary : AppColors.textSecondary)
+      }
+      .width('100%')
+      .height(48)
+      .backgroundColor(this.hasSheetResult() ? AppColors.primary : AppColors.fillNeutral)
+      .borderRadius(8)
+      .margin({ top: 8 })
+      .enabled(this.hasSheetResult())
+      .onClick(() => {
+        this.showCalcSheet = false;
+      })
     }
     .width('100%')
     .height('100%')
+    .padding({ left: 16, right: 16, bottom: 8 })
+  }
+
+  // 判断 sheet 中计算器是否有结果
+  hasSheetResult(): boolean {
+    return this.sheetCalcValue !== null || this.sheetCalcValueText.length > 0;
   }
 
   @Builder

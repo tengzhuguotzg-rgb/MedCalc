@@ -57,9 +57,10 @@ export struct LlmDialog {
   onSheetResultChange(): void {
     const calcId = this.sheetCalcId;
     if (calcId.length > 0 && this.sheetCalcTimestamp > 0) {
+      // 优先用格式化后的 valueText，fallback 对 value 做一位小数格式化
       const valStr = this.sheetCalcValueText.length > 0
         ? this.sheetCalcValueText
-        : (this.sheetCalcValue !== null ? String(this.sheetCalcValue) : '');
+        : (this.sheetCalcValue !== null ? this.sheetCalcValue.toFixed(1) : '');
       const data = `${valStr}||${this.sheetCalcTier}||${this.sheetCalcTierClass}||${this.sheetCalcValueText}`;
       const newResults: Record<string, string> = {};
       const keys = Object.keys(this.calcResults);
