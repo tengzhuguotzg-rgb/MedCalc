@@ -11,6 +11,18 @@ import { sendVisionRequest, ApiServiceConfig } from './LlmService';
 import { PreferencesService } from './PreferencesService';
 import { extractTitle, extractSourceInfo, extractWikilinks } from '../utils/KbTextUtils';
 import { SearchResult, KnowledgePage, ExpandedQueryResult, SmartSearchResult, SmartSearchOutcome, VerifyResult } from './KnowledgeTypes';
+import {
+  buildKnowledgeVerifySystemPrompt,
+  buildKnowledgeVerifyPrompt,
+} from './prompts/KnowledgeVerifyPrompt';
+import {
+  buildKnowledgeExpandSystemPrompt,
+  buildKnowledgeExpandPrompt,
+  buildKnowledgeExpandR2SystemPrompt,
+  buildKnowledgeExpandR2Prompt,
+  buildKnowledgeExpandV2SystemPrompt,
+  buildKnowledgeExpandV2Prompt,
+} from './prompts/KnowledgeExpandPrompt';
 
 const DOMAIN: number = 0x0001;
 const TAG: string = 'MedCalc';
@@ -277,12 +289,8 @@ export class KnowledgeSearch {
     if (ftsResults.length > 0) {
       hilog.info(DOMAIN, TAG, 'smartSearch: R1 all rejected, trying R2 with feedback');
       const feedbackTopics = ftsResults.slice(0, 10).map((sr: SearchResult): string => sr.path.split('/')[0]).join('、');
-      const r2Prompt = '你是重症医学文献检索专家。用户正在ICU知识库中搜索文献，但第一轮搜索未找到相关结果。' +
-        '请根据反馈信息重新生成3-6个扩展检索词。只输出扩展词，每行一个，不要编号，不要解释。' +
-        '扩展词必须是ICU指南和教材中常见的疾病名/综合征名/治疗主题名，不要用学术分类名。' +
-        '例如不要输出"阴离子间隙""高氯性酸中毒"，而应输出"脓毒症""休克""CRRT"等临床词。';
-      const r2Feedback = '查询词"' + query + '"的第一轮搜索结果全部不相关。搜索结果主题包括：' +
-        feedbackTopics + '。请重新生成3-6个更精准的扩展检索词，覆盖不同方向。';
+      const r2Prompt = buildKnowledgeExpandR2SystemPrompt();
+      const r2Feedback = buildKnowledgeExpandR2Prompt(query, feedbackTopics);
       try {
         const r2Terms = await this.expandQueryWithLlm(query, config, r2Prompt, r2Feedback);
         if (r2Terms.length > 0) {
@@ -335,16 +343,10 @@ export class KnowledgeSearch {
         docList.push((i + 1).toString() + '. [' + results[i].path + ']' +
           (summary.length > 0 ? ' 摘要：' + summary : ' ' + results[i].title));
       }
-      const systemPrompt = '你是重症医学知识库搜索验收专家。给定用户查询词和候选文章列表（含文章摘要），对每篇文章判断其与查询词的相关程度。' +
-        '\n\n三级判断标准：' +
-        'Y(全文相关)：文章的主要主题就是查询词所述的疾病/综合征，或者是该疾病的核心病因疾病/核心治疗措施。' +
-        '例如：查询"Ⅰ型呼吸衰竭"，ARDS是核心病因→Y，氧疗/机械通气/无创通气/高流量氧疗是核心治疗→Y，肺炎/肺栓塞是常见病因→Y。' +
-        '查询"代谢性酸中毒"，乳酸酸中毒/酮症酸中毒是核心病因→Y，碳酸氢钠/血液透析/CRRT是核心治疗→Y，糖尿病/休克/急性肾损伤是常见病因→Y。' +
-        'P(片段相关)：文章主要主题不是查询词疾病，但文章中有独立段落专门讨论查询词疾病的诊断、监测、治疗等临床内容。' +
-        'N(不相关)：文章仅顺带提及查询词。' +
-        '\n\n关键：宁可多判Y/P，不要漏掉临床相关文献。' +
-        '\n\n输出格式：每篇文章输出"编号:Y"或"编号:P"或"编号:N"，用逗号分隔。不要解释。';
-      const userText = '查询词：' + query + (description.length > 0 ? '（' + description + '）' : '') + '\n候选文章：\n' + docList.join('\n');
+      const systemPrompt = buildKnowledgeVerifySystemPrompt();
+      // 调用方负责把 description 拼到 query 之后（如 "query（description）"），再交给 prompt 模块。
+      const queryForLlm = description.length > 0 ? query + '（' + description + '）' : query;
+      const userText = buildKnowledgeVerifyPrompt(queryForLlm, docList.join('\n'));
       hilog.info(DOMAIN, TAG, 'verifyResults: query=' + query + ' candidates=' + results.length.toString() + ' userTextFirst500=' + userText.substring(0, 500));
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
       hilog.info(DOMAIN, TAG, 'verifyResults: raw response=' + response);
@@ -416,24 +418,11 @@ export class KnowledgeSearch {
   async expandQueryV2(query: string, config: ApiServiceConfig, description: string = ''): Promise<ExpandedQueryResult> {
     const result = new ExpandedQueryResult();
     try {
-      const systemPrompt =
-        '你是重症医学文献检索专家。用户会给你一个ICU临床诊断，你需要为该诊断在知识库中查找相关文献。' +
-        '\n\n知识库目录分两类，用|分隔列出：' +
-        '\n【中文疾病目录】' + KnowledgeSearch.KB_DIRECTORIES.split('|').filter((d: string): boolean => d.match(/^[0-9]{4}\s/) === null).join('|') +
-        '\n【英文指南目录（非常重要，含最新国际指南，务必优先选择）】' + KnowledgeSearch.KB_DIRECTORIES.split('|').filter((d: string): boolean => d.match(/^[0-9]{4}\s/) !== null).join('|') +
-        '\n\n请按以下5行格式输出（严格5行）：' +
-        '\n第1行：搜索词 — 该诊断的同义词/缩写/别名（3-8个），用空格分隔' +
-        '\n第2行：相关目录名 — 从上面目录列表中选择与该诊断直接或间接相关的目录（5-15个），用|分隔，英文指南目录优先' +
-        '\n第3行：病因相关词 — 该诊断的常见病因/诱因/关联疾病的临床检索词（3-8个），用空格分隔' +
-        '\n第4行：治疗相关词 — 该诊断的关键治疗措施/药物/操作的临床检索词（3-8个），用空格分隔' +
-        '\n第5行：监测相关词 — 该诊断的核心监测指标/评估方法/评分工具（3-8个），用空格分隔' +
-        '\n\n输出规则：' +
-        '\n1. 搜索词必须是ICU指南和教材中常见的临床术语，不要用学术分类名' +
-        '\n2. 目录名必须完全照搬上面的目录列表原文（含空格、年份等），不要拆分、缩写或改写目录名，用|分隔多个目录' +
-        '\n3. 英文指南目录与中文疾病目录可能指向同一批文件（如"急性呼吸窘迫综合征"和"2023 ESICM ARDS Guidelines"都含ARDS内容），两者都要选' +
-        '\n4. 病因/治疗/监测词应覆盖该诊断在ICU场景下的主要临床维度' +
-        '\n5. 严格只输出5行，不要编号，不要解释，不要输出原诊断名';
-      const userText = '诊断名称：' + query + (description.length > 0 ? '\n诊断依据：' + description : '');
+      const dirs = KnowledgeSearch.KB_DIRECTORIES.split('|');
+      const chineseDirs = dirs.filter((d: string): boolean => d.match(/^[0-9]{4}\s/) === null).join('|');
+      const englishDirs = dirs.filter((d: string): boolean => d.match(/^[0-9]{4}\s/) !== null).join('|');
+      const systemPrompt = buildKnowledgeExpandV2SystemPrompt(chineseDirs, englishDirs);
+      const userText = buildKnowledgeExpandV2Prompt(query, description);
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
       hilog.info(DOMAIN, TAG, 'expandQueryV2 raw response for "' + query + '": ' + response);
       const lines = response.split('\n');
@@ -644,22 +633,8 @@ export class KnowledgeSearch {
   private async expandQueryWithLlm(query: string, config: ApiServiceConfig, description: string = '',
     customSystemPrompt: string = '', customUserText: string = ''): Promise<string[]> {
     try {
-      const systemPrompt = customSystemPrompt.length > 0 ? customSystemPrompt :
-        '你是重症医学文献检索专家。用户会给你一个临床诊断及其诊断依据，用于在ICU知识库中搜索相关文献。' +
-        '请基于诊断名称和诊断依据，生成3-6个扩展检索词。' +
-        '\n\n扩展策略（按优先级）：' +
-        '1. 同义词/缩写：如"脓毒症"→"败血症""Sepsis"，"AKI"→"急性肾损伤""急性肾衰竭""ARF"' +
-        '2. 核心病因/并发症：如"Ⅰ型呼吸衰竭"→"ARDS""急性呼吸窘迫综合征"，"感染性休克"→"脓毒症休克"' +
-        '3. 关键治疗/监测主题：如"呼吸衰竭"→"氧疗""机械通气""呼吸支持"，"AKI"→"肾替代治疗""CRRT"' +
-        '4. 常见关联疾病：如"Ⅱ型呼吸衰竭"→"COPD""慢性阻塞性肺病"' +
-        '\n只输出扩展词，每行一个，不要编号，不要解释，不要输出原查询词。' +
-        '\n\n重要约束：' +
-        '1. 扩展词应该是ICU指南和教材中常见的疾病名/综合征名/治疗主题名，而不是学术分类名或病理生理描述。' +
-        '2. 例如"代谢性酸中毒"不要扩展为"阴离子间隙""高氯性酸中毒""乳酸性酸中毒"等学术分类，' +
-        '而应扩展为"脓毒症""休克""急性肾损伤""液体复苏""碳酸氢钠""CRRT"等能直接匹配到文献主题的临床词。' +
-        '3. 严格只输出3-6个词，不要输出超过6个。';
-      const userText = customUserText.length > 0 ? customUserText :
-        '诊断名称：' + query + (description.length > 0 ? '\n诊断标准：' + description : '');
+      const systemPrompt = customSystemPrompt.length > 0 ? customSystemPrompt : buildKnowledgeExpandSystemPrompt();
+      const userText = customUserText.length > 0 ? customUserText : buildKnowledgeExpandPrompt(query, description);
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
       hilog.info(DOMAIN, TAG, 'expandQuery raw response for "' + query + '": ' + response);
       const lines = response.split(/[\n,，、；;]+/);
