@@ -4,6 +4,10 @@ import { preferences } from '@kit.ArkData';
 import { ApiServiceConfig } from './LlmService';
 import { PreferencesService } from './PreferencesService';
 
+// 预留：指南动态更新的向量检索底座，未接入主链路
+// 底层存储层（DDL、BLOB 序列化、storeEmbedding）已完整，检索/生成/建索引方法为 stub
+// 未来诊断 Tab 的"实体->指南章节"映射关系更新时可能需要向量检索能力
+
 const DOMAIN: number = 0xF000;
 const TAG: string = 'EmbeddingService';
 
