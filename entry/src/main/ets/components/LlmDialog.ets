@@ -416,6 +416,7 @@ export struct LlmDialog {
         this.phase = 'result';
         if (resp.recommendations.length === 0) {
           this.errorMsg = '未找到匹配的计算器，请尝试更详细的描述';
+          setTimeout(() => { this.errorMsg = ''; }, 3000);
         }
       } else if (resp.questions.length > 0) {
         // LLM 返回追问
@@ -430,11 +431,13 @@ export struct LlmDialog {
         this.phase = 'result';
         if (resp.recommendations.length === 0) {
           this.errorMsg = '未找到匹配的计算器，请尝试更详细的描述';
+          setTimeout(() => { this.errorMsg = ''; }, 3000);
         }
       }
     }).catch((_err: Error) => {
       this.phase = 'questionnaire';
       this.errorMsg = '请求失败，请重试';
+      setTimeout(() => { this.errorMsg = ''; }, 3000);
     });
   }
 
@@ -528,7 +531,7 @@ export struct LlmDialog {
         Column()
           .width('100%')
           .height('100%')
-          .backgroundColor('rgba(0,0,0,0.4)')
+          .backgroundColor(AppColors.overlay)
           .onClick(() => {
             this.closeDialog();
           })

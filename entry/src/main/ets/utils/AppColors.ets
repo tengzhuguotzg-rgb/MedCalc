@@ -118,6 +118,10 @@ export class AppColors {
   /** 分组隔线：primary 低透明度独立 token */
   static readonly groupLine: ResourceStr = $r('app.color.app_color_group_line');
 
+  // ─── 遮罩 ───
+  /** 全局遮罩·半透明黑：弹层、抽屉、侧栏遮罩统一色（rgba(0,0,0,0.4)） */
+  static readonly overlay: ResourceStr = $r('app.color.app_color_overlay');
+
   // ─── 计算器分类色（方向A·分类色相） ───
   /** 呼吸 */
   static readonly catResp: ResourceStr = $r('app.color.app_color_cat_resp');

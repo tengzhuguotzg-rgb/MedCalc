@@ -283,7 +283,7 @@ export struct PatientListPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .justifyContent(FlexAlign.Center)
   }
 
@@ -340,7 +340,7 @@ export struct PatientListPage {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .justifyContent(FlexAlign.Center)
   }
 }

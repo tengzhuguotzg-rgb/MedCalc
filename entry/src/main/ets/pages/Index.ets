@@ -172,7 +172,7 @@ struct Index {
         Column()
           .width('100%')
           .height('100%')
-          .backgroundColor('rgba(0,0,0,0.35)')
+          .backgroundColor(AppColors.overlay)
           .onClick(() => { this.sidebarCollapsed = true; });
 
         Sidebar({
@@ -206,7 +206,7 @@ struct Index {
     .width('100%')
     .height('100%')
     .bindSheet($$this.showCalcSheet, this.CalcSheetBuilder(), {
-      height: SheetSize.LARGE,
+      height: this.getSheetHeight(),
       dragBar: true,
       showClose: true,
       backgroundColor: AppColors.background,
@@ -215,6 +215,14 @@ struct Index {
         dismissAction.dismiss();
       }
     });
+  }
+
+  // 根据计算器 ID 判断复杂度，决定 bindSheet 高度
+  // 简单计算器（≤4 个输入项）用 MEDIUM；复杂计算器（>4 个输入项）用 LARGE
+  getSheetHeight(): SheetSize {
+    // 已知简单计算器列表：常见 ≤4 个输入项的常用量表
+    const simpleCalcs: string[] = ['map', 'shocki', 'qtc', 'na', 'crcl', 'gfr', 'rsbi', 'qsofa', 'sirs'];
+    return simpleCalcs.indexOf(this.sheetCalcId) >= 0 ? SheetSize.MEDIUM : SheetSize.LARGE;
   }
 
   @Builder

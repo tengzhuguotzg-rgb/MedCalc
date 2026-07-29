@@ -122,7 +122,7 @@ export struct TimelineDialog {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .justifyContent(FlexAlign.Center)
   }
 }
@@ -198,7 +198,7 @@ export struct ExamTimeEditorDialog {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .justifyContent(FlexAlign.Center)
   }
 }
@@ -341,7 +341,7 @@ export struct ManualInputDialog {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .justifyContent(FlexAlign.Center)
   }
 }
@@ -401,7 +401,7 @@ export struct DeleteConfirmDialog {
     }
     .width('100%')
     .height('100%')
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .justifyContent(FlexAlign.Center)
   }
 }
@@ -486,7 +486,7 @@ export struct AddDiagnosisDialog {
     .width('100%')
     .height('100%')
     .justifyContent(FlexAlign.Center)
-    .backgroundColor('rgba(0,0,0,0.4)')
+    .backgroundColor(AppColors.overlay)
     .onClick(() => {
       this.showAddDiagnosis = false;
     })
