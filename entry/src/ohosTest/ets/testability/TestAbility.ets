@@ -1,31 +1,36 @@
-import hilog from '@ohos.hilog';
-import TestRunner from '../test/TestRunner';
+import { AbilityConstant, UIAbility, Want } from '@kit.AbilityKit';
+import { hilog } from '@kit.PerformanceAnalysisKit';
+import { window } from '@kit.ArkUI';
 
-export default class TestAbility {
-  onCreate(want: object, launchParam: object) {
+export default class TestAbility extends UIAbility {
+  onCreate(want: Want, launchParam: AbilityConstant.LaunchParam): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onCreate');
   }
-  onDestroy() {
+
+  onDestroy(): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onDestroy');
   }
-  onWindowStageCreate(windowStage: object) {
+
+  onWindowStageCreate(windowStage: window.WindowStage): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onWindowStageCreate');
-    const stage = windowStage as Record<string, Function>;
-    stage.loadContent('pages/TestPage', (err: Error, data: object) => {
-      if (err.message) {
+    windowStage.loadContent('pages/TestPage', (err) => {
+      if (err.code) {
         hilog.error(0x0000, 'testTag', 'Failed to load content. %{public}s', JSON.stringify(err));
         return;
       }
-      hilog.info(0x0000, 'testTag', 'Loaded content. %{public}s', JSON.stringify(data));
+      hilog.info(0x0000, 'testTag', '%{public}s', 'Succeeded in loading content.');
     });
   }
-  onWindowStageDestroy() {
+
+  onWindowStageDestroy(): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onWindowStageDestroy');
   }
-  onForeground() {
+
+  onForeground(): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onForeground');
   }
-  onBackground() {
+
+  onBackground(): void {
     hilog.info(0x0000, 'testTag', '%{public}s', 'TestAbility onBackground');
   }
 }

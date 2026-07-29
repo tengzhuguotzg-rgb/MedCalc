@@ -1194,12 +1194,21 @@ export function resolveCalcId(alias: string): string | undefined {
   return result !== undefined ? result : aliasToCalcIdCache.get(alias.toLowerCase());
 }
 
+// 输入规格缓存：calcId -> CalcInputSpec，与别名缓存同模式，O(1) 查询
+let inputSpecCache: Map<string, CalcInputSpec> | null = null;
+
+function buildInputSpecCache(): Map<string, CalcInputSpec> {
+  const cache: Map<string, CalcInputSpec> = new Map<string, CalcInputSpec>();
+  for (let i = 0; i < CALC_INPUT_SPECS.length; i++) {
+    cache.set(CALC_INPUT_SPECS[i].calcId, CALC_INPUT_SPECS[i]);
+  }
+  return cache;
+}
+
 // 获取计算器的输入规格
 export function getCalcInputSpec(calcId: string): CalcInputSpec | undefined {
-  for (let i = 0; i < CALC_INPUT_SPECS.length; i++) {
-    if (CALC_INPUT_SPECS[i].calcId === calcId) {
-      return CALC_INPUT_SPECS[i];
-    }
+  if (inputSpecCache === null) {
+    inputSpecCache = buildInputSpecCache();
   }
-  return undefined;
+  return inputSpecCache.get(calcId);
 }
