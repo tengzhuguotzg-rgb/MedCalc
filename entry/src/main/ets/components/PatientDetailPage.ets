@@ -10,6 +10,7 @@ import {
   MarkdownLine,
   parseKbMarkdown
 } from '../utils/KbMarkdownParser';
+import { excerptContent } from '../utils/KbTextUtils';
 import { DIAGNOSIS_RULES, DiagnosisRule } from '../model/DiagnosisRules';
 
 import { photoAccessHelper } from '@kit.MediaLibraryKit';
@@ -814,7 +815,7 @@ export struct PatientDetailPage {
          let content = page.content;
          if (content.length > MAX_GUIDELINE_PER_FILE) {
            const kw: string[] = diag.name.split(/\s+/);
-           content = this.kbService.excerptContent(content, kw, MAX_GUIDELINE_PER_FILE);
+           content = excerptContent(content, kw, MAX_GUIDELINE_PER_FILE);
          }
          contextText += '### [指南] ' + path + '\n---\n' + content + '\n\n';
          guidelineChars += content.length;
@@ -833,9 +834,9 @@ export struct PatientDetailPage {
       if (page !== null && page.content.trim().length >= 100) {
         let content: string;
         if (perChapterBudget > 0 && page.content.length > perChapterBudget) {
-          content = this.kbService.excerptContent(page.content, queryKeywords, perChapterBudget);
+          content = excerptContent(page.content, queryKeywords, perChapterBudget);
         } else if (perChapterBudget <= 0) {
-          content = this.kbService.excerptContent(page.content, queryKeywords, 5000);
+          content = excerptContent(page.content, queryKeywords, 5000);
         } else {
           content = page.content;
         }
@@ -848,7 +849,7 @@ export struct PatientDetailPage {
       const page = await this.kbService.getPage(path);
       if (page !== null && page.content.trim().length >= 100) {
         const excerptBudget = Math.min(15000, partialBudget > 0 ? Math.floor(partialBudget / kbData.partialPaths.length) : 5000);
-        const content = this.kbService.excerptContent(page.content, queryKeywords, excerptBudget);
+        const content = excerptContent(page.content, queryKeywords, excerptBudget);
         if (content.length >= 100) {
           contextText += '### [片段参考·主题非' + diag.name + '] ' + path + '\n---\n' + content + '\n\n';
         }
@@ -1027,7 +1028,7 @@ export struct PatientDetailPage {
         for (const path of newPaths) {
           const page = await this.kbService.getPage(path);
           if (page !== null && page.content.trim().length >= 100) {
-            const excerpt = this.kbService.excerptContent(page.content, queryKeywords, 6000);
+            const excerpt = excerptContent(page.content, queryKeywords, 6000);
             suppContext += '### [补搜] ' + path + '\n---\n' + excerpt + '\n\n';
           }
         }

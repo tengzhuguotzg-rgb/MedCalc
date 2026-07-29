@@ -3,6 +3,7 @@ import {
   MarkdownLine, TocEntry, CalloutStyle, AnnotationBadge,
   parseKbMarkdown, extractTocFromLines, stripMarkdownInline, stripTableMarkdown, getCalloutStyle, getAnnotationBadgeInfo, parseTableCells
 } from '../utils/KbMarkdownParser';
+import { extractWikilinks } from '../utils/KbTextUtils';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
 import { componentUtils } from '@kit.ArkUI';
@@ -162,7 +163,7 @@ export struct KnowledgeSearchPage {
       this.readingPage = page;
       this.readingPath = path;
       this.markdownLines = parseKbMarkdown(page.content);
-      this.wikilinks = this.kbService.extractWikilinks(page.content);
+      this.wikilinks = extractWikilinks(page.content);
       this.tocEntries = extractTocFromLines(this.markdownLines);
       this.showToc = false;
       this.relatedPages = await this.kbService.getRelatedPages(path, 5);
@@ -179,7 +180,7 @@ export struct KnowledgeSearchPage {
           this.readingPage = p;
           this.readingPath = prevPath;
           this.markdownLines = parseKbMarkdown(p.content);
-          this.wikilinks = this.kbService.extractWikilinks(p.content);
+          this.wikilinks = extractWikilinks(p.content);
           this.tocEntries = extractTocFromLines(this.markdownLines);
         }
       });
