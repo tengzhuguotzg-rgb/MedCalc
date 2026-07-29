@@ -1,3 +1,5 @@
+import { CALC_ID_ALIASES, CALC_INPUT_SPECS, CalcInputSpec } from './FieldSchema';
+
 export interface Calculator {
   id: string;
   name: string;
@@ -1167,4 +1169,37 @@ export function getCalculatorById(id: string): Calculator | undefined {
 
 export function getCalculatorsByGroup(group: string): Calculator[] {
   return CALCULATORS.filter(calc => calc.group === group);
+}
+
+// === 派生查询函数（注册表作为唯一逻辑数据源，数据物理存储在 FieldSchema） ===
+
+// 反向 Map 缓存：alias -> calcId，启动时派生，O(1) 查询
+let aliasToCalcIdCache: Map<string, string> | null = null;
+
+function buildAliasCache(): Map<string, string> {
+  const cache = new Map<string, string>();
+  const keys = Object.keys(CALC_ID_ALIASES);
+  for (let i = 0; i < keys.length; i++) {
+    cache.set(keys[i], CALC_ID_ALIASES[keys[i]]);
+  }
+  return cache;
+}
+
+// 通过别名查找计算器 ID（LLM 输出归一化用）
+export function resolveCalcId(alias: string): string | undefined {
+  if (aliasToCalcIdCache === null) {
+    aliasToCalcIdCache = buildAliasCache();
+  }
+  const result = aliasToCalcIdCache.get(alias);
+  return result !== undefined ? result : aliasToCalcIdCache.get(alias.toLowerCase());
+}
+
+// 获取计算器的输入规格
+export function getCalcInputSpec(calcId: string): CalcInputSpec | undefined {
+  for (let i = 0; i < CALC_INPUT_SPECS.length; i++) {
+    if (CALC_INPUT_SPECS[i].calcId === calcId) {
+      return CALC_INPUT_SPECS[i];
+    }
+  }
+  return undefined;
 }
