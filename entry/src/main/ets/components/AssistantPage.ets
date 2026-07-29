@@ -13,6 +13,7 @@ import { hilog } from '@kit.PerformanceAnalysisKit';
 import { AppColors } from '../utils/AppColors';
 import { AppDimens } from '../utils/AppDimens';
 import { showConfirmDialog } from '../utils/ConfirmDialog';
+import { showToast } from '../utils/ToastUtil';
 
 class DataDisplayItem {
   key: string = '';
@@ -113,6 +114,8 @@ export struct AssistantPage {
       this.messages = this.assistantService.getMessages();
       this.imageBase64 = '';
       this.imageMime = '';
+      const fieldCount = Object.keys(msg.extractedData).length;
+      showToast('已提取 ' + fieldCount + ' 项数据');
       this.scroller.scrollToIndex(this.messages.length - 1);
     }).catch((err: Error) => {
       this.loading = false;

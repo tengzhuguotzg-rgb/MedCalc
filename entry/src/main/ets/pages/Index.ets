@@ -11,6 +11,7 @@ import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 import { AppColors } from '../utils/AppColors';
 import { TabIndex, CalcMode } from '../model/Enums';
+import { showToast } from '../utils/ToastUtil';
 
 @Entry
 @Component
@@ -258,6 +259,7 @@ struct Index {
       .enabled(this.hasSheetResult())
       .onClick(() => {
         this.showCalcSheet = false;
+        showToast('结果已保存');
       })
     }
     .width('100%')

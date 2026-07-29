@@ -6,6 +6,7 @@ import {
   LlmModelConfig
 } from '../services/LlmService';
 import { AppColors } from '../utils/AppColors';
+import { showToast } from '../utils/ToastUtil';
 import { display } from '@kit.ArkUI';
 
 @Component
@@ -444,6 +445,9 @@ export struct LlmDialog {
   jumpToCalculator(id: string): void {
     if (id) {
       this.currentCalc = id;
+      const calc = CALCULATORS.find((c): boolean => c.id === id);
+      const calcName = calc ? calc.name : id;
+      showToast('已切换到 ' + calcName);
       // pageMode 下保存推荐状态，切回来时恢复
       if (this.pageMode) {
         this.saveState();
@@ -486,6 +490,7 @@ export struct LlmDialog {
       } catch (e) {
       }
     }
+    showToast('已清空');
   }
 
   build() {

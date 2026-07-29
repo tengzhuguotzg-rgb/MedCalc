@@ -9,6 +9,8 @@ import { DiagnosisRule } from '../model/DiagnosisRules';
 import { sendVisionRequest, ApiServiceConfig } from './LlmService';
 import { PreferencesService } from './PreferencesService';
 import { hilog } from '@kit.PerformanceAnalysisKit';
+import { buildDiagnosisConfirmPrompt } from './prompts/DiagnosisConfirmPrompt';
+import { buildDiagnosisSuggestPrompt } from './prompts/DiagnosisSuggestPrompt';
 
 class CalcResultJson {
   value: number | null = null;
@@ -539,10 +541,7 @@ export class PatientService {
         }
       }
 
-      const systemPrompt = '你是一名ICU主治医师。根据患者数据和计算器结果，系统已自动匹配以下疑似诊断。' +
-        '请对每项诊断确认是否成立，并补充说明。' +
-        '严格按以下JSON格式回复，不要添加其他内容：' +
-        '{"confirmations":[{"ruleId":"id","status":"confirmed或rejected或uncertain","note":"补充说明"}]}';
+      const systemPrompt = buildDiagnosisConfirmPrompt(diagnosisList, dataSummary);
 
       const userText = '疑似诊断：\n' + diagnosisList + '\n患者数据：' + dataSummary +
         '\n计算器结果：' + alertSummary;
@@ -625,10 +624,7 @@ export class PatientService {
           alertSummary += alertKeys[i] + '=' + (r.value !== null ? r.value.toFixed(1) : 'null') + '(' + r.tier + ') ';
         }
       }
-      const systemPrompt = '你是一名ICU主治医师。根据患者数据和计算器结果，系统已自动匹配以下疑似诊断。' +
-        '请对每项诊断确认是否成立，并补充说明。' +
-        '严格按以下JSON格式回复，不要添加其他内容：' +
-        '{"confirmations":[{"ruleId":"id","status":"confirmed或rejected或uncertain","note":"补充说明"}]}';
+      const systemPrompt = buildDiagnosisConfirmPrompt(diagnosisList, dataSummary);
       const userText = '疑似诊断：\n' + diagnosisList + '\n患者数据：' + dataSummary +
         '\n计算器结果：' + alertSummary;
       const response = await sendVisionRequest(config, systemPrompt, userText, '', '');
@@ -699,11 +695,7 @@ export class PatientService {
         }
       }
 
-      const systemPrompt = '你是一名ICU主治医师。根据患者数据，系统未能完全匹配任何确定性诊断规则。' +
-        '请分析患者数据，给出最可能的诊断提示（最多5个）。' +
-        '每个提示说明：1)诊断名 2)可能性(高/中/低) 3)已有支持数据 4)还需要什么检查来确认。' +
-        '注意：仅给出提示，不做确诊。' +
-        '严格按JSON格式回复：{"suggestions":[{"name":"诊断名","category":"感染|呼吸|肾脏|心血管|神经|血液|肝|代谢|营养","likelihood":"高|中|低","supportingData":"已有支持","missingChecks":"需要补充的检查"}]}';
+      const systemPrompt = buildDiagnosisSuggestPrompt(dataSummary);
 
       const userText = '患者数据：' + dataSummary + '\n计算器结果：' + alertSummary;
 

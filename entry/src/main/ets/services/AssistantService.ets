@@ -5,6 +5,7 @@ import { ApiServiceConfig, sendVisionRequest, extractJsonPayload } from './LlmSe
 
 
 import { DataFieldSpec, CalcInputSpec, DATA_FIELDS, CALC_ID_ALIASES, FIELD_KEY_ALIASES, CALC_INPUT_SPECS, normalizeFieldKey, normalizeForSearch } from '../model/FieldSchema';
+import { buildExtractionPrompt } from './prompts/CalcExtractionPrompt';
 
 // Re-export: 保持下游 import 路径不变（PatientService / PatientDetailPage 等仍从 AssistantService 导入）
 export { DataFieldSpec, CalcInputSpec };
@@ -90,7 +91,7 @@ export class AssistantService {
     userMsg.text = text;
     this.messages = [...this.messages, userMsg];
 
-    const systemPrompt = this.buildExtractionPrompt();
+    const systemPrompt = buildExtractionPrompt();
     const hasImage = imageBase64.length > 0 && imageMime.length > 0;
     const userContent = text.length > 0 ? text : '请从这张医学检查报告中提取所有可识别的医疗数据参数';
 
@@ -193,49 +194,7 @@ export class AssistantService {
   }
 
   getExtractionPrompt(): string {
-    return this.buildExtractionPrompt();
-  }
-
-  private buildExtractionPrompt(): string {
-    let prompt = '你是医学数据提取助手。从用户文字描述或医学检查报告图片中提取所有可识别的医疗参数数值，判断哪些计算器可用。\n';
-    prompt += '## 重要规则\n';
-    prompt += '- 如果输入是医学检查报告图片（如血气分析、生化检验、血常规等），仔细识别图片中每一项指标及其数值，尽可能多地提取，不要遗漏\n';
-    prompt += '- 提取的字段键名必须使用下方列表中准确的 field_key，不要自行翻译或缩写\n';
-    prompt += '- 特别注意：PaO2的字段键名是pao2(不是po2)，PaCO2的键名是paco2(不是pco2)，SpO2的键名是spo2(不是sao2)\n';
-    prompt += '- 数值和单位要按字段定义转换（如肌酐mg/dL需标注crUnit为mgdl，FiO2百分比需转换为小数如40%→0.4并标注fio2Mode为pct）\n';
-    prompt += '- 图片中明确标注的数值均可提取，不需要用户逐项提及\n';
-    prompt += '- **只提取图片中明确可见/标注的数值，不要推断、猜测或补全任何未标注的参数**（如FiO2未标注则不提取fio2字段，不要推断为0.21或其他值）\n';
-    prompt += '- **报告上的检查日期和时间也必须提取**，分别放入reportDate和reportTime字段，格式：reportDate为YYYY-MM-DD（如2025-01-15），reportTime为HH:MM（如14:30）。如果只有日期没有时间，reportTime留空；如果都没有则两个字段都不填\n\n';
-    prompt += '## 可提取字段\n';
-    for (const f of DATA_FIELDS) {
-      let line = f.key + ': ' + f.label + '(' + f.unit + ')';
-      if (f.type === 'select' && f.options) {
-        line += ' 选项:' + f.options.join('/');
-      }
-      if (f.normalRange) {
-        line += ' 参考:' + f.normalRange;
-      }
-      prompt += line + '\n';
-    }
-    prompt += '\n## 计算器ID列表（matched数组必须使用以下准确的calcId！）\n';
-    prompt += '注：这些是系统中定义的计算器ID，matched中只能使用这些ID，不要使用拼音、英文翻译或缩写。\n';
-    for (const spec of CALC_INPUT_SPECS) {
-      const calc = CALCULATORS.find(c => c.id === spec.calcId);
-      if (calc) {
-        prompt += spec.calcId + '(' + calc.name + '): 必填[' + spec.requiredFields.join(',') + ']';
-        if (spec.optionalFields.length > 0) {
-          prompt += ' 可选[' + spec.optionalFields.join(',') + ']';
-        }
-        prompt += '\n';
-      }
-    }
-    prompt += '\n常见别名对应关系（请勿使用别名，统一用左侧calcId）：\n';
-    prompt += 'pf-ratio(氧合指数)→pf, anion-gap(阴离子间隙)→cag, blood-gas(血气分析)→bg, corrected-calcium(校正钙)→系统中无独立计算器, osmolal-gap(渗透压间隙)→系统中无独立计算器\n';
-    prompt += '\n## 输出格式\n';
-    prompt += '严格输出JSON，不要输出任何其他文字：\n';
-    prompt += '{"extracted":{"field_key":"value",...},"matched":["calcId1","calcId2",...]}\n';
-    prompt += '规则：1.从文字或图片中尽可能多提取明确可识别的数值 2.数值统一为数字字符串单位按字段定义 3.sex字段用male/female 4.布尔字段用0/1 5.matched列出所有至少有1个必填字段的计算器按相关度排序，必须使用上面列表中准确的calcId 6.如确实无法提取任何医疗数据返回{"extracted":{},"matched":[]}\n';
-    return prompt;
+    return buildExtractionPrompt();
   }
 
   private parseExtractionResponse(content: string): ExtractionResult {
