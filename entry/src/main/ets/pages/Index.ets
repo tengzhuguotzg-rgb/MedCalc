@@ -10,6 +10,7 @@ import { CalcKbLinks } from '../components/CalcKbLinks';
 import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 import { AppColors } from '../utils/AppColors';
+import { TabIndex, CalcMode } from '../model/Enums';
 
 @Entry
 @Component
@@ -17,8 +18,8 @@ struct Index {
   @State currentCalc: string = 'crcl';
   @State favorites: string[] = [];
   @State sidebarCollapsed: boolean = true;
-  @State currentTab: number = 0;
-  @State calcMode: string = 'normal';
+  @State currentTab: TabIndex = TabIndex.Calculator;
+  @State calcMode: CalcMode = CalcMode.Normal;
   @State showCalcSheet: boolean = false;
   @State sheetCalcId: string = '';
   @StorageProp('sheetCalcValue') sheetCalcValue: number | null = null;
@@ -34,17 +35,17 @@ struct Index {
     const prefsService = PreferencesService.getInstance();
     this.favorites = prefsService.getFavorites();
     this.currentCalc = prefsService.getLastCalculator();
-    this.calcMode = prefsService.getCalcMode();
+    this.calcMode = prefsService.getCalcMode() as CalcMode;
   }
 
   onKbNavigate() {
     if (this.kbNavigatePath.length > 0) {
-      this.currentTab = 2;
+      this.currentTab = TabIndex.Knowledge;
     }
   }
 
   onBackPress(): boolean | void {
-    if (this.currentTab === 2 && this.kbNavDepth > 0) {
+    if (this.currentTab === TabIndex.Knowledge && this.kbNavDepth > 0) {
       this.kbBackAction++;
       return true;
     }
@@ -62,7 +63,7 @@ struct Index {
       TabContent() {
         this.CalcModeView();
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_calculator'), 0))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_calculator'), TabIndex.Calculator))
 
       TabContent() {
         Navigation(this.patientStack) {
@@ -71,7 +72,7 @@ struct Index {
         .hideTitleBar(true)
         .navDestination(this.PatientRouteMap)
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_patient'), 1))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_patient'), TabIndex.Patient))
 
       TabContent() {
         Navigation(this.kbStack) {
@@ -82,12 +83,12 @@ struct Index {
         }
         .hideTitleBar(true)
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_knowledge'), 2))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_knowledge'), TabIndex.Knowledge))
 
       TabContent() {
         SettingsPage();
       }
-      .tabBar(this.TabBarBuilder($r('app.string.tab_settings'), 3))
+      .tabBar(this.TabBarBuilder($r('app.string.tab_settings'), TabIndex.Settings))
     }
     .barBackgroundColor(AppColors.card)
     .barMode(BarMode.Fixed)
@@ -148,7 +149,7 @@ struct Index {
     Column() {
       this.Topbar();
 
-      if (this.calcMode === 'normal') {
+      if (this.calcMode === CalcMode.Normal) {
         Stack({ alignContent: Alignment.Start }) {
           Column() {
             Scroll() {
@@ -183,13 +184,13 @@ struct Index {
     }
     .width('100%')
     .layoutWeight(1);
-      } else if (this.calcMode === 'recommend') {
+      } else if (this.calcMode === CalcMode.Recommend) {
         LlmDialog({
           currentCalc: $currentCalc,
           pageMode: true,
           onPickCalc: (id: string) => {
-            this.calcMode = 'normal';
-            PreferencesService.getInstance().saveCalcMode('normal');
+            this.calcMode = CalcMode.Normal;
+            PreferencesService.getInstance().saveCalcMode(CalcMode.Normal);
           },
           onCalculate: (id: string) => {
             this.sheetCalcId = id;
@@ -198,7 +199,7 @@ struct Index {
           }
         })
           .layoutWeight(1);
-      } else if (this.calcMode === 'recognize') {
+      } else if (this.calcMode === CalcMode.Recognize) {
         this.RecognizeView();
       }
     }
@@ -271,18 +272,18 @@ struct Index {
       .width(44)
       .height(44)
       .backgroundColor('transparent')
-      .enabled(this.calcMode === 'normal')
+      .enabled(this.calcMode === CalcMode.Normal)
       .onClick(() => {
-        if (this.calcMode === 'normal') {
+        if (this.calcMode === CalcMode.Normal) {
           this.sidebarCollapsed = false;
         }
       });
 
       // 中：三模式分段切换
       Row({ space: 4 }) {
-        this.ModeButton('常规模式', 'normal');
-        this.ModeButton('LLM推荐', 'recommend');
-        this.ModeButton('LLM识别', 'recognize');
+        this.ModeButton('常规模式', CalcMode.Normal);
+        this.ModeButton('LLM推荐', CalcMode.Recommend);
+        this.ModeButton('LLM识别', CalcMode.Recognize);
       }
       .layoutWeight(1)
       .justifyContent(FlexAlign.Center)
@@ -300,7 +301,7 @@ struct Index {
   }
 
   @Builder
-  ModeButton(label: string, mode: string) {
+  ModeButton(label: string, mode: CalcMode) {
     Text(label)
       .fontSize(13)
       .padding({ left: 12, right: 12, top: 6, bottom: 6 })
