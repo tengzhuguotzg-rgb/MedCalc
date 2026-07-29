@@ -1,0 +1,12 @@
+{
+  "name": "entry_ohosTest",
+  "version": "1.0.0",
+  "description": "MedCalc engine unit tests",
+  "main": "",
+  "author": "",
+  "license": "",
+  "dependencies": {},
+  "devDependencies": {
+    "@ohos/hypium": "1.0.25"
+  }
+}
