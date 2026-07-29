@@ -61,7 +61,7 @@ ICU/重症医学智能计算器套件，基于 ArkTS + ArkUI 开发，支持鸿�
 ### 知识库
 - 本地 Markdown 知识库（rawfile 打包，离线可用）
 - SQLite FTS4 全文检索（icu zh_CN 分词）
-- 向量嵌入混合检索（EmbeddingService）
+- 向量检索预留未启用（EmbeddingService 底层存储层已就绪，检索方法待接入）
 - Markdown 渲染器（表格横滑/callout/标注/TOC 跳转）
 - 收录《实用重症医学》+ 多份国际指南/专家共识
 
@@ -104,7 +104,7 @@ entry/src/main/ets/
     ├── PatientService.ets               # 业务逻辑（预警+诊断）
     ├── DiagnosisEngine.ets              # 诊断匹配引擎
     ├── KnowledgeService.ets             # 知识库全文检索
-    ├── EmbeddingService.ets             # 向量嵌入
+    ├── EmbeddingService.ets             # 向量检索底座（预留未启用）
     └── ImageStore.ets                   # 图片存取
 ```
 
