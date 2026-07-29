@@ -70,10 +70,11 @@ ICU/重症医学智能计算器套件，基于 ArkTS + ArkUI 开发，支持鸿�
 ```
 entry/src/main/ets/
 ├── pages/
-│   └── Index.ets                        # 5-Tab 主框架
+│   └── Index.ets                        # 4-Tab 主框架（三模式切换）
 ├── components/
+│   ├── CalcRouter.ets                   # 88路计算器统一路由（@Component + @Prop）
 │   ├── Sidebar.ets                      # 抽屉侧边栏（分类色导航）
-│   ├── LlmDialog.ets                    # AI推荐计算器（多轮问诊+LLM切换+FAB）
+│   ├── LlmDialog.ets                    # AI推荐计算器（多轮问诊+LLM切换+弹出计算器）
 │   ├── AssistantPage.ets                # AI助手（上传/提取/补充）
 │   ├── ImageEditor.ets                  # 图片脱敏编辑器
 │   ├── PatientListPage.ets              # 患者列表
@@ -88,24 +89,42 @@ entry/src/main/ets/
 │   ├── CalcEngine.ets                   # CalcResult + emptyResult + tier分级
 │   └── ...（37个引擎文件，含Batch聚合）
 ├── model/
-│   ├── CalculatorRegistry.ets           # 88个计算器注册表 + 8分类
+│   ├── CalculatorRegistry.ets           # 88个计算器注册表 + 派生查询函数
+│   ├── FieldSchema.ets                  # 字段定义+别名+输入规格（从AssistantService拆出）
+│   ├── Enums.ets                        # TabIndex + CalcMode 枚举
 │   ├── Patient.ets                      # 患者数据模型
 │   └── DiagnosisRules.ets               # 诊断规则库
 ├── utils/
-│   ├── AppColors.ets                    # 语义色彩 token（$r 双主题）
+│   ├── AppColors.ets                    # 语义色彩 token（$r 双主题 + overlay）
 │   ├── AppDimens.ets                    # 尺寸 token
 │   ├── ConfirmDialog.ets                # 确认弹窗
-│   └── KbMarkdownParser.ets            # Markdown 解析+TOC提取
+│   ├── ToastUtil.ets                    # Toast 反馈工具
+│   ├── KbMarkdownParser.ets            # Markdown 解析+TOC提取
+│   └── KbTextUtils.ets                 # 知识库文本处理纯函数
 └── services/
     ├── PreferencesService.ets           # 偏好持久化（收藏/LLM配置/主题）
     ├── LlmService.ets                   # LLM API（多轮问诊+视觉+extractJsonPayload）
-    ├── AssistantService.ets             # 助手逻辑（提取+解析+引擎路由）
+    ├── AssistantService.ets             # 助手逻辑（对话管理+LLM提取）
+    ├── CalcDispatcher.ets               # 计算器引擎调度（策略表路由）
+    ├── SheetResultBus.ets              # AppStorage 类型安全总线（12键封装）
     ├── PatientRepository.ets            # RDB 层
     ├── PatientService.ets               # 业务逻辑（预警+诊断）
-    ├── DiagnosisEngine.ets              # 诊断匹配引擎
-    ├── KnowledgeService.ets             # 知识库全文检索
+    ├── DiagnosisEngine.ets              # 诊断匹配引擎（纯函数，无副作用）
+    ├── KnowledgeService.ets             # 知识库门面（单例）
+    ├── KnowledgeIndex.ets               # 知识库DB初始化+Markdown摄取
+    ├── KnowledgeSearch.ets              # 知识库FTS检索+LLM增强检索
+    ├── KnowledgeTypes.ets               # 知识库共享数据类型
     ├── EmbeddingService.ets             # 向量检索底座（预留未启用）
-    └── ImageStore.ets                   # 图片存取
+    ├── ImageStore.ets                   # 图片存取
+    └── prompts/                         # LLM Prompt 集中管理（6个文件）
+        ├── CalcExtractionPrompt.ets     # 计算器字段提取
+        ├── ClarifyPrompt.ets            # 推荐澄清（含CLARIFY_DIMENSIONS）
+        ├── DiagnosisConfirmPrompt.ets   # 诊断确认
+        ├── DiagnosisSuggestPrompt.ets   # 诊断建议
+        ├── KnowledgeVerifyPrompt.ets    # 知识库验证
+        └── KnowledgeExpandPrompt.ets    # 知识库扩展
+
+entry/src/ohosTest/                      # 单元测试（31个用例，hypium标准驱动）
 ```
 
 ## 技术栈
@@ -131,7 +150,25 @@ entry/src/main/ets/
 - 88 个计算器与 MDCalc 两轮交叉验证（`docs/mdcalc-validation-report.md`）
 - 每个计算器的原始文献（PMID + 期刊 + 年份）和 MDCalc 链接可溯源（`docs/calculator-references.md`）
 - 全量编译验证（devecocli build BUILD SUCCESSFUL）
+- 单元测试 31 个用例全绿（hypium 标准驱动，`aa test` 实测通过）
 - 零 `any` 类型滥用
+
+## 架构重构（2026-07 完成）
+
+项目经历了一轮完整的架构重构，消除了三个上帝文件（Index.ets / AssistantService.ets / KnowledgeService.ets），详见 `docs/架构重构结果报告.md`。
+
+**核心成果**：
+- 三个上帝文件合计 4131 -> ~1355 行（-67%）
+- 88 路 if-else 路由从 2 份重复 -> 1 份集中（CalcRouter）
+- AppStorage 12 个裸键封装为类型安全总线（SheetResultBus）
+- LLM prompt 从散落在方法体内 -> 集中到 services/prompts/（6 个文件全部接线）
+- 魔法数字/字符串 -> 枚举化（TabIndex + CalcMode）
+- 单元测试从 0 -> 31 个用例全绿
+- UI 改进：遮罩统一 token / Toast 反馈 / Sheet 高度分档 / 顶栏颜色修正
+
+**挂起事项**（诊断 Tab 开发时一起做）：
+- 注册表物理合并（aliases/inputSpec 并入 Calculator 接口，当前逻辑门面已就绪）
+- InputRow 受控化（消除 resetKey 承重 hack，需改 85 个组件）
 
 ## 许可
 
