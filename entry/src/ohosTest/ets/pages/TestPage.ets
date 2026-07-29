@@ -1,19 +1,13 @@
-import TestRunner from '../test/TestRunner';
-
 @Entry
 @Component
 struct TestPage {
-  aboutToAppear() {
-    TestRunner.run();
-  }
-
   build() {
     Column() {
       Text('MedCalc Engine Tests')
         .fontSize(20)
         .fontWeight(FontWeight.Bold)
         .margin({ top: 100 })
-      Text('Tests are running. Check hilog for results.')
+      Text('Run via: aa test -s unittest OpenHarmonyTestRunner')
         .fontSize(14)
         .margin({ top: 20 })
     }

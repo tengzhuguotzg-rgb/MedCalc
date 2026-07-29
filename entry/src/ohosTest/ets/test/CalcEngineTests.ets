@@ -129,22 +129,24 @@ export function CalcEngineTests() {
   describe('CrCl', () => {
     it('male_normal_crcl', 0, () => {
       // CrCl = (140-50)*70 / (72*1.0) = 90*70/72 = 87.5
+      // 87.5 落在 CKD G2 区间 60-89 → 轻度下降（引擎阈值：≥90 正常）
       const r = calculateCrCl('male', 50, 70, 1.0, 'mgdl');
       expect(r.value !== null).assertTrue();
       if (r.value !== null) {
         expect(r.value > 87 && r.value < 88).assertTrue();
       }
-      expect(r.tier).assertEqual('正常');
+      expect(r.tier).assertEqual('轻度下降');
     });
 
     it('female_lower_crcl', 0, () => {
       // Same params but female: 87.5 * 0.85 = 74.375
+      // 74.375 同样落在 CKD G2 区间 60-89 → 轻度下降（中度下降为 30-59）
       const r = calculateCrCl('female', 50, 70, 1.0, 'mgdl');
       expect(r.value !== null).assertTrue();
       if (r.value !== null) {
         expect(r.value > 74 && r.value < 75).assertTrue();
       }
-      expect(r.tier).assertEqual('中度下降');
+      expect(r.tier).assertEqual('轻度下降');
     });
 
     it('umol_conversion', 0, () => {
@@ -197,9 +199,10 @@ export function CalcEngineTests() {
 
   describe('RIPASA', () => {
     it('male_young_low_score', 0, () => {
-      // male(1) + age<=40(1) = 2
+      // male(1) + age<=40(1) + 病程>48h(0.5) + temp=37落在37-39(2) = 4.5
+      // 注意：durLt48h=false 不是 0 分，而是"病程>48h"项得 0.5 分
       const r = calculateRipasa(30, 'male', false, false, false, false, false, false, false, false, false, 37, 8, false, false);
-      expect(r.value).assertEqual(2);
+      expect(r.value).assertEqual(4.5);
       expect(r.tier).assertEqual('不太可能');
     });
 
@@ -217,9 +220,10 @@ export function CalcEngineTests() {
       const r1 = calculateRipasa(30, 'male', false, false, false, false, false, false, false, false, false, 39, 8, false, false);
       // temp=39.1 should NOT be included
       const r2 = calculateRipasa(30, 'male', false, false, false, false, false, false, false, false, false, 39.1, 8, false, false);
-      expect(r1.value).assertEqual(3); // male(1) + age<=40(1) + temp(2) - wait, age=30 <=40 -> 1, male -> 1, temp 37-39 -> 2 = 4
-      // Actually: male(1) + age<=40(1) + temp 37-39(2) = 4
-      expect(r2.value).assertEqual(2); // male(1) + age<=40(1), temp 39.1 excluded
+      // r1: male(1) + age<=40(1) + 病程>48h(0.5) + temp 37-39(2) = 4.5
+      expect(r1.value).assertEqual(4.5);
+      // r2: male(1) + age<=40(1) + 病程>48h(0.5)，temp 39.1 出界不计 = 2.5
+      expect(r2.value).assertEqual(2.5);
     });
 
     it('foreign_national_adds_1', 0, () => {
