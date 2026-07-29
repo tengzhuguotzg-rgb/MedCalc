@@ -1,0 +1,14 @@
+[
+  {
+    "name": "module_desc",
+    "value": "MedCalc test module"
+  },
+  {
+    "name": "TestAbility_desc",
+    "value": "Engine unit tests"
+  },
+  {
+    "name": "TestAbility_label",
+    "value": "MedCalc Tests"
+  }
+]
