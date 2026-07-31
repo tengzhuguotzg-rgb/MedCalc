@@ -200,10 +200,10 @@ export struct Sidebar {
   private calcIcon(calcId: string): Resource {
     const groupMap: Record<string, string[]> = {
       '呼吸': ['pf', 'rox', 'bg', 'news2', 'fssicu', 'camicu'],
-      '心血管': ['map', 'sf', 'sofa', 'chadsvasc', 'hasbled', 'curb65', 'scai', 'vasopressor', 'timi_stemi', 'timi_nstemi', 'wells', 'pesi'],
-      '肾': ['crcl', 'gfr', 'kdigo', 'na', 'na_deficit', 'na_correction'],
-      '肝': ['child_pugh', 'clif_c', 'meld'],
-      '神经': ['gcs', 'nihss', 'rass', 'hunt_hess', 'wfns', 'fisher', 'ich', 'abcd2'],
+      '心血管': ['map', 'sf', 'sofa', 'chadsvasc', 'hasbled', 'curb65', 'scai', 'vasopressor', 'wells', 'pesi'],
+      '肾': ['crcl', 'gfr', 'kdigo', 'na'],
+      '肝': [],
+      '神经': ['gcs', 'nihss', 'rass', 'wfns', 'fisher', 'ich', 'abcd2'],
       '代谢': ['cag', 'sirs', 'mehran', 'mnutric', 'nrs2002'],
       '感染': ['sofa', 'sirs', 'curb65'],
       '综合': [],

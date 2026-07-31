@@ -7,7 +7,7 @@ import { PatientListPage } from '../components/PatientListPage';
 import { PatientDetailPage } from '../components/PatientDetailPage';
 import { KnowledgeSearchPage } from '../components/KnowledgeSearchPage';
 import { CalcKbLinks } from '../components/CalcKbLinks';
-import { CALCULATORS, Calculator } from '../model/CalculatorRegistry';
+import { CALCULATORS } from '../model/CalculatorRegistry';
 import { PreferencesService } from '../services/PreferencesService';
 import { AppColors } from '../utils/AppColors';
 import { TabIndex, CalcMode } from '../model/Enums';
@@ -315,8 +315,8 @@ struct Index {
     Text(label)
       .fontSize(13)
       .padding({ left: 12, right: 12, top: 6, bottom: 6 })
-      .fontColor(this.calcMode === mode ? AppColors.onPrimary : AppColors.textBody)
-      .backgroundColor(this.calcMode === mode ? AppColors.primary : AppColors.fillNeutral)
+      .fontColor(this.calcMode === mode ? AppColors.onPrimary : AppColors.textSecondary)
+      .backgroundColor(this.calcMode === mode ? AppColors.primary : Color.Transparent)
       .borderRadius(6)
       .onClick(() => {
         this.calcMode = mode;
@@ -331,7 +331,7 @@ struct Index {
         Text(this.getCurrentCalculatorName())
           .fontSize(20)
           .fontWeight(FontWeight.Bold)
-          .fontColor(AppColors.headerText);
+          .fontColor(AppColors.primary);
         if (this.getCurrentGroup().length > 0) {
           Text(this.getCurrentGroup())
             .fontSize(11)
@@ -349,7 +349,7 @@ struct Index {
         Image(this.isFavorite() ? $r('app.media.ic_star_filled') : $r('app.media.ic_star'))
           .width(20)
           .height(20)
-          .fillColor(AppColors.headerText)
+          .fillColor(AppColors.primary)
           .objectFit(ImageFit.Contain)
       }
       .width(44)
@@ -372,23 +372,6 @@ struct Index {
       .objectFit(ImageFit.Contain)
   }
 
-  @Builder
-  PlaceholderCalculator() {
-    Column() {
-      Text($r('app.string.calc_placeholder'))
-        .fontSize(17)
-        .fontWeight(FontWeight.Bold)
-        .fontColor(AppColors.primary);
-      Text($r('app.string.calc_placeholder_hint'))
-        .fontSize(11.5)
-        .fontColor(AppColors.textBody)
-        .margin({ top: 8 });
-    }
-    .width('100%')
-    .padding(16)
-    .alignItems(HorizontalAlign.Center);
-  }
-
   private getCurrentCalculatorName(): string {
     const calc = CALCULATORS.find(c => c.id === this.currentCalc);
     return calc ? calc.name : '未知计算器';
@@ -397,11 +380,6 @@ struct Index {
   private getCurrentGroup(): string {
     const calc = CALCULATORS.find(c => c.id === this.currentCalc);
     return calc ? calc.group : '';
-  }
-
-  private getCurrentCalculatorDescription(): string {
-    const calc = CALCULATORS.find(c => c.id === this.currentCalc);
-    return calc ? calc.description : '';
   }
 
   private isFavorite(): boolean {

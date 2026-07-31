@@ -34,6 +34,7 @@ export class SheetResultBus {
   private static readonly KEY_LLM_REC_USER_INPUT: string = 'llmRecUserInput';
   private static readonly KEY_LLM_REC_SUMMARY: string = 'llmRecSummary';
   private static readonly KEY_LLM_REC_RESULTS: string = 'llmRecResults';
+  private static readonly KEY_LLM_REC_CALC_RESULTS: string = 'llmRecCalcResults';
 
   // ============================================================
   // sheetCalc* —— 当前计算器弹层结果
